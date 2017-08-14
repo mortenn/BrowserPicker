@@ -1,4 +1,5 @@
-﻿using System.Security.Policy;
+﻿using System.Reflection;
+using System.Security.Policy;
 using System.Windows;
 
 namespace BrowserPicker
