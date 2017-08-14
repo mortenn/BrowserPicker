@@ -43,12 +43,18 @@ namespace BrowserPicker
 
 		private void Launch()
 		{
-			var url = Environment.GetCommandLineArgs()[1];
-			if (Command == @"microsoft-edge:")
-				Process.Start("microsoft-edge:" + url);
-			else
-				Process.Start(Command, url);
-
+			try
+			{
+				var url = Environment.GetCommandLineArgs()[1];
+				if (Command == @"microsoft-edge:")
+					Process.Start("microsoft-edge:" + url);
+				else
+					Process.Start(Command, url);
+			}
+			catch
+			{
+				// ignored
+			}
 			Application.Current.Shutdown();
 		}
 

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Security.Policy;
 using System.Windows;
 
@@ -11,7 +12,18 @@ namespace BrowserPicker
 	{
 		public App()
 		{
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			ViewModel = new ViewModel(false);
+		}
+
+		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+		{
+			var e = (Exception) unhandledExceptionEventArgs.ExceptionObject;
+			while(e != null)
+			{
+				MessageBox.Show(e.Message + e.StackTrace);
+				e = e.InnerException;
+			}
 		}
 
 		public ViewModel ViewModel { get; }
