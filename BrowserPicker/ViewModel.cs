@@ -62,7 +62,7 @@ namespace BrowserPicker
 			var root = Registry.LocalMachine.OpenSubKey(subKey);
 			if (root == null)
 				return;
-			foreach (var browser in root.GetSubKeyNames())
+			foreach (var browser in root.GetSubKeyNames().Where(n => n != "BrowserPicker"))
 				GetBrowserDetails(root, browser);
 		}
 
