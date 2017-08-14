@@ -25,13 +25,13 @@
 			<Component Guid="*" Win64="yes">
 				<File Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
 
-				<RegistryValue Root="HKCR" Key="HKEY_CLASSES_ROOT\BrowserPicker" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKCR" Key="HKEY_CLASSES_ROOT\BrowserPicker" Name="EditFlags" Value="2" Type="integer" />
-				<RegistryValue Root="HKCR" Key="HKEY_CLASSES_ROOT\BrowserPicker" Name="FriendlyTypeName" Value="Web URL" Type="string" />
-				<RegistryValue Root="HKCR" Key="HKEY_CLASSES_ROOT\BrowserPicker" Name="URL Protocol" Value="" Type="string" />
-				<RegistryValue Root="HKCR" Key="HKEY_CLASSES_ROOT\BrowserPicker\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
-				<RegistryValue Root="HKCR" Key="HKEY_CLASSES_ROOT\BrowserPicker\shell" Type="string" Value="open" />
-				<RegistryValue Root="HKCR" Key="HKEY_CLASSES_ROOT\BrowserPicker\shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="EditFlags" Value="2" Type="integer" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="FriendlyTypeName" Value="Web URL" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="URL Protocol" Value="" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker\shell" Type="string" Value="open" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker\shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" />
 				
 				<!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
 				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationDescription" Value="Shows a prompt to let you use different browsers on the fly." Type="string" />
