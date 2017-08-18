@@ -62,10 +62,13 @@ namespace BrowserPicker
 			}
 		}
 
+		public int Usage { get; set; }
+
 		private void Launch()
 		{
 			try
 			{
+				Config.UpdateCounter(this);
 				var url = Environment.GetCommandLineArgs()[1];
 				if (Command == @"microsoft-edge:")
 					Process.Start("microsoft-edge:" + url);

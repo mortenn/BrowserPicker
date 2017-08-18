@@ -19,6 +19,13 @@ namespace BrowserPicker
 			set => SetBrowsers(value);
 		}
 
+		public static void UpdateCounter(Browser browser)
+		{
+			Reg
+				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Name), true)
+				?.SetValue(nameof(browser.Usage), browser.Usage + 1, RegistryValueKind.DWord);
+		}
+
 		private static void SetBrowsers(IEnumerable<Browser> browsers)
 		{
 			var list = Reg.CreateSubKey(nameof(BrowserList), true);
@@ -57,7 +64,7 @@ namespace BrowserPicker
 				);
 			}
 			list.Close();
-			return browsers;
+			return browsers.OrderByDescending(b => b.Usage);
 		}
 
 		private static readonly RegistryKey Reg = Registry.CurrentUser.CreateSubKey("Software\\BrowserPicker", true);
