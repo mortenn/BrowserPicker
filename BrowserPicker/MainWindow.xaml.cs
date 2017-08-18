@@ -35,7 +35,12 @@ namespace BrowserPicker
 					case Key.D9: n = 9; break;
 				}
 
-				if (n > 0 && ViewModel.Choices.Count >= n)
+				if (n <= 0 || ViewModel.Choices.Count < n)
+					return;
+
+				if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+					ViewModel.Choices[n - 1].SelectPrivacy.Execute(null);
+				else
 					ViewModel.Choices[n - 1].Select.Execute(null);
 			}
 			catch
@@ -45,5 +50,10 @@ namespace BrowserPicker
 		}
 
 		private ViewModel ViewModel => (ViewModel)DataContext;
+
+		private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+		}
 	}
 }

@@ -99,5 +99,8 @@
   <ItemGroup>
     <Resource Include="web_icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="privacy.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

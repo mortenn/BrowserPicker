@@ -61,6 +61,7 @@
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition Width="Auto" />
 												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="Auto" />
 											</Grid.ColumnDefinitions>
 											<Image Margin="20,0,0,0" Source="{Binding Thumbnail}"></Image>
 											<TextBlock Text="{Binding Name}" Grid.Column="1" Foreground="White" Margin="20" FontSize="18">
@@ -77,6 +78,24 @@
 													</Style>
 												</TextBlock.Style>
 											</TextBlock>
+											<Button Grid.Column="2" Command="{Binding SelectPrivacy}" Click="ButtonBase_OnClick" ToolTip="Open in privacy mode">
+												<Button.Style>
+													<Style>
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding PrivacyArgs}" Value="{x:Null}">
+																<Setter Property="UIElement.Visibility" Value="Collapsed" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Button.Style>
+												<Button.Template>
+													<ControlTemplate>
+														<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40">
+															<Image Source="privacy.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+														</Border>
+													</ControlTemplate>
+												</Button.Template>
+											</Button>
 										</Grid>
 									</Border>
 								</ControlTemplate>

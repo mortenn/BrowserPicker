@@ -70,7 +70,8 @@ namespace BrowserPicker
 			}
 		}
 
-		public DelegateCommand Select => new DelegateCommand(Launch, () => IsUsable);
+		public DelegateCommand Select => new DelegateCommand(() => Launch(), () => IsUsable);
+		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true));
 
 		public bool IsRunning
 		{
@@ -98,7 +99,7 @@ namespace BrowserPicker
 
 		public int Usage { get; set; }
 
-		private void Launch()
+		private void Launch(bool privacy = false)
 		{
 			try
 			{
@@ -108,13 +109,12 @@ namespace BrowserPicker
 					Process.Start("microsoft-edge:" + url);
 				else
 				{
-					var args = privacy_mode ? PrivacyArgs : string.Empty;
+					var args = privacy || privacy_mode ? PrivacyArgs : string.Empty;
 					Process.Start(Command, args + " " + url);
 				}
 			}
 			catch
 			{
-				return;
 				// ignored
 			}
 			Application.Current.Shutdown();
