@@ -38,6 +38,16 @@
 							<Button.Template>
 								<ControlTemplate>
 									<Border Cursor="Hand" CornerRadius="5" Background="#44000000" BorderBrush="#22ffffff" BorderThickness="1">
+										<Border.Style>
+											<Style>
+												<Setter Property="UIElement.Opacity" Value="1" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding IsUsable}" Value="False">
+														<Setter Property="UIElement.Opacity" Value="0.2" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Border.Style>
 										<Grid>
 											<Grid.Style>
 												<Style>
@@ -81,7 +91,8 @@
 						<TextBlock Text="Update browser list" />
 					</Hyperlink>
 				</TextBlock>
-				<CheckBox IsChecked="{Binding Configuration.AlwaysPrompt}" Content="Always ask" Foreground="White" />
+				<CheckBox IsChecked="{Binding Configuration.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
+				<CheckBox IsChecked="{Binding PrivacyMode, UpdateSourceTrigger=PropertyChanged}" Content="Privacy mode" Foreground="White" x:Name="Privacy" />
 			</StackPanel>
 		</Grid>
 	</Border>

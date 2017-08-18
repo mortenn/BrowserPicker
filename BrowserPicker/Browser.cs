@@ -1,21 +1,53 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using BrowserPicker.Annotations;
 
 namespace BrowserPicker
 {
-	public class Browser
+	public class Browser : INotifyPropertyChanged
 	{
 		public string Name { get; set; }
 
 		public string IconPath { get; set; }
 
 		public string Command { get; set; }
+
+		public bool PrivacyMode
+		{
+			get => privacy_mode;
+			set
+			{
+				privacy_mode = value;
+				Select.RaiseCanExecuteChanged();
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(IsUsable));
+			}
+		}
+
+		public string PrivacyArgs
+		{
+			get
+			{
+				switch (Name)
+				{
+					default:
+						return null;
+					case "Mozilla Firefox":
+						return "-private-window";
+					case "Internet Explorer":
+						return "-private";
+					case "Google Chrome":
+						return "--incognito";
+				}
+			}
+		}
 
 		public BitmapFrame Thumbnail
 		{
@@ -38,7 +70,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public ICommand Select => new DelegateCommand(Launch);
+		public DelegateCommand Select => new DelegateCommand(Launch, () => IsUsable);
 
 		public bool IsRunning
 		{
@@ -52,7 +84,7 @@ namespace BrowserPicker
 					var cmd = Command;
 					if (cmd[0] == '"')
 						cmd = cmd.Split('"')[1];
-					return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd))?.Length > 0;
+					return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd)).Length > 0;
 				}
 				catch
 				{
@@ -60,6 +92,11 @@ namespace BrowserPicker
 					return false;
 				}
 			}
+		}
+
+		public bool IsUsable
+		{
+			get => !privacy_mode || PrivacyArgs != null;
 		}
 
 		public int Usage { get; set; }
@@ -73,15 +110,27 @@ namespace BrowserPicker
 				if (Command == @"microsoft-edge:")
 					Process.Start("microsoft-edge:" + url);
 				else
-					Process.Start(Command, url);
+				{
+					var args = privacy_mode ? PrivacyArgs : string.Empty;
+					Process.Start(Command, args + " " + url);
+				}
 			}
 			catch
 			{
+				return;
 				// ignored
 			}
 			Application.Current.Shutdown();
 		}
 
 		private BitmapFrame icon;
+		private bool privacy_mode;
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[NotifyPropertyChangedInvocator]
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
 	}
 }

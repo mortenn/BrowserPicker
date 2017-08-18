@@ -62,6 +62,7 @@
     <Compile Include="Browser.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="RegistryHelpers.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">

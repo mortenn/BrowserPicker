@@ -9,6 +9,8 @@ namespace BrowserPicker
 {
 	public class ViewModel
 	{
+		private bool privacy_mode;
+
 		public ViewModel()
 		{
 			Configuration = new Config();
@@ -29,6 +31,17 @@ namespace BrowserPicker
 		public ObservableCollection<Browser> Choices { get; }
 
 		public string TargetURL => Environment.GetCommandLineArgs()[1];
+
+		public bool PrivacyMode
+		{
+			get => privacy_mode;
+			set
+			{
+				privacy_mode = value;
+				foreach(var browser in Choices)
+					browser.PrivacyMode = value;
+			}
+		}
 
 		private void FindBrowsers()
 		{

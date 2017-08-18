@@ -5,18 +5,17 @@ namespace BrowserPicker
 {
 	public class DelegateCommand : ICommand
 	{
-		private readonly Action execute;
-
 		public event EventHandler CanExecuteChanged;
 
-		public DelegateCommand(Action execute) 
+		public DelegateCommand(Action callback, Func<bool> canExecute = null)
 		{
-			this.execute = execute;
+			execute = callback;
+			can_execute = canExecute;
 		}
 
 		public bool CanExecute(object parameter)
 		{
-			return true;
+			return can_execute == null || can_execute();
 		}
 
 		public void Execute(object parameter)
@@ -28,5 +27,8 @@ namespace BrowserPicker
 		{
 			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
+
+		private readonly Action execute;
+		private readonly Func<bool> can_execute;
 	}
 }
