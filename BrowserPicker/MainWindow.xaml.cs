@@ -24,6 +24,7 @@ namespace BrowserPicker
 				var n = 0;
 				switch (e.Key)
 				{
+					case Key.Enter:
 					case Key.D1: n = 1; break;
 					case Key.D2: n = 2; break;
 					case Key.D3: n = 3; break;
