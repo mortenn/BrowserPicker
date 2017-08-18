@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
@@ -9,16 +8,11 @@ namespace BrowserPicker
 {
 	public class ViewModel
 	{
-		public ViewModel() : this(true) { }
-
-		public ViewModel(bool designer)
+		public ViewModel()
 		{
-			isDesignTime = designer;
 			Choices = new ObservableCollection<Browser>();
 			FindBrowsers();
 			FindEdge();
-			if (isDesignTime)
-				return;
 			var active = Choices.Where(b => b.IsRunning).ToList();
 			if (active.Count == 1)
 				active[0].Select.Execute(null);
@@ -26,10 +20,7 @@ namespace BrowserPicker
 
 		public ObservableCollection<Browser> Choices { get; }
 
-		public string TargetURL
-		{
-			get { return isDesignTime ? "https://google.com/long-url-sample-for-designer-purposes-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" : Environment.GetCommandLineArgs()[1]; }
-		}
+		public string TargetURL => Environment.GetCommandLineArgs()[1];
 
 		private void FindBrowsers()
 		{
@@ -51,7 +42,6 @@ namespace BrowserPicker
 						Name = "Edge",
 						Command = "microsoft-edge:",
 						IconPath = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png"),
-						IsRunning = isDesignTime || Process.GetProcessesByName("MicrosoftEdge").Length > 0
 					}
 				);
 			}
@@ -78,10 +68,6 @@ namespace BrowserPicker
 
 			var icon = (string)reg.OpenSubKey("DefaultIcon")?.GetValue(null);
 			var shell = (string)reg.OpenSubKey("shell\\open\\command")?.GetValue(null);
-			var cmd = shell;
-			if (shell[0] == '"')
-				cmd = shell.Split('"')[1];
-			var running = isDesignTime || Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd))?.Length > 0;
 			if (icon?.Contains(",") ?? false)
 				icon = icon.Split(',')[0];
 			Choices.Add(
@@ -89,12 +75,9 @@ namespace BrowserPicker
 				{
 					Name = name,
 					IconPath = icon,
-					Command = shell,
-					IsRunning = running
+					Command = shell
 				}
 			);
 		}
-
-		private bool isDesignTime;
 	}
 }

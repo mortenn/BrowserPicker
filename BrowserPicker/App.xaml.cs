@@ -13,7 +13,7 @@ namespace BrowserPicker
 		public App()
 		{
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-			ViewModel = new ViewModel(false);
+			ViewModel = new ViewModel();
 		}
 
 		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)

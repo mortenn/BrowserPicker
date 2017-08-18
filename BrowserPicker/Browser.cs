@@ -39,7 +39,28 @@ namespace BrowserPicker
 		}
 
 		public ICommand Select => new DelegateCommand(Launch);
-		public bool IsRunning { get; set; }
+
+		public bool IsRunning
+		{
+			get
+			{
+				try
+				{
+					if (Command == "microsoft-edge:")
+						return Process.GetProcessesByName("MicrosoftEdge").Length > 0;
+
+					var cmd = Command;
+					if (cmd[0] == '"')
+						cmd = cmd.Split('"')[1];
+					return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd))?.Length > 0;
+				}
+				catch
+				{
+					// Design time exceptionss
+					return false;
+				}
+			}
+		}
 
 		private void Launch()
 		{
