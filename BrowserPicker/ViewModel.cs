@@ -59,7 +59,7 @@ namespace BrowserPicker
 
 		private void EnumerateBrowsers(string subKey)
 		{
-			var root = Registry.LocalMachine.OpenSubKey(subKey);
+			var root = Registry.LocalMachine.OpenSubKey(subKey, false);
 			if (root == null)
 				return;
 			foreach (var browser in root.GetSubKeyNames().Where(n => n != "BrowserPicker"))
@@ -68,7 +68,7 @@ namespace BrowserPicker
 
 		private void GetBrowserDetails(RegistryKey root, string browser)
 		{
-			var reg = root.OpenSubKey(browser);
+			var reg = root.OpenSubKey(browser, false);
 			if (reg == null)
 				return;
 
@@ -76,8 +76,8 @@ namespace BrowserPicker
 			if (Choices.Any(c => c.Name == name))
 				return;
 
-			var icon = (string)reg.OpenSubKey("DefaultIcon")?.GetValue(null);
-			var shell = (string)reg.OpenSubKey("shell\\open\\command")?.GetValue(null);
+			var icon = (string)reg.OpenSubKey("DefaultIcon", false)?.GetValue(null);
+			var shell = (string)reg.OpenSubKey("shell\\open\\command", false)?.GetValue(null);
 			if (icon?.Contains(",") ?? false)
 				icon = icon.Split(',')[0];
 			Choices.Add(
