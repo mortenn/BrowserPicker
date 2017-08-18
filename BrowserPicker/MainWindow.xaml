@@ -21,6 +21,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition />
 				<RowDefinition />
+				<RowDefinition />
 			</Grid.RowDefinitions>
 			<StackPanel Orientation="Horizontal">
 				<TextBlock Text="{Binding TargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" MaxWidth="380" />
@@ -74,6 +75,14 @@
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
+			<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+				<TextBlock Margin="10,0">
+					<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
+						<TextBlock Text="Update browser list" />
+					</Hyperlink>
+				</TextBlock>
+				<CheckBox IsChecked="{Binding Configuration.AlwaysPrompt}" Content="Always ask" Foreground="White" />
+			</StackPanel>
 		</Grid>
 	</Border>
 </Window>
