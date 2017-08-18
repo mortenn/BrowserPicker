@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows.Input;
 using Microsoft.Win32;
 
 namespace BrowserPicker
@@ -10,13 +11,20 @@ namespace BrowserPicker
 	{
 		public ViewModel()
 		{
-			Choices = new ObservableCollection<Browser>();
-			FindBrowsers();
-			FindEdge();
+			Configuration = new Config();
+			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
+			if(Choices.Count == 0)
+				FindBrowsers();
+			if(Configuration.AlwaysPrompt)
+				return;
 			var active = Choices.Where(b => b.IsRunning).ToList();
 			if (active.Count == 1)
 				active[0].Select.Execute(null);
 		}
+
+		public ICommand RefreshBrowsers => new DelegateCommand(FindBrowsers);
+
+		public Config Configuration { get; }
 
 		public ObservableCollection<Browser> Choices { get; }
 
@@ -26,6 +34,8 @@ namespace BrowserPicker
 		{
 			EnumerateBrowsers(@"SOFTWARE\Clients\StartMenuInternet");
 			EnumerateBrowsers(@"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
+			FindEdge();
+			Configuration.BrowserList = Choices;
 		}
 
 		private void FindEdge()
