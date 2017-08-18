@@ -9,7 +9,7 @@
 				d:DataContext="{d:DesignInstance local:ViewModel,d:IsDesignTimeCreatable=true}"
         Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
 				AllowsTransparency="True" WindowStyle="None"
-				KeyUp="MainWindow_OnKeyUp" LostFocus="MainWindow_OnLostFocus" ShowInTaskbar="False">
+				KeyUp="MainWindow_OnKeyUp" ShowInTaskbar="False">
 	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2">
 		<Border.Background>
 			<LinearGradientBrush EndPoint="0,1">

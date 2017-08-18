@@ -46,17 +46,5 @@ namespace BrowserPicker
 		}
 
 		private ViewModel ViewModel => (ViewModel)DataContext;
-
-		private void MainWindow_OnLostFocus(object sender, RoutedEventArgs e)
-		{
-			try
-			{
-				Close();
-			}
-			catch
-			{
-				// ignored
-			}
-		}
 	}
 }

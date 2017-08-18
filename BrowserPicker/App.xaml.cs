@@ -14,6 +14,7 @@ namespace BrowserPicker
 		{
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			ViewModel = new ViewModel();
+			Deactivated += (sender, args) => Current.Shutdown();
 		}
 
 		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
