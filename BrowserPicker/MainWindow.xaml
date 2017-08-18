@@ -105,12 +105,12 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 			<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-				<TextBlock Margin="10,0">
+				<TextBlock>
 					<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
 						<TextBlock Text="Update browser list" />
 					</Hyperlink>
 				</TextBlock>
-				<CheckBox IsChecked="{Binding Configuration.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
+				<CheckBox Margin="10,0" IsChecked="{Binding Configuration.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
 				<CheckBox IsChecked="{Binding PrivacyMode, UpdateSourceTrigger=PropertyChanged}" Content="Privacy mode" Foreground="White" x:Name="Privacy" />
 			</StackPanel>
 		</Grid>
