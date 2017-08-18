@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using BrowserPicker.Annotations;
 using Microsoft.Win32;
 
 namespace BrowserPicker
@@ -26,7 +28,8 @@ namespace BrowserPicker
 				?.SetValue(nameof(browser.Usage), browser.Usage + 1, RegistryValueKind.DWord);
 		}
 
-		private static void SetBrowsers(IEnumerable<Browser> browsers)
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+		private static void SetBrowsers([NotNull] IEnumerable<Browser> browsers)
 		{
 			var list = Reg.CreateSubKey(nameof(BrowserList), true);
 			foreach (var remove in list.GetSubKeyNames().Except(browsers.Select(b => b.Name)))
@@ -64,7 +67,7 @@ namespace BrowserPicker
 				);
 			}
 			list.Close();
-			return browsers.OrderByDescending(b => b.Usage);
+			return browsers.OrderByDescending(b => b.Usage).ToList();
 		}
 
 		private static readonly RegistryKey Reg = Registry.CurrentUser.CreateSubKey("Software\\BrowserPicker", true);

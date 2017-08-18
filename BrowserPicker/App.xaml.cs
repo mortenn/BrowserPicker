@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Reflection;
-using System.Security.Policy;
 using System.Windows;
 
 namespace BrowserPicker
@@ -8,7 +6,7 @@ namespace BrowserPicker
 	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
-	public partial class App : Application
+	public partial class App
 	{
 		public App()
 		{

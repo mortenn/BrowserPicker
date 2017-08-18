@@ -94,10 +94,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public bool IsUsable
-		{
-			get => !privacy_mode || PrivacyArgs != null;
-		}
+		public bool IsUsable => !privacy_mode || PrivacyArgs != null;
 
 		public int Usage { get; set; }
 

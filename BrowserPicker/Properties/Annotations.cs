@@ -30,6 +30,7 @@ using System;
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable InconsistentNaming
 
+// ReSharper disable once CheckNamespace
 namespace BrowserPicker.Annotations
 {
   /// <summary>
@@ -110,7 +111,7 @@ namespace BrowserPicker.Annotations
       FormatParameterName = formatParameterName;
     }
 
-    [NotNull] public string FormatParameterName { get; private set; }
+    [NotNull] public string FormatParameterName { get; }
   }
 
   /// <summary>
@@ -127,7 +128,7 @@ namespace BrowserPicker.Annotations
       Name = name;
     }
 
-    [NotNull] public string Name { get; private set; }
+    [NotNull] public string Name { get; }
   }
 
   /// <summary>
@@ -191,7 +192,7 @@ namespace BrowserPicker.Annotations
       ParameterName = parameterName;
     }
 
-    [CanBeNull] public string ParameterName { get; private set; }
+    [CanBeNull] public string ParameterName { get; }
   }
 
   /// <summary>
@@ -250,9 +251,9 @@ namespace BrowserPicker.Annotations
       ForceFullStates = forceFullStates;
     }
 
-    [NotNull] public string Contract { get; private set; }
+    [NotNull] public string Contract { get; }
 
-    public bool ForceFullStates { get; private set; }
+    public bool ForceFullStates { get; }
   }
 
   /// <summary>
@@ -274,7 +275,7 @@ namespace BrowserPicker.Annotations
       Required = required;
     }
 
-    public bool Required { get; private set; }
+    public bool Required { get; }
   }
 
   /// <summary>
@@ -320,7 +321,7 @@ namespace BrowserPicker.Annotations
       BaseType = baseType;
     }
 
-    [NotNull] public Type BaseType { get; private set; }
+    [NotNull] public Type BaseType { get; }
   }
 
   /// <summary>
@@ -345,9 +346,9 @@ namespace BrowserPicker.Annotations
       TargetFlags = targetFlags;
     }
 
-    public ImplicitUseKindFlags UseKindFlags { get; private set; }
+    public ImplicitUseKindFlags UseKindFlags { get; }
 
-    public ImplicitUseTargetFlags TargetFlags { get; private set; }
+    public ImplicitUseTargetFlags TargetFlags { get; }
   }
 
   /// <summary>
@@ -423,7 +424,7 @@ namespace BrowserPicker.Annotations
       Comment = comment;
     }
 
-    [CanBeNull] public string Comment { get; private set; }
+    [CanBeNull] public string Comment { get; }
   }
 
   /// <summary>
@@ -461,7 +462,7 @@ namespace BrowserPicker.Annotations
       Justification = justification;
     }
 
-    [CanBeNull] public string Justification { get; private set; }
+    [CanBeNull] public string Justification { get; }
   }
 
   /// <summary>
@@ -498,7 +499,7 @@ namespace BrowserPicker.Annotations
       BasePath = basePath;
     }
 
-    [CanBeNull] public string BasePath { get; private set; }
+    [CanBeNull] public string BasePath { get; }
   }
 
   /// <summary>
@@ -589,7 +590,7 @@ namespace BrowserPicker.Annotations
       Format = format;
     }
 
-    [NotNull] public string Format { get; private set; }
+    [NotNull] public string Format { get; }
   }
 
   [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
@@ -600,7 +601,7 @@ namespace BrowserPicker.Annotations
       Format = format;
     }
 
-    [NotNull] public string Format { get; private set; }
+    [NotNull] public string Format { get; }
   }
 
   [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
@@ -611,7 +612,7 @@ namespace BrowserPicker.Annotations
       Format = format;
     }
 
-    [NotNull] public string Format { get; private set; }
+    [NotNull] public string Format { get; }
   }
 
   [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
@@ -622,7 +623,7 @@ namespace BrowserPicker.Annotations
       Format = format;
     }
 
-    [NotNull] public string Format { get; private set; }
+    [NotNull] public string Format { get; }
   }
 
   [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
@@ -633,7 +634,7 @@ namespace BrowserPicker.Annotations
       Format = format;
     }
 
-    [NotNull] public string Format { get; private set; }
+    [NotNull] public string Format { get; }
   }
 
   [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
@@ -644,7 +645,7 @@ namespace BrowserPicker.Annotations
       Format = format;
     }
 
-    [NotNull] public string Format { get; private set; }
+    [NotNull] public string Format { get; }
   }
 
   /// <summary>
@@ -663,7 +664,7 @@ namespace BrowserPicker.Annotations
       AnonymousProperty = anonymousProperty;
     }
 
-    [CanBeNull] public string AnonymousProperty { get; private set; }
+    [CanBeNull] public string AnonymousProperty { get; }
   }
 
   /// <summary>
@@ -681,7 +682,7 @@ namespace BrowserPicker.Annotations
       AnonymousProperty = anonymousProperty;
     }
 
-    [CanBeNull] public string AnonymousProperty { get; private set; }
+    [CanBeNull] public string AnonymousProperty { get; }
   }
 
   /// <summary>
@@ -700,7 +701,7 @@ namespace BrowserPicker.Annotations
       AnonymousProperty = anonymousProperty;
     }
 
-    [CanBeNull] public string AnonymousProperty { get; private set; }
+    [CanBeNull] public string AnonymousProperty { get; }
   }
 
   /// <summary>
@@ -803,7 +804,7 @@ namespace BrowserPicker.Annotations
       Name = name;
     }
 
-    [CanBeNull] public string Name { get; private set; }
+    [CanBeNull] public string Name { get; }
   }
 
   [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Field | AttributeTargets.Property)]
@@ -814,7 +815,7 @@ namespace BrowserPicker.Annotations
       Name = name;
     }
 
-    [NotNull] public string Name { get; private set; }
+    [NotNull] public string Name { get; }
   }
 
   /// <summary>
@@ -837,7 +838,7 @@ namespace BrowserPicker.Annotations
       CollectionAccessType = collectionAccessType;
     }
 
-    public CollectionAccessType CollectionAccessType { get; private set; }
+    public CollectionAccessType CollectionAccessType { get; }
   }
 
   [Flags]
@@ -874,7 +875,7 @@ namespace BrowserPicker.Annotations
       ConditionType = conditionType;
     }
 
-    public AssertionConditionType ConditionType { get; private set; }
+    public AssertionConditionType ConditionType { get; }
   }
 
   /// <summary>
@@ -959,9 +960,9 @@ namespace BrowserPicker.Annotations
       ControlType = controlType;
     }
 
-    [NotNull] public string TagName { get; private set; }
+    [NotNull] public string TagName { get; }
 
-    [NotNull] public Type ControlType { get; private set; }
+    [NotNull] public Type ControlType { get; }
   }
 
   [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
@@ -981,13 +982,13 @@ namespace BrowserPicker.Annotations
       Attribute = attribute;
     }
 
-    [NotNull] public string Attribute { get; private set; }
+    [NotNull] public string Attribute { get; }
   }
 
   [AttributeUsage(AttributeTargets.Property)]
   public sealed class AspTypePropertyAttribute : Attribute
   {
-    public bool CreateConstructorReferences { get; private set; }
+    public bool CreateConstructorReferences { get; }
 
     public AspTypePropertyAttribute(bool createConstructorReferences)
     {
@@ -1003,7 +1004,7 @@ namespace BrowserPicker.Annotations
       Name = name;
     }
 
-    [NotNull] public string Name { get; private set; }
+    [NotNull] public string Name { get; }
   }
 
   [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
@@ -1015,9 +1016,9 @@ namespace BrowserPicker.Annotations
       FieldName = fieldName;
     }
 
-    [NotNull] public string Type { get; private set; }
+    [NotNull] public string Type { get; }
 
-    [NotNull] public string FieldName { get; private set; }
+    [NotNull] public string FieldName { get; }
   }
 
   [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
@@ -1028,7 +1029,7 @@ namespace BrowserPicker.Annotations
       Directive = directive;
     }
 
-    [NotNull] public string Directive { get; private set; }
+    [NotNull] public string Directive { get; }
   }
 
   [AttributeUsage(AttributeTargets.Method)]
