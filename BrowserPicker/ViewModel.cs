@@ -40,9 +40,13 @@ namespace BrowserPicker
 
 		private void FindEdge()
 		{
+			if(Choices.Any(b => b.Name.Equals("Edge")))
+				return;
+
 			var systemApps = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SystemApps");
 			if (!Directory.Exists(systemApps))
 				return;
+
 			var targets = Directory.GetDirectories(systemApps, "*MicrosoftEdge*");
 			if (targets.Length > 0)
 			{
