@@ -21,7 +21,7 @@ When you open a link outside a browser, one of two things will happen:
 1) If you have a single browser running, that one will be fed the url.
 2) If you have more than one or zero, browsers running, you will be presented with a simple window asking you which browser to use.  
 
-![Screenshot](http://i.imgur.com/ozgDkoE.png)
+![Screenshot](http://i.imgur.com/R5jru1m.png)
 
 When this window is open and has focus, you can use the following keyboard shortcuts:
 
