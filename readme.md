@@ -21,17 +21,19 @@ When you open a link outside a browser, one of two things will happen:
 1) If you have a single browser running, that one will be fed the url, unless you have enabled the "always ask" option.
 2) If you have more than one or zero, browsers running, you will be presented with a simple window asking you which browser to use.  
 
-![Screenshot](http://i.imgur.com/R5jru1m.png)
+![Screenshot](http://i.imgur.com/vKIXk8G.png)
 
 When this window is open and has focus, you can use the following keyboard shortcuts:
 
-`[1]` Pick the first browser in the list
+`[enter]` or `[1]` Pick the first browser in the list
 
 `[2]` Pick the second browser in the list
 
 ...
 
 `[9]` Pick the ninth browser in the list
+
+If you keep `[alt]` pressed while hitting one of these, the browser will be opened in privacy mode.
 
 `[esc]` Abort and close window
 
