@@ -98,7 +98,7 @@ namespace BrowserPicker
 				else
 				{
 					var args = privacy ? PrivacyArgs : string.Empty;
-					Process.Start(Command, args + " " + url);
+					Process.Start(Command, $"{args} \"{url}\"");
 				}
 			}
 			catch
