@@ -19,18 +19,6 @@ namespace BrowserPicker
 
 		public string Command { get; set; }
 
-		public bool PrivacyMode
-		{
-			get => privacy_mode;
-			set
-			{
-				privacy_mode = value;
-				Select.RaiseCanExecuteChanged();
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(IsUsable));
-			}
-		}
-
 		public string PrivacyArgs
 		{
 			get
@@ -71,7 +59,7 @@ namespace BrowserPicker
 		}
 
 		public DelegateCommand Select => new DelegateCommand(() => Launch(), () => IsUsable);
-		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true));
+		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => PrivacyArgs != null && IsUsable);
 
 		public bool IsRunning
 		{
@@ -95,7 +83,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public bool IsUsable => !privacy_mode || PrivacyArgs != null;
+		public bool IsUsable => Command != @"microsoft-edge:" || Environment.GetCommandLineArgs()[1].StartsWith("http");
 
 		public int Usage { get; set; }
 
@@ -105,11 +93,11 @@ namespace BrowserPicker
 			{
 				Config.UpdateCounter(this);
 				var url = Environment.GetCommandLineArgs()[1];
-				if (Command == @"microsoft-edge:")
-					Process.Start("microsoft-edge:" + url);
+				if (Command == MicrosoftEdge)
+					Process.Start($"{MicrosoftEdge}{url}");
 				else
 				{
-					var args = privacy || privacy_mode ? PrivacyArgs : string.Empty;
+					var args = privacy ? PrivacyArgs : string.Empty;
 					Process.Start(Command, args + " " + url);
 				}
 			}
@@ -121,7 +109,6 @@ namespace BrowserPicker
 		}
 
 		private BitmapFrame icon;
-		private bool privacy_mode;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]
@@ -129,5 +116,7 @@ namespace BrowserPicker
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+
+		private const string MicrosoftEdge = @"microsoft-edge:";
 	}
 }
