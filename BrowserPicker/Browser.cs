@@ -5,7 +5,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using BrowserPicker.Annotations;
 
@@ -60,6 +59,7 @@ namespace BrowserPicker
 
 		public DelegateCommand Select => new DelegateCommand(() => Launch(false), () => CanLaunch(false));
 		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
+		public DelegateCommand Disable => new DelegateCommand(() => Disabled = !Disabled);
 
 		public bool IsRunning
 		{
@@ -86,8 +86,6 @@ namespace BrowserPicker
 		public bool IsUsable => App.TargetURL != null && (Command != @"microsoft-edge:" || App.TargetURL.StartsWith("http"));
 
 		public int Usage { get; set; }
-
-		public ICommand Disable => new DelegateCommand(() => Disabled = !Disabled);
 
 		public bool Disabled
 		{
