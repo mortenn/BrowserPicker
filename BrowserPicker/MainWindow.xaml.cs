@@ -51,10 +51,5 @@ namespace BrowserPicker
 		}
 
 		private ViewModel ViewModel => (ViewModel)DataContext;
-
-		private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-		{
-			e.Handled = true;
-		}
 	}
 }

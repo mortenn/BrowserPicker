@@ -1,0 +1,65 @@
+﻿<UserControl 
+	x:Class="BrowserPicker.View.Configuration"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:browserPicker="clr-namespace:BrowserPicker"
+	mc:Ignorable="d" 
+	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}" d:DesignWidth="390">
+
+	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+			<StackPanel.Style>
+				<Style>
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding TargetURL}" Value="{x:Null}">
+							<Setter Property="UIElement.Visibility" Value="Collapsed" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</StackPanel.Style>
+
+			<TextBlock>
+				<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
+					<TextBlock Text="Refresh browser list" />
+				</Hyperlink>
+			</TextBlock>
+
+			<TextBlock Margin="10,0,0,0">
+				<Hyperlink Command="{Binding Configure}" Foreground="White">
+					<TextBlock Text="Done" />
+				</Hyperlink>
+			</TextBlock>
+		</StackPanel>
+
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+			<StackPanel.Style>
+				<Style>
+					<Setter Property="UIElement.Visibility" Value="Collapsed" />
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding TargetURL}" Value="{x:Null}">
+							<Setter Property="UIElement.Visibility" Value="Visible" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</StackPanel.Style>
+
+			<TextBlock>
+				<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
+					<TextBlock Text="Refresh browser list" />
+				</Hyperlink>
+			</TextBlock>
+
+			<TextBlock Margin="10,0,0,0">
+				<Hyperlink Command="{Binding Exit}" Foreground="White">
+					<TextBlock Text="Done" />
+				</Hyperlink>
+			</TextBlock>
+		</StackPanel>
+	</Grid>
+</UserControl>

@@ -1,0 +1,106 @@
+﻿<UserControl
+	x:Class="BrowserPicker.View.BrowserList"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	xmlns:browserPicker="clr-namespace:BrowserPicker"
+	mc:Ignorable="d" 
+	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		<StackPanel Orientation="Horizontal">
+			<TextBlock Text="{Binding TargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" MaxWidth="380" />
+		</StackPanel>
+		<ItemsControl Grid.Row="1" ItemsSource="{Binding Choices}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Vertical" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="browserPicker:Browser">
+					<Button Command="{Binding Select}" Margin="2">
+						<Button.Template>
+							<ControlTemplate>
+								<Border Cursor="Hand" CornerRadius="5" Background="#44000000" BorderBrush="#22ffffff" BorderThickness="1">
+									<Border.Style>
+										<Style>
+											<Setter Property="UIElement.Opacity" Value="1" />
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding IsUsable}" Value="False">
+													<Setter Property="UIElement.Opacity" Value="0.2" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</Border.Style>
+									<Grid>
+										<Grid.Style>
+											<Style>
+												<Style.Triggers>
+													<Trigger Property="Grid.IsMouseOver" Value="True">
+														<Setter Property="Grid.Background" Value="#22ffffff" />
+													</Trigger>
+												</Style.Triggers>
+											</Style>
+										</Grid.Style>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="Auto" />
+										</Grid.ColumnDefinitions>
+										<Image Margin="20,0,0,0" Source="{Binding Thumbnail}"></Image>
+										<TextBlock Text="{Binding Name}" Grid.Column="1" Foreground="White" Margin="20" FontSize="18">
+											<TextBlock.Style>
+												<Style>
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding IsRunning}" Value="True">
+															<Setter Property="TextBlock.FontWeight" Value="Bold" />
+														</DataTrigger>
+														<DataTrigger Binding="{Binding IsRunning}" Value="False">
+															<Setter Property="TextBlock.FontStyle" Value="Italic" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</TextBlock.Style>
+										</TextBlock>
+										<Button Grid.Column="2" Command="{Binding SelectPrivacy}" Click="ButtonBase_OnClick" ToolTip="Open in privacy mode">
+											<Button.Style>
+												<Style>
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding PrivacyArgs}" Value="{x:Null}">
+															<Setter Property="UIElement.Visibility" Value="Collapsed" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Button.Style>
+											<Button.Template>
+												<ControlTemplate>
+													<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40">
+														<Image Source="/privacy.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+													</Border>
+												</ControlTemplate>
+											</Button.Template>
+										</Button>
+									</Grid>
+								</Border>
+							</ControlTemplate>
+						</Button.Template>
+					</Button>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+			<TextBlock>
+				<Hyperlink Command="{Binding Configure}" Foreground="White">
+					<TextBlock Text="Configure browser list" />
+				</Hyperlink>
+			</TextBlock>
+			<CheckBox Margin="10,0,0,0" IsChecked="{Binding Configuration.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
+		</StackPanel>
+	</Grid>
+</UserControl>

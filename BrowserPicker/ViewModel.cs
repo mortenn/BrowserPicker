@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
+using BrowserPicker.Annotations;
 using Microsoft.Win32;
 
 namespace BrowserPicker
 {
-	public class ViewModel
+	public class ViewModel : INotifyPropertyChanged
 	{
 		public ViewModel()
 		{
 			ConfigurationMode = App.TargetURL == null;
 			Configuration = new Config();
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
-			if(Choices.Count == 0)
+			if (Choices.Count == 0)
 				FindBrowsers();
-			if(Configuration.AlwaysPrompt)
+			if (Configuration.AlwaysPrompt || ConfigurationMode)
 				return;
 			var active = Choices.Where(b => b.IsRunning).ToList();
 			if (active.Count == 1)
@@ -25,11 +29,26 @@ namespace BrowserPicker
 
 		public ICommand RefreshBrowsers => new DelegateCommand(FindBrowsers);
 
+		public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
+
+		public ICommand Exit => new DelegateCommand(() => Application.Current.Shutdown());
+
 		public Config Configuration { get; }
 
 		public ObservableCollection<Browser> Choices { get; }
 
+		public bool ConfigurationMode
+		{
+			get => configuration_mode;
+			set
+			{
+				configuration_mode = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public string TargetURL => App.TargetURL;
+
 
 		private void FindBrowsers()
 		{
@@ -41,7 +60,7 @@ namespace BrowserPicker
 
 		private void FindEdge()
 		{
-			if(Choices.Any(b => b.Name.Equals("Edge")))
+			if (Choices.Any(b => b.Name.Equals("Edge")))
 				return;
 
 			var systemApps = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SystemApps");
@@ -94,5 +113,15 @@ namespace BrowserPicker
 				}
 			);
 		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[NotifyPropertyChangedInvocator]
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		private bool configuration_mode;
 	}
 }
