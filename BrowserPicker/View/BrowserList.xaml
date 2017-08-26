@@ -25,6 +25,17 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate DataType="browserPicker:Browser">
 					<Button Command="{Binding Select}" Margin="2">
+						<Button.Style>
+							<Style>
+								<Setter Property="UIElement.Visibility" Value="Visible" />
+
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Disabled}" Value="True">
+										<Setter Property="UIElement.Visibility" Value="Collapsed" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Button.Style>
 						<Button.Template>
 							<ControlTemplate>
 								<Border Cursor="Hand" CornerRadius="5" Background="#44000000" BorderBrush="#22ffffff" BorderThickness="1">

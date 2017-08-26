@@ -87,6 +87,19 @@ namespace BrowserPicker
 
 		public int Usage { get; set; }
 
+		public ICommand Disable => new DelegateCommand(() => Disabled = !Disabled);
+
+		public bool Disabled
+		{
+			get => disabled;
+			set
+			{
+				disabled = value;
+				Config.UpdateBrowserDisabled(this);
+				OnPropertyChanged();
+			}
+		}
+
 		private void Launch(bool privacy = false)
 		{
 			try
@@ -108,6 +121,7 @@ namespace BrowserPicker
 		}
 
 		private BitmapFrame icon;
+		private bool disabled;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]

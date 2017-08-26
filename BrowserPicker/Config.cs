@@ -28,6 +28,13 @@ namespace BrowserPicker
 				?.SetValue(nameof(browser.Usage), browser.Usage + 1, RegistryValueKind.DWord);
 		}
 
+		public static void UpdateBrowserDisabled(Browser browser)
+		{
+			Reg
+				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Name), true)
+				?.SetValue(nameof(browser.Disabled), browser.Disabled ? 1 : 0, RegistryValueKind.DWord);
+		}
+
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		private static void SetBrowsers([NotNull] IEnumerable<Browser> browsers)
 		{
@@ -62,7 +69,8 @@ namespace BrowserPicker
 						Name = browser,
 						Command = config.Get<string>(nameof(Browser.Command)),
 						IconPath = config.Get<string>(nameof(Browser.IconPath)),
-						Usage = config.Get<int>(nameof(Browser.Usage))
+						Usage = config.Get<int>(nameof(Browser.Usage)),
+						Disabled = config.Get<bool>(nameof(Browser.Disabled))
 					}
 				);
 			}
