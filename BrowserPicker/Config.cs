@@ -35,6 +35,11 @@ namespace BrowserPicker
 				?.SetValue(nameof(browser.Disabled), browser.Disabled ? 1 : 0, RegistryValueKind.DWord);
 		}
 
+		public static void RemoveBrowser(Browser browser)
+		{
+			Reg.DeleteSubKeyTree(Path.Combine(nameof(BrowserList), browser.Name), false);
+		}
+
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		private static void SetBrowsers([NotNull] IEnumerable<Browser> browsers)
 		{

@@ -60,6 +60,7 @@ namespace BrowserPicker
 		public DelegateCommand Select => new DelegateCommand(() => Launch(false), () => CanLaunch(false));
 		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
 		public DelegateCommand Disable => new DelegateCommand(() => Disabled = !Disabled);
+		public DelegateCommand Remove => new DelegateCommand(() => Removed = true);
 
 		public bool IsRunning
 		{
@@ -98,6 +99,18 @@ namespace BrowserPicker
 			}
 		}
 
+		public bool Removed
+		{
+			get => removed;
+			set
+			{
+				removed = value;
+				Disabled = value;
+				Config.RemoveBrowser(this);
+				OnPropertyChanged();
+			}
+		}
+
 		private bool CanLaunch(bool privacy)
 		{
 			return IsUsable && !(privacy && PrivacyArgs == null);
@@ -125,6 +138,7 @@ namespace BrowserPicker
 
 		private BitmapFrame icon;
 		private bool disabled;
+		private bool removed;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]

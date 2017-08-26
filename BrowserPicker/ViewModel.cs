@@ -52,6 +52,10 @@ namespace BrowserPicker
 
 		private void FindBrowsers()
 		{
+			var removed = Choices.Where(b => b.Removed).ToList();
+			if (removed.Count > 0)
+				removed.ForEach(b => Choices.Remove(b));
+
 			EnumerateBrowsers(@"SOFTWARE\Clients\StartMenuInternet");
 			EnumerateBrowsers(@"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
 			FindEdge();

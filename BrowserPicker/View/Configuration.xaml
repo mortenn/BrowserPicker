@@ -23,9 +23,20 @@
 			<ItemsControl.ItemTemplate>
 				<DataTemplate DataType="browserPicker:Browser">
 					<Grid>
+						<Grid.Style>
+							<Style>
+								<Setter Property="UIElement.Visibility" Value="Visible" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Removed}" Value="True">
+										<Setter Property="UIElement.Visibility" Value="Collapsed" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Grid.Style>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
 						<Image Margin="20,0,0,0" Source="{Binding Thumbnail}"></Image>
@@ -46,6 +57,11 @@
 										</Style>
 									</TextBlock.Style>
 								</TextBlock>
+							</Hyperlink>
+						</TextBlock>
+						<TextBlock Grid.Column="3" Margin="10" FontSize="16">
+							<Hyperlink Command="{Binding Remove}">
+								<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
 							</Hyperlink>
 						</TextBlock>
 					</Grid>
