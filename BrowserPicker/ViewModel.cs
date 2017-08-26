@@ -33,6 +33,25 @@ namespace BrowserPicker
 
 		public ICommand Exit => new DelegateCommand(() => Application.Current.Shutdown());
 
+		public DelegateCommand AddBrowser => new DelegateCommand(AddBrowserManually);
+
+		private void AddBrowserManually()
+		{
+			var editor = new BrowserEditor();
+			editor.Show();
+			editor.Closing += Editor_Closing;
+		}
+
+		private void Editor_Closing(object sender, CancelEventArgs e)
+		{
+			((Window)sender).Closing -= Editor_Closing;
+			var browser = ((Window)sender).DataContext as Browser;
+			if (browser == null)
+				return;
+			Choices.Add(browser);
+			Configuration.BrowserList = Choices;
+		}
+
 		public Config Configuration { get; }
 
 		public ObservableCollection<Browser> Choices { get; }

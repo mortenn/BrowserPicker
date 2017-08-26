@@ -60,6 +60,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Browser.cs" />
+    <Compile Include="BrowserEditor.xaml.cs">
+      <DependentUpon>BrowserEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -71,6 +74,10 @@
     <Compile Include="View\Configuration.xaml.cs">
       <DependentUpon>Configuration.xaml</DependentUpon>
     </Compile>
+    <Page Include="BrowserEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

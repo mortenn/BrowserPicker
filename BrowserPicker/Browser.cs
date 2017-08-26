@@ -12,11 +12,36 @@ namespace BrowserPicker
 {
 	public class Browser : INotifyPropertyChanged
 	{
-		public string Name { get; set; }
+		public string Name
+		{
+			get => name;
+			set
+			{
+				name = value;
+				OnPropertyChanged();
+			}
+		}
 
-		public string IconPath { get; set; }
+		public string IconPath
+		{
+			get => icon_path;
+			set
+			{
+				icon_path = value;
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(Thumbnail));
+			}
+		}
 
-		public string Command { get; set; }
+		public string Command
+		{
+			get => command;
+			set
+			{
+				command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public string PrivacyArgs
 		{
@@ -139,6 +164,9 @@ namespace BrowserPicker
 		private BitmapFrame icon;
 		private bool disabled;
 		private bool removed;
+		private string name;
+		private string icon_path;
+		private string command;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]

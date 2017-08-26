@@ -71,52 +71,51 @@
 
 
 		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-			<StackPanel.Style>
-				<Style>
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding TargetURL}" Value="{x:Null}">
-							<Setter Property="UIElement.Visibility" Value="Collapsed" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</StackPanel.Style>
 
 			<TextBlock>
+				<Hyperlink Command="{Binding AddBrowser}" Foreground="White">
+					<TextBlock Text="Add browser" />
+				</Hyperlink>
+			</TextBlock>
+
+			<TextBlock Margin="10,0,0,0">
 				<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
 					<TextBlock Text="Refresh browser list" />
 				</Hyperlink>
 			</TextBlock>
 
 			<TextBlock Margin="10,0,0,0">
+				<TextBlock.Style>
+					<Style>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding TargetURL}" Value="{x:Null}">
+								<Setter Property="UIElement.Visibility" Value="Collapsed" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
 				<Hyperlink Command="{Binding Configure}" Foreground="White">
 					<TextBlock Text="Done" />
 				</Hyperlink>
 			</TextBlock>
-		</StackPanel>
-
-		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-			<StackPanel.Style>
-				<Style>
-					<Setter Property="UIElement.Visibility" Value="Collapsed" />
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding TargetURL}" Value="{x:Null}">
-							<Setter Property="UIElement.Visibility" Value="Visible" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</StackPanel.Style>
-
-			<TextBlock>
-				<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
-					<TextBlock Text="Refresh browser list" />
-				</Hyperlink>
-			</TextBlock>
 
 			<TextBlock Margin="10,0,0,0">
+				<TextBlock.Style>
+					<Style>
+						<Setter Property="UIElement.Visibility" Value="Collapsed" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding TargetURL}" Value="{x:Null}">
+								<Setter Property="UIElement.Visibility" Value="Visible" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
 				<Hyperlink Command="{Binding Exit}" Foreground="White">
 					<TextBlock Text="Done" />
 				</Hyperlink>
 			</TextBlock>
+
 		</StackPanel>
+
 	</Grid>
 </UserControl>
