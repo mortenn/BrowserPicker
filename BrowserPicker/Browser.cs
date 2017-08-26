@@ -65,7 +65,7 @@ namespace BrowserPicker
 		{
 			get
 			{
-				if (icon != null)
+				if (icon != null || string.IsNullOrEmpty(IconPath))
 					return icon;
 				if (IconPath.EndsWith("exe"))
 				{
