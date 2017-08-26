@@ -64,6 +64,7 @@
       <DependentUpon>BrowserEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Config.cs" />
+    <Compile Include="DefaultSetting.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="RegistryHelpers.cs" />

@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace BrowserPicker.View
 {
 	/// <summary>
 	/// Interaction logic for Configuration.xaml
 	/// </summary>
-	public partial class Configuration : UserControl
+	public partial class Configuration
 	{
 		public Configuration()
 		{
 			InitializeComponent();
+		}
+
+		private void AddDefault(object sender, RoutedEventArgs e)
+		{
+			var fragment = NewFragment.Text;
+			var browser = (string)NewDefault.SelectedValue;
+			Config.SetDefault(fragment, browser);
+			DefaultsList.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
 		}
 	}
 }

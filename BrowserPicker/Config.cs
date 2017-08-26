@@ -21,6 +21,12 @@ namespace BrowserPicker
 			set => SetBrowsers(value);
 		}
 
+		public IEnumerable<DefaultSetting> Defaults
+		{
+			get => GetDefaults();
+			set => SetDefaults(value);
+		}
+
 		public static void UpdateCounter(Browser browser)
 		{
 			Reg
@@ -38,6 +44,36 @@ namespace BrowserPicker
 		public static void RemoveBrowser(Browser browser)
 		{
 			Reg.DeleteSubKeyTree(Path.Combine(nameof(BrowserList), browser.Name), false);
+		}
+
+		public static void RemoveDefault(string fragment)
+		{
+			Reg.OpenSubKey(nameof(Defaults), true)?.DeleteValue(fragment);
+		}
+
+		public static void SetDefault(string fragment, string browser)
+		{
+			Reg.CreateSubKey(nameof(Defaults), true).SetValue(fragment, browser, RegistryValueKind.String);
+		}
+
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+		private static void SetDefaults([NotNull] IEnumerable<DefaultSetting> defaults)
+		{
+			var key = Reg.CreateSubKey(nameof(Defaults), true);
+			var values = key.GetValueNames();
+			foreach (var fragment in values.Except(defaults.Select(d => d.Fragment)))
+				key.DeleteValue(fragment);
+			foreach(var setting in defaults)
+				key.SetValue(setting.Fragment, setting.Browser, RegistryValueKind.String);
+		}
+
+		private static IEnumerable<DefaultSetting> GetDefaults()
+		{
+			var key = Reg.CreateSubKey(nameof(Defaults), true);
+			var values = key.GetValueNames();
+			return values.Select(
+				fragment => new DefaultSetting(fragment, (string)key.GetValue(fragment))
+			).ToList();
 		}
 
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]

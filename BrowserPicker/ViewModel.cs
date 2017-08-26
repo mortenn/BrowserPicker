@@ -17,7 +17,12 @@ namespace BrowserPicker
 		{
 			ConfigurationMode = App.TargetURL == null;
 			Configuration = new Config();
+
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
+
+			if (App.TargetURL != null)
+				CheckDefaultBrowser();
+
 			if (Choices.Count == 0)
 				FindBrowsers();
 			if (Configuration.AlwaysPrompt || ConfigurationMode)
@@ -25,6 +30,22 @@ namespace BrowserPicker
 			var active = Choices.Where(b => b.IsRunning).ToList();
 			if (active.Count == 1)
 				active[0].Select.Execute(null);
+		}
+
+		private void CheckDefaultBrowser()
+		{
+			var defaults = Configuration.Defaults.ToList();
+			if (defaults.Count <= 0)
+				return;
+
+			var url = new Uri(App.TargetURL);
+			var auto = defaults.Where(d => url.Host.EndsWith(d.Fragment)).ToList();
+			if (auto.Count <= 0)
+				return;
+
+			var browser = auto.OrderByDescending(d => d.Fragment.Length).First().Browser;
+			var start = Choices.FirstOrDefault(c => c.Name == browser);
+			start?.Select.Execute(null);
 		}
 
 		public ICommand RefreshBrowsers => new DelegateCommand(FindBrowsers);
@@ -148,7 +169,7 @@ namespace BrowserPicker
 
 		public void OnDeactivated()
 		{
-			if(!ConfigurationMode)
+			if (!ConfigurationMode)
 				Application.Current.Shutdown();
 		}
 	}
