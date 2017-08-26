@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -6,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using BrowserPicker.Annotations;
 
@@ -58,8 +58,8 @@ namespace BrowserPicker
 			}
 		}
 
-		public DelegateCommand Select => new DelegateCommand(() => Launch(), () => IsUsable);
-		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => PrivacyArgs != null && IsUsable);
+		public DelegateCommand Select => new DelegateCommand(() => Launch(false), () => CanLaunch(false));
+		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
 
 		public bool IsRunning
 		{
@@ -100,7 +100,12 @@ namespace BrowserPicker
 			}
 		}
 
-		private void Launch(bool privacy = false)
+		private bool CanLaunch(bool privacy)
+		{
+			return IsUsable && !(privacy && PrivacyArgs == null);
+		}
+
+		private void Launch(bool privacy)
 		{
 			try
 			{
