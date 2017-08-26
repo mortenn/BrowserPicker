@@ -83,7 +83,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public bool IsUsable => Command != @"microsoft-edge:" || Environment.GetCommandLineArgs()[1].StartsWith("http");
+		public bool IsUsable => App.TargetURL != null && (Command != @"microsoft-edge:" || App.TargetURL.StartsWith("http"));
 
 		public int Usage { get; set; }
 
@@ -92,13 +92,12 @@ namespace BrowserPicker
 			try
 			{
 				Config.UpdateCounter(this);
-				var url = Environment.GetCommandLineArgs()[1];
 				if (Command == MicrosoftEdge)
-					Process.Start($"{MicrosoftEdge}{url}");
+					Process.Start($"{MicrosoftEdge}{App.TargetURL}");
 				else
 				{
 					var args = privacy ? PrivacyArgs : string.Empty;
-					Process.Start(Command, $"{args} \"{url}\"");
+					Process.Start(Command, $"{args} \"{App.TargetURL}\"");
 				}
 			}
 			catch

@@ -11,6 +11,7 @@ namespace BrowserPicker
 	{
 		public ViewModel()
 		{
+			ConfigurationMode = App.TargetURL == null;
 			Configuration = new Config();
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
 			if(Choices.Count == 0)
@@ -28,7 +29,7 @@ namespace BrowserPicker
 
 		public ObservableCollection<Browser> Choices { get; }
 
-		public string TargetURL => Environment.GetCommandLineArgs()[1];
+		public string TargetURL => App.TargetURL;
 
 		private void FindBrowsers()
 		{
