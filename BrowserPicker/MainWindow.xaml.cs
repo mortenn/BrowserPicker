@@ -21,6 +21,9 @@ namespace BrowserPicker
 				if (e.Key == Key.Escape)
 					Close();
 
+				if (App.TargetURL == null)
+					return;
+
 				var n = 0;
 				switch (e.Key)
 				{
