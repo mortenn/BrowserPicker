@@ -24,7 +24,7 @@ namespace BrowserPicker
 				if (App.TargetURL == null)
 					return;
 
-				var n = 0;
+				int n;
 				switch (e.Key)
 				{
 					case Key.Enter:
@@ -37,9 +37,10 @@ namespace BrowserPicker
 					case Key.D7: n = 7; break;
 					case Key.D8: n = 8; break;
 					case Key.D9: n = 9; break;
+					default: return;
 				}
 
-				if (n <= 0 || ViewModel.Choices.Count < n)
+				if (ViewModel.Choices.Count < n)
 					return;
 
 				if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
