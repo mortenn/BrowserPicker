@@ -43,10 +43,8 @@ namespace BrowserPicker
 				if (ViewModel.Choices.Count < n)
 					return;
 
-				if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
-					ViewModel.Choices[n - 1].SelectPrivacy.Execute(null);
-				else
-					ViewModel.Choices[n - 1].Select.Execute(null);
+				var privacy = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+				ViewModel.Choices[n - 1].Select.Execute(privacy);
 			}
 			catch
 			{
@@ -55,5 +53,17 @@ namespace BrowserPicker
 		}
 
 		private ViewModel ViewModel => (ViewModel)DataContext;
+
+		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if(e.PreviousSize == e.NewSize)
+				return;
+
+			var w = SystemParameters.PrimaryScreenWidth;
+			var h = SystemParameters.PrimaryScreenHeight;
+
+			Left = (w - e.NewSize.Width) / 2;
+			Top = (h - e.NewSize.Height) / 2;
+		}
 	}
 }
