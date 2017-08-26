@@ -68,7 +68,6 @@ namespace BrowserPicker
 
 		public string TargetURL => App.TargetURL;
 
-
 		private void FindBrowsers()
 		{
 			var removed = Choices.Where(b => b.Removed).ToList();
