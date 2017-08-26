@@ -127,5 +127,11 @@ namespace BrowserPicker
 		}
 
 		private bool configuration_mode;
+
+		public void OnDeactivated()
+		{
+			if(!ConfigurationMode)
+				Application.Current.Shutdown();
+		}
 	}
 }
