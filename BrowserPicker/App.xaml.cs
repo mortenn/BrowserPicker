@@ -10,6 +10,8 @@ namespace BrowserPicker
 	{
 		public App()
 		{
+			var arguments = Environment.GetCommandLineArgs();
+			TargetURL = arguments.Length > 1 ? arguments[1] : null;
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			ViewModel = new ViewModel();
 			Deactivated += (sender, args) => Current.Shutdown();
@@ -24,6 +26,8 @@ namespace BrowserPicker
 				e = e.InnerException;
 			}
 		}
+
+		public static string TargetURL { get; private set; }
 
 		public ViewModel ViewModel { get; }
 	}
