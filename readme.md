@@ -59,6 +59,7 @@ At the bottom of this window, there are three hyperlinks:
 Add browser opens popup where you can manually add a browser that has not been detected - or some other tool that isn't a browser.
 
 ![Screenshot 4](http://i.imgur.com/ickDffz.png)
+![Screenshot 5](http://i.imgur.com/bbFltpi.png)
 
 If you browse for the command first, the application will assume the executable also has an icon, and prefill that box.
 
