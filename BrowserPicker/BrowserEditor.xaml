@@ -12,7 +12,7 @@
 	AllowsTransparency="True" WindowStyle="None"
 	Loaded="BrowserEditor_OnLoaded"
 	ShowInTaskbar="False">
-	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" Padding="10" Width="400">
+	<Border CornerRadius="5" BorderBrush="#77FFFFFF" BorderThickness="2" Padding="10" Width="400">
 		<Border.Background>
 			<LinearGradientBrush EndPoint="0,1">
 				<GradientStop Offset="0" Color="#77272727" />
