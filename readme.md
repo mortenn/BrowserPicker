@@ -67,7 +67,7 @@ The name of the application will be attempted to be set automatically based on i
 
 Under the other tab, you can assign a default browser by domain:
 
-![Screenshot 3](http://i.imgur.com/SDPxF8p.png)
+![Screenshot 3](http://i.imgur.com/Ealb42I.png)
 
 If you want the defaults to only apply when the browser is already running, check the checkbox above the list.
 
