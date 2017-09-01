@@ -101,7 +101,10 @@
 						<RowDefinition Height="*" />
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
-					<TextBlock Text="Set default browser per domain" Foreground="White" Margin="5" />
+					<StackPanel Orientation="Vertical">
+						<TextBlock Text="Set default browser per domain" Foreground="White" Margin="5" />
+						<CheckBox Content="Only when browser is running" IsChecked="{Binding Configuration.DefaultsWhenRunning}" Foreground="White" Margin="5,0,0,5" />
+					</StackPanel>
 					<ScrollViewer Grid.Row="1">
 						<ItemsControl ItemsSource="{Binding Configuration.Defaults}" Name="DefaultsList">
 							<ItemsControl.ItemsPanel>

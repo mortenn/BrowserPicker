@@ -27,6 +27,12 @@ namespace BrowserPicker
 			set => SetDefaults(value);
 		}
 
+		public bool DefaultsWhenRunning
+		{
+			get => Reg.Get<bool>(nameof(DefaultsWhenRunning));
+			set => Reg.Set(nameof(DefaultsWhenRunning), value);
+		}
+
 		public static void UpdateCounter(Browser browser)
 		{
 			Reg

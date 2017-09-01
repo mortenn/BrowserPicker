@@ -45,6 +45,9 @@ namespace BrowserPicker
 
 			var browser = auto.OrderByDescending(d => d.Fragment.Length).First().Browser;
 			var start = Choices.FirstOrDefault(c => c.Name == browser);
+			if(Configuration.DefaultsWhenRunning && !start.IsRunning)
+				return;
+
 			start?.Select.Execute(null);
 		}
 
