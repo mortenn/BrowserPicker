@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -93,13 +94,15 @@ namespace BrowserPicker
 			{
 				try
 				{
+					var session = Process.GetCurrentProcess().SessionId;
+
 					if (Command == "microsoft-edge:")
-						return Process.GetProcessesByName("MicrosoftEdge").Length > 0;
+						return Process.GetProcessesByName("MicrosoftEdge").Any(p => p.SessionId == session);
 
 					var cmd = Command;
 					if (cmd[0] == '"')
 						cmd = cmd.Split('"')[1];
-					return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd)).Length > 0;
+					return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd)).Any(p => p.SessionId == session);
 				}
 				catch
 				{
