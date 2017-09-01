@@ -67,7 +67,9 @@ The name of the application will be attempted to be set automatically based on i
 
 Under the other tab, you can assign a default browser by domain:
 
-![Screenshot 3](http://i.imgur.com/SpUdc05.png)
+![Screenshot 3](http://i.imgur.com/SDPxF8p.png)
+
+If you want the defaults to only apply when the browser is already running, check the checkbox above the list.
 
 When you open a link, the application will check if you have defined a default matching the end of the host part of the URL.
 That is, if you open https://www.github.com/mortenn/BrowserPicker, a default set for github.com will match.
