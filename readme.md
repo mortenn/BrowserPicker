@@ -4,7 +4,7 @@ A default browser replacement for windows to let you pick your preferred browser
 
 ## Installation
 
-Simply download and install the latest MSI.
+Simply download and install the [latest MSI](https://github.com/mortenn/BrowserPicker/releases).
 
 ## Configuration
 
