@@ -47,10 +47,7 @@ Currently running browsers will have their name in bold, whilst browsers not cur
 
 As you use the application, it keeps count of how many times you selected each browser. This information is used to show you your browsers in your preferred order automatically.
 
-At the bottom of the window, there is a checkboxes and a hyperlink.
-
-Ticking the option to always ask will disable the autoselect feature.
-Clicking the hyperlink will open the settings window
+At the bottom of the window, there is a checkbox to enable "always ask" and a hyperlink to open settings.
 
 ![Screenshot 2](http://i.imgur.com/rBzgDbw.png)
 
