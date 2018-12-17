@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="BrowserPicker" Language="1033" Version="1.5.2" Manufacturer="Runsafe"
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+	<Product Id="*" Name="BrowserPicker" Language="1033" Version="1.6.0" Manufacturer="Runsafe"
 					 UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
 
@@ -23,7 +23,9 @@
 	<Fragment>
 		<ComponentGroup Source="$(var.BrowserPicker.TargetDir)" Id="ProductComponents" Directory="INSTALLFOLDER">
 			<Component Guid="*" Win64="yes">
-				<File Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
+				<File Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64">
+					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.TargetFileName)" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+				</File>
 
 				<RegistryValue Root="HKCR" Key="BrowserPicker" Value="BrowserPicker" Type="string" />
 				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="EditFlags" Value="2" Type="integer" />
