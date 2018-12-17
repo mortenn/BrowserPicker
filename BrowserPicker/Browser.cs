@@ -53,11 +53,11 @@ namespace BrowserPicker
 					default:
 						return null;
 					case "Mozilla Firefox":
-						return "-private-window";
+						return "-private-window ";
 					case "Internet Explorer":
-						return "-private";
+						return "-private ";
 					case "Google Chrome":
-						return "--incognito";
+						return "--incognito ";
 				}
 			}
 		}
@@ -154,7 +154,7 @@ namespace BrowserPicker
 				else
 				{
 					var args = privacy ? PrivacyArgs : string.Empty;
-					Process.Start(Command, $"{args} \"{App.TargetURL}\"");
+					Process.Start(Command, $"{args}\"{App.TargetURL}\"");
 				}
 			}
 			catch
