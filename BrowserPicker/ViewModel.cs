@@ -25,6 +25,8 @@ namespace BrowserPicker
 
 			if (Choices.Count == 0)
 				FindBrowsers();
+			else
+				CheckEdge();
 			if (Configuration.AlwaysPrompt || ConfigurationMode || forceChoice)
 				return;
 			var active = Choices.Where(b => b.IsRunning).ToList();
@@ -104,6 +106,14 @@ namespace BrowserPicker
 			Configuration.BrowserList = Choices;
 		}
 
+		private void CheckEdge()
+		{
+			var edge = Choices.FirstOrDefault(b => b.Command == "microsoft-edge:");
+			if(edge == null) return;
+			Choices.Remove(edge);
+			FindEdge();
+		}
+
 		private void FindEdge()
 		{
 			if (Choices.Any(b => b.Name.Equals("Edge")))
@@ -113,14 +123,14 @@ namespace BrowserPicker
 			if (!Directory.Exists(systemApps))
 				return;
 
-			var targets = Directory.GetDirectories(systemApps, "*MicrosoftEdge*");
+			var targets = Directory.GetDirectories(systemApps, "*MicrosoftEdge_*");
 			if (targets.Length > 0)
 			{
 				Choices.Add(
 					new Browser
 					{
 						Name = "Edge",
-						Command = "microsoft-edge:",
+						Command = $"shell:AppsFolder\\{Path.GetFileName(targets[0])}!MicrosoftEdge",
 						IconPath = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png"),
 					}
 				);

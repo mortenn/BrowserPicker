@@ -58,6 +58,8 @@ namespace BrowserPicker
 						return "-private ";
 					case "Google Chrome":
 						return "--incognito ";
+					case "Edge":
+						return " -private";
 				}
 			}
 		}
@@ -112,7 +114,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public bool IsUsable => App.TargetURL != null && (Command != @"microsoft-edge:" || App.TargetURL.StartsWith("http"));
+		public bool IsUsable => App.TargetURL != null;
 
 		public int Usage { get; set; }
 
@@ -149,8 +151,11 @@ namespace BrowserPicker
 			try
 			{
 				Config.UpdateCounter(this);
-				if (Command == MicrosoftEdge)
-					Process.Start($"{MicrosoftEdge}{App.TargetURL}");
+				if(Name == "Edge")
+				{
+					var args = (privacy ? "-private " : string.Empty) + App.TargetURL;
+					Process.Start(Command, args);
+				}
 				else
 				{
 					var args = privacy ? PrivacyArgs : string.Empty;
@@ -177,7 +182,5 @@ namespace BrowserPicker
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
-
-		private const string MicrosoftEdge = @"microsoft-edge:";
 	}
 }
