@@ -11,9 +11,16 @@ namespace BrowserPicker
 		public App()
 		{
 			var arguments = Environment.GetCommandLineArgs();
-			TargetURL = arguments.Length > 1 ? arguments[1] : null;
+			var forceChoice = false;
+			if(arguments[1] == "/choose")
+			{
+				TargetURL = arguments[2];
+				forceChoice = true;
+			}
+			else
+				TargetURL = arguments.Length > 1 ? arguments[1] : null;
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-			ViewModel = new ViewModel();
+			ViewModel = new ViewModel(forceChoice);
 			Deactivated += (sender, args) => ViewModel.OnDeactivated();
 		}
 

@@ -13,7 +13,7 @@ namespace BrowserPicker
 {
 	public class ViewModel : INotifyPropertyChanged
 	{
-		public ViewModel()
+		public ViewModel(bool forceChoice)
 		{
 			ConfigurationMode = App.TargetURL == null;
 			Configuration = new Config();
@@ -25,7 +25,7 @@ namespace BrowserPicker
 
 			if (Choices.Count == 0)
 				FindBrowsers();
-			if (Configuration.AlwaysPrompt || ConfigurationMode)
+			if (Configuration.AlwaysPrompt || ConfigurationMode || forceChoice)
 				return;
 			var active = Choices.Where(b => b.IsRunning).ToList();
 			if (active.Count == 1)
