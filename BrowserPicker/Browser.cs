@@ -166,7 +166,7 @@ namespace BrowserPicker
 			{
 				// ignored
 			}
-			Application.Current.Shutdown();
+			Application.Current?.Shutdown();
 		}
 
 		private BitmapFrame icon;
