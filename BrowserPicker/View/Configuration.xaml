@@ -7,15 +7,16 @@
 	xmlns:browserPicker="clr-namespace:BrowserPicker"
 	xmlns:view="clr-namespace:BrowserPicker.View"
 	mc:Ignorable="d" 
-	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}" d:DesignWidth="390">
+	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}"
+	Height="300" Width="400">
 
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
-			<RowDefinition Height="*" />
+			<RowDefinition Height="auto" />
 		</Grid.RowDefinitions>
 
-		<TabControl Background="#77000000" BorderBrush="#77FFFFFF" Height="300">
+		<TabControl Background="#77000000" BorderBrush="#77FFFFFF" VerticalAlignment="Stretch">
 			<TabControl.Resources>
 				<Style TargetType="{x:Type TabItem}">
 					<Setter Property="Template">
@@ -39,60 +40,62 @@
 				</Style>
 			</TabControl.Resources>
 			<TabItem Header="Browsers">
-				<ItemsControl Grid.Row="0" ItemsSource="{Binding Choices}">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Orientation="Vertical" />
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate DataType="browserPicker:Browser">
-							<Grid>
-								<Grid.Style>
-									<Style>
-										<Setter Property="UIElement.Visibility" Value="Visible" />
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding Removed}" Value="True">
-												<Setter Property="UIElement.Visibility" Value="Collapsed" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Grid.Style>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="Auto" />
-									<ColumnDefinition Width="Auto" />
-								</Grid.ColumnDefinitions>
-								<Image Margin="20,0,0,0" Source="{Binding Thumbnail}"></Image>
-								<TextBlock Text="{Binding Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
-								<TextBlock Grid.Column="2" Margin="10" FontSize="16">
-									<Hyperlink Command="{Binding Disable}">
-										<TextBlock>
-											<TextBlock.Style>
-												<Style>
-													<Setter Property="TextBlock.Foreground" Value="Green" />
-													<Setter Property="TextBlock.Text" Value="Enabled" />
-													<Style.Triggers>
-														<DataTrigger Binding="{Binding Disabled}" Value="True">
-															<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
-															<Setter Property="TextBlock.Text" Value="Disabled" />
-														</DataTrigger>
-													</Style.Triggers>
-												</Style>
-											</TextBlock.Style>
-										</TextBlock>
-									</Hyperlink>
-								</TextBlock>
-								<TextBlock Grid.Column="3" Margin="10" FontSize="16">
-									<Hyperlink Command="{Binding Remove}">
-										<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
-									</Hyperlink>
-								</TextBlock>
-							</Grid>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<ItemsControl Grid.Row="0" ItemsSource="{Binding Choices}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Vertical" CanVerticallyScroll="True" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate DataType="browserPicker:Browser">
+								<Grid>
+									<Grid.Style>
+										<Style>
+											<Setter Property="UIElement.Visibility" Value="Visible" />
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding Removed}" Value="True">
+													<Setter Property="UIElement.Visibility" Value="Collapsed" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</Grid.Style>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<Image Margin="20,0,0,0" Source="{Binding Thumbnail}"></Image>
+									<TextBlock Text="{Binding Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
+									<TextBlock Grid.Column="2" Margin="10" FontSize="16">
+										<Hyperlink Command="{Binding Disable}">
+											<TextBlock>
+												<TextBlock.Style>
+													<Style>
+														<Setter Property="TextBlock.Foreground" Value="Green" />
+														<Setter Property="TextBlock.Text" Value="Enabled" />
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Disabled}" Value="True">
+																<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
+																<Setter Property="TextBlock.Text" Value="Disabled" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</TextBlock.Style>
+											</TextBlock>
+										</Hyperlink>
+									</TextBlock>
+									<TextBlock Grid.Column="3" Margin="10" FontSize="16">
+										<Hyperlink Command="{Binding Remove}">
+											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
+										</Hyperlink>
+									</TextBlock>
+								</Grid>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Defaults">
 				<Grid>
@@ -155,7 +158,7 @@
 			</TabItem>
 		</TabControl>
 
-		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
 
 			<TextBlock>
 				<Hyperlink Command="{Binding AddBrowser}" Foreground="White">

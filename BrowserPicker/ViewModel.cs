@@ -13,6 +13,12 @@ namespace BrowserPicker
 {
 	public class ViewModel : INotifyPropertyChanged
 	{
+		// Used by WPF designer
+		[UsedImplicitly]
+		public ViewModel() : this(true)
+		{
+		}
+
 		public ViewModel(bool forceChoice)
 		{
 			ConfigurationMode = App.TargetURL == null;

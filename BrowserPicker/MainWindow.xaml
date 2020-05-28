@@ -19,8 +19,7 @@
 				<GradientStop Offset="1" Color="#77000000" />
 			</LinearGradientBrush>
 		</Border.Background>
-		<Grid Margin="10" Width="400">
-
+		<Grid Margin="10">
 			<view:BrowserList>
 				<view:BrowserList.Style>
 					<Style>
