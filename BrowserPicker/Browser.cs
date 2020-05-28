@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 
 namespace BrowserPicker
 {
+	[DebuggerDisplay("{" + nameof(Name) + "}")]
 	public class Browser : INotifyPropertyChanged
 	{
 		public string Name
