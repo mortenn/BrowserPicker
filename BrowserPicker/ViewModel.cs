@@ -31,10 +31,10 @@ namespace BrowserPicker
 
 			if (Choices.Count == 0)
 				FindBrowsers();
-			else
-				CheckEdge();
+			
 			if (Configuration.AlwaysPrompt || ConfigurationMode || forceChoice)
 				return;
+			
 			var active = Choices.Where(b => b.IsRunning).ToList();
 			if (active.Count == 1)
 				active[0].Select.Execute(null);
@@ -109,14 +109,6 @@ namespace BrowserPicker
 			EnumerateBrowsers(@"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
 			FindEdge();
 			Configuration.BrowserList = Choices;
-		}
-
-		private void CheckEdge()
-		{
-			var edge = Choices.FirstOrDefault(b => b.Command == "microsoft-edge:");
-			if(edge == null) return;
-			Choices.Remove(edge);
-			FindEdge();
 		}
 
 		private void FindEdge()
