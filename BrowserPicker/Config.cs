@@ -101,28 +101,35 @@ namespace BrowserPicker
 
 		private static IEnumerable<Browser> GetBrowsers()
 		{
-			var browsers = new List<Browser>();
 
 			var list = Reg.OpenSubKey("BrowserList", true);
 			if (list == null)
-				return browsers;
+				return new List<Browser>();
 
-			foreach (var browser in list.GetSubKeyNames())
-			{
-				var config = list.OpenSubKey(browser, false);
-				browsers.Add(
-					new Browser
-					{
-						Name = browser,
-						Command = config.Get<string>(nameof(Browser.Command)),
-						IconPath = config.Get<string>(nameof(Browser.IconPath)),
-						Usage = config.Get<int>(nameof(Browser.Usage)),
-						Disabled = config.Get<bool>(nameof(Browser.Disabled))
-					}
-				);
-			}
+			var browsers = list.GetSubKeyNames()
+				.Select(browser => GetBrowser(list, browser))
+				.Where(browser => browser != null)
+				.OrderByDescending(b => b.Usage)
+				.ToList();
+			
 			list.Close();
-			return browsers.OrderByDescending(b => b.Usage).ToList();
+			return browsers;
+		}
+
+		private static Browser GetBrowser(RegistryKey list, string name)
+		{
+			var config = list.OpenSubKey(name, false);
+			if(config == null) return null;
+			var browser = new Browser
+			{
+				Name = name,
+				Command = config.Get<string>(nameof(Browser.Command)),
+				IconPath = config.Get<string>(nameof(Browser.IconPath)),
+				Usage = config.Get<int>(nameof(Browser.Usage)),
+				Disabled = config.Get<bool>(nameof(Browser.Disabled))
+			};
+			config.Close();
+			return browser.Command == null ? null : browser;
 		}
 
 		private static readonly RegistryKey Reg = Registry.CurrentUser.CreateSubKey("Software\\BrowserPicker", true);

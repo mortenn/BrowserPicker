@@ -6,10 +6,17 @@ namespace BrowserPicker
 	{
 		public static T Get<T>(this RegistryKey key, string name)
 		{
-			if (typeof(T) == typeof(bool))
-				return (T)(object)(((int?)key.GetValue(name) ?? 0) == 1);
+			try
+			{
+				if (typeof(T) == typeof(bool))
+					return (T)(object)(((int?)key.GetValue(name) ?? 0) == 1);
 
-			return (T)key.GetValue(name);
+				return (T)key.GetValue(name);
+			}
+			catch
+			{
+				return default;
+			}
 		}
 
 
