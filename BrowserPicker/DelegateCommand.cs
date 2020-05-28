@@ -1,8 +1,10 @@
 using System;
 using System.Windows.Input;
+using JetBrains.Annotations;
 
 namespace BrowserPicker
 {
+	[PublicAPI]
 	public class DelegateCommand : ICommand
 	{
 		public event EventHandler CanExecuteChanged;

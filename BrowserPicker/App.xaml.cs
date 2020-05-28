@@ -24,7 +24,7 @@ namespace BrowserPicker
 			Deactivated += (sender, args) => ViewModel.OnDeactivated();
 		}
 
-		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
 		{
 			var e = (Exception) unhandledExceptionEventArgs.ExceptionObject;
 			while(e != null)
@@ -34,7 +34,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public static string TargetURL { get; private set; }
+		public static string TargetURL { get; private set; } = "https://github.com"; // Design time default
 
 		public ViewModel ViewModel { get; }
 	}

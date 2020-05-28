@@ -41,7 +41,7 @@
 			</TabControl.Resources>
 			<TabItem Header="Browsers">
 				<ScrollViewer VerticalScrollBarVisibility="Auto">
-					<ItemsControl Grid.Row="0" ItemsSource="{Binding Choices}">
+					<ItemsControl ItemsSource="{Binding Choices}">
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
 								<StackPanel Orientation="Vertical" CanVerticallyScroll="True" />

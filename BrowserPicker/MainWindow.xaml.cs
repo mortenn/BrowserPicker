@@ -25,6 +25,7 @@ namespace BrowserPicker
 					return;
 
 				int n;
+				// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 				switch (e.Key)
 				{
 					case Key.Enter:

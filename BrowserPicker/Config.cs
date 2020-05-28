@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using BrowserPicker.Annotations;
+using JetBrains.Annotations;
 using Microsoft.Win32;
 
 namespace BrowserPicker

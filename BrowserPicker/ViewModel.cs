@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using BrowserPicker.Annotations;
+using JetBrains.Annotations;
 using Microsoft.Win32;
 
 namespace BrowserPicker
@@ -56,7 +56,7 @@ namespace BrowserPicker
 			if(start == null || Configuration.DefaultsWhenRunning && !start.IsRunning)
 				return;
 
-			start?.Select.Execute(null);
+			start.Select.Execute(null);
 		}
 
 		public ICommand RefreshBrowsers => new DelegateCommand(FindBrowsers);
@@ -77,8 +77,7 @@ namespace BrowserPicker
 		private void Editor_Closing(object sender, CancelEventArgs e)
 		{
 			((Window)sender).Closing -= Editor_Closing;
-			var browser = ((Window)sender).DataContext as Browser;
-			if (browser == null)
+			if (!(((Window)sender).DataContext is Browser browser))
 				return;
 			Choices.Add(browser);
 			Configuration.BrowserList = Choices;
@@ -137,7 +136,7 @@ namespace BrowserPicker
 					{
 						Name = "Edge",
 						Command = $"shell:AppsFolder\\{Path.GetFileName(targets[0])}!MicrosoftEdge",
-						IconPath = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png"),
+						IconPath = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png")
 					}
 				);
 			}
@@ -179,7 +178,7 @@ namespace BrowserPicker
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]
-		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
