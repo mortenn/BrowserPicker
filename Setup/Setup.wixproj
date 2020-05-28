@@ -18,6 +18,10 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'SignedRelease|x86' ">
+		<OutputPath>bin\$(Configuration)\</OutputPath>
+		<IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+	</PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
   </ItemGroup>
@@ -43,7 +47,9 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetPath)</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == SignedRelease (
+  "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetPath)
+)</PostBuildEvent>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
