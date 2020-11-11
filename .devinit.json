@@ -1,0 +1,10 @@
+{
+    "$schema": "https://json.schemastore.org/devinit.schema-4.0",
+    "run": [
+        {
+            "comments": "Installs the Wix toolset",
+            "tool": "msi-install",
+            "input": "https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe"
+        }
+    ]
+}
