@@ -45,7 +45,7 @@ namespace BrowserPicker
 			if (defaults.Count <= 0)
 				return;
 
-			var url = new Uri(App.TargetURL);
+			var url = new Uri(App.UnderlyingTargetURL);
 			var auto = defaults
 				.Select(rule => new { rule, matchLength = rule.MatchLength(url)})
 				.Where(o => o.matchLength > 0)
@@ -101,6 +101,7 @@ namespace BrowserPicker
 		}
 
 		public string TargetURL => App.TargetURL;
+		public string UnderlyingTargetURL => App.UnderlyingTargetURL;
 
 		private void FindBrowsers()
 		{

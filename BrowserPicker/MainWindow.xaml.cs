@@ -40,6 +40,7 @@ namespace BrowserPicker
 					case Key.D7: n = 7; break;
 					case Key.D8: n = 8; break;
 					case Key.D9: n = 9; break;
+					case Key.C: Clipboard.SetText(ViewModel.TargetURL); return;
 					default: return;
 				}
 
