@@ -1,11 +1,13 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using JetBrains.Annotations;
 
 namespace BrowserPicker
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
+	[UsedImplicitly]
 	public partial class MainWindow
 	{
 		public MainWindow()
