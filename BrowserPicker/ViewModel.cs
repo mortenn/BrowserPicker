@@ -25,10 +25,15 @@ namespace BrowserPicker
 			Configuration = new Config();
 
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
+			this.forceChoice = forceChoice;
+		}
+
+		public void Initialize()
+		{
 			if (Choices.Count == 0)
 				FindBrowsers();
 
-			if (Configuration.AlwaysPrompt || ConfigurationMode || forceChoice)
+			if (Configuration.AlwaysPrompt || ConfigurationMode || this.forceChoice)
 				return;
 
 			if (App.TargetURL != null)
@@ -180,6 +185,7 @@ namespace BrowserPicker
 		}
 
 		private bool configuration_mode;
+		private readonly bool forceChoice;
 
 		public void OnDeactivated()
 		{

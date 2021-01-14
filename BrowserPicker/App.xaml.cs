@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
 
@@ -20,13 +22,22 @@ namespace BrowserPicker
 			}
 			else
 				TargetURL = arguments.Length > 1 ? arguments[1] : null;
-			UnderlyingTargetURL = GetUnderlyingURL(TargetURL);
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			ViewModel = new ViewModel(forceChoice);
-			Deactivated += (sender, args) => ViewModel.OnDeactivated();
 		}
 
-		private string GetUnderlyingURL(string url)
+		protected override async void OnStartup(StartupEventArgs e)
+		{
+			UnderlyingTargetURL = await GetUnderlyingURLAsync(TargetURL);
+			Deactivated += (sender, args) => ViewModel.OnDeactivated();
+
+			ViewModel.Initialize();
+
+			MainWindow = new MainWindow();
+			MainWindow.Show();
+		}
+
+		private async Task<string> GetUnderlyingURLAsync(string url)
 		{
 			if (url.StartsWith("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/"))
 			{
@@ -45,6 +56,20 @@ namespace BrowserPicker
 						var underlyingUrl = HttpUtility.UrlDecode(parts[1]);
 						return underlyingUrl;
 					}
+				}
+			}
+			if (url.StartsWith("https://nam06.safelinks.protection.outlook.com/"))
+			{
+				var clientHandler = new HttpClientHandler
+				{
+					AllowAutoRedirect = false
+				};
+				var client = new HttpClient(clientHandler);
+				var response = await client.GetAsync(url);
+				var location = response.Headers.Location;
+				if (location != null)
+				{
+					return location.OriginalString;
 				}
 			}
 			return url;
