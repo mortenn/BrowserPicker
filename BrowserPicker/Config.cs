@@ -33,6 +33,12 @@ namespace BrowserPicker
 			set => Reg.Set(nameof(DefaultsWhenRunning), value);
 		}
 
+		public int UrlLookupTimeoutMilliseconds
+		{
+			get => Reg.Get<int>(nameof(UrlLookupTimeoutMilliseconds), 500);
+			set => Reg.Set(nameof(UrlLookupTimeoutMilliseconds), value);
+		}
+
 		public static void UpdateCounter(Browser browser)
 		{
 			Reg

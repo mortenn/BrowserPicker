@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
@@ -57,11 +58,22 @@ namespace BrowserPicker
 					AllowAutoRedirect = false
 				};
 				var client = new HttpClient(clientHandler);
-				var response = await client.GetAsync(url);
-				var location = response.Headers.Location;
-				if (location != null)
+				var cts = new CancellationTokenSource();
+				cts.CancelAfter(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
+				try
 				{
-					return location.OriginalString;
+					var response = await client.GetAsync(url, cts.Token);
+					var location = response.Headers.Location;
+					if (location != null)
+					{
+						return location.OriginalString;
+					}
+				}
+				catch(TaskCanceledException)
+				{
+					// TaskCanceledException occurs when the CancellationToken is triggered before the request completes
+					// In this case, skip the lookup to avoid poor user experience
+					return url;
 				}
 			}
 			return url;
