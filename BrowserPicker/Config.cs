@@ -69,7 +69,7 @@ namespace BrowserPicker
 			var values = key.GetValueNames();
 			foreach (var fragment in values.Except(defaults.Select(d => d.Fragment)))
 				key.DeleteValue(fragment);
-			foreach(var setting in defaults)
+			foreach (var setting in defaults)
 				key.SetValue(setting.Fragment, setting.Browser, RegistryValueKind.String);
 		}
 
@@ -112,7 +112,7 @@ namespace BrowserPicker
 				.Where(browser => browser != null)
 				.OrderByDescending(b => b.Usage)
 				.ToList();
-			
+
 			list.Close();
 			return browsers;
 		}
@@ -120,7 +120,7 @@ namespace BrowserPicker
 		private static Browser GetBrowser(RegistryKey list, string name)
 		{
 			var config = list.OpenSubKey(name, false);
-			if(config == null) return null;
+			if (config == null) return null;
 			var browser = new Browser
 			{
 				Name = name,

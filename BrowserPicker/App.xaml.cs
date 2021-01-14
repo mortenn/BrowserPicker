@@ -13,7 +13,7 @@ namespace BrowserPicker
 		{
 			var arguments = Environment.GetCommandLineArgs();
 			var forceChoice = false;
-			if(arguments[1] == "/choose")
+			if (arguments[1] == "/choose")
 			{
 				TargetURL = arguments[2];
 				forceChoice = true;
@@ -45,15 +45,15 @@ namespace BrowserPicker
 						var underlyingUrl = HttpUtility.UrlDecode(parts[1]);
 						return underlyingUrl;
 					}
+				}
 			}
-		}
 			return url;
 		}
 
 		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
 		{
-			var e = (Exception) unhandledExceptionEventArgs.ExceptionObject;
-			while(e != null)
+			var e = (Exception)unhandledExceptionEventArgs.ExceptionObject;
+			while (e != null)
 			{
 				MessageBox.Show(e.Message + e.StackTrace);
 				e = e.InnerException;

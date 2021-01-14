@@ -60,7 +60,7 @@ namespace BrowserPicker
 
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
-			if(e.PreviousSize == e.NewSize)
+			if (e.PreviousSize == e.NewSize)
 				return;
 
 			var w = SystemParameters.PrimaryScreenWidth;
