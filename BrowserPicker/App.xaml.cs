@@ -43,19 +43,11 @@ namespace BrowserPicker
 			{
 				var uri = new Uri(url);
 				var queryString = uri.Query;
-				if (queryString[0] == '?')
+				var queryStringValues = HttpUtility.ParseQueryString(queryString);
+				var underlyingUrl = queryStringValues["url"];
+				if (underlyingUrl != null)
 				{
-					queryString = queryString.Substring(1);
-				}
-				var queryStringElements = queryString.Split('&');
-				foreach (var queryStringElement in queryStringElements)
-				{
-					var parts = queryStringElement.Split('=');
-					if (parts.Length == 2 && parts[0] == "url")
-					{
-						var underlyingUrl = HttpUtility.UrlDecode(parts[1]);
-						return underlyingUrl;
-					}
+					return underlyingUrl;
 				}
 			}
 			if (url.StartsWith("https://nam06.safelinks.protection.outlook.com/"))
