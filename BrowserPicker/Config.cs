@@ -93,6 +93,7 @@ namespace BrowserPicker
 				var key = list.CreateSubKey(browser.Name, true);
 				key.Set(nameof(browser.Name), browser.Name);
 				key.Set(nameof(browser.Command), browser.Command);
+				key.Set(nameof(browser.CommandArgs), browser.CommandArgs);
 				key.Set(nameof(browser.IconPath), browser.IconPath);
 				key.Set(nameof(browser.Usage), browser.Usage);
 			}
@@ -124,6 +125,7 @@ namespace BrowserPicker
 			{
 				Name = name,
 				Command = config.Get<string>(nameof(Browser.Command)),
+				CommandArgs = config.Get<string>(nameof(Browser.CommandArgs)),
 				IconPath = config.Get<string>(nameof(Browser.IconPath)),
 				Usage = config.Get<int>(nameof(Browser.Usage)),
 				Disabled = config.Get<bool>(nameof(Browser.Disabled))

@@ -45,6 +45,16 @@ namespace BrowserPicker
 			}
 		}
 
+		public string CommandArgs
+		{
+			get => commandArgs;
+			set
+			{
+				commandArgs = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public string PrivacyArgs
 		{
 			get
@@ -152,16 +162,18 @@ namespace BrowserPicker
 			try
 			{
 				Config.UpdateCounter(this);
-				if(Name == "Edge")
+				var args = CommandArgs;
+				if (Name == "Edge")
 				{
-					var args = (privacy ? "-private " : string.Empty) + App.TargetURL;
-					Process.Start(Command, args);
+					var newArgs = (privacy ? "-private " : string.Empty) + App.TargetURL;
+					args = CombineArgs(args, newArgs);
 				}
 				else
 				{
-					var args = privacy ? PrivacyArgs : string.Empty;
-					Process.Start(Command, $"{args}\"{App.TargetURL}\"");
+					var newArgs = privacy ? PrivacyArgs : string.Empty;
+					args = CombineArgs(args, $"{newArgs}\"{App.TargetURL}\"");
 				}
+				Process.Start(Command, args);
 			}
 			catch
 			{
@@ -170,12 +182,22 @@ namespace BrowserPicker
 			Application.Current?.Shutdown();
 		}
 
+		private static string CombineArgs(string args1, string args2)
+		{
+			if (string.IsNullOrEmpty(args1))
+			{
+				return args2;
+			}
+			return args1 + " " + args2;
+		}
+
 		private BitmapFrame icon;
 		private bool disabled;
 		private bool removed;
 		private string name;
 		private string icon_path;
 		private string command;
+		private string commandArgs;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]
