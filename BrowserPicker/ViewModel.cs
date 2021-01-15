@@ -48,9 +48,9 @@ namespace BrowserPicker
 
 			var url = new Uri(App.TargetURL);
 			var auto = defaults
-							.Select(rule => new { rule, matchLength = rule.MatchLength(url)})
-							.Where(o => o.matchLength > 0)
-							.ToList();
+				.Select(rule => new { rule, matchLength = rule.MatchLength(url)})
+				.Where(o => o.matchLength > 0)
+				.ToList();
 			if (auto.Count <= 0)
 				return;
 
