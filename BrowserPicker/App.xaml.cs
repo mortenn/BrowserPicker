@@ -12,6 +12,8 @@ namespace BrowserPicker
 	/// </summary>
 	public partial class App
 	{
+		private const int LoadingWindowDelayMilliseconds = 300;
+
 		public App()
 		{
 			var arguments = Environment.GetCommandLineArgs();
@@ -29,17 +31,56 @@ namespace BrowserPicker
 
 		protected override async void OnStartup(StartupEventArgs e)
 		{
-			UnderlyingTargetURL = await GetUnderlyingURLAsync(TargetURL);
+			UnderlyingTargetURL = TargetURL;
+
+			// Create a CancellationToken that cancels after the lookup timeout
+			// to limit the amount of time spent looking up underlying URLs
+			var cts = new CancellationTokenSource();
+			cts.CancelAfter(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
+
+			var _ = ShowLoadingWindowAfterDelayAsync(cts.Token); // fire and forget
+			await UpdateUnderlyingURLAsync(cts.Token);
+			cts.Cancel(); // cancel to avoid accidentally showing LoadingWindow once Task.Delay finishes
+
 			Deactivated += (sender, args) => ViewModel.OnDeactivated();
+
 
 			ViewModel.Initialize();
 
+			Window oldWindow = MainWindow;
 			MainWindow = new MainWindow();
 			MainWindow.Show();
+			if (oldWindow != null)
+			{
+				// I tried hiding this before showing the new window but there was a slight gap
+				// This way feels like a more immediate switch
+				oldWindow.Hide();
+			}
 		}
 
-		private async Task<string> GetUnderlyingURLAsync(string url)
+		private async Task ShowLoadingWindowAfterDelayAsync(CancellationToken cancellationToken)
 		{
+			try
+			{
+				// Show LoadingWindow after a small delay
+				// Goal is to avoid flicker for fast loading sites but to show progress for sites that take longer
+				await Task.Delay(LoadingWindowDelayMilliseconds, cancellationToken);
+				MainWindow = new LoadingWindow();
+				MainWindow.Show();
+			}
+			catch (TaskCanceledException)
+			{
+			}
+		}
+
+		/// <summary>
+		/// Updates
+		/// </summary>
+		/// <param name="url"></param>
+		/// <returns></returns>
+		private async Task UpdateUnderlyingURLAsync(CancellationToken cancellationToken)
+		{
+			string url = UnderlyingTargetURL;
 			if (url.StartsWith("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/"))
 			{
 				var uri = new Uri(url);
@@ -48,35 +89,52 @@ namespace BrowserPicker
 				var underlyingUrl = queryStringValues["url"];
 				if (underlyingUrl != null)
 				{
-					return underlyingUrl;
+					UnderlyingTargetURL = underlyingUrl;
+					await UpdateUnderlyingURLAsync(cancellationToken);
 				}
 			}
-			if (url.StartsWith("https://nam06.safelinks.protection.outlook.com/"))
+			else if (url.StartsWith("https://l.facebook.com/l.php"))
+			{
+				var uri = new Uri(url);
+				var queryString = uri.Query;
+				var queryStringValues = HttpUtility.ParseQueryString(queryString);
+				var underlyingUrl = queryStringValues["u"];
+				if (underlyingUrl != null)
+				{
+					UnderlyingTargetURL = underlyingUrl;
+					await UpdateUnderlyingURLAsync(cancellationToken);
+				}
+			}
+			else if (
+				url.StartsWith("https://nam06.safelinks.protection.outlook.com/")
+				|| url.StartsWith("https://aka.ms/")
+				|| url.StartsWith("https://fwd.olsvc.com")
+				|| url.StartsWith("https://t.co/")
+				)
 			{
 				var clientHandler = new HttpClientHandler
 				{
 					AllowAutoRedirect = false
 				};
 				var client = new HttpClient(clientHandler);
-				var cts = new CancellationTokenSource();
-				cts.CancelAfter(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
 				try
 				{
-					var response = await client.GetAsync(url, cts.Token);
+					var response = await client.GetAsync(url, cancellationToken);
 					var location = response.Headers.Location;
 					if (location != null)
 					{
-						return location.OriginalString;
+						UnderlyingTargetURL = location.OriginalString;
+						await UpdateUnderlyingURLAsync(cancellationToken);
+						return;
 					}
 				}
-				catch(TaskCanceledException)
+				catch (TaskCanceledException)
 				{
 					// TaskCanceledException occurs when the CancellationToken is triggered before the request completes
 					// In this case, skip the lookup to avoid poor user experience
-					return url;
+					return;
 				}
 			}
-			return url;
 		}
 
 		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)

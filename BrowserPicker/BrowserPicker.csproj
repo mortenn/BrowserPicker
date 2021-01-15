@@ -102,6 +102,9 @@
     <Compile Include="Config.cs" />
     <Compile Include="DefaultSetting.cs" />
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RegistryHelpers.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="View\BrowserList.xaml.cs">
@@ -113,6 +116,10 @@
     <Page Include="BrowserEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoadingWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
