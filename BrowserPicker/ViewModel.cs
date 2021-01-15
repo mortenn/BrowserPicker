@@ -25,16 +25,15 @@ namespace BrowserPicker
 			Configuration = new Config();
 
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
+			if (Choices.Count == 0)
+				FindBrowsers();
+
+			if (Configuration.AlwaysPrompt || ConfigurationMode || forceChoice)
+				return;
 
 			if (App.TargetURL != null)
 				CheckDefaultBrowser();
 
-			if (Choices.Count == 0)
-				FindBrowsers();
-			
-			if (Configuration.AlwaysPrompt || ConfigurationMode || forceChoice)
-				return;
-			
 			var active = Choices.Where(b => b.IsRunning).ToList();
 			if (active.Count == 1)
 				active[0].Select.Execute(null);
