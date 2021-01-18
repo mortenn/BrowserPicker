@@ -47,17 +47,21 @@ namespace BrowserPicker
 				return;
 
 			var url = new Uri(App.TargetURL);
-			var auto = defaults.Where(d => url.Host.EndsWith(d.Fragment)).ToList();
+			var auto = defaults
+				.Select(rule => new { rule, matchLength = rule.MatchLength(url)})
+				.Where(o => o.matchLength > 0)
+				.ToList();
 			if (auto.Count <= 0)
 				return;
 
-			var browser = auto.OrderByDescending(d => d.Fragment.Length).First().Browser;
+			var browser = auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
 			var start = Choices.FirstOrDefault(c => c.Name == browser);
 			if(start == null || Configuration.DefaultsWhenRunning && !start.IsRunning)
 				return;
 
 			start.Select.Execute(null);
 		}
+
 
 		public ICommand RefreshBrowsers => new DelegateCommand(FindBrowsers);
 
