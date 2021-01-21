@@ -25,10 +25,15 @@ namespace BrowserPicker
 			Configuration = new Config();
 
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
+			this.forceChoice = forceChoice;
+		}
+
+		public void Initialize()
+		{
 			if (Choices.Count == 0)
 				FindBrowsers();
 
-			if (Configuration.AlwaysPrompt || ConfigurationMode || forceChoice)
+			if (Configuration.AlwaysPrompt || ConfigurationMode || this.forceChoice)
 				return;
 
 			if (App.TargetURL != null)
@@ -45,7 +50,7 @@ namespace BrowserPicker
 			if (defaults.Count <= 0)
 				return;
 
-			var url = new Uri(App.TargetURL);
+			var url = new Uri(App.UnderlyingTargetURL);
 			var auto = defaults
 				.Select(rule => new { rule, matchLength = rule.MatchLength(url)})
 				.Where(o => o.matchLength > 0)
@@ -55,7 +60,7 @@ namespace BrowserPicker
 
 			var browser = auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
 			var start = Choices.FirstOrDefault(c => c.Name == browser);
-			if(start == null || Configuration.DefaultsWhenRunning && !start.IsRunning)
+			if (start == null || Configuration.DefaultsWhenRunning && !start.IsRunning)
 				return;
 
 			start.Select.Execute(null);
@@ -101,6 +106,7 @@ namespace BrowserPicker
 		}
 
 		public string TargetURL => App.TargetURL;
+		public string UnderlyingTargetURL => App.UnderlyingTargetURL;
 
 		private void FindBrowsers()
 		{
@@ -179,6 +185,7 @@ namespace BrowserPicker
 		}
 
 		private bool configuration_mode;
+		private readonly bool forceChoice;
 
 		public void OnDeactivated()
 		{
