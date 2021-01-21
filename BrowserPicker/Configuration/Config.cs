@@ -5,7 +5,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 
-namespace BrowserPicker
+namespace BrowserPicker.Configuration
 {
 	public class Config
 	{

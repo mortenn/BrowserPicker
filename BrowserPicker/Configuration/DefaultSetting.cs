@@ -4,13 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 
-namespace BrowserPicker
+namespace BrowserPicker.Configuration
 {
 	public class DefaultSetting : INotifyPropertyChanged
 	{
-		private const string MatchTypePrefix = "prefix";
-		private const string MatchTypeRegex = "regex";
-
 		public DefaultSetting(string fragment, string browser)
 		{
 			this.fragment = fragment;
@@ -70,28 +67,26 @@ namespace BrowserPicker
 
 		public int MatchLength(Uri url)
 		{
-			// Suffix match on the host name
-			if (!Fragment.StartsWith("|"))
-				return url.Host.EndsWith(Fragment) ? Fragment.Length : 0;
-
-			var splitIndex = Fragment.IndexOf('|', 1);
-			if (splitIndex <0 )
+			var matchType = MatchType.Hostname;
+			var value = Fragment;
+			if (Fragment[0] == '|')
 			{
-				// bad format
-				return 0;
+				Enum.TryParse(Fragment.Substring(1, Fragment.IndexOf("|", 1)), true, out matchType);
+				value = Fragment.Substring(Fragment.IndexOf('|', 1) + 1);
 			}
-			
-			var matchType = Fragment.Substring(1, splitIndex-1);
-			var value = Fragment.Substring(splitIndex+1);
+
 			switch (matchType)
 			{
-				case MatchTypePrefix:
+				case MatchType.Hostname:
+					return url.Host.EndsWith(Fragment) ? Fragment.Length : 0;
+				
+				case MatchType.Prefix:
 					return url.OriginalString.StartsWith(value) ? value.Length : 0;
-				case MatchTypeRegex:
-					var match = Regex.Match(url.OriginalString, value);
-					return match.Length;
+				
+				case MatchType.Regex:
+					return Regex.Match(url.OriginalString, value).Length;
+				
 				default:
-					// unhandled match type
 					return 0;
 			}
 		}

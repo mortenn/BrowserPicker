@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using BrowserPicker.Configuration;
 using BrowserPicker.View;
 using JetBrains.Annotations;
 using Microsoft.Win32;

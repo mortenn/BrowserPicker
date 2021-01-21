@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
+using BrowserPicker.Configuration;
 using Microsoft.Win32;
 
 namespace BrowserPicker.View

@@ -6,6 +6,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:browserPicker="clr-namespace:BrowserPicker"
 	xmlns:view="clr-namespace:BrowserPicker.View"
+	xmlns:configuration="clr-namespace:BrowserPicker.Configuration"
 	mc:Ignorable="d" 
 	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}"
 	Height="300" Width="400">
@@ -48,7 +49,7 @@
 							</ItemsPanelTemplate>
 						</ItemsControl.ItemsPanel>
 						<ItemsControl.ItemTemplate>
-							<DataTemplate DataType="browserPicker:Browser">
+							<DataTemplate DataType="configuration:Browser">
 								<Grid>
 									<Grid.Style>
 										<Style>
@@ -116,7 +117,7 @@
 								</ItemsPanelTemplate>
 							</ItemsControl.ItemsPanel>
 							<ItemsControl.ItemTemplate>
-								<DataTemplate DataType="browserPicker:DefaultSetting">
+								<DataTemplate DataType="configuration:DefaultSetting">
 									<Grid>
 										<Grid.Style>
 											<Style>

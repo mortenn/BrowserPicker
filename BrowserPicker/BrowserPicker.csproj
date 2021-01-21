@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>web_icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\web_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -92,11 +92,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Browser.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="DefaultSetting.cs" />
+    <Compile Include="Configuration\Browser.cs" />
+    <Compile Include="Configuration\Config.cs" />
+    <Compile Include="Configuration\DefaultSetting.cs" />
     <Compile Include="DelegateCommand.cs" />
-    <Compile Include="RegistryHelpers.cs" />
+    <Compile Include="Configuration\MatchType.cs" />
+    <Compile Include="Configuration\RegistryHelpers.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="View\BrowserEditor.xaml.cs">
       <DependentUpon>BrowserEditor.xaml</DependentUpon>
@@ -155,14 +156,15 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="web_icon.png" />
+    <Resource Include="Resources\web_icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="web_icon.ico" />
+    <Resource Include="Resources\web_icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="privacy.png" />
+    <Resource Include="Resources\privacy.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == SignedRelease (

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace BrowserPicker
+namespace BrowserPicker.Configuration
 {
 	public static class RegistryHelpers
 	{

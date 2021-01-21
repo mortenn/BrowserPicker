@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:browserPicker="clr-namespace:BrowserPicker"
+	xmlns:configuration="clr-namespace:BrowserPicker.Configuration"
 	mc:Ignorable="d" 
 	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}">
 	<Grid MinWidth="350">
@@ -24,7 +25,7 @@
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
-					<DataTemplate DataType="browserPicker:Browser">
+					<DataTemplate DataType="configuration:Browser">
 						<Button Command="{Binding Select}" Margin="2">
 							<Button.Style>
 								<Style>

@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using JetBrains.Annotations;
 
-namespace BrowserPicker
+namespace BrowserPicker.Configuration
 {
 	[DebuggerDisplay("{" + nameof(Name) + "}")]
 	public class Browser : INotifyPropertyChanged
