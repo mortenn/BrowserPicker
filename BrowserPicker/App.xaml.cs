@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace BrowserPicker
 			}
 			else
 				TargetURL = arguments.Length > 1 ? arguments[1] : null;
+
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 			ViewModel = new ViewModel(forceChoice);
 		}
@@ -79,32 +81,22 @@ namespace BrowserPicker
 		{
 			while (true)
 			{
-				string url = UnderlyingTargetURL;
-				if (url.StartsWith("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/"))
+				var url = UnderlyingTargetURL;
+				var uri = new Uri(url);
+				foreach (var service in JumpPages)
 				{
-					var uri = new Uri(url);
-					var queryString = uri.Query;
-					var queryStringValues = HttpUtility.ParseQueryString(queryString);
+					if (!url.StartsWith(service.Key))
+						continue;
+
+					var queryStringValues = HttpUtility.ParseQueryString(uri.Query);
 					var underlyingUrl = queryStringValues["url"];
 					if (underlyingUrl != null)
-					{
 						UnderlyingTargetURL = underlyingUrl;
-						continue;
-					}
 				}
-				else if (url.StartsWith("https://l.facebook.com/l.php"))
-				{
-					var uri = new Uri(url);
-					var queryString = uri.Query;
-					var queryStringValues = HttpUtility.ParseQueryString(queryString);
-					var underlyingUrl = queryStringValues["u"];
-					if (underlyingUrl != null)
-					{
-						UnderlyingTargetURL = underlyingUrl;
-						continue;
-					}
-				}
-				else if (url.StartsWith("https://nam06.safelinks.protection.outlook.com/") || url.StartsWith("https://aka.ms/") || url.StartsWith("https://fwd.olsvc.com") || url.StartsWith("https://t.co/"))
+				if(UnderlyingTargetURL != url)
+					continue;
+				
+				if (UrlShorteners.Contains(uri.Host))
 				{
 					var clientHandler = new HttpClientHandler {AllowAutoRedirect = false};
 					var client = new HttpClient(clientHandler);
@@ -129,7 +121,8 @@ namespace BrowserPicker
 			}
 		}
 
-		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+		private static void CurrentDomainOnUnhandledException(object sender,
+			UnhandledExceptionEventArgs unhandledExceptionEventArgs)
 		{
 			var e = (Exception)unhandledExceptionEventArgs.ExceptionObject;
 			while (e != null)
@@ -143,5 +136,30 @@ namespace BrowserPicker
 		public static string UnderlyingTargetURL { get; private set; } = "https://github.com"; // Design time default
 
 		public ViewModel ViewModel { get; }
+
+		private static readonly List<string> UrlShorteners = new List<string>
+		{
+			"nam06.safelinks.protection.outlook.com",
+			"aka.ms",
+			"fwd.olsvc.com",
+			"t.co",
+			"bit.ly",
+			"goo.gl",
+			"tinyurl.com",
+			"ow.ly",
+			"is.gd",
+			"buff.ly",
+			"adf.ly",
+			"bit.do",
+			"mcaf.ee",
+			"su.pr",
+			"go.microsoft.com"
+		};
+
+		private static readonly Dictionary<string, string> JumpPages = new Dictionary<string, string>
+		{
+			{"https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"},
+			{"https://l.facebook.com/l.php", "u"}
+		};
 	}
 }
