@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using JetBrains.Annotations;
 
-namespace BrowserPicker
+namespace BrowserPicker.View
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
+using BrowserPicker.View;
 
 namespace BrowserPicker
 {

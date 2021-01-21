@@ -2,7 +2,7 @@
 using System.Windows;
 using Microsoft.Win32;
 
-namespace BrowserPicker
+namespace BrowserPicker.View
 {
 	/// <summary>
 	/// Interaction logic for BrowserEditor.xaml

@@ -1,7 +1,6 @@
 ﻿using System.Windows;
-using System.Windows.Input;
 
-namespace BrowserPicker
+namespace BrowserPicker.View
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
