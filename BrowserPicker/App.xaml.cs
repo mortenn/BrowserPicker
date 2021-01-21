@@ -51,12 +51,9 @@ namespace BrowserPicker
 			Window oldWindow = MainWindow;
 			MainWindow = new MainWindow();
 			MainWindow.Show();
-			if (oldWindow != null)
-			{
-				// I tried hiding this before showing the new window but there was a slight gap
-				// This way feels like a more immediate switch
-				oldWindow.Hide();
-			}
+			// I tried hiding this before showing the new window but there was a slight gap
+			// This way feels like a more immediate switch
+			oldWindow?.Hide();
 		}
 
 		private async Task ShowLoadingWindowAfterDelayAsync(CancellationToken cancellationToken)
@@ -77,64 +74,58 @@ namespace BrowserPicker
 		/// <summary>
 		/// Updates
 		/// </summary>
-		/// <param name="url"></param>
 		/// <returns></returns>
-		private async Task UpdateUnderlyingURLAsync(CancellationToken cancellationToken)
+		private static async Task UpdateUnderlyingURLAsync(CancellationToken cancellationToken)
 		{
-			string url = UnderlyingTargetURL;
-			if (url.StartsWith("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/"))
+			while (true)
 			{
-				var uri = new Uri(url);
-				var queryString = uri.Query;
-				var queryStringValues = HttpUtility.ParseQueryString(queryString);
-				var underlyingUrl = queryStringValues["url"];
-				if (underlyingUrl != null)
+				string url = UnderlyingTargetURL;
+				if (url.StartsWith("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/"))
 				{
-					UnderlyingTargetURL = underlyingUrl;
-					await UpdateUnderlyingURLAsync(cancellationToken);
-				}
-			}
-			else if (url.StartsWith("https://l.facebook.com/l.php"))
-			{
-				var uri = new Uri(url);
-				var queryString = uri.Query;
-				var queryStringValues = HttpUtility.ParseQueryString(queryString);
-				var underlyingUrl = queryStringValues["u"];
-				if (underlyingUrl != null)
-				{
-					UnderlyingTargetURL = underlyingUrl;
-					await UpdateUnderlyingURLAsync(cancellationToken);
-				}
-			}
-			else if (
-				url.StartsWith("https://nam06.safelinks.protection.outlook.com/")
-				|| url.StartsWith("https://aka.ms/")
-				|| url.StartsWith("https://fwd.olsvc.com")
-				|| url.StartsWith("https://t.co/")
-				)
-			{
-				var clientHandler = new HttpClientHandler
-				{
-					AllowAutoRedirect = false
-				};
-				var client = new HttpClient(clientHandler);
-				try
-				{
-					var response = await client.GetAsync(url, cancellationToken);
-					var location = response.Headers.Location;
-					if (location != null)
+					var uri = new Uri(url);
+					var queryString = uri.Query;
+					var queryStringValues = HttpUtility.ParseQueryString(queryString);
+					var underlyingUrl = queryStringValues["url"];
+					if (underlyingUrl != null)
 					{
-						UnderlyingTargetURL = location.OriginalString;
-						await UpdateUnderlyingURLAsync(cancellationToken);
-						return;
+						UnderlyingTargetURL = underlyingUrl;
+						continue;
 					}
 				}
-				catch (TaskCanceledException)
+				else if (url.StartsWith("https://l.facebook.com/l.php"))
 				{
-					// TaskCanceledException occurs when the CancellationToken is triggered before the request completes
-					// In this case, skip the lookup to avoid poor user experience
-					return;
+					var uri = new Uri(url);
+					var queryString = uri.Query;
+					var queryStringValues = HttpUtility.ParseQueryString(queryString);
+					var underlyingUrl = queryStringValues["u"];
+					if (underlyingUrl != null)
+					{
+						UnderlyingTargetURL = underlyingUrl;
+						continue;
+					}
 				}
+				else if (url.StartsWith("https://nam06.safelinks.protection.outlook.com/") || url.StartsWith("https://aka.ms/") || url.StartsWith("https://fwd.olsvc.com") || url.StartsWith("https://t.co/"))
+				{
+					var clientHandler = new HttpClientHandler {AllowAutoRedirect = false};
+					var client = new HttpClient(clientHandler);
+					try
+					{
+						var response = await client.GetAsync(url, cancellationToken);
+						var location = response.Headers.Location;
+						if (location != null)
+						{
+							UnderlyingTargetURL = location.OriginalString;
+							continue;
+						}
+					}
+					catch (TaskCanceledException)
+					{
+						// TaskCanceledException occurs when the CancellationToken is triggered before the request completes
+						// In this case, skip the lookup to avoid poor user experience
+					}
+				}
+
+				break;
 			}
 		}
 

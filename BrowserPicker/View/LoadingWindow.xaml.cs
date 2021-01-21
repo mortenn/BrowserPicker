@@ -13,8 +13,6 @@ namespace BrowserPicker.View
 			DataContext = ((App)Application.Current).ViewModel;
 		}
 
-		private ViewModel ViewModel => (ViewModel)DataContext;
-
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
 			if (e.PreviousSize == e.NewSize)

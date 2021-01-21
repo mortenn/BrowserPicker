@@ -47,10 +47,10 @@ namespace BrowserPicker
 
 		public string CommandArgs
 		{
-			get => commandArgs;
+			get => command_args;
 			set
 			{
-				commandArgs = value;
+				command_args = value;
 				OnPropertyChanged();
 			}
 		}
@@ -197,7 +197,7 @@ namespace BrowserPicker
 		private string name;
 		private string icon_path;
 		private string command;
-		private string commandArgs;
+		private string command_args;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]

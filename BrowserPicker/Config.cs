@@ -35,7 +35,7 @@ namespace BrowserPicker
 
 		public int UrlLookupTimeoutMilliseconds
 		{
-			get => Reg.Get<int>(nameof(UrlLookupTimeoutMilliseconds), 500);
+			get => Reg.Get(nameof(UrlLookupTimeoutMilliseconds), 500);
 			set => Reg.Set(nameof(UrlLookupTimeoutMilliseconds), value);
 		}
 

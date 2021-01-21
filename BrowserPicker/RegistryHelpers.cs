@@ -4,7 +4,7 @@ namespace BrowserPicker
 {
 	public static class RegistryHelpers
 	{
-		public static T Get<T>(this RegistryKey key, string name, T defaultValue = default(T) )
+		public static T Get<T>(this RegistryKey key, string name, T defaultValue = default )
 		{
 			try
 			{
