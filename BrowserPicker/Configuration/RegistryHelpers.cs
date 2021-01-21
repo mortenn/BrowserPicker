@@ -11,7 +11,8 @@ namespace BrowserPicker.Configuration
 				if (typeof(T) == typeof(bool))
 					return (T)(object)(((int?)key.GetValue(name) ?? 0) == 1);
 
-				return (T)key.GetValue(name);
+				var value = key.GetValue(name);
+				return value == null ? defaultValue : (T)value;
 			}
 			catch
 			{
