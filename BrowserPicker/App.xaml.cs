@@ -28,20 +28,20 @@ namespace BrowserPicker
 
 		protected override async void OnStartup(StartupEventArgs e)
 		{
-			UnderlyingTargetURL = TargetURL;
+			if (TargetURL != null)
+			{
+				UnderlyingTargetURL = TargetURL;
 
-			// Create a CancellationToken that cancels after the lookup timeout
-			// to limit the amount of time spent looking up underlying URLs
-			var cts = new CancellationTokenSource();
-			cts.CancelAfter(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
+				// Create a CancellationToken that cancels after the lookup timeout
+				// to limit the amount of time spent looking up underlying URLs
+				var cts = new CancellationTokenSource();
+				cts.CancelAfter(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
 
-			var _ = ShowLoadingWindowAfterDelayAsync(cts.Token); // fire and forget
-			await UpdateUnderlyingURLAsync(cts.Token);
-			cts.Cancel(); // cancel to avoid accidentally showing LoadingWindow once Task.Delay finishes
-
+				var _ = ShowLoadingWindowAfterDelayAsync(cts.Token); // fire and forget
+				await UpdateUnderlyingURLAsync(cts.Token);
+				cts.Cancel(); // cancel to avoid accidentally showing LoadingWindow once Task.Delay finishes
+			}
 			Deactivated += (sender, args) => ViewModel.OnDeactivated();
-
-
 			ViewModel.Initialize();
 
 			Window oldWindow = MainWindow;
