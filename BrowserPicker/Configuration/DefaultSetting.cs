@@ -71,7 +71,7 @@ namespace BrowserPicker.Configuration
 			var value = Fragment;
 			if (Fragment[0] == '|')
 			{
-				Enum.TryParse(Fragment.Substring(1, Fragment.IndexOf("|", 1)), true, out matchType);
+				Enum.TryParse(Fragment.Substring(1, Fragment.IndexOf('|', 1)), true, out matchType);
 				value = Fragment.Substring(Fragment.IndexOf('|', 1) + 1);
 			}
 

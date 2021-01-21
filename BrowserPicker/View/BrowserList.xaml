@@ -94,7 +94,7 @@
 												<Button.Template>
 													<ControlTemplate>
 														<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40">
-															<Image Source="/privacy.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+															<Image Source="/Resources/privacy.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 														</Border>
 													</ControlTemplate>
 												</Button.Template>

@@ -5,5 +5,5 @@
 		Hostname,
 		Prefix,
 		Regex
-	};
+	}
 }
