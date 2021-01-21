@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,18 +19,11 @@ namespace BrowserPicker
 
 		public App()
 		{
-			var arguments = Environment.GetCommandLineArgs();
-			var forceChoice = false;
-			if (arguments[1] == "/choose")
-			{
-				TargetURL = arguments[2];
-				forceChoice = true;
-			}
-			else
-				TargetURL = arguments.Length > 1 ? arguments[1] : null;
-
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-			ViewModel = new ViewModel(forceChoice);
+			var arguments = Environment.GetCommandLineArgs().Skip(1).ToList();
+			var options = arguments.Where(arg => arg[0] == '/').ToList();
+			TargetURL = arguments.Except(options).FirstOrDefault();
+			ViewModel = new ViewModel(options.Contains("/choose"));
 		}
 
 		protected override async void OnStartup(StartupEventArgs e)
