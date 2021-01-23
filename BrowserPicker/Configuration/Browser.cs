@@ -109,7 +109,7 @@ namespace BrowserPicker.Configuration
 				{
 					var session = Process.GetCurrentProcess().SessionId;
 
-					if (Command == "microsoft-edge:")
+					if (Command == "microsoft-edge:" || Command.Contains("MicrosoftEdge"))
 						return Process.GetProcessesByName("MicrosoftEdge").Any(p => p.SessionId == session);
 
 					var cmd = Command;
