@@ -118,7 +118,8 @@ namespace BrowserPicker
 
 			EnumerateBrowsers(@"SOFTWARE\Clients\StartMenuInternet");
 			EnumerateBrowsers(@"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
-			FindEdge();
+			if(!Choices.Any(browser => browser.Name.Contains("Edge")))
+				FindEdge();
 			Configuration.BrowserList = Choices;
 		}
 
