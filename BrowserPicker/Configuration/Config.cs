@@ -119,6 +119,16 @@ namespace BrowserPicker.Configuration
 				.OrderByDescending(b => b.Usage)
 				.ToList();
 
+			if (browsers.Any(browser => browser.Name.Equals("Microsoft Edge")))
+			{
+				var edge = browsers.FirstOrDefault(browser => browser.Name.Equals("Edge"));
+				if (edge != null)
+				{
+					browsers.Remove(edge);
+					list.DeleteSubKeyTree(edge.Name);
+				}
+			}
+
 			list.Close();
 			return browsers;
 		}
