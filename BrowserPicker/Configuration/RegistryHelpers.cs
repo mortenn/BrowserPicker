@@ -23,7 +23,12 @@ namespace BrowserPicker.Configuration
 
 		public static void Set<T>(this RegistryKey key, string name, T value)
 		{
-			if (typeof(T) == typeof(bool))
+			if (value == null)
+			{
+				if(key.GetValue(name) != null)
+					key.DeleteValue(name);
+			}
+			else if (typeof(T) == typeof(bool))
 				key.SetValue(name, (bool)(object)value ? 1 : 0, RegistryValueKind.DWord);
 
 			else if (typeof(T) == typeof(string))
