@@ -69,9 +69,13 @@ namespace BrowserPicker.Configuration
 		{
 			var matchType = MatchType.Hostname;
 			var value = Fragment;
+
+			if (Fragment?.Length == 0)
+				return 0;
+
 			if (Fragment[0] == '|')
 			{
-				Enum.TryParse(Fragment.Substring(1, Fragment.IndexOf('|', 1)), true, out matchType);
+				Enum.TryParse(Fragment.Substring(1, Fragment.IndexOf('|', 1) - 1), true, out matchType);
 				value = Fragment.Substring(Fragment.IndexOf('|', 1) + 1);
 			}
 
