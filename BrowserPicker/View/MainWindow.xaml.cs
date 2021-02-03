@@ -69,5 +69,10 @@ namespace BrowserPicker.View
 			Left = (w - e.NewSize.Width) / 2;
 			Top = (h - e.NewSize.Height) / 2;
 		}
+
+		public void DragWindow(object sender, MouseButtonEventArgs args)
+		{
+			DragMove();
+		}
 	}
 }
