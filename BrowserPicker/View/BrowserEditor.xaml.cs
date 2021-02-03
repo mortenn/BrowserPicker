@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using BrowserPicker.Configuration;
 using Microsoft.Win32;
 
@@ -72,5 +73,10 @@ namespace BrowserPicker.View
 		}
 
 		private Browser Browser => DataContext as Browser;
+
+		public void DragWindow(object sender, MouseButtonEventArgs args)
+		{
+			DragMove();
+		}
 	}
 }
