@@ -1,70 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="BrowserPicker" Language="1033" Version="1.8.1" Manufacturer="Runsafe"
+  <Product Id="*" Name="BrowserPicker" Language="1033" Version="1.8.1" Manufacturer="Runsafe"
 					 UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate EmbedCab="yes" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
 
-		<Feature Id="ProductFeature" Title="Setup" Level="1">
-			<ComponentGroupRef Id="ProductComponents" />
-		</Feature>
-	</Product>
+    <Feature Id="ProductFeature" Title="Setup" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
 
-	<Fragment>
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFiles64Folder">
-				<Directory Id="INSTALLFOLDER" Name="BrowserPicker" />
-			</Directory>
-		</Directory>
-	</Fragment>
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="Browser Picker"
+                  Description="Awesome Browser Picker"
+                  Target="[#BrowserPicker.exe]"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <RemoveFolder Id="CleanUpShortCut" Directory="ApplicationProgramsFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\mortenn\BrowserPicker" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Product>
 
-	<Fragment>
-		<ComponentGroup Source="$(var.BrowserPicker.TargetDir)" Id="ProductComponents" Directory="INSTALLFOLDER">
-			<Component Guid="*" Win64="yes">
-				<File Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64">
-					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.TargetFileName)" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
-				</File>
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="BrowserPicker" />
+      </Directory>
+      <!-- Step 1: Define the directory structure -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" src="BrowserPicker" Name="Browser Picker"/>
+      </Directory>
+    </Directory>
+  </Fragment>
 
-				<RegistryValue Root="HKCR" Key="BrowserPicker" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="EditFlags" Value="2" Type="integer" />
-				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="FriendlyTypeName" Value="Web URL" Type="string" />
-				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="URL Protocol" Value="" Type="string" />
-				<RegistryValue Root="HKCR" Key="BrowserPicker\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
-				<RegistryValue Root="HKCR" Key="BrowserPicker\shell" Type="string" Value="open" />
-				<RegistryValue Root="HKCR" Key="BrowserPicker\shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" />
-				
-				<!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationDescription" Value="Shows a prompt to let you use different browsers on the fly." Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,0" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationName" Value="Browser Picker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".html" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".htm" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\StartMenu" Name="StartMenuInternet" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="ftp" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="http" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="https" Value="BrowserPicker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\shell" Value="open" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\shell\open\command" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="BrowserPicker" Value="SOFTWARE\BrowserPicker\Capabilities" Type="string" />
+  <Fragment>
+    <ComponentGroup Source="$(var.BrowserPicker.TargetDir)" Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Guid="*" Win64="yes">
+        <File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64">
+          <netfx:NativeImage Id="ngen_$(var.BrowserPicker.TargetFileName)" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+        </File>
 
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker" Type="string" Value="Browser Picker" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\DefaultIcon" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe,0" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="HideIconsCommand" Value="" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="integer" Name="IconsVisible" Value="1" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="ReinstallCommand" Value="" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="ShowIconsCommand" Value="" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell" Type="string" Value="open" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell\open\command" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe" />
-			</Component>
-			<Component Guid="*" Win64="yes">
-				<File Name="$(var.BrowserPicker.TargetFileName).config" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Guid="*" Win64="yes">
-				<File Name="JetBrains.Annotations.dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-		</ComponentGroup>
-	</Fragment>
+        <RegistryValue Root="HKCR" Key="BrowserPicker" Value="BrowserPicker" Type="string" />
+        <RegistryValue Root="HKCR" Key="BrowserPicker" Name="EditFlags" Value="2" Type="integer" />
+        <RegistryValue Root="HKCR" Key="BrowserPicker" Name="FriendlyTypeName" Value="Web URL" Type="string" />
+        <RegistryValue Root="HKCR" Key="BrowserPicker" Name="URL Protocol" Value="" Type="string" />
+        <RegistryValue Root="HKCR" Key="BrowserPicker\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
+        <RegistryValue Root="HKCR" Key="BrowserPicker\shell" Type="string" Value="open" />
+        <RegistryValue Root="HKCR" Key="BrowserPicker\shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" />
+
+        <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationDescription" Value="Shows a prompt to let you use different browsers on the fly." Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,0" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationName" Value="Browser Picker" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".html" Value="BrowserPicker" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".htm" Value="BrowserPicker" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\StartMenu" Name="StartMenuInternet" Value="BrowserPicker" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="ftp" Value="BrowserPicker" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="http" Value="BrowserPicker" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="https" Value="BrowserPicker" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\shell" Value="open" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\shell\open\command" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="BrowserPicker" Value="SOFTWARE\BrowserPicker\Capabilities" Type="string" />
+
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker" Type="string" Value="Browser Picker" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\DefaultIcon" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe,0" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="HideIconsCommand" Value="" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="integer" Name="IconsVisible" Value="1" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="ReinstallCommand" Value="" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="ShowIconsCommand" Value="" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell" Type="string" Value="open" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell\open\command" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe" />
+      </Component>
+      <Component Guid="*" Win64="yes">
+        <File Name="$(var.BrowserPicker.TargetFileName).config" KeyPath="yes" ProcessorArchitecture="x64" />
+      </Component>
+      <Component Guid="*" Win64="yes">
+        <File Name="JetBrains.Annotations.dll" KeyPath="yes" ProcessorArchitecture="x64" />
+      </Component>
+      <ComponentRef Id="ApplicationShortcut" />
+    </ComponentGroup>
+  </Fragment>
 </Wix>
