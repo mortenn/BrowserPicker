@@ -15,8 +15,8 @@
 	<Border CornerRadius="5" BorderBrush="#77FFFFFF" BorderThickness="2" Padding="10" Width="400" MouseLeftButtonDown="DragWindow">
 		<Border.Background>
 			<LinearGradientBrush EndPoint="0,1">
-				<GradientStop Offset="0" Color="#77272727" />
-				<GradientStop Offset="1" Color="#77000000" />
+				<GradientStop Offset="0" Color="#cc272727" />
+				<GradientStop Offset="1" Color="#cc000000" />
 			</LinearGradientBrush>
 		</Border.Background>
 

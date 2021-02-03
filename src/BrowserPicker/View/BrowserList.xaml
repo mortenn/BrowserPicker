@@ -85,7 +85,7 @@
 												<Setter Property="UIElement.Opacity" Value="1" />
 												<Style.Triggers>
 													<DataTrigger Binding="{Binding IsUsable}" Value="False">
-														<Setter Property="UIElement.Opacity" Value="0.2" />
+														<Setter Property="UIElement.Opacity" Value="0.5" />
 													</DataTrigger>
 												</Style.Triggers>
 											</Style>
