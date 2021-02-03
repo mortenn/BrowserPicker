@@ -65,7 +65,8 @@ namespace BrowserPicker.Configuration
 
 		public static void SetDefault(string fragment, string browser)
 		{
-			Reg.CreateSubKey(nameof(Defaults), true).SetValue(fragment, browser, RegistryValueKind.String);
+			if (!string.IsNullOrEmpty(fragment) && !string.IsNullOrEmpty(browser))
+				Reg.CreateSubKey(nameof(Defaults), true).SetValue(fragment, browser, RegistryValueKind.String);
 		}
 
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
