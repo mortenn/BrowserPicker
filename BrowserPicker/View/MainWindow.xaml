@@ -11,8 +11,8 @@
 	d:DataContext="{d:DesignInstance local:ViewModel,d:IsDesignTimeCreatable=true}"
 	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
 	AllowsTransparency="True" WindowStyle="None"
-	KeyUp="MainWindow_OnKeyUp" ShowInTaskbar="False" SizeChanged="Window_SizeChanged">
-	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2">
+	KeyUp="MainWindow_OnKeyUp" ShowInTaskbar="False" SizeChanged="Window_SizeChanged" >
+	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" MouseLeftButtonDown="DragWindow">
 		<Border.Background>
 			<LinearGradientBrush EndPoint="0,1">
 				<GradientStop Offset="0" Color="#77272727" />

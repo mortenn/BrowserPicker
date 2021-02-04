@@ -89,8 +89,12 @@ namespace BrowserPicker
 			((Window)sender).Closing -= Editor_Closing;
 			if (!(((Window)sender).DataContext is Browser browser))
 				return;
-			Choices.Add(browser);
-			Configuration.BrowserList = Choices;
+
+			if (!string.IsNullOrEmpty(browser.Name) && !string.IsNullOrEmpty(browser.Command))
+			{
+				Choices.Add(browser);
+				Configuration.BrowserList = Choices;
+			}
 		}
 
 		public Config Configuration { get; }
