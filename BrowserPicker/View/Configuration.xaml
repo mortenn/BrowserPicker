@@ -7,9 +7,18 @@
 	xmlns:browserPicker="clr-namespace:BrowserPicker"
 	xmlns:view="clr-namespace:BrowserPicker.View"
 	xmlns:configuration="clr-namespace:BrowserPicker.Configuration"
+	xmlns:System="clr-namespace:System;assembly=mscorlib"
 	mc:Ignorable="d" 
 	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}"
 	Height="300" Width="400">
+
+	<UserControl.Resources>
+		<ObjectDataProvider x:Key="MatchTypes" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+			<ObjectDataProvider.MethodParameters>
+				<x:Type TypeName="configuration:MatchType" />
+			</ObjectDataProvider.MethodParameters>
+		</ObjectDataProvider>
+	</UserControl.Resources>
 
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<Grid.RowDefinitions>
@@ -107,7 +116,14 @@
 					</Grid.RowDefinitions>
 					<StackPanel Orientation="Vertical">
 						<TextBlock Text="Set default browser per domain" Foreground="White" Margin="5" />
-						<CheckBox Content="Only when browser is running" IsChecked="{Binding Configuration.DefaultsWhenRunning}" Foreground="White" Margin="5,0,0,5" />
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+							<CheckBox Content="Only when browser is running" IsChecked="{Binding Configuration.DefaultsWhenRunning}" Foreground="White" Margin="5,0,0,5" />
+							<CheckBox Grid.Column="1" Content="Advanced" Foreground="White" IsChecked="{Binding Configuration.Advanced}" Margin="5,0,0,5" />
+						</Grid>
 					</StackPanel>
 					<ScrollViewer Grid.Row="1">
 						<ItemsControl ItemsSource="{Binding Configuration.Defaults}" Name="DefaultsList">
@@ -129,6 +145,7 @@
 											</Style>
 										</Grid.Style>
 										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
 											<ColumnDefinition Width="*" />
 											<ColumnDefinition Width="Auto" />
 											<ColumnDefinition Width="Auto" />
@@ -147,13 +164,25 @@
 					</ScrollViewer>
 					<Grid Grid.Row="2">
 						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="*" />
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
-						<TextBox Name="NewFragment" Grid.Column="0" />
-						<ComboBox Name="NewDefault" Grid.Column="1" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.Choices}" DisplayMemberPath="Name" SelectedValuePath="Name" />
-						<Button Content="Add" Grid.Column="2" Padding="5,0" Click="AddDefault" />
+						<ComboBox ItemsSource="{Binding Source={StaticResource MatchTypes}}" SelectedItem="{Binding NewMatchType}">
+							<ComboBox.Style>
+								<Style>
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Configuration.Advanced}" Value="False">
+											<Setter Property="UIElement.Visibility" Value="Collapsed" />
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</ComboBox.Style>
+						</ComboBox>
+						<TextBox Name="NewFragment" Grid.Column="1" />
+						<ComboBox Name="NewDefault" Grid.Column="2" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.Choices}" DisplayMemberPath="Name" SelectedValuePath="Name" />
+						<Button Content="Add" Grid.Column="3" Padding="5,0" Click="AddDefault" />
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -161,7 +190,7 @@
 
 		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
 
-			<TextBlock>
+			<TextBlock Margin="10,0,0,0">
 				<Hyperlink Command="{Binding AddBrowser}" Foreground="White">
 					<TextBlock Text="Add browser" />
 				</Hyperlink>

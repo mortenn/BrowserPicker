@@ -110,6 +110,14 @@ namespace BrowserPicker
 		public string TargetURL => App.TargetURL;
 		public string UnderlyingTargetURL => App.UnderlyingTargetURL;
 
+		public MatchType NewMatchType { get; set; } = MatchType.Hostname;
+
+		public bool AdvancedConfigurationMode
+		{
+			get;
+			set;
+		}
+
 		private void FindBrowsers()
 		{
 			var removed = Choices.Where(b => b.Removed).ToList();

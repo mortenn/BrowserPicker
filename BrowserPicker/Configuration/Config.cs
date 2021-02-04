@@ -24,7 +24,6 @@ namespace BrowserPicker.Configuration
 		public IEnumerable<DefaultSetting> Defaults
 		{
 			get => GetDefaults();
-			set => SetDefaults(value);
 		}
 
 		public bool DefaultsWhenRunning
@@ -37,6 +36,12 @@ namespace BrowserPicker.Configuration
 		{
 			get => Reg.Get(nameof(UrlLookupTimeoutMilliseconds), 500);
 			set => Reg.Set(nameof(UrlLookupTimeoutMilliseconds), value);
+		}
+
+		public bool Advanced
+		{
+			get => Reg.Get(nameof(Advanced), false);
+			set => Reg.Set(nameof(Advanced), value);
 		}
 
 		public static void UpdateCounter(Browser browser)
@@ -66,17 +71,6 @@ namespace BrowserPicker.Configuration
 		public static void SetDefault(string fragment, string browser)
 		{
 			Reg.CreateSubKey(nameof(Defaults), true).SetValue(fragment, browser, RegistryValueKind.String);
-		}
-
-		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-		private static void SetDefaults([NotNull] IEnumerable<DefaultSetting> defaults)
-		{
-			var key = Reg.CreateSubKey(nameof(Defaults), true);
-			var values = key.GetValueNames();
-			foreach (var fragment in values.Except(defaults.Select(d => d.Fragment)))
-				key.DeleteValue(fragment);
-			foreach (var setting in defaults)
-				key.SetValue(setting.Fragment, setting.Browser, RegistryValueKind.String);
 		}
 
 		private static IEnumerable<DefaultSetting> GetDefaults()

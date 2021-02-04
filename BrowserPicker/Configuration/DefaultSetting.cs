@@ -10,31 +10,40 @@ namespace BrowserPicker.Configuration
 	{
 		public DefaultSetting(string fragment, string browser)
 		{
-			this.fragment = fragment;
+			var rule = fragment.Split('|');
+			if (rule.Length == 3)
+			{
+				MatchType = Enum.TryParse<MatchType>(rule[1], true, out var match) ? match : MatchType.Hostname;
+				pattern = rule[2];
+			}
+			else
+			{
+				match_type = MatchType.Hostname;
+				pattern = fragment;
+				Save();
+			}
 			this.browser = browser;
 		}
-		/// <summary>
-		/// If Fragment starts with a pipe (|) character then it is of the format
-		///      |type|value
-		/// Otherwise the Fragment is a suffix-match on the URL host name.
-		/// Currently supported Fragment types:
-		///      |prefix|https://example.com/test           This applies a prefix match to the full URL value
-		///      |regex|https://.*\.example\.com/test		This applies a regex match to the full URL value
-		/// </summary>
-		public string Fragment
+		
+		public MatchType MatchType
 		{
-			get => fragment;
+			get => match_type;
 			set
 			{
-				if (fragment == value)
-					return;
+				match_type = value;
+				OnPropertyChanged(nameof(MatchType));
+				Save();
+			}
+		}
 
-				if (!string.IsNullOrEmpty(fragment))
-					Config.RemoveDefault(fragment);
-				if (!string.IsNullOrEmpty(value))
-					Config.SetDefault(value, Browser);
-				fragment = value;
-				OnPropertyChanged();
+		public string Pattern
+		{
+			get => pattern;
+			set
+			{
+				pattern = value;
+				OnPropertyChanged(nameof(Pattern));
+				Save();
 			}
 		}
 
@@ -47,12 +56,30 @@ namespace BrowserPicker.Configuration
 					return;
 
 				browser = value;
-				Config.SetDefault(Fragment, value);
 				OnPropertyChanged();
+				Save();
 			}
 		}
 
-		public DelegateCommand Remove => new DelegateCommand(() => Fragment = string.Empty);
+		public int MatchLength(Uri url)
+		{
+			switch (MatchType)
+			{
+				case MatchType.Hostname:
+					return url.Host.EndsWith(Pattern) ? Pattern.Length : 0;
+
+				case MatchType.Prefix:
+					return url.OriginalString.StartsWith(Pattern) ? Pattern.Length : 0;
+
+				case MatchType.Regex:
+					return Regex.Match(url.OriginalString, Pattern).Length;
+
+				default:
+					return 0;
+			}
+		}
+
+		public DelegateCommand Remove => new DelegateCommand(() => Pattern = string.Empty);
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -62,33 +89,13 @@ namespace BrowserPicker.Configuration
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		private string fragment;
-		private string browser;
-
-		public int MatchLength(Uri url)
+		private void Save()
 		{
-			var matchType = MatchType.Hostname;
-			var value = Fragment;
-			if (Fragment[0] == '|')
-			{
-				Enum.TryParse(Fragment.Substring(1, Fragment.IndexOf('|', 1)), true, out matchType);
-				value = Fragment.Substring(Fragment.IndexOf('|', 1) + 1);
-			}
-
-			switch (matchType)
-			{
-				case MatchType.Hostname:
-					return url.Host.EndsWith(Fragment) ? Fragment.Length : 0;
-				
-				case MatchType.Prefix:
-					return url.OriginalString.StartsWith(value) ? value.Length : 0;
-				
-				case MatchType.Regex:
-					return Regex.Match(url.OriginalString, value).Length;
-				
-				default:
-					return 0;
-			}
+			Config.SetDefault($"|{MatchType}|{Pattern}", browser);
 		}
+
+		private string browser;
+		private string pattern;
+		private MatchType match_type;
 	}
 }
