@@ -69,8 +69,12 @@ Under the other tab, you can assign a default browser by domain:
 If you want the defaults to only apply when the browser is already running, check the checkbox above the list.
 
 When you open a link, the application will check if you have defined a default matching the end of the host part of the URL.
-That is, if you open https://www.github.com/mortenn/BrowserPicker, a default set for github.com will match.
+That is, if you open `https://www.github.com/mortenn/BrowserPicker`, a default set for `github.com` will match.
 
-As the match happens on the end of the host, that url would also match hub.com.
+As the match happens on the end of the host, that url would also match `hub.com`.
+
+In addition to the default behaviour to match the end of the URL host, you can also apply `prefix` and `regex` matching:
+- A rule of `|prefix|https://github.com/mortenn` applies matching to the start of the full URL, so would match `https://github.com/mortenn/BrowserPicker` but not `https://github.com/stuartleeks/devcontainer-cli`
+- A rule of `|regex|.*/mortenn` applies the `.*/mortenn` to the full URL, so would match `https://github.com/mortenn/BrowserPicker`
 
 If multiple matches are found for a url, the longest match will be used.
