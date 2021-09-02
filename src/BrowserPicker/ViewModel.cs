@@ -26,7 +26,7 @@ namespace BrowserPicker
 		public ViewModel(bool forceChoice)
 		{
 			ConfigurationMode = App.TargetURL == null;
-			Configuration = new Config();
+			Configuration = Config.Settings;
 
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
 			force_choice = forceChoice;

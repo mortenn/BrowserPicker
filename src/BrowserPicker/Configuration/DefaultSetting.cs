@@ -31,9 +31,9 @@ namespace BrowserPicker.Configuration
 					return;
 
 				if (!string.IsNullOrEmpty(fragment))
-					Config.RemoveDefault(fragment);
+					Config.Settings.RemoveDefault(fragment);
 				if (!string.IsNullOrEmpty(value))
-					Config.SetDefault(value, Browser);
+					Config.Settings.SetDefault(value, Browser);
 				fragment = value;
 				OnPropertyChanged();
 			}
@@ -48,7 +48,7 @@ namespace BrowserPicker.Configuration
 					return;
 
 				browser = value;
-				Config.SetDefault(Fragment, value);
+				Config.Settings.SetDefault(Fragment, value);
 				OnPropertyChanged();
 			}
 		}

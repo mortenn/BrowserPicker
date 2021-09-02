@@ -146,7 +146,7 @@ namespace BrowserPicker.Configuration
 			set
 			{
 				disabled = value;
-				Config.UpdateBrowserDisabled(this);
+				Config.Settings.UpdateBrowserDisabled(this);
 				OnPropertyChanged();
 			}
 		}
@@ -158,7 +158,7 @@ namespace BrowserPicker.Configuration
 			{
 				removed = value;
 				Disabled = value;
-				Config.RemoveBrowser(this);
+				Config.Settings.RemoveBrowser(this);
 				OnPropertyChanged();
 			}
 		}

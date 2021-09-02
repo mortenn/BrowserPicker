@@ -11,6 +11,8 @@ namespace BrowserPicker.Configuration
 {
 	public class Config
 	{
+		public static Config Settings = new Config();
+
 		public bool AlwaysPrompt
 		{
 			get => Reg.Get<bool>(nameof(AlwaysPrompt));
@@ -47,31 +49,37 @@ namespace BrowserPicker.Configuration
 			set => Reg.Set(nameof(LastBrowserScanTime), value.Ticks);
 		}
 
-		public static void UpdateCounter(Browser browser)
+		public bool UseAutomaticOrdering
+		{
+			get => Reg.Get(nameof(UseAutomaticOrdering), true);
+			set => Reg.Set(nameof(UserPreferenceCategory), value);
+		}
+
+		public void UpdateCounter(Browser browser)
 		{
 			Reg
 				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Name), true)
 				?.SetValue(nameof(browser.Usage), browser.Usage + 1, RegistryValueKind.DWord);
 		}
 
-		public static void UpdateBrowserDisabled(Browser browser)
+		public void UpdateBrowserDisabled(Browser browser)
 		{
 			Reg
 				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Name), true)
 				?.SetValue(nameof(browser.Disabled), browser.Disabled ? 1 : 0, RegistryValueKind.DWord);
 		}
 
-		public static void RemoveBrowser(Browser browser)
+		public void RemoveBrowser(Browser browser)
 		{
 			Reg.DeleteSubKeyTree(Path.Combine(nameof(BrowserList), browser.Name), false);
 		}
 
-		public static void RemoveDefault(string fragment)
+		public void RemoveDefault(string fragment)
 		{
 			Reg.OpenSubKey(nameof(Defaults), true)?.DeleteValue(fragment);
 		}
 
-		public static void SetDefault(string fragment, string browser)
+		public void SetDefault(string fragment, string browser)
 		{
 			if (!string.IsNullOrEmpty(fragment) && !string.IsNullOrEmpty(browser))
 				Reg.CreateSubKey(nameof(Defaults), true).SetValue(fragment, browser, RegistryValueKind.String);
