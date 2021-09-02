@@ -212,7 +212,8 @@ namespace BrowserPicker.Configuration
 		{
 			try
 			{
-				//Config.UpdateCounter(this);
+				if (Config.Settings.UseAutomaticOrdering)
+					Config.Settings.UpdateCounter(this);
 				var args = CommandArgs;
 				if (Name == "Edge")
 				{
