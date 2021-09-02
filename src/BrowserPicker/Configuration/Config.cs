@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using BrowserPicker.Lib;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 

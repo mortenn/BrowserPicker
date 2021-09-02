@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using BrowserPicker.Lib;
 using JetBrains.Annotations;
 
 namespace BrowserPicker.Configuration

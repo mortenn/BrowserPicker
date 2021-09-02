@@ -1,4 +1,4 @@
-﻿namespace BrowserPicker.Configuration
+﻿namespace BrowserPicker.Lib
 {
 	public enum MatchType
 	{

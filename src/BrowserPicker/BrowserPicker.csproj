@@ -67,8 +67,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=2020.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.2020.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+    <Reference Include="JetBrains.Annotations, Version=2021.2.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JetBrains.Annotations.2021.2.0\lib\net20\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -95,9 +95,6 @@
     <Compile Include="Configuration\Browser.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\DefaultSetting.cs" />
-    <Compile Include="DelegateCommand.cs" />
-    <Compile Include="Configuration\MatchType.cs" />
-    <Compile Include="Configuration\RegistryHelpers.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="View\BrowserEditor.xaml.cs">
       <DependentUpon>BrowserEditor.xaml</DependentUpon>
@@ -164,7 +161,12 @@
   <ItemGroup>
     <Resource Include="Resources\privacy.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\BrowserPicker.Lib\BrowserPicker.Lib.csproj">
+      <Project>{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}</Project>
+      <Name>BrowserPicker.Lib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == SignedRelease (

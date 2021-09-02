@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using BrowserPicker.Lib;
 using JetBrains.Annotations;
 
 namespace BrowserPicker.Configuration

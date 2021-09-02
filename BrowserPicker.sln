@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker.Lib", "src\BrowserPicker.Lib\BrowserPicker.Lib.csproj", "{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,18 @@ Global
 		{D6E6C475-4FE6-4AC8-9E28-401B8423890F}.SignedRelease|Any CPU.Build.0 = SignedRelease|x86
 		{D6E6C475-4FE6-4AC8-9E28-401B8423890F}.SignedRelease|x86.ActiveCfg = SignedRelease|x86
 		{D6E6C475-4FE6-4AC8-9E28-401B8423890F}.SignedRelease|x86.Build.0 = SignedRelease|x86
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.Release|x86.Build.0 = Release|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.SignedRelease|x86.ActiveCfg = Release|Any CPU
+		{17DF31C5-FE19-4D62-9E20-88AEB9FDA6B9}.SignedRelease|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

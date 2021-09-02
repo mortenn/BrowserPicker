@@ -2,7 +2,7 @@ using System;
 using System.Windows.Input;
 using JetBrains.Annotations;
 
-namespace BrowserPicker
+namespace BrowserPicker.Lib
 {
 	[PublicAPI]
 	public class DelegateCommand : ICommand
