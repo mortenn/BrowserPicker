@@ -115,6 +115,11 @@ namespace BrowserPicker
 			}
 		}
 
+		internal static void OverrideURL(string value)
+		{
+			TargetURL = value;
+		}
+
 		private static void CurrentDomainOnUnhandledException(object sender,
 			UnhandledExceptionEventArgs unhandledExceptionEventArgs)
 		{

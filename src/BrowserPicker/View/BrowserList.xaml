@@ -15,6 +15,16 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Horizontal">
+			<StackPanel.Style>
+				<Style TargetType="{x:Type StackPanel}">
+					<Setter Property="UIElement.Visibility" Value="Collapsed" />
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
+							<Setter Property="UIElement.Visibility" Value="Visible" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</StackPanel.Style>
 			<TextBlock Margin="0,5">
 				<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}">
 					<Hyperlink.Style>
@@ -29,9 +39,21 @@
 					</Hyperlink.Style>
 					📋
 				</Hyperlink>
+				<Hyperlink Foreground="Silver" TextDecorations="None" Command="{Binding Edit}">✏</Hyperlink>
 			</TextBlock>
 			<TextBlock Text="{Binding UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" MaxWidth="380" />
 		</StackPanel>
+		<TextBox Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="Wrap">
+			<TextBox.Style>
+				<Style TargetType="{x:Type TextBox}">
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
+							<Setter Property="UIElement.Visibility" Value="Collapsed" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</TextBox.Style>
+		</TextBox>
 		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 			<ItemsControl ItemsSource="{Binding Choices}">
 				<ItemsControl.ItemsPanel>

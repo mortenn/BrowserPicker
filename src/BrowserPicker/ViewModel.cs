@@ -79,6 +79,9 @@ namespace BrowserPicker
 
 		public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
 
+		public ICommand Edit => new DelegateCommand(OpenURLEditor);
+
+
 		public DelegateCommand AddBrowser => new DelegateCommand(AddBrowserManually);
 
 		private void AddBrowserManually()
@@ -117,6 +120,17 @@ namespace BrowserPicker
 
 		public string TargetURL => App.TargetURL;
 		public string UnderlyingTargetURL => App.UnderlyingTargetURL;
+
+		public string EditURL
+		{
+			get => editURL;
+			set
+			{
+				editURL = value;
+				App.OverrideURL(value);
+			}
+		}
+
 		public bool Copied { get; set; }
 
 		private void PerformCopyUrl()
@@ -134,6 +148,12 @@ namespace BrowserPicker
 			{
 				// ignored
 			}
+		}
+
+		private void OpenURLEditor()
+		{
+			EditURL = UnderlyingTargetURL;
+			OnPropertyChanged(nameof(EditURL));
 		}
 
 		private void FindBrowsers()
@@ -215,6 +235,7 @@ namespace BrowserPicker
 		}
 
 		private bool configuration_mode;
+		private string editURL;
 		private readonly bool force_choice;
 
 		public void OnDeactivated()
