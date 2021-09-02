@@ -15,6 +15,21 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Horizontal">
+			<TextBlock Margin="0,5">
+				<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}">
+					<Hyperlink.Style>
+						<Style>
+							<Setter Property="Hyperlink.Foreground" Value="Silver" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding Copied}" Value="True">
+									<Setter Property="Hyperlink.Foreground" Value="White" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</Hyperlink.Style>
+					📋
+				</Hyperlink>
+			</TextBlock>
 			<TextBlock Text="{Binding UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" MaxWidth="380" />
 		</StackPanel>
 		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">

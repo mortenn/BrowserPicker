@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Configuration;
@@ -55,7 +56,7 @@ namespace BrowserPicker
 
 			var url = new Uri(App.UnderlyingTargetURL);
 			var auto = defaults
-				.Select(rule => new { rule, matchLength = rule.MatchLength(url)})
+				.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
 				.Where(o => o.matchLength > 0)
 				.ToList();
 			if (auto.Count <= 0)
@@ -75,6 +76,8 @@ namespace BrowserPicker
 		public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
 
 		public ICommand Exit => new DelegateCommand(() => Application.Current.Shutdown());
+
+		public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
 
 		public DelegateCommand AddBrowser => new DelegateCommand(AddBrowserManually);
 
@@ -114,6 +117,24 @@ namespace BrowserPicker
 
 		public string TargetURL => App.TargetURL;
 		public string UnderlyingTargetURL => App.UnderlyingTargetURL;
+		public bool Copied { get; set; }
+
+		private void PerformCopyUrl()
+		{
+			try
+			{
+				var thread = new Thread(() => Clipboard.SetText(UnderlyingTargetURL));
+				thread.SetApartmentState(ApartmentState.STA);
+				thread.Start();
+				thread.Join();
+				Copied = true;
+				OnPropertyChanged(nameof(Copied));
+			}
+			catch
+			{
+				// ignored
+			}
+		}
 
 		private void FindBrowsers()
 		{
@@ -123,7 +144,7 @@ namespace BrowserPicker
 
 			EnumerateBrowsers(@"SOFTWARE\Clients\StartMenuInternet");
 			EnumerateBrowsers(@"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
-			if(!Choices.Any(browser => browser.Name.Contains("Edge")))
+			if (!Choices.Any(browser => browser.Name.Contains("Edge")))
 				FindEdge();
 			Configuration.BrowserList = Choices;
 			Configuration.LastBrowserScanTime = DateTime.Now;
