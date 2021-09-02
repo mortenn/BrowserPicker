@@ -28,15 +28,15 @@ namespace BrowserPicker
 			Configuration = new Config();
 
 			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
-			this.force_choice = forceChoice;
+			force_choice = forceChoice;
 		}
 
 		public void Initialize()
 		{
-			if (Choices.Count == 0)
+			if (Choices.Count == 0 || (DateTime.Now - Configuration.LastBrowserScanTime) > TimeSpan.FromDays(7))
 				FindBrowsers();
 
-			if (Configuration.AlwaysPrompt || ConfigurationMode || this.force_choice)
+			if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
 				return;
 
 			if (App.TargetURL != null)
@@ -126,6 +126,7 @@ namespace BrowserPicker
 			if(!Choices.Any(browser => browser.Name.Contains("Edge")))
 				FindEdge();
 			Configuration.BrowserList = Choices;
+			Configuration.LastBrowserScanTime = DateTime.Now;
 		}
 
 		private void FindEdge()

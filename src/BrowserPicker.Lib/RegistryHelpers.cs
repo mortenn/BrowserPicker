@@ -25,7 +25,7 @@ namespace BrowserPicker.Lib
 		{
 			if (value == null)
 			{
-				if(key.GetValue(name) != null)
+				if (key.GetValue(name) != null)
 					key.DeleteValue(name);
 			}
 			else if (typeof(T) == typeof(bool))
@@ -36,6 +36,9 @@ namespace BrowserPicker.Lib
 
 			else if (typeof(T) == typeof(int))
 				key.SetValue(name, value, RegistryValueKind.DWord);
+
+			else if (typeof(T) == typeof(long))
+				key.SetValue(name, value, RegistryValueKind.QWord);
 		}
 	}
 }

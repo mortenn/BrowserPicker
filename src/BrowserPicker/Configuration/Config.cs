@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -38,6 +39,12 @@ namespace BrowserPicker.Configuration
 		{
 			get => Reg.Get(nameof(UrlLookupTimeoutMilliseconds), 500);
 			set => Reg.Set(nameof(UrlLookupTimeoutMilliseconds), value);
+		}
+
+		public DateTime LastBrowserScanTime
+		{
+			get => new DateTime(Reg.Get<long>(nameof(LastBrowserScanTime)));
+			set => Reg.Set(nameof(LastBrowserScanTime), value.Ticks);
 		}
 
 		public static void UpdateCounter(Browser browser)
