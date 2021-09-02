@@ -260,6 +260,6 @@ namespace BrowserPicker.Configuration
 		private const string IE_PRIVATE_ARG = "-private ";
 		private const string FIREFOX_PRIVATE_ARG = "-private-window ";
 		private const string CHROME_PRIVATE_ARG = "--incognito ";
-		private const string EDGE_PRIVATE_ARG = "-private ";
+		private const string EDGE_PRIVATE_ARG = "-inprivate ";
 	}
 }
