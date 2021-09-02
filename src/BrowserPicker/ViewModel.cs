@@ -42,7 +42,7 @@ namespace BrowserPicker
 			if (App.TargetURL != null)
 				CheckDefaultBrowser();
 
-			var active = Choices.Where(b => b.IsRunning).ToList();
+			var active = Choices.Where(b => b.IsRunning && !b.Disabled).ToList();
 			if (active.Count == 1)
 				active[0].Select.Execute(null);
 		}
