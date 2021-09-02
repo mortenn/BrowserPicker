@@ -70,6 +70,7 @@ namespace BrowserPicker.Configuration
 						return "-private ";
 					case "Google Chrome":
 						return "--incognito ";
+					case "Microsoft Edge":
 					case "Edge":
 						return " -private";
 				}
