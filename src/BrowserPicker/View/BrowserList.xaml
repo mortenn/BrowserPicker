@@ -7,8 +7,7 @@
 	xmlns:browserPicker="clr-namespace:BrowserPicker"
 	xmlns:configuration="clr-namespace:BrowserPicker.Configuration"
 	mc:Ignorable="d" 
-	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}"
-	Background="#333">
+	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}">
 	<Grid MinWidth="350">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
