@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using JetBrains.Annotations;
@@ -65,6 +66,8 @@ namespace BrowserPicker
 
 		public ICommand Exit => new DelegateCommand(() => Application.Current.Shutdown());
 
+		public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
+
 		public DelegateCommand AddBrowser => new DelegateCommand(AddBrowserManually);
 
 		private void AddBrowserManually()
@@ -98,6 +101,24 @@ namespace BrowserPicker
 		}
 
 		public string TargetURL => App.TargetURL;
+		public bool Copied { get; set; }
+
+		private void PerformCopyUrl()
+		{
+			try
+			{
+				var thread = new Thread(() => Clipboard.SetText(UnderlyingTargetURL));
+				thread.SetApartmentState(ApartmentState.STA);
+				thread.Start();
+				thread.Join();
+				Copied = true;
+				OnPropertyChanged(nameof(Copied));
+			}
+			catch
+			{
+				// ignored
+			}
+		}
 
 		private void FindBrowsers()
 		{
