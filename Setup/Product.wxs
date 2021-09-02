@@ -17,6 +17,9 @@
 			<Directory Id="ProgramFiles64Folder">
 				<Directory Id="INSTALLFOLDER" Name="BrowserPicker" />
 			</Directory>
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="Browser Picker"/>
+			</Directory>
 		</Directory>
 	</Fragment>
 
@@ -25,6 +28,14 @@
 			<Component Guid="*" Win64="yes">
 				<File Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64">
 					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.TargetFileName)" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+					<Shortcut
+						Directory="ApplicationProgramsFolder"
+						Id="ApplicationStartMenuShortcut"
+						Name="Browser Picker"
+						Description="Awesome Browser Picker"
+						WorkingDirectory="INSTALLFOLDER"
+						Icon="Icon.exe"
+						Advertise="yes"/>
 				</File>
 
 				<RegistryValue Root="HKCR" Key="BrowserPicker" Value="BrowserPicker" Type="string" />
@@ -58,6 +69,8 @@
 				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="ShowIconsCommand" Value="" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell" Type="string" Value="open" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell\open\command" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe" />
+
+				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
 			</Component>
 			<Component Guid="*" Win64="yes">
 				<File Name="$(var.BrowserPicker.TargetFileName).config" KeyPath="yes" ProcessorArchitecture="x64" />
