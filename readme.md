@@ -5,6 +5,7 @@ A default browser replacement for windows to let you pick your preferred browser
 ## Installation
 
 Simply download and install the [latest MSI](https://github.com/mortenn/BrowserPicker/releases).
+To avoid warnings about unknown publisher, [import](https://stackoverflow.com/questions/49039136/powershell-script-to-install-trusted-publisher-certificates) the provided certificate into your certificate store first.
 
 ## Configuration
 
