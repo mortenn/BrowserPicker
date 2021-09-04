@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace BrowserPicker.Lib
@@ -43,6 +44,23 @@ namespace BrowserPicker.Lib
 				return;
 			}
 			key.SetValue(name, value, TypeMap[typeof(T)]);
+		}
+
+		public static RegistryKey SubKey(this RegistryKey key, params string[] path)
+		{
+			return key.OpenSubKey(Path.Combine(path), true);
+		}
+
+		public static (string name, string icon, string shell) GetBrowser(this RegistryKey key)
+		{
+			var name = (string)key.GetValue(null);
+
+			var icon = (string)key.OpenSubKey("DefaultIcon", false)?.GetValue(null);
+			if (icon?.Contains(",") ?? false)
+				icon = icon.Split(',')[0];
+			var shell = (string)key.OpenSubKey("shell\\open\\command", false)?.GetValue(null);
+
+			return (name, icon, shell);
 		}
 
 		private readonly static Dictionary<Type, RegistryValueKind> TypeMap = new Dictionary<Type, RegistryValueKind>

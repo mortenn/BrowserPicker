@@ -118,7 +118,7 @@ namespace BrowserPicker.Configuration
 
 		public void RemoveDefault(string fragment)
 		{
-			Reg.OpenSubKey(nameof(Defaults), true)?.DeleteValue(fragment);
+			Reg.SubKey(nameof(Defaults))?.DeleteValue(fragment);
 		}
 
 		public DefaultSetting AddDefault(string fragment, string browser)
@@ -170,10 +170,11 @@ namespace BrowserPicker.Configuration
 
 		private static List<BrowserModel> GetBrowsers()
 		{
-
-			var list = Reg.OpenSubKey("BrowserList", true);
+			var list = Reg.SubKey(nameof(BrowserList));
 			if (list == null)
+			{
 				return new List<BrowserModel>();
+			}
 
 			var browsers = list.GetSubKeyNames()
 				.Select(browser => GetBrowser(list, browser))
@@ -221,46 +222,18 @@ namespace BrowserPicker.Configuration
 		private static void BrowserConfiguration_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var model = (BrowserModel)sender;
-			var key = Path.Combine(nameof(BrowserList), model.Name);
-			object value;
-			var kind = RegistryValueKind.String;
+			var config = Reg.SubKey(nameof(BrowserList), model.Name);
 			switch (e.PropertyName)
 			{
-				case nameof(BrowserModel.Command):
-					value = model.Command;
-					break;
-
-				case nameof(BrowserModel.Executable):
-					value = model.Executable;
-					break;
-
-				case nameof(BrowserModel.CommandArgs):
-					value = model.CommandArgs;
-					break;
-
-				case nameof(BrowserModel.PrivacyArgs):
-					value = model.PrivacyArgs;
-					break;
-
-				case nameof(BrowserModel.IconPath):
-					value = model.IconPath;
-					break;
-
-				case nameof(BrowserModel.Usage):
-					kind = RegistryValueKind.DWord;
-					value = model.Usage;
-					break;
-
-				case nameof(BrowserModel.Disabled):
-					kind = RegistryValueKind.DWord;
-					value = model.Disabled ? 1 : 0;
-					break;
-
-				default:
-					return;
+				case nameof(BrowserModel.Command):     config.Set(model.Command,     e.PropertyName); break;
+				case nameof(BrowserModel.Executable):  config.Set(model.Executable,  e.PropertyName); break;
+				case nameof(BrowserModel.CommandArgs): config.Set(model.CommandArgs, e.PropertyName); break;
+				case nameof(BrowserModel.PrivacyArgs): config.Set(model.PrivacyArgs, e.PropertyName); break;
+				case nameof(BrowserModel.IconPath):    config.Set(model.IconPath,    e.PropertyName); break;
+				case nameof(BrowserModel.Usage):       config.Set(model.Usage,       e.PropertyName); break;
+				case nameof(BrowserModel.Disabled):    config.Set(model.Disabled,    e.PropertyName); break;
+				default: return;
 			}
-
-			Reg.OpenSubKey(key, true)?.SetValue(e.PropertyName, value, kind);
 		}
 
 		private static readonly RegistryKey Reg = Registry.CurrentUser.CreateSubKey("Software\\BrowserPicker", true);

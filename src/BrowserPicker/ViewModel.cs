@@ -101,7 +101,6 @@ namespace BrowserPicker
 			start.Select.Execute(null);
 		}
 
-
 		public ICommand RefreshBrowsers => new DelegateCommand(FindBrowsers);
 
 		public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
@@ -111,7 +110,6 @@ namespace BrowserPicker
 		public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
 
 		public ICommand Edit => new DelegateCommand(OpenURLEditor);
-
 
 		public DelegateCommand AddBrowser => new DelegateCommand(AddBrowserManually);
 
@@ -276,12 +274,8 @@ namespace BrowserPicker
 			if (reg == null)
 				return;
 
-			var name = (string)reg.GetValue(null);
+			var (name, icon, shell) = reg.GetBrowser();
 
-			var icon = (string)reg.OpenSubKey("DefaultIcon", false)?.GetValue(null);
-			if (icon?.Contains(",") ?? false)
-				icon = icon.Split(',')[0];
-			var shell = (string)reg.OpenSubKey("shell\\open\\command", false)?.GetValue(null);
 			var known = WellKnownBrowsers.Lookup(name, shell);
 			if (known != null)
 			{
