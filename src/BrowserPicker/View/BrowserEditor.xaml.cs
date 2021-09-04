@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Configuration;
+using BrowserPicker.Lib;
 using Microsoft.Win32;
 
 namespace BrowserPicker.View
@@ -18,7 +19,7 @@ namespace BrowserPicker.View
 
 		private void BrowserEditor_OnLoaded(object sender, RoutedEventArgs e)
 		{
-			DataContext = new Browser();
+			DataContext = new Browser(new BrowserModel(), null);
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
@@ -43,21 +44,21 @@ namespace BrowserPicker.View
 			if (result != true)
 				return;
 
-			Browser.Command = browser.FileName;
-			if (string.IsNullOrEmpty(Browser.Name))
+			Browser.Model.Command = browser.FileName;
+			if (string.IsNullOrEmpty(Browser.Model.Name))
 			{
 				try
 				{
 					var name = FileVersionInfo.GetVersionInfo(browser.FileName);
-					Browser.Name = name.FileDescription;
+					Browser.Model.Name = name.FileDescription;
 				}
 				catch
 				{
 					// ignored
 				}
 			}
-			if (string.IsNullOrEmpty(Browser.IconPath))
-				Browser.IconPath = browser.FileName;
+			if (string.IsNullOrEmpty(Browser.Model.IconPath))
+				Browser.Model.IconPath = browser.FileName;
 		}
 
 		private void Icon_Browse(object sender, RoutedEventArgs e)
@@ -69,7 +70,7 @@ namespace BrowserPicker.View
 			};
 			var result = browser.ShowDialog(this);
 			if (result == true)
-				Browser.IconPath = browser.FileName;
+				Browser.Model.IconPath = browser.FileName;
 		}
 
 		private Browser Browser => DataContext as Browser;

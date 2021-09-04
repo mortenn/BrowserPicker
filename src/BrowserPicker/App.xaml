@@ -2,6 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<Application.Resources>
-
+		<ResourceDictionary>
+			<ImageSource x:Key="DefaultIcon">pack://application:,,,/Resources/web_icon.png</ImageSource>
+			<ImageSource x:Key="PrivacyShield">pack://application:,,,/Resources/privacy.png</ImageSource>
+		</ResourceDictionary>
 	</Application.Resources>
 </Application>

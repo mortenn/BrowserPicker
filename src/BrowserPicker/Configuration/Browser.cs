@@ -1,97 +1,42 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using BrowserPicker.Lib;
-using JetBrains.Annotations;
 
 namespace BrowserPicker.Configuration
 {
-	[DebuggerDisplay("{" + nameof(Name) + "}")]
-	public class Browser : INotifyPropertyChanged
+	[DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
+	public class Browser : ViewModelBase<BrowserModel>
 	{
-		public string Name
+		public Browser(BrowserModel model, ViewModel viewModel) : base(model)
 		{
-			get => name;
-			set
-			{
-				name = value;
-				OnPropertyChanged();
-			}
+			model.PropertyChanged += Model_PropertyChanged;
+			view_model = viewModel;
 		}
 
-		public string IconPath
+		private void Model_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			get => icon_path;
-			set
+			switch (e.PropertyName)
 			{
-				icon_path = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(Thumbnail));
-			}
-		}
+				case nameof(BrowserModel.PrivacyArgs):
+					SelectPrivacy.RaiseCanExecuteChanged();
+					break;
 
-		public string Command
-		{
-			get => command;
-			set
-			{
-				command = value;
-				OnPropertyChanged();
-			}
-		}
+				case nameof(BrowserModel.Disabled):
+					SelectPrivacy.RaiseCanExecuteChanged();
+					Select.RaiseCanExecuteChanged();
+					break;
 
-		public string CommandArgs
-		{
-			get => command_args;
-			set
-			{
-				command_args = value;
-				OnPropertyChanged();
-			}
-		}
-
-		public string PrivacyArgs
-		{
-			get
-			{
-				string arg = null;
-				switch (Name)
-				{
-					default:
-						arg = null;
-						break;
-					case "Mozilla Firefox":
-						arg = FIREFOX_PRIVATE_ARG;
-						break;
-					case "Internet Explorer":
-						arg = IE_PRIVATE_ARG;
-						break;
-					case "Google Chrome":
-						arg = CHROME_PRIVATE_ARG;
-						break;
-					case "Microsoft Edge":
-					case "Edge":
-						arg = EDGE_PRIVATE_ARG;
-						break;
-				}
-				if (string.IsNullOrEmpty(arg) && !string.IsNullOrEmpty(Command))
-				{
-					if (Command.IndexOf("chrome.exe", System.StringComparison.CurrentCultureIgnoreCase) != -1)
-						arg = CHROME_PRIVATE_ARG;
-					else if (Command.IndexOf("msedge.exe", System.StringComparison.CurrentCultureIgnoreCase) != -1)
-						arg = EDGE_PRIVATE_ARG;
-					else if (Command.IndexOf("iexplore.exe", System.StringComparison.CurrentCultureIgnoreCase) != -1)
-						arg = IE_PRIVATE_ARG;
-					else if (Command.IndexOf("firefox.exe", System.StringComparison.CurrentCultureIgnoreCase) != -1)
-						arg = FIREFOX_PRIVATE_ARG;
-				}
-				return arg;
+				case nameof(BrowserModel.IconPath):
+					icon = null;
+					OnPropertyChanged(nameof(Thumbnail));
+					break;
 			}
 		}
 
@@ -101,7 +46,7 @@ namespace BrowserPicker.Configuration
 			{
 				if (icon == null)
 				{
-					icon = GetBrowserIcon(IconPath);
+					icon = GetBrowserIcon(Model.IconPath);
 				}
 				return icon;
 			}
@@ -109,8 +54,8 @@ namespace BrowserPicker.Configuration
 
 		public DelegateCommand Select => new DelegateCommand(() => Launch(false), () => CanLaunch(false));
 		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
-		public DelegateCommand Disable => new DelegateCommand(() => Disabled = !Disabled);
-		public DelegateCommand Remove => new DelegateCommand(() => Removed = true);
+		public DelegateCommand Disable => new DelegateCommand(() => Model.Disabled = !Model.Disabled);
+		public DelegateCommand Remove => new DelegateCommand(() => Model.Removed = true);
 
 		public bool IsRunning
 		{
@@ -120,13 +65,16 @@ namespace BrowserPicker.Configuration
 				{
 					var session = Process.GetCurrentProcess().SessionId;
 
-					if (Command == "microsoft-edge:" || Command.Contains("MicrosoftEdge"))
+					if (Model.Command == "microsoft-edge:" || Model.Command.Contains("MicrosoftEdge"))
 						return Process.GetProcessesByName("MicrosoftEdge").Any(p => p.SessionId == session);
 
-					var cmd = Command;
+					var cmd = Model.Command;
 					if (cmd[0] == '"')
 						cmd = cmd.Split('"')[1];
-					return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd)).Any(p => p.SessionId == session);
+
+					var processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Model.Executable ?? cmd));
+
+					return processes.Any(p => p.SessionId == session);
 				}
 				catch
 				{
@@ -136,34 +84,7 @@ namespace BrowserPicker.Configuration
 			}
 		}
 
-		public bool IsUsable => App.TargetURL != null;
-
-		public int Usage { get; set; }
-
-		public bool Disabled
-		{
-			get => disabled;
-			set
-			{
-				disabled = value;
-				Config.Settings.UpdateBrowserDisabled(this);
-				OnPropertyChanged();
-			}
-		}
-
-		public bool Removed
-		{
-			get => removed;
-			set
-			{
-				removed = value;
-				Disabled = value;
-				Config.Settings.RemoveBrowser(this);
-				OnPropertyChanged();
-			}
-		}
-
-		private BitmapFrame GetBrowserIcon(string iconPath)
+		private static BitmapFrame GetBrowserIcon(string iconPath)
 		{
 			BitmapFrame _icon = null;
 			if (!string.IsNullOrEmpty(iconPath))
@@ -187,45 +108,28 @@ namespace BrowserPicker.Configuration
 				}
 				catch { }
 			}
-			if (_icon == null)
-				_icon = GetDefaultIcon();
-			return _icon;
-		}
-
-		private BitmapFrame GetDefaultIcon()
-		{
-			BitmapFrame _icon = null;
-			try
-			{
-				_icon = BitmapFrame.Create(new System.Uri("pack://application:,,,/Resources/web_icon.png"));
-			}
-			catch { }
 			return _icon;
 		}
 
 		private bool CanLaunch(bool privacy)
 		{
-			return IsUsable && !(privacy && PrivacyArgs == null);
+			return !string.IsNullOrWhiteSpace(view_model.TargetURL) && !(privacy && Model.PrivacyArgs == null);
 		}
 
 		private void Launch(bool privacy)
 		{
+			//	throw new InvalidOperationException("This is a test, do not panic.");
+
 			try
 			{
 				if (Config.Settings.UseAutomaticOrdering)
+				{
 					Config.Settings.UpdateCounter(this);
-				var args = CommandArgs;
-				if (Name == "Edge")
-				{
-					var newArgs = (privacy ? "-private " : string.Empty) + App.TargetURL;
-					args = CombineArgs(args, newArgs);
 				}
-				else
-				{
-					var newArgs = privacy ? PrivacyArgs : string.Empty;
-					args = CombineArgs(args, $"{newArgs}\"{App.TargetURL}\"");
-				}
-				Process.Start(Command, args);
+				var args = Model.CommandArgs;
+				var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
+				args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.TargetURL}\"");
+				_ = Process.Start(Model.Command, args);
 			}
 			catch
 			{
@@ -244,23 +148,6 @@ namespace BrowserPicker.Configuration
 		}
 
 		private BitmapFrame icon;
-		private bool disabled;
-		private bool removed;
-		private string name;
-		private string icon_path;
-		private string command;
-		private string command_args;
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		[NotifyPropertyChangedInvocator]
-		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		private const string IE_PRIVATE_ARG = "-private ";
-		private const string FIREFOX_PRIVATE_ARG = "-private-window ";
-		private const string CHROME_PRIVATE_ARG = "--incognito ";
-		private const string EDGE_PRIVATE_ARG = "-inprivate ";
+		private readonly ViewModel view_model;
 	}
 }

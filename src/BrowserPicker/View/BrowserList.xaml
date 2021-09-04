@@ -26,7 +26,7 @@
 				</Style>
 			</StackPanel.Style>
 			<TextBlock Margin="0,5">
-				<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}">
+				<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}" ToolTip="Copy the URL to the clipboard">
 					<Hyperlink.Style>
 						<Style>
 							<Setter Property="Hyperlink.Foreground" Value="Silver" />
@@ -39,12 +39,23 @@
 					</Hyperlink.Style>
 					📋
 				</Hyperlink>
-				<Hyperlink Foreground="Silver" TextDecorations="None" Command="{Binding Edit}">✏</Hyperlink>
+				<Hyperlink Foreground="Silver" TextDecorations="None" Command="{Binding Edit}" ToolTip="Edit the URL before opening it">✏</Hyperlink>
+			</TextBlock>
+			<TextBlock Text="i" Foreground="LightBlue" Margin="5,5,0,0" FontWeight="Black" ToolTip="Shortened URL">
+				<TextBlock.Style>
+					<Style>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding IsShortenedURL}" Value="False">
+								<Setter Property="UIElement.Visibility" Value="Collapsed" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
 			</TextBlock>
 			<TextBlock Text="{Binding UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow"
 								 TextTrimming="CharacterEllipsis" MaxWidth="380" />
 		</StackPanel>
-		<TextBox Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="Wrap">
+		<TextBox Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow">
 			<TextBox.Style>
 				<Style TargetType="{x:Type TextBox}">
 					<Style.Triggers>
@@ -64,11 +75,10 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate DataType="configuration:Browser">
-						<Button Command="{Binding Select}" Margin="2">
+						<Button Command="{Binding Select}" CommandParameter="{Binding Path=TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
 							<Button.Style>
 								<Style>
 									<Setter Property="UIElement.Visibility" Value="Visible" />
-
 									<Style.Triggers>
 										<DataTrigger Binding="{Binding Disabled}" Value="True">
 											<Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -104,8 +114,19 @@
 												<ColumnDefinition Width="*" />
 												<ColumnDefinition Width="Auto" />
 											</Grid.ColumnDefinitions>
-											<Image Margin="20,0,0,0" Source="{Binding Thumbnail}" Width="40" Height="40"></Image>
-											<TextBlock Text="{Binding Name}" Grid.Column="1" Foreground="White" Margin="20" FontSize="18">
+											<Image Margin="20,0,0,0" Width="40" Height="40">
+												<Image.Style>
+													<Style TargetType="{x:Type Image}">
+														<Setter Property="Source" Value="{Binding Thumbnail}" />
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Thumbnail}" Value="{x:Null}">
+																<Setter Property="Source" Value="{StaticResource DefaultIcon}" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Image.Style>
+											</Image>
+											<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="20" FontSize="18">
 												<TextBlock.Style>
 													<Style>
 														<Style.Triggers>
@@ -123,7 +144,7 @@
 												<Button.Style>
 													<Style>
 														<Style.Triggers>
-															<DataTrigger Binding="{Binding PrivacyArgs}" Value="{x:Null}">
+															<DataTrigger Binding="{Binding Model.PrivacyArgs}" Value="{x:Null}">
 																<Setter Property="UIElement.Visibility" Value="Collapsed" />
 															</DataTrigger>
 														</Style.Triggers>
@@ -132,7 +153,7 @@
 												<Button.Template>
 													<ControlTemplate>
 														<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40">
-															<Image Source="/Resources/privacy.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+															<Image Source="{StaticResource PrivacyShield}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 														</Border>
 													</ControlTemplate>
 												</Button.Template>

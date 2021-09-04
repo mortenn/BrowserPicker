@@ -12,39 +12,51 @@
 	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
 	AllowsTransparency="True" WindowStyle="None"
 	WindowState="Normal" Topmost="True"
-	KeyUp="MainWindow_OnKeyUp" ShowInTaskbar="False" SizeChanged="Window_SizeChanged" >
-	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" MouseLeftButtonDown="DragWindow">
-		<Border.Background>
-			<LinearGradientBrush EndPoint="0,1">
-				<GradientStop Offset="0" Color="#cc272727" />
-				<GradientStop Offset="1" Color="#cc000000" />
-			</LinearGradientBrush>
-		</Border.Background>
-		<Grid Margin="10">
-			<view:BrowserList>
-				<view:BrowserList.Style>
-					<Style>
-						<Setter Property="UIElement.Visibility" Value="Visible" />
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding ConfigurationMode}" Value="True">
-								<Setter Property="UIElement.Visibility" Value="Collapsed" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</view:BrowserList.Style>
-			</view:BrowserList>
-			<view:Configuration>
-				<view:Configuration.Style>
-					<Style>
-						<Setter Property="UIElement.Visibility" Value="Collapsed" />
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding ConfigurationMode}" Value="True">
-								<Setter Property="UIElement.Visibility" Value="Visible" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</view:Configuration.Style>
-			</view:Configuration>
-		</Grid>
+	KeyUp="MainWindow_OnKeyUp" ShowInTaskbar="False" SizeChanged="Window_SizeChanged">
+	<Border CornerRadius="5">
+		<Border.Style>
+			<Style TargetType="{x:Type Border}">
+				<Setter Property="Border.Background" Value="Transparent" />
+				<Style.Triggers>
+					<DataTrigger Binding="{Binding Configuration.DisableTransparency}" Value="True">
+						<Setter Property="Border.Background" Value="Black" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+		</Border.Style>
+		<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" MouseLeftButtonDown="DragWindow">
+			<Border.Background>
+				<LinearGradientBrush EndPoint="0,1">
+					<GradientStop Offset="0" Color="#cc272727" />
+					<GradientStop Offset="1" Color="#cc000000" />
+				</LinearGradientBrush>
+			</Border.Background>
+			<Grid Margin="10">
+				<view:BrowserList>
+					<view:BrowserList.Style>
+						<Style>
+							<Setter Property="UIElement.Visibility" Value="Visible" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding ConfigurationMode}" Value="True">
+									<Setter Property="UIElement.Visibility" Value="Collapsed" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</view:BrowserList.Style>
+				</view:BrowserList>
+				<view:Configuration>
+					<view:Configuration.Style>
+						<Style>
+							<Setter Property="UIElement.Visibility" Value="Collapsed" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding ConfigurationMode}" Value="True">
+									<Setter Property="UIElement.Visibility" Value="Visible" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</view:Configuration.Style>
+				</view:Configuration>
+			</Grid>
+		</Border>
 	</Border>
 </Window>

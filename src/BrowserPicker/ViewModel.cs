@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Configuration;
@@ -19,33 +22,61 @@ namespace BrowserPicker
 	{
 		// Used by WPF designer
 		[UsedImplicitly]
-		public ViewModel() : this(true)
+		public ViewModel()
 		{
+			UnderlyingTargetURL = "https://github.com/mortenn/BrowserPicker";
+			force_choice = true;
+			Configuration = Config.Settings;
+			Choices = new ObservableCollection<Browser>(Configuration.BrowserList.Select(m => new Browser(m, this)));
 		}
 
-		public ViewModel(bool forceChoice)
+		public ViewModel(List<string> arguments)
 		{
-			ConfigurationMode = App.TargetURL == null;
+			var options = arguments.Where(arg => arg[0] == '/').ToList();
+			TargetURL = arguments.Except(options).FirstOrDefault();
+			UnderlyingTargetURL = TargetURL;
+			force_choice = options.Contains("/choose");
+			ConfigurationMode = TargetURL == null;
 			Configuration = Config.Settings;
-
-			Choices = new ObservableCollection<Browser>(Configuration.BrowserList);
-			force_choice = forceChoice;
+			Choices = new ObservableCollection<Browser>(Configuration.BrowserList.Select(m => new Browser(m, this)));
 		}
 
 		public void Initialize()
 		{
-			if (Choices.Count == 0 || (DateTime.Now - Configuration.LastBrowserScanTime) > TimeSpan.FromDays(7))
+			if (Choices.Count == 0 || (DateTime.Now - Configuration.LastBrowserScanTime) > TimeSpan.FromDays(7) || Choices.All(c => c.Model.PrivacyArgs == null))
+			{
 				FindBrowsers();
-
+			}
 			if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
+			{
 				return;
-
-			if (App.TargetURL != null)
+			}
+			if (TargetURL != null)
+			{
 				CheckDefaultBrowser();
-
-			var active = Choices.Where(b => b.IsRunning && !b.Disabled).ToList();
+			}
+			var active = Choices.Where(b => b.IsRunning && !b.Model.Disabled).ToList();
 			if (active.Count == 1)
+			{
 				active[0].Select.Execute(null);
+			}
+		}
+
+		public async Task ScanURLAsync(CancellationToken token)
+		{
+			var url = new UrlHandler(TargetURL);
+			try
+			{
+				await url.ScanURLAsync(token);
+			}
+			catch (TaskCanceledException)
+			{
+				// ignored
+			}
+			if (url.UnderlyingTargetURL != UnderlyingTargetURL)
+			{
+				UnderlyingTargetURL = url.UnderlyingTargetURL;
+			}
 		}
 
 		private void CheckDefaultBrowser()
@@ -54,7 +85,7 @@ namespace BrowserPicker
 			if (defaults.Count <= 0)
 				return;
 
-			var url = new Uri(App.UnderlyingTargetURL);
+			var url = new Uri(UnderlyingTargetURL);
 			var auto = defaults
 				.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
 				.Where(o => o.matchLength > 0)
@@ -63,7 +94,7 @@ namespace BrowserPicker
 				return;
 
 			var browser = auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
-			var start = Choices.FirstOrDefault(c => c.Name == browser);
+			var start = Choices.FirstOrDefault(c => c.Model.Name == browser);
 			if (start == null || Configuration.DefaultsWhenRunning && !start.IsRunning)
 				return;
 
@@ -75,7 +106,7 @@ namespace BrowserPicker
 
 		public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
 
-		public ICommand Exit => new DelegateCommand(() => Application.Current.Shutdown());
+		public ICommand Exit => new DelegateCommand(() => OnShutdown?.Invoke(this, EventArgs.Empty));
 
 		public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
 
@@ -97,10 +128,10 @@ namespace BrowserPicker
 			if (!(((Window)sender).DataContext is Browser browser))
 				return;
 
-			if (!string.IsNullOrEmpty(browser.Name) && !string.IsNullOrEmpty(browser.Command))
+			if (!string.IsNullOrEmpty(browser.Model.Name) && !string.IsNullOrEmpty(browser.Model.Command))
 			{
 				Choices.Add(browser);
-				Configuration.BrowserList = Choices;
+				Configuration.AddBrowser(browser.Model);
 			}
 		}
 
@@ -118,8 +149,37 @@ namespace BrowserPicker
 			}
 		}
 
-		public string TargetURL => App.TargetURL;
-		public string UnderlyingTargetURL => App.UnderlyingTargetURL;
+		public string TargetURL
+		{
+			get => targetURL;
+			private set
+			{
+				if (Equals(targetURL, value))
+				{
+					return;
+				}
+				targetURL = value;
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(IsShortenedURL));
+			}
+		}
+
+		public string UnderlyingTargetURL
+		{
+			get => underlyingTargetURL;
+			set
+			{
+				if (Equals(underlyingTargetURL, value))
+				{
+					return;
+				}
+				underlyingTargetURL = value;
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(IsShortenedURL));
+			}
+		}
+
+		public bool IsShortenedURL => TargetURL != UnderlyingTargetURL;
 
 		public string EditURL
 		{
@@ -127,11 +187,13 @@ namespace BrowserPicker
 			set
 			{
 				editURL = value;
-				App.OverrideURL(value);
+				UnderlyingTargetURL = value;
 			}
 		}
 
 		public bool Copied { get; set; }
+
+		public EventHandler OnShutdown;
 
 		private void PerformCopyUrl()
 		{
@@ -158,23 +220,30 @@ namespace BrowserPicker
 
 		private void FindBrowsers()
 		{
-			var removed = Choices.Where(b => b.Removed).ToList();
+			var removed = Choices.Where(b => b.Model.Removed).ToList();
 			if (removed.Count > 0)
 				removed.ForEach(b => Choices.Remove(b));
 
-			EnumerateBrowsers(@"SOFTWARE\Clients\StartMenuInternet");
-			EnumerateBrowsers(@"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
-			if (!Choices.Any(browser => browser.Name.Contains("Edge")))
-				FindEdge();
-			Configuration.BrowserList = Choices;
+			// Prefer 64 bit browsers to 32 bit ones, machine wide installs to user specific ones.
+			EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\Clients\StartMenuInternet");
+			EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\Clients\StartMenuInternet");
+			EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
+			EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
+
+			if (!Choices.Any(browser => browser.Model.Name.Contains("Edge")))
+			{
+				FindLegacyEdge();
+			}
+
 			Configuration.LastBrowserScanTime = DateTime.Now;
 		}
 
-		private void FindEdge()
+		/// <summary>
+		/// This is used to detect the old Edge browser.
+		/// If the computer has the new Microsoft Edge browser installed, this should never be called.
+		/// </summary>
+		private void FindLegacyEdge()
 		{
-			if (Choices.Any(b => b.Name.Equals("Edge")))
-				return;
-
 			var systemApps = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SystemApps");
 			if (!Directory.Exists(systemApps))
 				return;
@@ -182,20 +251,19 @@ namespace BrowserPicker
 			var targets = Directory.GetDirectories(systemApps, "*MicrosoftEdge_*");
 			if (targets.Length > 0)
 			{
-				Choices.Add(
-					new Browser
-					{
-						Name = "Edge",
-						Command = $"shell:AppsFolder\\{Path.GetFileName(targets[0])}!MicrosoftEdge",
-						IconPath = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png")
-					}
-				);
+				var known = WellKnownBrowsers.Lookup("Edge", null);
+				var appId = Path.GetFileName(targets[0]);
+				var icon = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png");
+				var shell = $"shell:AppsFolder\\{appId}!MicrosoftEdge";
+
+				var model = new BrowserModel(known, icon, shell);
+				AddOrUpdateBrowserModel(model);
 			}
 		}
 
-		private void EnumerateBrowsers(string subKey)
+		private void EnumerateBrowsers(RegistryKey hive, string subKey)
 		{
-			var root = Registry.LocalMachine.OpenSubKey(subKey, false);
+			var root = hive.OpenSubKey(subKey, false);
 			if (root == null)
 				return;
 			foreach (var browser in root.GetSubKeyNames().Where(n => n != "BrowserPicker"))
@@ -209,21 +277,35 @@ namespace BrowserPicker
 				return;
 
 			var name = (string)reg.GetValue(null);
-			if (Choices.Any(c => c.Name == name))
-				return;
 
 			var icon = (string)reg.OpenSubKey("DefaultIcon", false)?.GetValue(null);
-			var shell = (string)reg.OpenSubKey("shell\\open\\command", false)?.GetValue(null);
 			if (icon?.Contains(",") ?? false)
 				icon = icon.Split(',')[0];
-			Choices.Add(
-				new Browser
-				{
-					Name = name,
-					IconPath = icon,
-					Command = shell
-				}
-			);
+			var shell = (string)reg.OpenSubKey("shell\\open\\command", false)?.GetValue(null);
+			var known = WellKnownBrowsers.Lookup(name, shell);
+			if (known != null)
+			{
+				var knownModel = new BrowserModel(known, icon, shell);
+				AddOrUpdateBrowserModel(knownModel);
+				return;
+			}
+			var model = new BrowserModel(name, icon, shell);
+			AddOrUpdateBrowserModel(model);
+		}
+
+		private void AddOrUpdateBrowserModel(BrowserModel model)
+		{
+			var update = Configuration.BrowserList.FirstOrDefault(m => m.Name.Equals(model.Name, StringComparison.CurrentCultureIgnoreCase));
+			if (update != null)
+			{
+				update.Command = model.Command;
+				update.CommandArgs = model.CommandArgs;
+				update.PrivacyArgs = model.PrivacyArgs;
+				update.IconPath = model.IconPath;
+				return;
+			}
+			Choices.Add(new Browser(model, this));
+			Configuration.AddBrowser(model);
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -236,12 +318,16 @@ namespace BrowserPicker
 
 		private bool configuration_mode;
 		private string editURL;
+		private string underlyingTargetURL;
+		private string targetURL;
 		private readonly bool force_choice;
 
 		public void OnDeactivated()
 		{
-			if (!ConfigurationMode)
-				Application.Current.Shutdown();
+			if (!ConfigurationMode && !Debugger.IsAttached)
+			{
+				OnShutdown?.Invoke(this, EventArgs.Empty);
+			}
 		}
 	}
 }

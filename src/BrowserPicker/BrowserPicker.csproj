@@ -95,6 +95,7 @@
     <Compile Include="Configuration\Browser.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\DefaultSetting.cs" />
+    <Compile Include="ExceptionViewModel.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="View\BrowserEditor.xaml.cs">
       <DependentUpon>BrowserEditor.xaml</DependentUpon>
@@ -108,6 +109,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\ExceptionReport.xaml.cs">
+      <DependentUpon>ExceptionReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\LoadingWindow.xaml.cs">
       <DependentUpon>LoadingWindow.xaml</DependentUpon>
@@ -124,6 +128,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Configuration.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ExceptionReport.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

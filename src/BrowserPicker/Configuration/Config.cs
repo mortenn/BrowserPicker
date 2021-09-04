@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -9,69 +10,105 @@ using Microsoft.Win32;
 
 namespace BrowserPicker.Configuration
 {
-	public class Config
+	public class Config : ModelBase
 	{
-		public static Config Settings = new Config();
+		private Config()
+		{
+			BrowserList = GetBrowsers();
+		}
 
 		public bool AlwaysPrompt
 		{
 			get => Reg.Get<bool>(nameof(AlwaysPrompt));
-			set => Reg.Set(nameof(AlwaysPrompt), value);
+			set
+			{
+				Reg.Set(nameof(AlwaysPrompt), value);
+				OnPropertyChanged();
+			}
 		}
 
-		public IEnumerable<Browser> BrowserList
+		public List<BrowserModel> BrowserList
 		{
-			get => GetBrowsers();
-			set => SetBrowsers(value);
+			get;
 		}
 
 		public IEnumerable<DefaultSetting> Defaults
 		{
 			get => GetDefaults();
-			set => SetDefaults(value);
+			set
+			{
+				SetDefaults(value);
+				OnPropertyChanged();
+			}
 		}
 
 		public bool DefaultsWhenRunning
 		{
 			get => Reg.Get<bool>(nameof(DefaultsWhenRunning));
-			set => Reg.Set(nameof(DefaultsWhenRunning), value);
+			set
+			{
+				Reg.Set(nameof(DefaultsWhenRunning), value);
+				OnPropertyChanged();
+			}
 		}
 
 		public int UrlLookupTimeoutMilliseconds
 		{
-			get => Reg.Get(nameof(UrlLookupTimeoutMilliseconds), 500);
-			set => Reg.Set(nameof(UrlLookupTimeoutMilliseconds), value);
+			get => Reg.Get(nameof(UrlLookupTimeoutMilliseconds), 2000);
+			set
+			{
+				Reg.Set(nameof(UrlLookupTimeoutMilliseconds), value);
+				OnPropertyChanged();
+			}
 		}
 
 		public DateTime LastBrowserScanTime
 		{
 			get => new DateTime(Reg.Get<long>(nameof(LastBrowserScanTime)));
-			set => Reg.Set(nameof(LastBrowserScanTime), value.Ticks);
+			set
+			{
+				Reg.Set(nameof(LastBrowserScanTime), value.Ticks);
+				OnPropertyChanged();
+			}
 		}
 
 		public bool UseAutomaticOrdering
 		{
 			get => Reg.Get(nameof(UseAutomaticOrdering), true);
-			set => Reg.Set(nameof(UserPreferenceCategory), value);
+			set
+			{
+				Reg.Set(nameof(UserPreferenceCategory), value);
+				OnPropertyChanged();
+			}
+		}
+
+		public bool DisableTransparency
+		{
+			get => Reg.Get(nameof(DisableTransparency), false);
+			set
+			{
+				Reg.Set(nameof(DisableTransparency), value);
+				OnPropertyChanged();
+			}
 		}
 
 		public void UpdateCounter(Browser browser)
 		{
 			Reg
-				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Name), true)
-				?.SetValue(nameof(browser.Usage), browser.Usage + 1, RegistryValueKind.DWord);
+				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Model.Name), true)
+				?.SetValue(nameof(browser.Model.Usage), browser.Model.Usage + 1, RegistryValueKind.DWord);
 		}
 
 		public void UpdateBrowserDisabled(Browser browser)
 		{
 			Reg
-				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Name), true)
-				?.SetValue(nameof(browser.Disabled), browser.Disabled ? 1 : 0, RegistryValueKind.DWord);
+				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Model.Name), true)
+				?.SetValue(nameof(browser.Model.Disabled), browser.Model.Disabled ? 1 : 0, RegistryValueKind.DWord);
 		}
 
 		public void RemoveBrowser(Browser browser)
 		{
-			Reg.DeleteSubKeyTree(Path.Combine(nameof(BrowserList), browser.Name), false);
+			Reg.DeleteSubKeyTree(Path.Combine(nameof(BrowserList), browser.Model.Name), false);
 		}
 
 		public void RemoveDefault(string fragment)
@@ -83,6 +120,13 @@ namespace BrowserPicker.Configuration
 		{
 			if (!string.IsNullOrEmpty(fragment) && !string.IsNullOrEmpty(browser))
 				Reg.CreateSubKey(nameof(Defaults), true).SetValue(fragment, browser, RegistryValueKind.String);
+		}
+
+		public void AddBrowser(BrowserModel model)
+		{
+			BrowserList.Add(model);
+			SetBrowsers(BrowserList);
+			model.PropertyChanged += Browser_PropertyChanged;
 		}
 
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
@@ -106,7 +150,7 @@ namespace BrowserPicker.Configuration
 		}
 
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-		private static void SetBrowsers([NotNull] IEnumerable<Browser> browsers)
+		private static void SetBrowsers([NotNull] IEnumerable<BrowserModel> browsers)
 		{
 			var list = Reg.CreateSubKey(nameof(BrowserList), true);
 			foreach (var remove in list.GetSubKeyNames().Except(browsers.Select(b => b.Name)))
@@ -114,21 +158,23 @@ namespace BrowserPicker.Configuration
 			foreach (var browser in browsers)
 			{
 				var key = list.CreateSubKey(browser.Name, true);
-				key.Set(nameof(browser.Name), browser.Name);
-				key.Set(nameof(browser.Command), browser.Command);
-				key.Set(nameof(browser.CommandArgs), browser.CommandArgs);
-				key.Set(nameof(browser.IconPath), browser.IconPath);
-				key.Set(nameof(browser.Usage), browser.Usage);
+				key.Set(nameof(BrowserModel.Name), browser.Name);
+				key.Set(nameof(BrowserModel.Command), browser.Command);
+				key.Set(nameof(BrowserModel.Executable), browser.Executable);
+				key.Set(nameof(BrowserModel.CommandArgs), browser.CommandArgs);
+				key.Set(nameof(BrowserModel.PrivacyArgs), browser.PrivacyArgs);
+				key.Set(nameof(BrowserModel.IconPath), browser.IconPath);
+				key.Set(nameof(BrowserModel.Usage), browser.Usage);
 			}
 			list.Close();
 		}
 
-		private static IEnumerable<Browser> GetBrowsers()
+		private static List<BrowserModel> GetBrowsers()
 		{
 
 			var list = Reg.OpenSubKey("BrowserList", true);
 			if (list == null)
-				return new List<Browser>();
+				return new List<BrowserModel>();
 
 			var browsers = list.GetSubKeyNames()
 				.Select(browser => GetBrowser(list, browser))
@@ -150,23 +196,76 @@ namespace BrowserPicker.Configuration
 			return browsers;
 		}
 
-		private static Browser GetBrowser(RegistryKey list, string name)
+		private static BrowserModel GetBrowser(RegistryKey list, string name)
 		{
 			var config = list.OpenSubKey(name, false);
 			if (config == null) return null;
-			var browser = new Browser
+			var browser = new BrowserModel
 			{
 				Name = name,
-				Command = config.Get<string>(nameof(Browser.Command)),
-				CommandArgs = config.Get<string>(nameof(Browser.CommandArgs)),
-				IconPath = config.Get<string>(nameof(Browser.IconPath)),
-				Usage = config.Get<int>(nameof(Browser.Usage)),
-				Disabled = config.Get<bool>(nameof(Browser.Disabled))
+				Command = config.Get<string>(nameof(BrowserModel.Command)),
+				Executable = config.Get<string>(nameof(BrowserModel.Executable)),
+				CommandArgs = config.Get<string>(nameof(BrowserModel.CommandArgs)),
+				PrivacyArgs = config.Get<string>(nameof(BrowserModel.PrivacyArgs)),
+				IconPath = config.Get<string>(nameof(BrowserModel.IconPath)),
+				Usage = config.Get<int>(nameof(BrowserModel.Usage)),
+				Disabled = config.Get<bool>(nameof(BrowserModel.Disabled))
 			};
 			config.Close();
-			return browser.Command == null ? null : browser;
+			if (browser.Command == null)
+				return null;
+
+			browser.PropertyChanged += Browser_PropertyChanged;
+			return browser;
+		}
+
+		private static void Browser_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var model = (BrowserModel)sender;
+			var key = Path.Combine(nameof(BrowserList), model.Name);
+			object value;
+			var kind = RegistryValueKind.String;
+			switch (e.PropertyName)
+			{
+				case nameof(BrowserModel.Command):
+					value = model.Command;
+					break;
+
+				case nameof(BrowserModel.Executable):
+					value = model.Executable;
+					break;
+
+				case nameof(BrowserModel.CommandArgs):
+					value = model.CommandArgs;
+					break;
+
+				case nameof(BrowserModel.PrivacyArgs):
+					value = model.PrivacyArgs;
+					break;
+
+				case nameof(BrowserModel.IconPath):
+					value = model.IconPath;
+					break;
+
+				case nameof(BrowserModel.Usage):
+					kind = RegistryValueKind.DWord;
+					value = model.Usage;
+					break;
+
+				case nameof(BrowserModel.Disabled):
+					kind = RegistryValueKind.DWord;
+					value = model.Disabled ? 1 : 0;
+					break;
+
+				default:
+					return;
+			}
+
+			Reg.OpenSubKey(key, true)?.SetValue(e.PropertyName, value, kind);
 		}
 
 		private static readonly RegistryKey Reg = Registry.CurrentUser.CreateSubKey("Software\\BrowserPicker", true);
+
+		public static Config Settings = new Config();
 	}
 }

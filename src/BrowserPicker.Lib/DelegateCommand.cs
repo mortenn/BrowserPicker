@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using JetBrains.Annotations;
 
@@ -9,18 +10,26 @@ namespace BrowserPicker.Lib
 	{
 		public event EventHandler CanExecuteChanged;
 
+		protected DelegateCommand() { }
+
 		public DelegateCommand(Action callback, Func<bool> canExecute = null)
 		{
 			execute = callback;
 			can_execute = canExecute;
 		}
 
-		public bool CanExecute(object parameter)
+		public DelegateCommand(Func<Task> callback, Func<bool> canExecute = null)
+		{
+			execute = () => callback();
+			can_execute = canExecute;
+		}
+
+		public virtual bool CanExecute(object parameter)
 		{
 			return can_execute == null || can_execute();
 		}
 
-		public void Execute(object parameter)
+		public virtual void Execute(object parameter)
 		{
 			execute();
 		}
@@ -32,5 +41,34 @@ namespace BrowserPicker.Lib
 
 		private readonly Action execute;
 		private readonly Func<bool> can_execute;
+	}
+
+	[PublicAPI]
+	public class DelegateCommand<T> : DelegateCommand
+	{
+		public DelegateCommand(Action<T> callback, Func<T, bool> canExecute = null)
+		{
+			execute = callback;
+			can_execute = canExecute;
+		}
+
+		public DelegateCommand(Func<T, Task> callback, Func<T, bool> canExecute = null)
+		{
+			execute = argument => callback(argument);
+			can_execute = canExecute;
+		}
+
+		public override bool CanExecute(object parameter)
+		{
+			return can_execute((T)parameter);
+		}
+
+		public override void Execute(object parameter)
+		{
+			execute((T)parameter);
+		}
+
+		private readonly Action<T> execute;
+		private readonly Func<T, bool> can_execute;
 	}
 }

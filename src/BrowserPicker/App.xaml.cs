@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Windows;
 using BrowserPicker.View;
 
@@ -19,146 +16,130 @@ namespace BrowserPicker
 
 		public App()
 		{
+			// Basic unhandled exception catchment
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+
+			// Get command line arguments and initialize ViewModel
 			var arguments = Environment.GetCommandLineArgs().Skip(1).ToList();
-			var options = arguments.Where(arg => arg[0] == '/').ToList();
-			TargetURL = arguments.Except(options).FirstOrDefault();
-			ViewModel = new ViewModel(options.Contains("/choose"));
+			try
+			{
+				ViewModel = new ViewModel(arguments);
+			}
+			catch (Exception exception)
+			{
+				ShowExceptionReport(exception);
+			}
 		}
 
 		protected override async void OnStartup(StartupEventArgs e)
 		{
-			if (TargetURL != null)
+			// Something failed during startup, abort.
+			if (ViewModel == null)
 			{
-				UnderlyingTargetURL = TargetURL;
+				return;
+			}
+			CancellationTokenSource cts = null;
+			Task<Window> loadingWindow = null;
+			try
+			{
+				// Hook up shutdown on the viewmodel to shut down the application
+				ViewModel.OnShutdown += ExitApplication;
+
+				// Catch user switching to another window
+				Deactivated += (sender, args) => ViewModel.OnDeactivated();
+
+				// Open in configuration mode if user started BrowserPicker directly
+				if (ViewModel.TargetURL == null)
+				{
+					ShowMainWindow();
+					return;
+				}
 
 				// Create a CancellationToken that cancels after the lookup timeout
 				// to limit the amount of time spent looking up underlying URLs
-				var cts = new CancellationTokenSource();
-				cts.CancelAfter(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
+				cts = new CancellationTokenSource(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
+				try
+				{
+					// Show LoadingWindow after a small delay
+					// Goal is to avoid flicker for fast loading sites but to show progress for sites that take longer
+					loadingWindow = ShowLoadingWindow(cts.Token);
+					await ViewModel.ScanURLAsync(cts.Token);
 
-				var _ = ShowLoadingWindowAfterDelayAsync(cts.Token); // fire and forget
-				await UpdateUnderlyingURLAsync(cts.Token);
-				cts.Cancel(); // cancel to avoid accidentally showing LoadingWindow once Task.Delay finishes
+					// cancel the token to prevent showing LoadingWindow if it is not needed and has not been shown already
+					cts.Cancel();
+
+					// close loading window if it got opened
+					(await loadingWindow)?.Close();
+				}
+				catch (TaskCanceledException)
+				{
+					// ignored
+				}
+
+				// Open up the browser picker window
+				ShowMainWindow();
 			}
-			Deactivated += (sender, args) => ViewModel.OnDeactivated();
-			ViewModel.Initialize();
-
-			Window oldWindow = MainWindow;
-			MainWindow = new MainWindow();
-			MainWindow.Show();
-			// I tried hiding this before showing the new window but there was a slight gap
-			// This way feels like a more immediate switch
-			oldWindow?.Hide();
-		}
-
-		private async Task ShowLoadingWindowAfterDelayAsync(CancellationToken cancellationToken)
-		{
-			try
+			catch (Exception exception)
 			{
-				// Show LoadingWindow after a small delay
-				// Goal is to avoid flicker for fast loading sites but to show progress for sites that take longer
-				await Task.Delay(LoadingWindowDelayMilliseconds, cancellationToken);
-				MainWindow = new LoadingWindow();
-				MainWindow.Show();
-			}
-			catch (TaskCanceledException)
-			{
+				try { ViewModel.OnShutdown -= ExitApplication; } catch { }
+				try { cts?.Cancel(); } catch { }
+				try { (await loadingWindow)?.Close(); } catch { }
+				try { ViewModel.OnShutdown -= ExitApplication; } catch { }
+				ShowExceptionReport(exception);
 			}
 		}
 
 		/// <summary>
-		/// Updates
+		/// Tells the ViewModel it can initialize and then show the browser list window
 		/// </summary>
-		/// <returns></returns>
-		private static async Task UpdateUnderlyingURLAsync(CancellationToken cancellationToken)
+		private void ShowMainWindow()
 		{
-			while (true)
-			{
-				var url = UnderlyingTargetURL;
-				var uri = new Uri(url);
-				foreach (var service in JumpPages)
-				{
-					if (!url.StartsWith(service.Key))
-						continue;
-
-					var queryStringValues = HttpUtility.ParseQueryString(uri.Query);
-					var underlyingUrl = queryStringValues["url"];
-					if (underlyingUrl != null)
-						UnderlyingTargetURL = underlyingUrl;
-				}
-				if(UnderlyingTargetURL != url)
-					continue;
-				
-				if (UrlShorteners.Contains(uri.Host))
-				{
-					var clientHandler = new HttpClientHandler {AllowAutoRedirect = false};
-					var client = new HttpClient(clientHandler);
-					try
-					{
-						var response = await client.GetAsync(url, cancellationToken);
-						var location = response.Headers.Location;
-						if (location != null)
-						{
-							UnderlyingTargetURL = location.OriginalString;
-							continue;
-						}
-					}
-					catch (TaskCanceledException)
-					{
-						// TaskCanceledException occurs when the CancellationToken is triggered before the request completes
-						// In this case, skip the lookup to avoid poor user experience
-					}
-				}
-
-				break;
-			}
+			ViewModel.Initialize();
+			MainWindow = new MainWindow();
+			MainWindow.DataContext = ViewModel;
+			MainWindow.Show();
+			MainWindow.Focus();
 		}
 
-		internal static void OverrideURL(string value)
+		/// <summary>
+		/// Shows the loading message window after a short delay, to let the user know we are in fact working on it
+		/// </summary>
+		/// <param name="cancellationToken">token that will cancel when the loading is complete or timed out</param>
+		/// <returns>The loading message window, so it may be closed.</returns>
+		private async Task<Window> ShowLoadingWindow(CancellationToken cancellationToken)
 		{
-			TargetURL = value;
+			await Task.Delay(LoadingWindowDelayMilliseconds, cancellationToken);
+			var window = new LoadingWindow();
+			window.Show();
+			return window;
 		}
 
-		private static void CurrentDomainOnUnhandledException(object sender,
-			UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+		private void ShowExceptionReport(Exception exception)
 		{
-			var e = (Exception)unhandledExceptionEventArgs.ExceptionObject;
-			while (e != null)
-			{
-				MessageBox.Show(e.Message + e.StackTrace);
-				e = e.InnerException;
-			}
+			var viewModel = new ExceptionViewModel(exception);
+			var window = new ExceptionReport();
+			viewModel.OnWindowClosed += (vm, args) => window.Close();
+			window.DataContext = viewModel;
+			window.Show();
+			window.Focus();
+			//window.Wait();
 		}
 
-		public static string TargetURL { get; private set; } = "https://github.com"; // Design time default
-		public static string UnderlyingTargetURL { get; private set; } = "https://github.com"; // Design time default
+		/// <summary>
+		/// Bare bones exception handler
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="unhandledExceptionEventArgs"></param>
+		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledException)
+		{
+			MessageBox.Show(unhandledException.ExceptionObject.ToString());
+		}
+
+		private static void ExitApplication(object sender, EventArgs args)
+		{
+			Current.Shutdown();
+		}
 
 		public ViewModel ViewModel { get; }
-
-		private static readonly List<string> UrlShorteners = new List<string>
-		{
-			"nam06.safelinks.protection.outlook.com",
-			"aka.ms",
-			"fwd.olsvc.com",
-			"t.co",
-			"bit.ly",
-			"goo.gl",
-			"tinyurl.com",
-			"ow.ly",
-			"is.gd",
-			"buff.ly",
-			"adf.ly",
-			"bit.do",
-			"mcaf.ee",
-			"su.pr",
-			"go.microsoft.com"
-		};
-
-		private static readonly Dictionary<string, string> JumpPages = new Dictionary<string, string>
-		{
-			{"https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"},
-			{"https://l.facebook.com/l.php", "u"}
-		};
 	}
 }
