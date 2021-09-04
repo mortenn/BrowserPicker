@@ -18,60 +18,60 @@ namespace BrowserPicker.Configuration
 
 		public bool AlwaysPrompt
 		{
-			get => Reg.Get<bool>(nameof(AlwaysPrompt));
+			get => Reg.Get<bool>();
 			set
 			{
-				Reg.Set(nameof(AlwaysPrompt), value);
+				Reg.Set(value);
 				OnPropertyChanged();
 			}
 		}
 
 		public bool DefaultsWhenRunning
 		{
-			get => Reg.Get<bool>(nameof(DefaultsWhenRunning));
+			get => Reg.Get<bool>();
 			set
 			{
-				Reg.Set(nameof(DefaultsWhenRunning), value);
+				Reg.Set(value);
 				OnPropertyChanged();
 			}
 		}
 
 		public int UrlLookupTimeoutMilliseconds
 		{
-			get => Reg.Get(nameof(UrlLookupTimeoutMilliseconds), 2000);
+			get => Reg.Get(2000);
 			set
 			{
-				Reg.Set(nameof(UrlLookupTimeoutMilliseconds), value);
+				Reg.Set(value);
 				OnPropertyChanged();
 			}
 		}
 
 		public DateTime LastBrowserScanTime
 		{
-			get => new DateTime(Reg.Get<long>(nameof(LastBrowserScanTime)));
+			get => new DateTime(Reg.Get<long>());
 			set
 			{
-				Reg.Set(nameof(LastBrowserScanTime), value.Ticks);
+				Reg.Set(value.Ticks);
 				OnPropertyChanged();
 			}
 		}
 
 		public bool UseAutomaticOrdering
 		{
-			get => Reg.Get(nameof(UseAutomaticOrdering), true);
+			get => Reg.Get(true);
 			set
 			{
-				Reg.Set(nameof(UserPreferenceCategory), value);
+				Reg.Set(value);
 				OnPropertyChanged();
 			}
 		}
 
 		public bool DisableTransparency
 		{
-			get => Reg.Get(nameof(DisableTransparency), false);
+			get => Reg.Get(false);
 			set
 			{
-				Reg.Set(nameof(DisableTransparency), value);
+				Reg.Set(value);
 				OnPropertyChanged();
 			}
 		}
@@ -97,13 +97,13 @@ namespace BrowserPicker.Configuration
 			var list = Reg.CreateSubKey(nameof(BrowserList), true);
 
 			var key = list.CreateSubKey(browser.Name, true);
-			key.Set(nameof(BrowserModel.Name), browser.Name);
-			key.Set(nameof(BrowserModel.Command), browser.Command);
-			key.Set(nameof(BrowserModel.Executable), browser.Executable);
-			key.Set(nameof(BrowserModel.CommandArgs), browser.CommandArgs);
-			key.Set(nameof(BrowserModel.PrivacyArgs), browser.PrivacyArgs);
-			key.Set(nameof(BrowserModel.IconPath), browser.IconPath);
-			key.Set(nameof(BrowserModel.Usage), browser.Usage);
+			key.Set(browser.Name);
+			key.Set(browser.Command);
+			key.Set(browser.Executable);
+			key.Set(browser.CommandArgs);
+			key.Set(browser.PrivacyArgs);
+			key.Set(browser.IconPath);
+			key.Set(browser.Usage);
 			browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 
 			BrowserList.Add(browser);
@@ -202,13 +202,13 @@ namespace BrowserPicker.Configuration
 			var browser = new BrowserModel
 			{
 				Name = name,
-				Command = config.Get<string>(nameof(BrowserModel.Command)),
-				Executable = config.Get<string>(nameof(BrowserModel.Executable)),
-				CommandArgs = config.Get<string>(nameof(BrowserModel.CommandArgs)),
-				PrivacyArgs = config.Get<string>(nameof(BrowserModel.PrivacyArgs)),
-				IconPath = config.Get<string>(nameof(BrowserModel.IconPath)),
-				Usage = config.Get<int>(nameof(BrowserModel.Usage)),
-				Disabled = config.Get<bool>(nameof(BrowserModel.Disabled))
+				Command = config.Get<string>(null, nameof(BrowserModel.Command)),
+				Executable = config.Get<string>(null, nameof(BrowserModel.Executable)),
+				CommandArgs = config.Get<string>(null, nameof(BrowserModel.CommandArgs)),
+				PrivacyArgs = config.Get<string>(null, nameof(BrowserModel.PrivacyArgs)),
+				IconPath = config.Get<string>(null, nameof(BrowserModel.IconPath)),
+				Usage = config.Get(0, nameof(BrowserModel.Usage)),
+				Disabled = config.Get(false, nameof(BrowserModel.Disabled))
 			};
 			config.Close();
 			if (browser.Command == null)

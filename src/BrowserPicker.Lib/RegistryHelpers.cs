@@ -1,10 +1,13 @@
 ﻿using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace BrowserPicker.Lib
 {
 	public static class RegistryHelpers
 	{
-		public static T Get<T>(this RegistryKey key, string name, T defaultValue = default )
+		public static T Get<T>(this RegistryKey key, T defaultValue = default, [CallerMemberName] string name = null)
 		{
 			try
 			{
@@ -20,25 +23,33 @@ namespace BrowserPicker.Lib
 			}
 		}
 
-
-		public static void Set<T>(this RegistryKey key, string name, T value)
+		public static void Set<T>(this RegistryKey key, T value, [CallerMemberName] string name = null)
 		{
 			if (value == null)
 			{
 				if (key.GetValue(name) != null)
+				{
 					key.DeleteValue(name);
+				}
+				return;
 			}
-			else if (typeof(T) == typeof(bool))
+			if (typeof(T) == typeof(bool))
+			{
 				key.SetValue(name, (bool)(object)value ? 1 : 0, RegistryValueKind.DWord);
-
-			else if (typeof(T) == typeof(string))
-				key.SetValue(name, value, RegistryValueKind.String);
-
-			else if (typeof(T) == typeof(int))
-				key.SetValue(name, value, RegistryValueKind.DWord);
-
-			else if (typeof(T) == typeof(long))
-				key.SetValue(name, value, RegistryValueKind.QWord);
+				return;
+			}
+			if (!TypeMap.ContainsKey(typeof(T)))
+			{
+				return;
+			}
+			key.SetValue(name, value, TypeMap[typeof(T)]);
 		}
+
+		private readonly static Dictionary<Type, RegistryValueKind> TypeMap = new Dictionary<Type, RegistryValueKind>
+		{
+			{ typeof(string), RegistryValueKind.String },
+			{ typeof(int), RegistryValueKind.DWord },
+			{ typeof(long), RegistryValueKind.QWord },
+		};
 	}
 }
