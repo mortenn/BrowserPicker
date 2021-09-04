@@ -95,6 +95,7 @@
     <Compile Include="Configuration\Browser.cs" />
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\DefaultSetting.cs" />
+    <Compile Include="Converter\IconConverter.cs" />
     <Compile Include="ExceptionViewModel.cs" />
     <Compile Include="ViewModel.cs" />
     <Compile Include="View\BrowserEditor.xaml.cs">

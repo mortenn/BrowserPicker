@@ -6,8 +6,14 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:browserPicker="clr-namespace:BrowserPicker"
 	xmlns:configuration="clr-namespace:BrowserPicker.Configuration"
-	mc:Ignorable="d" 
+	xmlns:converter="clr-namespace:BrowserPicker.Converter"
+	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<converter:IconFileToImageConverter x:Key="IconConverter" />
+		</ResourceDictionary>
+	</UserControl.Resources>
 	<Grid MinWidth="350">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
@@ -114,12 +120,12 @@
 												<ColumnDefinition Width="*" />
 												<ColumnDefinition Width="Auto" />
 											</Grid.ColumnDefinitions>
-											<Image Margin="20,0,0,0" Width="40" Height="40">
+											<Image Margin="20,0,0,0" Width="40" Height="40" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{StaticResource DefaultIcon}">
 												<Image.Style>
 													<Style TargetType="{x:Type Image}">
-														<Setter Property="Source" Value="{Binding Thumbnail}" />
+														<Setter Property="Source" Value="{Binding}" />
 														<Style.Triggers>
-															<DataTrigger Binding="{Binding Thumbnail}" Value="{x:Null}">
+															<DataTrigger Binding="{Binding}" Value="{x:Null}">
 																<Setter Property="Source" Value="{StaticResource DefaultIcon}" />
 															</DataTrigger>
 														</Style.Triggers>

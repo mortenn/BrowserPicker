@@ -1,12 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using BrowserPicker.Lib;
 
 namespace BrowserPicker.Configuration
@@ -32,25 +28,9 @@ namespace BrowserPicker.Configuration
 					SelectPrivacy.RaiseCanExecuteChanged();
 					Select.RaiseCanExecuteChanged();
 					break;
-
-				case nameof(BrowserModel.IconPath):
-					icon = null;
-					OnPropertyChanged(nameof(Thumbnail));
-					break;
 			}
 		}
 
-		public BitmapFrame Thumbnail
-		{
-			get
-			{
-				if (icon == null)
-				{
-					icon = GetBrowserIcon(Model.IconPath);
-				}
-				return icon;
-			}
-		}
 
 		public DelegateCommand Select => new DelegateCommand(() => Launch(false), () => CanLaunch(false));
 		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
@@ -82,33 +62,6 @@ namespace BrowserPicker.Configuration
 					return false;
 				}
 			}
-		}
-
-		private static BitmapFrame GetBrowserIcon(string iconPath)
-		{
-			BitmapFrame _icon = null;
-			if (!string.IsNullOrEmpty(iconPath))
-			{
-				var _iconPath = iconPath.Trim(new[] { '"', '\'', ' ', '\t', '\r', '\n' });
-				try
-				{
-					if (!File.Exists(_iconPath) && _iconPath.Contains("%"))
-						_iconPath = System.Environment.ExpandEnvironmentVariables(_iconPath);
-					if (_iconPath.EndsWith(".exe"))
-					{
-						var iconData = Icon.ExtractAssociatedIcon(_iconPath)?.ToBitmap();
-						if (iconData == null)
-							return null;
-						var stream = new MemoryStream();
-						iconData.Save(stream, ImageFormat.Png);
-						_icon = BitmapFrame.Create(stream);
-					}
-					else
-						_icon = BitmapFrame.Create(File.Open(_iconPath, FileMode.Open, FileAccess.Read, FileShare.Read));
-				}
-				catch { }
-			}
-			return _icon;
 		}
 
 		private bool CanLaunch(bool privacy)
@@ -147,7 +100,6 @@ namespace BrowserPicker.Configuration
 			return args1 + " " + args2;
 		}
 
-		private BitmapFrame icon;
 		private readonly ViewModel view_model;
 	}
 }
