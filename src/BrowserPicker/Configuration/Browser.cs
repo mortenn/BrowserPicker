@@ -31,11 +31,19 @@ namespace BrowserPicker.Configuration
 			}
 		}
 
-
 		public DelegateCommand Select => new DelegateCommand(() => Launch(false), () => CanLaunch(false));
 		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
 		public DelegateCommand Disable => new DelegateCommand(() => Model.Disabled = !Model.Disabled);
 		public DelegateCommand Remove => new DelegateCommand(() => Model.Removed = true);
+
+		public string PrivacyTooltip
+		{
+			get
+			{
+				var known = WellKnownBrowsers.Lookup(Model.Name, null);
+				return known.PrivacyMode ?? "Open in privacy mode";
+			}
+		}
 
 		public bool IsRunning
 		{

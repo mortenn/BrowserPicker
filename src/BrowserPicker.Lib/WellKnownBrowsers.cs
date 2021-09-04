@@ -28,6 +28,7 @@ namespace BrowserPicker.Lib
 		string Executable { get; }
 		string RealExecutable { get; }
 		string PrivacyArgs { get; }
+		string PrivacyMode { get; }
 	}
 
 	public class Firefox : IWellKnownBrowser
@@ -39,6 +40,8 @@ namespace BrowserPicker.Lib
 		public string RealExecutable => null;
 
 		public string PrivacyArgs => "-private-window ";
+
+		public string PrivacyMode => "Open with private browsing";
 	}
 
 	public class Chrome : IWellKnownBrowser
@@ -50,6 +53,8 @@ namespace BrowserPicker.Lib
 		public string RealExecutable => null;
 
 		public string PrivacyArgs => "--incognito ";
+
+		public string PrivacyMode => "Open incognito";
 	}
 
 	public class MicrosoftEdge : IWellKnownBrowser
@@ -61,6 +66,8 @@ namespace BrowserPicker.Lib
 		public string RealExecutable => null;
 	
 		public string PrivacyArgs => "-inprivate ";
+
+		public string PrivacyMode => "Open in private mode";
 	}
 
 	public class Edge : IWellKnownBrowser
@@ -72,6 +79,8 @@ namespace BrowserPicker.Lib
 		public string RealExecutable => null;
 	
 		public string PrivacyArgs => "-private ";
+
+		public string PrivacyMode => "Open in private mode";
 	}
 
 	public class InternetExplorer : IWellKnownBrowser
@@ -83,6 +92,8 @@ namespace BrowserPicker.Lib
 		public string RealExecutable => null;
 	
 		public string PrivacyArgs => "-private ";
+
+		public string PrivacyMode => "Open in private mode";
 	}
 
 	public class OperaStable : IWellKnownBrowser
@@ -94,5 +105,7 @@ namespace BrowserPicker.Lib
 		public string RealExecutable => "opera.exe";
 	
 		public string PrivacyArgs => "--private ";
+	
+		public string PrivacyMode => "Open in private mode";
 	}
 }

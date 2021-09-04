@@ -146,7 +146,7 @@
 													</Style>
 												</TextBlock.Style>
 											</TextBlock>
-											<Button Grid.Column="2" Command="{Binding SelectPrivacy}" Click="ButtonBase_OnClick" ToolTip="Open in privacy mode">
+											<Button Grid.Column="2" Command="{Binding SelectPrivacy}" Click="ButtonBase_OnClick" ToolTip="{Binding PrivacyTooltip}">
 												<Button.Style>
 													<Style>
 														<Style.Triggers>
@@ -158,8 +158,8 @@
 												</Button.Style>
 												<Button.Template>
 													<ControlTemplate>
-														<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40">
-															<Image Source="{StaticResource PrivacyShield}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+														<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40" CornerRadius="5">
+															<Image Source="{StaticResource PrivacyShield}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 														</Border>
 													</ControlTemplate>
 												</Button.Template>
