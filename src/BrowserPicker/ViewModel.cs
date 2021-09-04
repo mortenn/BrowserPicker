@@ -149,14 +149,14 @@ namespace BrowserPicker
 
 		public string TargetURL
 		{
-			get => targetURL;
+			get => target_url;
 			private set
 			{
-				if (Equals(targetURL, value))
+				if (Equals(target_url, value))
 				{
 					return;
 				}
-				targetURL = value;
+				target_url = value;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsShortenedURL));
 			}
@@ -164,14 +164,14 @@ namespace BrowserPicker
 
 		public string UnderlyingTargetURL
 		{
-			get => underlyingTargetURL;
+			get => actual_url;
 			set
 			{
-				if (Equals(underlyingTargetURL, value))
+				if (Equals(actual_url, value))
 				{
 					return;
 				}
-				underlyingTargetURL = value;
+				actual_url = value;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsShortenedURL));
 			}
@@ -181,10 +181,10 @@ namespace BrowserPicker
 
 		public string EditURL
 		{
-			get => editURL;
+			get => edit_url;
 			set
 			{
-				editURL = value;
+				edit_url = value;
 				UnderlyingTargetURL = value;
 			}
 		}
@@ -192,6 +192,14 @@ namespace BrowserPicker
 		public bool Copied { get; set; }
 
 		public EventHandler OnShutdown;
+
+		public void OnDeactivated()
+		{
+			if (!ConfigurationMode && !Debugger.IsAttached)
+			{
+				OnShutdown?.Invoke(this, EventArgs.Empty);
+			}
+		}
 
 		private void PerformCopyUrl()
 		{
@@ -311,17 +319,9 @@ namespace BrowserPicker
 		}
 
 		private bool configuration_mode;
-		private string editURL;
-		private string underlyingTargetURL;
-		private string targetURL;
+		private string edit_url;
+		private string target_url;
+		private string actual_url;
 		private readonly bool force_choice;
-
-		public void OnDeactivated()
-		{
-			if (!ConfigurationMode && !Debugger.IsAttached)
-			{
-				OnShutdown?.Invoke(this, EventArgs.Empty);
-			}
-		}
 	}
 }

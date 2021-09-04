@@ -19,61 +19,37 @@ namespace BrowserPicker.Configuration
 		public bool AlwaysPrompt
 		{
 			get => Reg.Get<bool>();
-			set
-			{
-				Reg.Set(value);
-				OnPropertyChanged();
-			}
+			set { Reg.Set(value); OnPropertyChanged(); }
 		}
 
 		public bool DefaultsWhenRunning
 		{
 			get => Reg.Get<bool>();
-			set
-			{
-				Reg.Set(value);
-				OnPropertyChanged();
-			}
+			set { Reg.Set(value); OnPropertyChanged(); }
 		}
 
 		public int UrlLookupTimeoutMilliseconds
 		{
 			get => Reg.Get(2000);
-			set
-			{
-				Reg.Set(value);
-				OnPropertyChanged();
-			}
+			set { Reg.Set(value); OnPropertyChanged(); }
 		}
 
 		public DateTime LastBrowserScanTime
 		{
 			get => new DateTime(Reg.Get<long>());
-			set
-			{
-				Reg.Set(value.Ticks);
-				OnPropertyChanged();
-			}
+			set { Reg.Set(value.Ticks); OnPropertyChanged(); }
 		}
 
 		public bool UseAutomaticOrdering
 		{
 			get => Reg.Get(true);
-			set
-			{
-				Reg.Set(value);
-				OnPropertyChanged();
-			}
+			set { Reg.Set(value); OnPropertyChanged(); }
 		}
 
 		public bool DisableTransparency
 		{
 			get => Reg.Get(false);
-			set
-			{
-				Reg.Set(value);
-				OnPropertyChanged();
-			}
+			set { Reg.Set(value); OnPropertyChanged(); }
 		}
 
 
