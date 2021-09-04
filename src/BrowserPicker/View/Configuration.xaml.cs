@@ -18,7 +18,7 @@ namespace BrowserPicker.View
 		{
 			var fragment = NewFragment.Text;
 			var browser = (string)NewDefault.SelectedValue;
-			Config.Settings.SetDefault(fragment, browser);
+			DefaultsList.Items.Add(Config.Settings.AddDefault(fragment, browser));
 			NewFragment.Text = string.Empty;
 			NewFragment.Focus();
 			DefaultsList.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();

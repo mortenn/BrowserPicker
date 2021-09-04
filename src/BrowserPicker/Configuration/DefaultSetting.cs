@@ -1,19 +1,18 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using BrowserPicker.Lib;
-using JetBrains.Annotations;
 
 namespace BrowserPicker.Configuration
 {
-	public class DefaultSetting : INotifyPropertyChanged
+	public class DefaultSetting : ModelBase
 	{
 		public DefaultSetting(string fragment, string browser)
 		{
 			this.fragment = fragment;
 			this.browser = browser;
+			Configure();
 		}
+
 		/// <summary>
 		/// If Fragment starts with a pipe (|) character then it is of the format
 		///      |type|value
@@ -28,13 +27,16 @@ namespace BrowserPicker.Configuration
 			set
 			{
 				if (fragment == value)
+				{
 					return;
+				}
+				// Trigger deletion if fragment is changing
+				IsValid = !string.IsNullOrEmpty(fragment);
 
-				if (!string.IsNullOrEmpty(fragment))
-					Config.Settings.RemoveDefault(fragment);
-				if (!string.IsNullOrEmpty(value))
-					Config.Settings.SetDefault(value, Browser);
+				// Skip adding to configuration if empty
+				IsValid = string.IsNullOrWhiteSpace(value);
 				fragment = value;
+				Configure();
 				OnPropertyChanged();
 			}
 		}
@@ -45,55 +47,82 @@ namespace BrowserPicker.Configuration
 			set
 			{
 				if (browser == value)
+				{
 					return;
-
+				}
 				browser = value;
-				Config.Settings.SetDefault(Fragment, value);
+				OnPropertyChanged();
+			}
+		}
+
+		public bool IsValid
+		{
+			get => isValid;
+			set
+			{
+				isValid = value;
 				OnPropertyChanged();
 			}
 		}
 
 		public DelegateCommand Remove => new DelegateCommand(() => Fragment = string.Empty);
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		[NotifyPropertyChangedInvocator]
-		private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		private string fragment;
-		private string browser;
-
 		public int MatchLength(Uri url)
 		{
-			var matchType = MatchType.Hostname;
-			var value = Fragment;
-
-			if (Fragment?.Length == 0)
-				return 0;
-
-			if (Fragment[0] == '|')
+			if (!IsValid)
 			{
-				Enum.TryParse(Fragment.Substring(1, Fragment.IndexOf('|', 1) - 1), true, out matchType);
-				value = Fragment.Substring(Fragment.IndexOf('|', 1) + 1);
+				return 0;
 			}
-
-			switch (matchType)
+			switch (type)
 			{
 				case MatchType.Hostname:
-					return url.Host.EndsWith(Fragment) ? Fragment.Length : 0;
-				
+					return url.Host.EndsWith(pattern) ? pattern.Length : 0;
+
 				case MatchType.Prefix:
-					return url.OriginalString.StartsWith(value) ? value.Length : 0;
-				
+					return url.OriginalString.StartsWith(pattern) ? pattern.Length : 0;
+
 				case MatchType.Regex:
-					return Regex.Match(url.OriginalString, value).Length;
-				
+					return Regex.Match(url.OriginalString, pattern).Length;
+
 				default:
 					return 0;
 			}
 		}
+
+		private void Configure()
+		{
+			pattern = null;
+			if (!IsValid)
+			{
+				return;
+			}
+			var config = fragment.Split('|');
+			if (config.Length > 1 && config[0] == string.Empty)
+			{
+				if (config.Length != 3)
+				{
+					// Unknown format detected, ignore rule
+					return;
+				}
+				if (Enum.TryParse<MatchType>(fragment.Substring(1, fragment.IndexOf('|', 1) - 1), true, out var matchType))
+				{
+					type = matchType;
+					pattern = config[2];
+					return;
+				}
+				// Unsupported match type detected, ignore rule
+				return;
+			}
+
+			// Default match type
+			type = MatchType.Hostname;
+			pattern = fragment;
+		}
+
+		private string fragment;
+		private string browser;
+		private MatchType type = MatchType.Hostname;
+		private string pattern;
+		private bool isValid;
 	}
 }

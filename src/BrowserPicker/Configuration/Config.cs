@@ -116,10 +116,11 @@ namespace BrowserPicker.Configuration
 			Reg.OpenSubKey(nameof(Defaults), true)?.DeleteValue(fragment);
 		}
 
-		public void SetDefault(string fragment, string browser)
+		public DefaultSetting AddDefault(string fragment, string browser)
 		{
-			if (!string.IsNullOrEmpty(fragment) && !string.IsNullOrEmpty(browser))
-				Reg.CreateSubKey(nameof(Defaults), true).SetValue(fragment, browser, RegistryValueKind.String);
+			var setting = GetDefaultSetting(null, browser);
+			setting.Fragment = fragment;
+			return setting;
 		}
 
 		public void AddBrowser(BrowserModel model)
@@ -144,9 +145,37 @@ namespace BrowserPicker.Configuration
 		{
 			var key = Reg.CreateSubKey(nameof(Defaults), true);
 			var values = key.GetValueNames();
-			return values.Select(
-				fragment => new DefaultSetting(fragment, (string)key.GetValue(fragment))
-			).ToList();
+			return values.Select(name => GetDefaultSetting(name, (string)key.GetValue(name)));
+		}
+
+		private static DefaultSetting GetDefaultSetting(string fragment, string browser)
+		{
+			var setting = new DefaultSetting(fragment, browser);
+			setting.PropertyChanged += Setting_PropertyChanged;
+			return setting;
+		}
+
+		private static void Setting_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			var key = Reg.CreateSubKey(nameof(Defaults), true);
+			var model = (DefaultSetting)sender;
+			switch (e.PropertyName)
+			{
+				case nameof(DefaultSetting.IsValid):
+					if (model.IsValid)
+					{
+						key.DeleteValue(model.Fragment);
+					}
+					break;
+
+				case nameof(DefaultSetting.Fragment):
+				case nameof(DefaultSetting.Browser):
+					if (model.IsValid)
+					{
+						key.SetValue(model.Fragment, model.Browser ?? string.Empty, RegistryValueKind.String);
+					}
+					break;
+			}
 		}
 
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
