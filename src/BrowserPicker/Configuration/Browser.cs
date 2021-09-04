@@ -88,8 +88,9 @@ namespace BrowserPicker.Configuration
 			{
 				if (Config.Settings.UseAutomaticOrdering)
 				{
-					Config.Settings.UpdateCounter(this);
+					Model.Usage++;
 				}
+
 				var args = Model.CommandArgs;
 				var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
 				args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.TargetURL}\"");
