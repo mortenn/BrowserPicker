@@ -35,11 +35,6 @@ namespace BrowserPicker.Configuration
 		public IEnumerable<DefaultSetting> Defaults
 		{
 			get => GetDefaults();
-			set
-			{
-				SetDefaults(value);
-				OnPropertyChanged();
-			}
 		}
 
 		public bool DefaultsWhenRunning
@@ -123,22 +118,22 @@ namespace BrowserPicker.Configuration
 			return setting;
 		}
 
-		public void AddBrowser(BrowserModel model)
+		public void AddBrowser(BrowserModel browser)
 		{
-			BrowserList.Add(model);
-			SetBrowsers(BrowserList);
-			model.PropertyChanged += Browser_PropertyChanged;
-		}
+			var list = Reg.CreateSubKey(nameof(BrowserList), true);
 
-		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-		private static void SetDefaults([NotNull] IEnumerable<DefaultSetting> defaults)
-		{
-			var key = Reg.CreateSubKey(nameof(Defaults), true);
-			var values = key.GetValueNames();
-			foreach (var fragment in values.Except(defaults.Select(d => d.Fragment)))
-				key.DeleteValue(fragment);
-			foreach (var setting in defaults)
-				key.SetValue(setting.Fragment, setting.Browser, RegistryValueKind.String);
+			var key = list.CreateSubKey(browser.Name, true);
+			key.Set(nameof(BrowserModel.Name), browser.Name);
+			key.Set(nameof(BrowserModel.Command), browser.Command);
+			key.Set(nameof(BrowserModel.Executable), browser.Executable);
+			key.Set(nameof(BrowserModel.CommandArgs), browser.CommandArgs);
+			key.Set(nameof(BrowserModel.PrivacyArgs), browser.PrivacyArgs);
+			key.Set(nameof(BrowserModel.IconPath), browser.IconPath);
+			key.Set(nameof(BrowserModel.Usage), browser.Usage);
+			browser.PropertyChanged += Browser_PropertyChanged;
+
+			BrowserList.Add(browser);
+			OnPropertyChanged(nameof(BrowserList));
 		}
 
 		private static IEnumerable<DefaultSetting> GetDefaults()
@@ -176,26 +171,6 @@ namespace BrowserPicker.Configuration
 					}
 					break;
 			}
-		}
-
-		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-		private static void SetBrowsers([NotNull] IEnumerable<BrowserModel> browsers)
-		{
-			var list = Reg.CreateSubKey(nameof(BrowserList), true);
-			foreach (var remove in list.GetSubKeyNames().Except(browsers.Select(b => b.Name)))
-				list.DeleteSubKeyTree(remove);
-			foreach (var browser in browsers)
-			{
-				var key = list.CreateSubKey(browser.Name, true);
-				key.Set(nameof(BrowserModel.Name), browser.Name);
-				key.Set(nameof(BrowserModel.Command), browser.Command);
-				key.Set(nameof(BrowserModel.Executable), browser.Executable);
-				key.Set(nameof(BrowserModel.CommandArgs), browser.CommandArgs);
-				key.Set(nameof(BrowserModel.PrivacyArgs), browser.PrivacyArgs);
-				key.Set(nameof(BrowserModel.IconPath), browser.IconPath);
-				key.Set(nameof(BrowserModel.Usage), browser.Usage);
-			}
-			list.Close();
 		}
 
 		private static List<BrowserModel> GetBrowsers()
