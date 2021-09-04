@@ -27,7 +27,7 @@ namespace BrowserPicker
 			UnderlyingTargetURL = "https://github.com/mortenn/BrowserPicker";
 			force_choice = true;
 			Configuration = Config.Settings;
-			Choices = new ObservableCollection<Browser>(Configuration.BrowserList.Select(m => new Browser(m, this)));
+			Choices = new ObservableCollection<Browser>(WellKnownBrowsers.List.Select(b => new Browser(new BrowserModel(b, null, null), this)));
 		}
 
 		public ViewModel(List<string> arguments)
@@ -73,7 +73,7 @@ namespace BrowserPicker
 			{
 				// ignored
 			}
-			if (url.UnderlyingTargetURL != UnderlyingTargetURL)
+			if (url.UnderlyingTargetURL != null)
 			{
 				UnderlyingTargetURL = url.UnderlyingTargetURL;
 			}

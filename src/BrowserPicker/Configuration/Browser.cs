@@ -4,12 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using BrowserPicker.Lib;
+using JetBrains.Annotations;
 
 namespace BrowserPicker.Configuration
 {
 	[DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
 	public class Browser : ViewModelBase<BrowserModel>
 	{
+		// WPF Designer
+		[UsedImplicitly]
+		public Browser() : base(new BrowserModel()) { }
+
 		public Browser(BrowserModel model, ViewModel viewModel) : base(model)
 		{
 			model.PropertyChanged += Model_PropertyChanged;
@@ -79,8 +84,6 @@ namespace BrowserPicker.Configuration
 
 		private void Launch(bool privacy)
 		{
-			//	throw new InvalidOperationException("This is a test, do not panic.");
-
 			try
 			{
 				if (Config.Settings.UseAutomaticOrdering)
