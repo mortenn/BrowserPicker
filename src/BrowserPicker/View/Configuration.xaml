@@ -7,11 +7,17 @@
 	xmlns:browserPicker="clr-namespace:BrowserPicker"
 	xmlns:view="clr-namespace:BrowserPicker.View"
 	xmlns:configuration="clr-namespace:BrowserPicker.Configuration"
+	xmlns:converter="clr-namespace:BrowserPicker.Converter"
 	mc:Ignorable="d" 
 	d:DataContext="{d:DesignInstance browserPicker:ViewModel,d:IsDesignTimeCreatable=true}"
 	Height="300" Width="400"
 	Background="#333">
-
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<converter:IconFileToImageConverter x:Key="IconConverter" />
+		</ResourceDictionary>
+	</UserControl.Resources>
+	
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
@@ -68,8 +74,19 @@
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
-									<Image Margin="20,0,0,0" Source="{Binding Thumbnail}" Width="40" Height="40"></Image>
-									<TextBlock Text="{Binding Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
+									<Image Margin="20,0,0,0" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" Width="40" Height="40" d:DataContext="{StaticResource DefaultIcon}">
+										<Image.Style>
+											<Style TargetType="Image">
+												<Setter Property="Source" Value="{Binding}" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding}" Value="{x:Null}">
+														<Setter Property="Source" Value="{StaticResource DefaultIcon}" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Image.Style>
+									</Image>
+									<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
 									<TextBlock Grid.Column="2" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Disable}">
 											<TextBlock>
