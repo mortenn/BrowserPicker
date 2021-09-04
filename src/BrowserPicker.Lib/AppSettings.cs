@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using BrowserPicker.Lib;
 using Microsoft.Win32;
 
-namespace BrowserPicker.Configuration
+namespace BrowserPicker.Lib
 {
-	public class Config : ModelBase
+	public class AppSettings : ModelBase
 	{
-		private Config()
+		private AppSettings()
 		{
 			BrowserList = GetBrowsers();
 			Defaults = GetDefaults();
@@ -56,16 +55,6 @@ namespace BrowserPicker.Configuration
 		public List<BrowserModel> BrowserList
 		{
 			get;
-		}
-
-		public void RemoveBrowser(Browser browser)
-		{
-			if (BrowserList.Contains(browser.Model))
-			{
-				BrowserList.Remove(browser.Model);
-				OnPropertyChanged(nameof(BrowserList));
-			}
-			Reg.DeleteSubKeyTree(Path.Combine(nameof(BrowserList), browser.Model.Name), false);
 		}
 
 		public void AddBrowser(BrowserModel browser)
@@ -208,12 +197,19 @@ namespace BrowserPicker.Configuration
 				case nameof(BrowserModel.IconPath):    config.Set(model.IconPath,    e.PropertyName); break;
 				case nameof(BrowserModel.Usage):       config.Set(model.Usage,       e.PropertyName); break;
 				case nameof(BrowserModel.Disabled):    config.Set(model.Disabled,    e.PropertyName); break;
+				case nameof(BrowserModel.Removed):
+					if (model.Removed)
+					{
+						model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
+						Reg.SubKey(nameof(BrowserList)).DeleteSubKey(model.Name);
+					}
+					break;
 				default: return;
 			}
 		}
 
 		private static readonly RegistryKey Reg = Registry.CurrentUser.CreateSubKey("Software\\BrowserPicker", true);
 
-		public static Config Settings = new Config();
+		public static AppSettings Settings = new AppSettings();
 	}
 }

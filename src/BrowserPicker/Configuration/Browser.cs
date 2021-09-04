@@ -86,7 +86,7 @@ namespace BrowserPicker.Configuration
 		{
 			try
 			{
-				if (Config.Settings.UseAutomaticOrdering)
+				if (AppSettings.Settings.UseAutomaticOrdering)
 				{
 					Model.Usage++;
 				}

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using BrowserPicker.Lib;
 
-namespace BrowserPicker.Configuration
+namespace BrowserPicker.Lib
 {
 	public class DefaultSetting : ModelBase
 	{
