@@ -92,7 +92,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Configuration\Browser.cs" />
+    <Compile Include="Browser.cs" />
     <Compile Include="Converter\IconConverter.cs" />
     <Compile Include="ExceptionViewModel.cs" />
     <Compile Include="ViewModel.cs" />

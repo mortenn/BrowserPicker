@@ -6,7 +6,7 @@ using System.Windows;
 using BrowserPicker.Lib;
 using JetBrains.Annotations;
 
-namespace BrowserPicker.Configuration
+namespace BrowserPicker
 {
 	[DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
 	public class Browser : ViewModelBase<BrowserModel>
