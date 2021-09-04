@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using BrowserPicker.Lib;
-using JetBrains.Annotations;
 using Microsoft.Win32;
 
 namespace BrowserPicker.Configuration
@@ -15,6 +13,7 @@ namespace BrowserPicker.Configuration
 		private Config()
 		{
 			BrowserList = GetBrowsers();
+			Defaults = GetDefaults();
 		}
 
 		public bool AlwaysPrompt
@@ -25,16 +24,6 @@ namespace BrowserPicker.Configuration
 				Reg.Set(nameof(AlwaysPrompt), value);
 				OnPropertyChanged();
 			}
-		}
-
-		public List<BrowserModel> BrowserList
-		{
-			get;
-		}
-
-		public IEnumerable<DefaultSetting> Defaults
-		{
-			get => GetDefaults();
 		}
 
 		public bool DefaultsWhenRunning
@@ -87,35 +76,20 @@ namespace BrowserPicker.Configuration
 			}
 		}
 
-		public void UpdateCounter(Browser browser)
-		{
-			Reg
-				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Model.Name), true)
-				?.SetValue(nameof(browser.Model.Usage), browser.Model.Usage + 1, RegistryValueKind.DWord);
-		}
 
-		public void UpdateBrowserDisabled(Browser browser)
+		public List<BrowserModel> BrowserList
 		{
-			Reg
-				.OpenSubKey(Path.Combine(nameof(BrowserList), browser.Model.Name), true)
-				?.SetValue(nameof(browser.Model.Disabled), browser.Model.Disabled ? 1 : 0, RegistryValueKind.DWord);
+			get;
 		}
 
 		public void RemoveBrowser(Browser browser)
 		{
+			if (BrowserList.Contains(browser.Model))
+			{
+				BrowserList.Remove(browser.Model);
+				OnPropertyChanged(nameof(BrowserList));
+			}
 			Reg.DeleteSubKeyTree(Path.Combine(nameof(BrowserList), browser.Model.Name), false);
-		}
-
-		public void RemoveDefault(string fragment)
-		{
-			Reg.OpenSubKey(nameof(Defaults), true)?.DeleteValue(fragment);
-		}
-
-		public DefaultSetting AddDefault(string fragment, string browser)
-		{
-			var setting = GetDefaultSetting(null, browser);
-			setting.Fragment = fragment;
-			return setting;
 		}
 
 		public void AddBrowser(BrowserModel browser)
@@ -130,27 +104,48 @@ namespace BrowserPicker.Configuration
 			key.Set(nameof(BrowserModel.PrivacyArgs), browser.PrivacyArgs);
 			key.Set(nameof(BrowserModel.IconPath), browser.IconPath);
 			key.Set(nameof(BrowserModel.Usage), browser.Usage);
-			browser.PropertyChanged += Browser_PropertyChanged;
+			browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 
 			BrowserList.Add(browser);
 			OnPropertyChanged(nameof(BrowserList));
 		}
 
-		private static IEnumerable<DefaultSetting> GetDefaults()
+
+		public List<DefaultSetting> Defaults
+		{
+			get;
+		}
+
+		public void RemoveDefault(string fragment)
+		{
+			Reg.OpenSubKey(nameof(Defaults), true)?.DeleteValue(fragment);
+		}
+
+		public DefaultSetting AddDefault(string fragment, string browser)
+		{
+			var setting = GetDefaultSetting(null, browser);
+			setting.Fragment = fragment;
+			Defaults.Add(setting);
+			OnPropertyChanged(nameof(Defaults));
+			return setting;
+		}
+
+
+		private static List<DefaultSetting> GetDefaults()
 		{
 			var key = Reg.CreateSubKey(nameof(Defaults), true);
 			var values = key.GetValueNames();
-			return values.Select(name => GetDefaultSetting(name, (string)key.GetValue(name)));
+			return values.Select(name => GetDefaultSetting(name, (string)key.GetValue(name))).ToList();
 		}
 
 		private static DefaultSetting GetDefaultSetting(string fragment, string browser)
 		{
 			var setting = new DefaultSetting(fragment, browser);
-			setting.PropertyChanged += Setting_PropertyChanged;
+			setting.PropertyChanged += DefaultSetting_PropertyChanged;
 			return setting;
 		}
 
-		private static void Setting_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private static void DefaultSetting_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var key = Reg.CreateSubKey(nameof(Defaults), true);
 			var model = (DefaultSetting)sender;
@@ -219,11 +214,11 @@ namespace BrowserPicker.Configuration
 			if (browser.Command == null)
 				return null;
 
-			browser.PropertyChanged += Browser_PropertyChanged;
+			browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 			return browser;
 		}
 
-		private static void Browser_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private static void BrowserConfiguration_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var model = (BrowserModel)sender;
 			var key = Path.Combine(nameof(BrowserList), model.Name);
