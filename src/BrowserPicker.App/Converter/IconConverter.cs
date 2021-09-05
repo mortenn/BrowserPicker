@@ -29,6 +29,9 @@ namespace BrowserPicker.Converter
 					if (!File.Exists(_iconPath) && _iconPath.Contains("%"))
 						_iconPath = Environment.ExpandEnvironmentVariables(_iconPath);
 
+					if (!File.Exists(_iconPath))
+						return null;
+
 					Stream icon = null;
 					if (_iconPath.EndsWith(".exe") || _iconPath.EndsWith(".dll"))
 					{
