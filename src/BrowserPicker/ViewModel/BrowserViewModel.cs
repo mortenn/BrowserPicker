@@ -6,16 +6,16 @@ using System.Windows;
 using BrowserPicker.Lib;
 using JetBrains.Annotations;
 
-namespace BrowserPicker
+namespace BrowserPicker.ViewModel
 {
 	[DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
-	public class Browser : ViewModelBase<BrowserModel>
+	public class BrowserViewModel : ViewModelBase<BrowserModel>
 	{
 		// WPF Designer
 		[UsedImplicitly]
-		public Browser() : base(new BrowserModel()) { }
+		public BrowserViewModel() : base(new BrowserModel()) { }
 
-		public Browser(BrowserModel model, ViewModel viewModel) : base(model)
+		public BrowserViewModel(BrowserModel model, ApplicationViewModel viewModel) : base(model)
 		{
 			model.PropertyChanged += Model_PropertyChanged;
 			view_model = viewModel;
@@ -112,6 +112,6 @@ namespace BrowserPicker
 			return args1 + " " + args2;
 		}
 
-		private readonly ViewModel view_model;
+		private readonly ApplicationViewModel view_model;
 	}
 }

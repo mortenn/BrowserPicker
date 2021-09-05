@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Lib;
+using BrowserPicker.ViewModel;
 using Microsoft.Win32;
 
 namespace BrowserPicker.View
@@ -18,7 +19,7 @@ namespace BrowserPicker.View
 
 		private void BrowserEditor_OnLoaded(object sender, RoutedEventArgs e)
 		{
-			DataContext = new Browser(new BrowserModel(), null);
+			DataContext = new BrowserViewModel(new BrowserModel(), null);
 		}
 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
@@ -72,7 +73,7 @@ namespace BrowserPicker.View
 				Browser.Model.IconPath = browser.FileName;
 		}
 
-		private Browser Browser => DataContext as Browser;
+		private BrowserViewModel Browser => DataContext as BrowserViewModel;
 
 		public void DragWindow(object sender, MouseButtonEventArgs args)
 		{

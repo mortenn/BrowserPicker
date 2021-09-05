@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using BrowserPicker.View;
+using BrowserPicker.ViewModel;
 
 namespace BrowserPicker
 {
@@ -23,7 +24,7 @@ namespace BrowserPicker
 			var arguments = Environment.GetCommandLineArgs().Skip(1).ToList();
 			try
 			{
-				ViewModel = new ViewModel(arguments);
+				ViewModel = new ApplicationViewModel(arguments);
 			}
 			catch (Exception exception)
 			{
@@ -140,6 +141,6 @@ namespace BrowserPicker
 			Current.Shutdown();
 		}
 
-		public ViewModel ViewModel { get; }
+		public ApplicationViewModel ViewModel { get; }
 	}
 }

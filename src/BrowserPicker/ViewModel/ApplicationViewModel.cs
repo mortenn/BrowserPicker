@@ -15,21 +15,21 @@ using BrowserPicker.View;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 
-namespace BrowserPicker
+namespace BrowserPicker.ViewModel
 {
-	public class ViewModel : INotifyPropertyChanged
+	public class ApplicationViewModel : INotifyPropertyChanged
 	{
 		// Used by WPF designer
 		[UsedImplicitly]
-		public ViewModel()
+		public ApplicationViewModel()
 		{
 			UnderlyingTargetURL = "https://github.com/mortenn/BrowserPicker";
 			force_choice = true;
 			Configuration = AppSettings.Settings;
-			Choices = new ObservableCollection<Browser>(WellKnownBrowsers.List.Select(b => new Browser(new BrowserModel(b, null, null), this)));
+			Choices = new ObservableCollection<BrowserViewModel>(WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this)));
 		}
 
-		public ViewModel(List<string> arguments)
+		public ApplicationViewModel(List<string> arguments)
 		{
 			var options = arguments.Where(arg => arg[0] == '/').ToList();
 			TargetURL = arguments.Except(options).FirstOrDefault();
@@ -37,7 +37,7 @@ namespace BrowserPicker
 			force_choice = options.Contains("/choose");
 			ConfigurationMode = TargetURL == null;
 			Configuration = AppSettings.Settings;
-			Choices = new ObservableCollection<Browser>(Configuration.BrowserList.Select(m => new Browser(m, this)));
+			Choices = new ObservableCollection<BrowserViewModel>(Configuration.BrowserList.Select(m => new BrowserViewModel(m, this)));
 		}
 
 		public void Initialize()
@@ -122,7 +122,7 @@ namespace BrowserPicker
 		private void Editor_Closing(object sender, CancelEventArgs e)
 		{
 			((Window)sender).Closing -= Editor_Closing;
-			if (!(((Window)sender).DataContext is Browser browser))
+			if (!(((Window)sender).DataContext is BrowserViewModel browser))
 				return;
 
 			if (!string.IsNullOrEmpty(browser.Model.Name) && !string.IsNullOrEmpty(browser.Model.Command))
@@ -134,7 +134,7 @@ namespace BrowserPicker
 
 		public AppSettings Configuration { get; }
 
-		public ObservableCollection<Browser> Choices { get; }
+		public ObservableCollection<BrowserViewModel> Choices { get; }
 
 		public bool ConfigurationMode
 		{
@@ -305,7 +305,7 @@ namespace BrowserPicker
 				update.IconPath = model.IconPath;
 				return;
 			}
-			Choices.Add(new Browser(model, this));
+			Choices.Add(new BrowserViewModel(model, this));
 			Configuration.AddBrowser(model);
 		}
 

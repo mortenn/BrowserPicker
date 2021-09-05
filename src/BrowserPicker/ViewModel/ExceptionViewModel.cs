@@ -5,7 +5,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
-namespace BrowserPicker
+namespace BrowserPicker.ViewModel
 {
 	public class ExceptionViewModel : ViewModelBase<ExceptionModel>
 	{

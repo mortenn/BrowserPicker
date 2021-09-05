@@ -92,10 +92,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Browser.cs" />
+    <Compile Include="ViewModel\BrowserViewModel.cs" />
     <Compile Include="Converter\IconConverter.cs" />
-    <Compile Include="ExceptionViewModel.cs" />
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="ViewModel\ExceptionViewModel.cs" />
+    <Compile Include="ViewModel\ApplicationViewModel.cs" />
     <Compile Include="View\BrowserEditor.xaml.cs">
       <DependentUpon>BrowserEditor.xaml</DependentUpon>
     </Compile>

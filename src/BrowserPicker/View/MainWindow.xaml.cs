@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using JetBrains.Annotations;
+using BrowserPicker.ViewModel;
 
 namespace BrowserPicker.View
 {
@@ -56,7 +57,7 @@ namespace BrowserPicker.View
 			}
 		}
 
-		private ViewModel ViewModel => (ViewModel)DataContext;
+		private ApplicationViewModel ViewModel => (ApplicationViewModel)DataContext;
 
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
