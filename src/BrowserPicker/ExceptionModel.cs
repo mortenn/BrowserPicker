@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System;
 
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	public class ExceptionModel : ModelBase
 	{

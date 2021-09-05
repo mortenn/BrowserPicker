@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using BrowserPicker.Lib;
 
 namespace BrowserPicker.View
 {

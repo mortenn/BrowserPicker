@@ -1,4 +1,4 @@
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	public abstract class ViewModelBase<T> : ModelBase where T : ModelBase
 	{

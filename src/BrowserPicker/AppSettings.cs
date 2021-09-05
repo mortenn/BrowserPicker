@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using Microsoft.Win32;
 
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	public class AppSettings : ModelBase
 	{

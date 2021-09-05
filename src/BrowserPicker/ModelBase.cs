@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	public abstract class ModelBase : INotifyPropertyChanged
 	{

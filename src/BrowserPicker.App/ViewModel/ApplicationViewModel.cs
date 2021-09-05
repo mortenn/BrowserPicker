@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using BrowserPicker.Lib;
 using BrowserPicker.View;
 using JetBrains.Annotations;
 using Microsoft.Win32;

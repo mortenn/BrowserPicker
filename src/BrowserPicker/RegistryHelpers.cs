@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	public static class RegistryHelpers
 	{

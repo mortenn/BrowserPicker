@@ -32,9 +32,9 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BrowserPicker.Lib\BrowserPicker.Lib.csproj">
-      <Name>BrowserPicker.Lib</Name>
-      <Project>{17df31c5-fe19-4d62-9e20-88aeb9fda6b9}</Project>
+    <ProjectReference Include="..\..\src\BrowserPicker.App\BrowserPicker.App.csproj">
+      <Name>BrowserPicker.App</Name>
+      <Project>{b875ae86-5212-4f7f-bb1c-2baa1fc110bc}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
@@ -42,7 +42,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\src\BrowserPicker\BrowserPicker.csproj">
       <Name>BrowserPicker</Name>
-      <Project>{b875ae86-5212-4f7f-bb1c-2baa1fc110bc}</Project>
+      <Project>{d7695535-9c0d-4983-b8f7-09b067347e7e}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>

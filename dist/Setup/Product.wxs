@@ -7,7 +7,7 @@
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
 
-		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.TargetPath)" />
+		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.App.TargetPath)" />
 		<Property Id="ARPPRODUCTICON" Value="Icon.exe" />
 
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
@@ -27,10 +27,10 @@
 	</Fragment>
 
 	<Fragment>
-		<ComponentGroup Source="$(var.BrowserPicker.TargetDir)" Id="ProductComponents" Directory="INSTALLFOLDER">
+		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)" Id="ProductComponents" Directory="INSTALLFOLDER">
 			<Component Guid="*" Win64="yes">
-				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64">
-					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.TargetFileName)" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
+				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64">
+					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.App.TargetFileName)" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
 					<Shortcut
 						Directory="ApplicationProgramsFolder"
 						Id="ApplicationStartMenuShortcut"
@@ -76,10 +76,10 @@
 				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
 			</Component>
 			<Component Guid="*" Win64="yes">
-				<File Name="$(var.BrowserPicker.TargetFileName).config" KeyPath="yes" ProcessorArchitecture="x64" />
+				<File Name="$(var.BrowserPicker.App.TargetFileName).config" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 			<Component Guid="*" Win64="yes">
-				<File Name="$(var.BrowserPicker.Lib.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
+				<File Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	public static class WellKnownBrowsers
 	{

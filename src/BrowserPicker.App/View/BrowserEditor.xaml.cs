@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using BrowserPicker.Lib;
 using BrowserPicker.ViewModel;
 using Microsoft.Win32;
 

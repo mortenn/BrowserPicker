@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	public class UrlHandler
 	{

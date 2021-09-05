@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace BrowserPicker.Lib
+namespace BrowserPicker
 {
 	[DebuggerDisplay("{" + nameof(Name) + "}")]
 	public class BrowserModel : ModelBase
