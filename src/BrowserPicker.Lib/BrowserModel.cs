@@ -23,7 +23,6 @@ namespace BrowserPicker.Lib
 			command = shell;
 		}
 
-
 		public string Name
 		{
 			get => name;

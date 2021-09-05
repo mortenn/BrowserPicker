@@ -63,6 +63,11 @@ namespace BrowserPicker.Lib
 			return (name, icon, shell);
 		}
 
+		public static RegistryKey Open(this RegistryKey key, params string[] path)
+		{
+			return key.CreateSubKey(Path.Combine(path), true);
+		}
+
 		private readonly static Dictionary<Type, RegistryValueKind> TypeMap = new Dictionary<Type, RegistryValueKind>
 		{
 			{ typeof(string), RegistryValueKind.String },

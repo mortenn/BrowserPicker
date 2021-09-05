@@ -58,9 +58,7 @@ namespace BrowserPicker.Lib
 
 		public void AddBrowser(BrowserModel browser)
 		{
-			var list = Reg.CreateSubKey(nameof(BrowserList), true);
-
-			var key = list.CreateSubKey(browser.Name, true);
+			var key = Reg.Open(nameof(BrowserList), browser.Name);
 			key.Set(browser.Name);
 			key.Set(browser.Command);
 			key.Set(browser.Executable);
@@ -97,7 +95,7 @@ namespace BrowserPicker.Lib
 
 		private static List<DefaultSetting> GetDefaults()
 		{
-			var key = Reg.CreateSubKey(nameof(Defaults), true);
+			var key = Reg.Open(nameof(Defaults));
 			var values = key.GetValueNames();
 			return values.Select(name => GetDefaultSetting(name, (string)key.GetValue(name))).ToList();
 		}
@@ -111,7 +109,7 @@ namespace BrowserPicker.Lib
 
 		private static void DefaultSetting_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			var key = Reg.CreateSubKey(nameof(Defaults), true);
+			var key = Reg.Open(nameof(Defaults));
 			var model = (DefaultSetting)sender;
 			switch (e.PropertyName)
 			{
@@ -207,7 +205,7 @@ namespace BrowserPicker.Lib
 			}
 		}
 
-		private static readonly RegistryKey Reg = Registry.CurrentUser.CreateSubKey("Software\\BrowserPicker", true);
+		private static readonly RegistryKey Reg = Registry.CurrentUser.Open("Software", nameof(BrowserPicker));
 
 		public static AppSettings Settings = new AppSettings();
 	}
