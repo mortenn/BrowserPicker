@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BrowserPicker.Framework;
+using System;
 using System.Text.RegularExpressions;
 
 namespace BrowserPicker

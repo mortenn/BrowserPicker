@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using JetBrains.Annotations;
 
-namespace BrowserPicker
+namespace BrowserPicker.Framework
 {
 	[PublicAPI]
 	public class DelegateCommand : ICommand

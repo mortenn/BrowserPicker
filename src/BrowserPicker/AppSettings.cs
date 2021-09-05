@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BrowserPicker.Framework;
 using Microsoft.Win32;
 
 namespace BrowserPicker

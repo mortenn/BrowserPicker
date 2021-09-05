@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using BrowserPicker.Framework;
+using System.Diagnostics;
 
 namespace BrowserPicker
 {
