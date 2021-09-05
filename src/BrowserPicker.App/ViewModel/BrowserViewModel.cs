@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using BrowserPicker.Framework;
 using JetBrains.Annotations;
 
 namespace BrowserPicker.ViewModel

@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace BrowserPicker
 {
+	// Note: I am not entirely happy with the design of this part, but it was the best I can do in a jiffy
 	public static class WellKnownBrowsers
 	{
 		public static IWellKnownBrowser Lookup(string name, string executable)

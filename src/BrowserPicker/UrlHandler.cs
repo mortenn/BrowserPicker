@@ -30,8 +30,7 @@ namespace BrowserPicker
 		{
 			try
 			{
-				var url = TargetURL;
-				var uri = new Uri(url);
+				var uri = new Uri(TargetURL);
 				while (true)
 				{
 					var jump = ResolveJumpPage(uri);
@@ -49,14 +48,14 @@ namespace BrowserPicker
 						uri = new Uri(shortened);
 						continue;
 					}
-					
+
 					break;
 				}
 			}
 			catch (TaskCanceledException)
 			{
 				// TaskCanceledException occurs when the CancellationToken is triggered before the request completes
-				// In this case, skip the lookup to avoid poor user experience
+				// In this case, end the lookup to avoid poor user experience
 			}
 		}
 

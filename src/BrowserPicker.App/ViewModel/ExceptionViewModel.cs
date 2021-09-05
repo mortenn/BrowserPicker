@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using BrowserPicker.Framework;
+using JetBrains.Annotations;
 using System;
 using System.Threading;
 using System.Windows;
