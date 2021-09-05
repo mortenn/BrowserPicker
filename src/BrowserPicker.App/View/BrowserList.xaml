@@ -19,7 +19,7 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<StackPanel Orientation="Horizontal">
+		<StackPanel Orientation="Vertical">
 			<StackPanel.Style>
 				<Style TargetType="{x:Type StackPanel}">
 					<Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -30,35 +30,38 @@
 					</Style.Triggers>
 				</Style>
 			</StackPanel.Style>
-			<TextBlock Margin="0,5">
-				<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}" ToolTip="Copy the URL to the clipboard">
-					<Hyperlink.Style>
+			<StackPanel Orientation="Horizontal">
+				<Image Source="{StaticResource DefaultIcon}" Height="16" Margin="5" />
+				<TextBlock Margin="0,5">
+					<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}" ToolTip="Copy the URL to the clipboard">
+						<Hyperlink.Style>
+							<Style>
+								<Setter Property="Hyperlink.Foreground" Value="Silver" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Copied}" Value="True">
+										<Setter Property="Hyperlink.Foreground" Value="White" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Hyperlink.Style>
+						📋
+					</Hyperlink>
+					<Hyperlink Foreground="Silver" TextDecorations="None" Command="{Binding Edit}" ToolTip="Edit the URL before opening it">✏</Hyperlink>
+				</TextBlock>
+				<TextBlock Text="Redirected URL" Foreground="Silver" Margin="5,5,0,0">
+					<TextBlock.Style>
 						<Style>
-							<Setter Property="Hyperlink.Foreground" Value="Silver" />
 							<Style.Triggers>
-								<DataTrigger Binding="{Binding Copied}" Value="True">
-									<Setter Property="Hyperlink.Foreground" Value="White" />
+								<DataTrigger Binding="{Binding IsShortenedURL}" Value="False">
+									<Setter Property="UIElement.Visibility" Value="Collapsed" />
 								</DataTrigger>
 							</Style.Triggers>
 						</Style>
-					</Hyperlink.Style>
-					📋
-				</Hyperlink>
-				<Hyperlink Foreground="Silver" TextDecorations="None" Command="{Binding Edit}" ToolTip="Edit the URL before opening it">✏</Hyperlink>
-			</TextBlock>
-			<TextBlock Text="i" Foreground="LightBlue" Margin="5,5,0,0" FontWeight="Black" ToolTip="Shortened URL">
-				<TextBlock.Style>
-					<Style>
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding IsShortenedURL}" Value="False">
-								<Setter Property="UIElement.Visibility" Value="Collapsed" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</TextBlock.Style>
-			</TextBlock>
-			<TextBlock Text="{Binding UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow"
-								 TextTrimming="CharacterEllipsis" MaxWidth="380" />
+					</TextBlock.Style>
+				</TextBlock>
+			</StackPanel>
+			<TextBlock Text="{Binding UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="Wrap"
+								 TextTrimming="CharacterEllipsis" MaxWidth="380" MaxHeight="100" />
 		</StackPanel>
 		<TextBox Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow">
 			<TextBox.Style>
