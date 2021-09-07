@@ -283,6 +283,10 @@ namespace BrowserPicker.ViewModel
 
 			var (name, icon, shell) = reg.GetBrowser();
 
+			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(shell))
+			{
+				return;
+			}
 			var known = WellKnownBrowsers.Lookup(name, shell);
 			if (known != null)
 			{
