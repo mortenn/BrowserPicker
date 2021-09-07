@@ -150,10 +150,14 @@
 											</TextBlock>
 											<Button Grid.Column="2" Command="{Binding SelectPrivacy}" Click="ButtonBase_OnClick" ToolTip="{Binding PrivacyTooltip}">
 												<Button.Style>
-													<Style>
+													<Style TargetType="Button">
 														<Style.Triggers>
 															<DataTrigger Binding="{Binding Model.PrivacyArgs}" Value="{x:Null}">
 																<Setter Property="UIElement.Visibility" Value="Collapsed" />
+															</DataTrigger>
+															<DataTrigger Binding="{Binding Path=AltPressed, RelativeSource={RelativeSource AncestorType=UserControl}}">
+																<Setter Property="BorderBrush" Value="White" />
+																<Setter Property="BorderThickness" Value="1" />
 															</DataTrigger>
 														</Style.Triggers>
 													</Style>

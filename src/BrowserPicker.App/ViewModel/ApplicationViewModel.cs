@@ -190,6 +190,17 @@ namespace BrowserPicker.ViewModel
 
 		public bool Copied { get; set; }
 
+		public bool AltPressed
+		{
+			get => alt_pressed;
+			set
+			{
+				if (alt_pressed == value) return;
+				alt_pressed = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public EventHandler OnShutdown;
 
 		public void OnDeactivated()
@@ -325,6 +336,7 @@ namespace BrowserPicker.ViewModel
 		private string edit_url;
 		private string target_url;
 		private string actual_url;
+		private bool alt_pressed;
 		private readonly bool force_choice;
 	}
 }
