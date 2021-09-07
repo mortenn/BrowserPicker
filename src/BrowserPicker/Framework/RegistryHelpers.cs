@@ -28,7 +28,7 @@ namespace BrowserPicker.Framework
 		{
 			if (value == null)
 			{
-				if (key.GetValue(name) != null)
+				if (name != null && key.GetValue(name) != null)
 				{
 					key.DeleteValue(name);
 				}
@@ -68,11 +68,11 @@ namespace BrowserPicker.Framework
 			return key.CreateSubKey(Path.Combine(path), true);
 		}
 
-		private readonly static Dictionary<Type, RegistryValueKind> TypeMap = new Dictionary<Type, RegistryValueKind>
+		private static readonly Dictionary<Type, RegistryValueKind> TypeMap = new Dictionary<Type, RegistryValueKind>
 		{
 			{ typeof(string), RegistryValueKind.String },
 			{ typeof(int), RegistryValueKind.DWord },
-			{ typeof(long), RegistryValueKind.QWord },
+			{ typeof(long), RegistryValueKind.QWord }
 		};
 	}
 }

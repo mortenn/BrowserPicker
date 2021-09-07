@@ -16,7 +16,7 @@
 	<Border CornerRadius="5">
 		<Border.Style>
 			<Style TargetType="{x:Type Border}">
-				<Setter Property="Border.Background" Value="Transparent" />
+				<Setter Property="Background" Value="Transparent" />
 				<Style.Triggers>
 					<DataTrigger Binding="{Binding Configuration.DisableTransparency}" Value="True">
 						<Setter Property="Border.Background" Value="Black" />

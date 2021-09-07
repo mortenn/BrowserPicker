@@ -59,22 +59,14 @@ namespace BrowserPicker
 			}
 		}
 
-		private string ResolveJumpPage(Uri uri)
+		private static string ResolveJumpPage(Uri uri)
 		{
-			foreach (var jumpPage in JumpPages)
-			{
-				if (!uri.Host.EndsWith(jumpPage.url) && !uri.AbsoluteUri.StartsWith(jumpPage.url))
-				{
-					continue;
-				}
-				var queryStringValues = HttpUtility.ParseQueryString(uri.Query);
-				var underlyingUrl = queryStringValues[jumpPage.parameter];
-				if (underlyingUrl != null)
-				{
-					return underlyingUrl;
-				}
-			}
-			return null;
+			return (
+				from jumpPage in JumpPages
+				where uri.Host.EndsWith(jumpPage.url) || uri.AbsoluteUri.StartsWith(jumpPage.url)
+				let queryStringValues = HttpUtility.ParseQueryString(uri.Query)
+				select queryStringValues[jumpPage.parameter]
+			).FirstOrDefault(underlyingUrl => underlyingUrl != null);
 		}
 
 		private async Task<string> ResolveShortener(Uri uri, CancellationToken cancellationToken)
@@ -89,17 +81,13 @@ namespace BrowserPicker
 			}
 			var response = await client.GetAsync(uri, cancellationToken);
 			var location = response.Headers.Location;
-			if (location != null)
-			{
-				return location.OriginalString;
-			}
-			return null;
+			return location != null ? location.OriginalString : null;
 		}
 
-		public string TargetURL { get; private set; }
+		public string TargetURL { get; }
 		public string UnderlyingTargetURL { get; private set; }
 
-		private HttpClient client = null;
+		private HttpClient client;
 
 		private static readonly List<string> UrlShorteners = new List<string>
 		{
@@ -120,7 +108,7 @@ namespace BrowserPicker
 			"go.microsoft.com"
 		};
 
-		private static readonly List<(string url, string parameter)> JumpPages = new List<(string url, string parameter)>()
+		private static readonly List<(string url, string parameter)> JumpPages = new List<(string url, string parameter)>
 		{
 			("safelinks.protection.outlook.com", "url"),
 			("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),

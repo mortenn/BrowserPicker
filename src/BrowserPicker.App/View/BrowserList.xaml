@@ -22,7 +22,7 @@
 		<StackPanel Orientation="Vertical">
 			<StackPanel.Style>
 				<Style TargetType="{x:Type StackPanel}">
-					<Setter Property="UIElement.Visibility" Value="Collapsed" />
+					<Setter Property="Visibility" Value="Collapsed" />
 					<Style.Triggers>
 						<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
 							<Setter Property="UIElement.Visibility" Value="Visible" />
@@ -63,7 +63,7 @@
 			<TextBlock Text="{Binding UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="Wrap"
 								 TextTrimming="CharacterEllipsis" MaxWidth="380" MaxHeight="100" />
 		</StackPanel>
-		<TextBox Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow">
+		<TextBox Grid.Row="0" Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow">
 			<TextBox.Style>
 				<Style TargetType="{x:Type TextBox}">
 					<Style.Triggers>
@@ -82,28 +82,28 @@
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
-					<DataTemplate DataType="configuration:Browser">
-						<Button Command="{Binding Select}" CommandParameter="{Binding Path=TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
+					<DataTemplate DataType="viewModel:BrowserViewModel">
+						<Button Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
 							<Button.Style>
 								<Style>
 									<Setter Property="UIElement.Visibility" Value="Visible" />
 									<Style.Triggers>
-										<DataTrigger Binding="{Binding Disabled}" Value="True">
+										<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
 											<Setter Property="UIElement.Visibility" Value="Collapsed" />
 										</DataTrigger>
 									</Style.Triggers>
 								</Style>
 							</Button.Style>
 							<Button.Template>
-								<ControlTemplate>
+								<ControlTemplate TargetType="Button">
 									<Border Cursor="Hand" CornerRadius="5" Background="#44000000" BorderBrush="#22ffffff" BorderThickness="1">
 										<Border.Style>
-											<Style>
-												<Setter Property="UIElement.Opacity" Value="1" />
+											<Style TargetType="Border">
+												<Setter Property="Opacity" Value="1" />
 												<Style.Triggers>
-													<DataTrigger Binding="{Binding IsUsable}" Value="False">
-														<Setter Property="UIElement.Opacity" Value="0.5" />
-													</DataTrigger>
+													<Trigger Property="IsEnabled" Value="False">
+														<Setter Property="Opacity" Value="0.5" />
+													</Trigger>
 												</Style.Triggers>
 											</Style>
 										</Border.Style>
@@ -150,11 +150,11 @@
 											</TextBlock>
 											<Button Grid.Column="2" Command="{Binding SelectPrivacy}" Click="ButtonBase_OnClick" ToolTip="{Binding PrivacyTooltip}">
 												<Button.Style>
-													<Style>
+													<Style TargetType="Button">
 														<Style.Triggers>
-															<DataTrigger Binding="{Binding Model.PrivacyArgs}" Value="{x:Null}">
+															<Trigger Property="IsEnabled" Value="False">
 																<Setter Property="UIElement.Visibility" Value="Collapsed" />
-															</DataTrigger>
+															</Trigger>
 														</Style.Triggers>
 													</Style>
 												</Button.Style>

@@ -5,6 +5,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
+	xmlns:converter="clr-namespace:BrowserPicker.Converter"
 	Background="Transparent"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:BrowserViewModel,d:IsDesignTimeCreatable=true}"
@@ -12,6 +13,11 @@
 	AllowsTransparency="True" WindowStyle="None"
 	Loaded="BrowserEditor_OnLoaded"
 	ShowInTaskbar="False">
+	<Window.Resources>
+		<ResourceDictionary>
+			<converter:IconFileToImageConverter x:Key="IconConverter" />
+		</ResourceDictionary>
+	</Window.Resources>
 	<Border CornerRadius="5" BorderBrush="#77FFFFFF" BorderThickness="2" Padding="10" Width="400" MouseLeftButtonDown="DragWindow">
 		<Border.Background>
 			<LinearGradientBrush EndPoint="0,1">
@@ -38,21 +44,21 @@
 
 			<TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="Add a browser" Foreground="White" HorizontalAlignment="Center" Margin="5" />
 
-			<Image Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="32" MaxHeight="32" Source="{Binding Thumbnail}" />
+			<Image Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="32" MaxHeight="32" Source="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" />
 
 			<TextBlock Text="Name: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Foreground="White" />
-			<TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+			<TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Model.Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 
             <TextBlock Text="Command: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="2" Foreground="White" />
-            <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Command,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+            <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Model.Command,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
             <Button Content="..." Grid.Row="2" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Command_Browse" />
 
             <TextBlock Text="Command Args: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="3" Foreground="White" />
-            <TextBox Grid.Column="2" Grid.Row="3" Text="{Binding CommandArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+            <TextBox Grid.Column="2" Grid.Row="3" Text="{Binding Model.CommandArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
             <Button Content="..." Grid.Row="3" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Command_Browse" />
 
             <TextBlock Text="Icon: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Foreground="White" />
-			<TextBox Grid.Column="2" Grid.Row="4" Text="{Binding IconPath,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+			<TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Model.IconPath,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 			<Button Content="..." Grid.Row="4" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Icon_Browse" />
 
 			<StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="5">

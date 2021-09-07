@@ -125,11 +125,12 @@ namespace BrowserPicker.ViewModel
 			if (!(((Window)sender).DataContext is BrowserViewModel browser))
 				return;
 
-			if (!string.IsNullOrEmpty(browser.Model.Name) && !string.IsNullOrEmpty(browser.Model.Command))
+			if (string.IsNullOrEmpty(browser.Model.Name) || string.IsNullOrEmpty(browser.Model.Command))
 			{
-				Choices.Add(browser);
-				Configuration.AddBrowser(browser.Model);
+				return;
 			}
+			Choices.Add(browser);
+			Configuration.AddBrowser(browser.Model);
 		}
 
 		public AppSettings Configuration { get; }
@@ -254,16 +255,17 @@ namespace BrowserPicker.ViewModel
 				return;
 
 			var targets = Directory.GetDirectories(systemApps, "*MicrosoftEdge_*");
-			if (targets.Length > 0)
+			if (targets.Length <= 0)
 			{
-				var known = WellKnownBrowsers.Lookup("Edge", null);
-				var appId = Path.GetFileName(targets[0]);
-				var icon = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png");
-				var shell = $"shell:AppsFolder\\{appId}!MicrosoftEdge";
-
-				var model = new BrowserModel(known, icon, shell);
-				AddOrUpdateBrowserModel(model);
+				return;
 			}
+			var known = WellKnownBrowsers.Lookup("Edge", null);
+			var appId = Path.GetFileName(targets[0]);
+			var icon = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png");
+			var shell = $"shell:AppsFolder\\{appId}!MicrosoftEdge";
+
+			var model = new BrowserModel(known, icon, shell);
+			AddOrUpdateBrowserModel(model);
 		}
 
 		private void EnumerateBrowsers(RegistryKey hive, string subKey)
