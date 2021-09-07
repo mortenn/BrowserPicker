@@ -79,11 +79,6 @@ namespace BrowserPicker
 			get;
 		}
 
-		public void RemoveDefault(string fragment)
-		{
-			Reg.SubKey(nameof(Defaults))?.DeleteValue(fragment);
-		}
-
 		public DefaultSetting AddDefault(string fragment, string browser)
 		{
 			var setting = GetDefaultSetting(null, browser);

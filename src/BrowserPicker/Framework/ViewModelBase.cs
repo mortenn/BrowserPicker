@@ -2,7 +2,7 @@ namespace BrowserPicker.Framework
 {
 	public abstract class ViewModelBase<T> : ModelBase where T : ModelBase
 	{
-		public ViewModelBase(T model)
+		protected ViewModelBase(T model)
 		{
 			Model = model;
 		}

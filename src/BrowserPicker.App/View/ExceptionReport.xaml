@@ -51,7 +51,7 @@
 							<Border BorderBrush="Silver" BorderThickness="1" Grid.Column="1">
 								<Border.Style>
 									<Style TargetType="Border">
-										<Setter Property="UIElement.Visibility" Value="Collapsed" />
+										<Setter Property="Visibility" Value="Collapsed" />
 										<Style.Triggers>
 											<DataTrigger Binding="{Binding ElementName=toggleButton, Path=IsChecked}" Value="True">
 												<Setter Property="UIElement.Visibility" Value="Visible" />
@@ -75,7 +75,7 @@
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical">
 			<TextBlock Text="Unfortunately, BrowserPicker has crashed." />
-			<TextBlock Text="Please submit a bugreport on https://github.com/mortenn/BrowserPicker." />
+			<TextBlock Text="Please submit a bug report on https://github.com/mortenn/BrowserPicker." />
 			<TextBlock Margin="0,4,0,0" Text="Exception details:" />
 		</StackPanel>
 		<Border Grid.Row="1" Margin="5">

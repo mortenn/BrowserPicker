@@ -82,10 +82,10 @@ namespace BrowserPicker
 			}
 			catch (Exception exception)
 			{
-				try { ViewModel.OnShutdown -= ExitApplication; } catch { }
-				try { cts?.Cancel(); } catch { }
-				try { (await loadingWindow)?.Close(); } catch { }
-				try { ViewModel.OnShutdown -= ExitApplication; } catch { }
+				try { ViewModel.OnShutdown -= ExitApplication; } catch { /* ignored */ }
+				try { cts?.Cancel(); } catch { /* ignored */ }
+				try { if (loadingWindow != null) (await loadingWindow)?.Close(); } catch { /* ignored */ }
+				try { ViewModel.OnShutdown -= ExitApplication; } catch { /* ignored */ }
 				ShowExceptionReport(exception);
 			}
 		}
@@ -107,7 +107,7 @@ namespace BrowserPicker
 		/// </summary>
 		/// <param name="cancellationToken">token that will cancel when the loading is complete or timed out</param>
 		/// <returns>The loading message window, so it may be closed.</returns>
-		private async Task<Window> ShowLoadingWindow(CancellationToken cancellationToken)
+		private static async Task<Window> ShowLoadingWindow(CancellationToken cancellationToken)
 		{
 			await Task.Delay(LoadingWindowDelayMilliseconds, cancellationToken);
 			var window = new LoadingWindow();
@@ -115,7 +115,7 @@ namespace BrowserPicker
 			return window;
 		}
 
-		private void ShowExceptionReport(Exception exception)
+		private static void ShowExceptionReport(Exception exception)
 		{
 			var viewModel = new ExceptionViewModel(exception);
 			var window = new ExceptionReport();
@@ -130,10 +130,10 @@ namespace BrowserPicker
 		/// Bare bones exception handler
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="unhandledExceptionEventArgs"></param>
-		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledException)
+		/// <param name="unhandledException"></param>
+		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledException)
 		{
-			MessageBox.Show(unhandledException.ExceptionObject.ToString());
+			_ = MessageBox.Show(unhandledException.ExceptionObject.ToString());
 		}
 
 		private static void ExitApplication(object sender, EventArgs args)

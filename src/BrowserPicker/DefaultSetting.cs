@@ -104,13 +104,15 @@ namespace BrowserPicker
 					// Unknown format detected, ignore rule
 					return;
 				}
-				if (Enum.TryParse<MatchType>(fragment.Substring(1, fragment.IndexOf('|', 1) - 1), true, out var matchType))
+
+				var prefix  = fragment.Substring(1, fragment.IndexOf('|', 1) - 1);
+				if (!Enum.TryParse<MatchType>(prefix, true, out var matchType))
 				{
-					type = matchType;
-					pattern = config[2];
+					// Unsupported match type detected, ignore rule
 					return;
 				}
-				// Unsupported match type detected, ignore rule
+				type = matchType;
+				pattern = config[2];
 				return;
 			}
 

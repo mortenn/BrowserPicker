@@ -12,7 +12,7 @@ namespace BrowserPicker
 			return List.FirstOrDefault(b => b.Name == name || executable != null && executable.IndexOf(b.Executable, StringComparison.CurrentCultureIgnoreCase) != -1);
 		}
 
-		public readonly static List<IWellKnownBrowser> List = new List<IWellKnownBrowser>
+		public static readonly List<IWellKnownBrowser> List = new List<IWellKnownBrowser>
 		{ 
 			new Firefox(),
 			new Chrome(),

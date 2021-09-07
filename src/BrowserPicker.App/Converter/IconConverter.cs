@@ -21,37 +21,41 @@ namespace BrowserPicker.Converter
 			{
 				return cache[iconPath];
 			}
-			if (!string.IsNullOrEmpty(iconPath))
+
+			if (string.IsNullOrWhiteSpace(iconPath))
 			{
-				var _iconPath = iconPath.Trim(new[] { '"', '\'', ' ', '\t', '\r', '\n' });
-				try
+				return null;
+			}
+
+			var realIconPath = iconPath.Trim('"', '\'', ' ', '\t', '\r', '\n');
+			try
+			{
+				if (!File.Exists(realIconPath) && realIconPath.Contains("%"))
+					realIconPath = Environment.ExpandEnvironmentVariables(realIconPath);
+
+				if (!File.Exists(realIconPath))
+					return null;
+
+				Stream icon;
+				if (realIconPath.EndsWith(".exe") || realIconPath.EndsWith(".dll"))
 				{
-					if (!File.Exists(_iconPath) && _iconPath.Contains("%"))
-						_iconPath = Environment.ExpandEnvironmentVariables(_iconPath);
-
-					if (!File.Exists(_iconPath))
+					var iconData = Icon.ExtractAssociatedIcon(realIconPath)?.ToBitmap();
+					if (iconData == null)
 						return null;
-
-					Stream icon = null;
-					if (_iconPath.EndsWith(".exe") || _iconPath.EndsWith(".dll"))
-					{
-						var iconData = Icon.ExtractAssociatedIcon(_iconPath)?.ToBitmap();
-						if (iconData == null)
-							return null;
-						icon = new MemoryStream();
-						iconData.Save(icon, ImageFormat.Png);
-					}
-					else
-					{
-						icon = File.Open(_iconPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-					}
-					if (icon != null)
-					{
-						cache.Add(iconPath, BitmapFrame.Create(icon));
-						return cache[iconPath];
-					}
+					icon = new MemoryStream();
+					iconData.Save(icon, ImageFormat.Png);
 				}
-				catch { }
+				else
+				{
+					icon = File.Open(realIconPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+				}
+
+				cache.Add(iconPath, BitmapFrame.Create(icon));
+				return cache[iconPath];
+			}
+			catch
+			{
+				// ignored
 			}
 			return null;
 		}
@@ -61,6 +65,6 @@ namespace BrowserPicker.Converter
 			return null;
 		}
 
-		private Dictionary<string, BitmapFrame> cache = new Dictionary<string, BitmapFrame>();
+		private readonly Dictionary<string, BitmapFrame> cache = new Dictionary<string, BitmapFrame>();
 	}
 }
