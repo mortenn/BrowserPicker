@@ -111,7 +111,7 @@ namespace BrowserPicker.Configuration
 			var list = Reg.CreateSubKey(nameof(BrowserList), true);
 			foreach (var remove in list.GetSubKeyNames().Except(browsers.Select(b => b.Name)))
 				list.DeleteSubKeyTree(remove);
-			foreach (var browser in browsers)
+			foreach (var browser in browsers.Where(b => !string.IsNullOrEmpty(b.Name)))
 			{
 				var key = list.CreateSubKey(browser.Name, true);
 				key.Set(nameof(browser.Name), browser.Name);

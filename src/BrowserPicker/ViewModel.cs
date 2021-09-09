@@ -209,7 +209,7 @@ namespace BrowserPicker
 				return;
 
 			var name = (string)reg.GetValue(null);
-			if (Choices.Any(c => c.Name == name))
+			if (Choices.Any(c => c.Name == name) || string.IsNullOrWhiteSpace(name))
 				return;
 
 			var icon = (string)reg.OpenSubKey("DefaultIcon", false)?.GetValue(null);
