@@ -169,6 +169,10 @@
     <Resource Include="Resources\privacy.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BrowserPicker.Windows\BrowserPicker.Windows.csproj">
+      <Project>{c3ce17ea-baae-4de7-afb2-319d50ecb2c8}</Project>
+      <Name>BrowserPicker.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BrowserPicker\BrowserPicker.csproj">
       <Project>{d7695535-9c0d-4983-b8f7-09b067347e7e}</Project>
       <Name>BrowserPicker</Name>

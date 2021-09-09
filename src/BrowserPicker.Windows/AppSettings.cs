@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using BrowserPicker.Framework;
 using Microsoft.Win32;
 
-namespace BrowserPicker
+namespace BrowserPicker.Windows
 {
-	public class AppSettings : ModelBase
+	public class AppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		private AppSettings()
 		{
@@ -51,6 +52,11 @@ namespace BrowserPicker
 			set { Reg.Set(value); OnPropertyChanged(); }
 		}
 
+		public bool DisableNetworkAccess
+		{
+			get => Reg.Get(false);
+			set { Reg.Set(value); OnPropertyChanged(); }
+		}
 
 		public List<BrowserModel> BrowserList
 		{
@@ -88,6 +94,92 @@ namespace BrowserPicker
 			return setting;
 		}
 
+
+		public void FindBrowsers()
+		{
+			// Prefer 64 bit browsers to 32 bit ones, machine wide installs to user specific ones.
+			EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\Clients\StartMenuInternet");
+			EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\Clients\StartMenuInternet");
+			EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
+			EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
+
+			if (!BrowserList.Any(browser => browser.Name.Contains("Edge")))
+			{
+				FindLegacyEdge();
+			}
+
+			LastBrowserScanTime = DateTime.Now;
+		}
+
+		/// <summary>
+		/// This is used to detect the old Edge browser.
+		/// If the computer has the new Microsoft Edge browser installed, this should never be called.
+		/// </summary>
+		private void FindLegacyEdge()
+		{
+			var systemApps = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SystemApps");
+			if (!Directory.Exists(systemApps))
+				return;
+
+			var targets = Directory.GetDirectories(systemApps, "*MicrosoftEdge_*");
+			if (targets.Length <= 0)
+			{
+				return;
+			}
+			var known = WellKnownBrowsers.Lookup("Edge", null);
+			var appId = Path.GetFileName(targets[0]);
+			var icon = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png");
+			var shell = $"shell:AppsFolder\\{appId}!MicrosoftEdge";
+
+			var model = new BrowserModel(known, icon, shell);
+			AddOrUpdateBrowserModel(model);
+		}
+
+		private void EnumerateBrowsers(RegistryKey hive, string subKey)
+		{
+			var root = hive.OpenSubKey(subKey, false);
+			if (root == null)
+				return;
+			foreach (var browser in root.GetSubKeyNames().Where(n => n != "BrowserPicker"))
+				GetBrowserDetails(root, browser);
+		}
+
+		private void GetBrowserDetails(RegistryKey root, string browser)
+		{
+			var reg = root.OpenSubKey(browser, false);
+			if (reg == null)
+				return;
+
+			var (name, icon, shell) = reg.GetBrowser();
+
+			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(shell))
+			{
+				return;
+			}
+			var known = WellKnownBrowsers.Lookup(name, shell);
+			if (known != null)
+			{
+				var knownModel = new BrowserModel(known, icon, shell);
+				AddOrUpdateBrowserModel(knownModel);
+				return;
+			}
+			var model = new BrowserModel(name, icon, shell);
+			AddOrUpdateBrowserModel(model);
+		}
+
+		private void AddOrUpdateBrowserModel(BrowserModel model)
+		{
+			var update = BrowserList.FirstOrDefault(m => m.Name.Equals(model.Name, StringComparison.CurrentCultureIgnoreCase));
+			if (update != null)
+			{
+				update.Command = model.Command;
+				update.CommandArgs = model.CommandArgs;
+				update.PrivacyArgs = model.PrivacyArgs;
+				update.IconPath = model.IconPath;
+				return;
+			}
+			AddBrowser(model);
+		}
 
 		private static List<DefaultSetting> GetDefaults()
 		{
@@ -183,13 +275,13 @@ namespace BrowserPicker
 			var config = Reg.SubKey(nameof(BrowserList), model.Name);
 			switch (e.PropertyName)
 			{
-				case nameof(BrowserModel.Command):     config.Set(model.Command,     e.PropertyName); break;
-				case nameof(BrowserModel.Executable):  config.Set(model.Executable,  e.PropertyName); break;
+				case nameof(BrowserModel.Command): config.Set(model.Command, e.PropertyName); break;
+				case nameof(BrowserModel.Executable): config.Set(model.Executable, e.PropertyName); break;
 				case nameof(BrowserModel.CommandArgs): config.Set(model.CommandArgs, e.PropertyName); break;
 				case nameof(BrowserModel.PrivacyArgs): config.Set(model.PrivacyArgs, e.PropertyName); break;
-				case nameof(BrowserModel.IconPath):    config.Set(model.IconPath,    e.PropertyName); break;
-				case nameof(BrowserModel.Usage):       config.Set(model.Usage,       e.PropertyName); break;
-				case nameof(BrowserModel.Disabled):    config.Set(model.Disabled,    e.PropertyName); break;
+				case nameof(BrowserModel.IconPath): config.Set(model.IconPath, e.PropertyName); break;
+				case nameof(BrowserModel.Usage): config.Set(model.Usage, e.PropertyName); break;
+				case nameof(BrowserModel.Disabled): config.Set(model.Disabled, e.PropertyName); break;
 				case nameof(BrowserModel.Removed):
 					if (model.Removed)
 					{

@@ -86,7 +86,7 @@ namespace BrowserPicker.ViewModel
 		{
 			try
 			{
-				if (AppSettings.Settings.UseAutomaticOrdering)
+				if (App.Settings.UseAutomaticOrdering)
 				{
 					Model.Usage++;
 				}

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using BrowserPicker.View;
 using BrowserPicker.ViewModel;
+using BrowserPicker.Windows;
 
 namespace BrowserPicker
 {
@@ -14,6 +15,8 @@ namespace BrowserPicker
 	public partial class App
 	{
 		private const int LoadingWindowDelayMilliseconds = 300;
+
+		public static IBrowserPickerConfiguration Settings = AppSettings.Settings;
 
 		public App()
 		{
