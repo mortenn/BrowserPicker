@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Framework;
@@ -22,34 +20,61 @@ namespace BrowserPicker.ViewModel
 		[UsedImplicitly]
 		public ApplicationViewModel()
 		{
-			UnderlyingTargetURL = "https://github.com/mortenn/BrowserPicker";
+			Url = new UrlHandler(App.Settings, "https://github.com/mortenn/BrowserPicker");
 			force_choice = true;
 			Configuration = App.Settings;
-			Choices = new ObservableCollection<BrowserViewModel>(WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this)));
+			Choices = new ObservableCollection<BrowserViewModel>(
+				WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this))
+			);
 		}
 
-		public ApplicationViewModel(List<string> arguments)
+		public ApplicationViewModel(List<string> arguments, IBrowserPickerConfiguration settings)
 		{
 			var options = arguments.Where(arg => arg[0] == '/').ToList();
-			TargetURL = arguments.Except(options).FirstOrDefault();
-			UnderlyingTargetURL = TargetURL;
 			force_choice = options.Contains("/choose");
-			ConfigurationMode = TargetURL == null;
-			Configuration = App.Settings;
+			var url = arguments.Except(options).FirstOrDefault();
+			if (url != null)
+			{
+				Url = new UrlHandler(settings, url);
+			}
+			ConfigurationMode = url == null;
+			Configuration = settings;
+			Configuration.PropertyChanged += Configuration_PropertyChanged;
 			Choices = new ObservableCollection<BrowserViewModel>(Configuration.BrowserList.Select(m => new BrowserViewModel(m, this)));
+		}
+
+		public UrlHandler Url { get; }
+
+		private void Configuration_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(Configuration.BrowserList))
+			{
+				var added = Configuration.BrowserList.Where(b => Choices.All(c => c.Model.Name != b.Name)).ToList();
+				if (added.Count > 0)
+				{
+					foreach(var vm in added.Select(m => new BrowserViewModel(m, this)))
+					{
+						Choices.Add(vm);
+					}
+				}
+				var removed = Choices.Where(c => Configuration.BrowserList.All(b => b.Name != c.Model.Name)).ToList();
+				if (removed.Count > 0)
+				{
+					foreach(var m in removed)
+					{
+						Choices.Remove(m);
+					}
+				}
+			}
 		}
 
 		public void Initialize()
 		{
-			if (Choices.Count == 0 || (DateTime.Now - Configuration.LastBrowserScanTime) > TimeSpan.FromDays(7) || Choices.All(c => c.Model.PrivacyArgs == null))
-			{
-				Configuration.FindBrowsers();
-			}
 			if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
 			{
 				return;
 			}
-			if (TargetURL != null)
+			if (Url != null)
 			{
 				CheckDefaultBrowser();
 			}
@@ -60,30 +85,13 @@ namespace BrowserPicker.ViewModel
 			}
 		}
 
-		public async Task ScanURLAsync(CancellationToken token)
-		{
-			var url = new UrlHandler(Configuration, TargetURL);
-			try
-			{
-				await url.ScanURLAsync(token);
-			}
-			catch (TaskCanceledException)
-			{
-				// ignored
-			}
-			if (url.UnderlyingTargetURL != null)
-			{
-				UnderlyingTargetURL = url.UnderlyingTargetURL;
-			}
-		}
-
 		private void CheckDefaultBrowser()
 		{
 			var defaults = Configuration.Defaults.ToList();
 			if (defaults.Count <= 0)
 				return;
 
-			var url = new Uri(UnderlyingTargetURL);
+			var url = new Uri(Url.UnderlyingTargetURL);
 			var auto = defaults
 				.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
 				.Where(o => o.matchLength > 0)
@@ -122,8 +130,9 @@ namespace BrowserPicker.ViewModel
 		{
 			((Window)sender).Closing -= Editor_Closing;
 			if (!(((Window)sender).DataContext is BrowserViewModel browser))
+			{
 				return;
-
+			}
 			if (string.IsNullOrEmpty(browser.Model.Name) || string.IsNullOrEmpty(browser.Model.Command))
 			{
 				return;
@@ -145,7 +154,7 @@ namespace BrowserPicker.ViewModel
 				OnPropertyChanged();
 			}
 		}
-
+		/*
 		public string TargetURL
 		{
 			get => target_url;
@@ -175,8 +184,7 @@ namespace BrowserPicker.ViewModel
 				OnPropertyChanged(nameof(IsShortenedURL));
 			}
 		}
-
-		public bool IsShortenedURL => TargetURL != UnderlyingTargetURL;
+		*/
 
 		public string EditURL
 		{
@@ -184,7 +192,7 @@ namespace BrowserPicker.ViewModel
 			set
 			{
 				edit_url = value;
-				UnderlyingTargetURL = value;
+				Url.UnderlyingTargetURL = value;
 			}
 		}
 
@@ -215,7 +223,7 @@ namespace BrowserPicker.ViewModel
 		{
 			try
 			{
-				var thread = new Thread(() => Clipboard.SetText(UnderlyingTargetURL));
+				var thread = new Thread(() => Clipboard.SetText(Url.UnderlyingTargetURL));
 				thread.SetApartmentState(ApartmentState.STA);
 				thread.Start();
 				thread.Join();
@@ -230,7 +238,7 @@ namespace BrowserPicker.ViewModel
 
 		private void OpenURLEditor()
 		{
-			EditURL = UnderlyingTargetURL;
+			EditURL = Url.UnderlyingTargetURL;
 			OnPropertyChanged(nameof(EditURL));
 		}
 
@@ -244,8 +252,6 @@ namespace BrowserPicker.ViewModel
 
 		private bool configuration_mode;
 		private string edit_url;
-		private string target_url;
-		private string actual_url;
 		private bool alt_pressed;
 		private readonly bool force_choice;
 	}

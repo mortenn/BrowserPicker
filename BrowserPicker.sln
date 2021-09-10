@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker", "src\Browse
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrowserPicker.App", "src\BrowserPicker.App\BrowserPicker.App.csproj", "{B875AE86-5212-4F7F-BB1C-2BAA1FC110BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrowserPicker.Windows", "src\BrowserPicker.Windows\BrowserPicker.Windows.csproj", "{C3CE17EA-BAAE-4DE7-AFB2-319D50ECB2C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker.Windows", "src\BrowserPicker.Windows\BrowserPicker.Windows.csproj", "{C3CE17EA-BAAE-4DE7-AFB2-319D50ECB2C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

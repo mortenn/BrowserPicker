@@ -1,25 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using BrowserPicker.Framework;
 using BrowserPicker.View;
 using BrowserPicker.ViewModel;
 using BrowserPicker.Windows;
 
 namespace BrowserPicker
 {
-	/// <summary>
-	/// Interaction logic for App.xaml
-	/// </summary>
 	public partial class App
 	{
 		private const int LoadingWindowDelayMilliseconds = 300;
 
-		public static IBrowserPickerConfiguration Settings = AppSettings.Settings;
+		public static CancellationTokenSource ApplicationCancellationToken = new CancellationTokenSource();
+
+		public static IBrowserPickerConfiguration Settings = new AppSettings();
 
 		public App()
 		{
+			backgroundTasks.Add(Settings);
+
 			// Basic unhandled exception catchment
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 
@@ -27,7 +30,11 @@ namespace BrowserPicker
 			var arguments = Environment.GetCommandLineArgs().Skip(1).ToList();
 			try
 			{
-				ViewModel = new ApplicationViewModel(arguments);
+				ViewModel = new ApplicationViewModel(arguments, Settings);
+				if (ViewModel.Url != null)
+				{
+					backgroundTasks.Add(ViewModel.Url);
+				}
 			}
 			catch (Exception exception)
 			{
@@ -52,8 +59,10 @@ namespace BrowserPicker
 				// Catch user switching to another window
 				Deactivated += (sender, args) => ViewModel.OnDeactivated();
 
+				LongRunningProcesses = RunLongRunningProcesses();
+
 				// Open in configuration mode if user started BrowserPicker directly
-				if (ViewModel.TargetURL == null)
+				if (ViewModel.Url == null)
 				{
 					ShowMainWindow();
 					return;
@@ -67,7 +76,9 @@ namespace BrowserPicker
 					// Show LoadingWindow after a small delay
 					// Goal is to avoid flicker for fast loading sites but to show progress for sites that take longer
 					loadingWindow = ShowLoadingWindow(cts.Token);
-					await ViewModel.ScanURLAsync(cts.Token);
+
+					// Wait for long running processes in case they finish quickly
+					await Task.Run(() => LongRunningProcesses.Wait(), cts.Token);
 
 					// cancel the token to prevent showing LoadingWindow if it is not needed and has not been shown already
 					cts.Cancel();
@@ -90,6 +101,19 @@ namespace BrowserPicker
 				try { if (loadingWindow != null) (await loadingWindow)?.Close(); } catch { /* ignored */ }
 				try { ViewModel.OnShutdown -= ExitApplication; } catch { /* ignored */ }
 				ShowExceptionReport(exception);
+			}
+		}
+
+		public async Task RunLongRunningProcesses()
+		{
+			try
+			{
+				var tasks = backgroundTasks.Select(task => task.Start(ApplicationCancellationToken.Token)).ToArray();
+				await Task.WhenAll(tasks);
+			}
+			catch (TaskCanceledException)
+			{
+				// ignored
 			}
 		}
 
@@ -126,7 +150,6 @@ namespace BrowserPicker
 			window.DataContext = viewModel;
 			window.Show();
 			window.Focus();
-			//window.Wait();
 		}
 
 		/// <summary>
@@ -136,14 +159,27 @@ namespace BrowserPicker
 		/// <param name="unhandledException"></param>
 		private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledException)
 		{
+			ApplicationCancellationToken.Cancel();
 			_ = MessageBox.Show(unhandledException.ExceptionObject.ToString());
 		}
 
 		private static void ExitApplication(object sender, EventArgs args)
 		{
+			ApplicationCancellationToken.Cancel();
+			try
+			{
+				LongRunningProcesses?.Wait();
+			}
+			catch (TaskCanceledException)
+			{
+				// ignore;
+			}
 			Current.Shutdown();
 		}
 
 		public ApplicationViewModel ViewModel { get; }
+
+		private static readonly List<ILongRunningProcess> backgroundTasks = new List<ILongRunningProcess>();
+		private static Task LongRunningProcesses;
 	}
 }

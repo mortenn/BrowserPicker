@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using BrowserPicker.Framework;
 using Microsoft.Win32;
 
@@ -10,7 +12,7 @@ namespace BrowserPicker.Windows
 {
 	public class AppSettings : ModelBase, IBrowserPickerConfiguration
 	{
-		private AppSettings()
+		public AppSettings()
 		{
 			BrowserList = GetBrowsers();
 			Defaults = GetDefaults();
@@ -32,12 +34,6 @@ namespace BrowserPicker.Windows
 		{
 			get => Reg.Get(2000);
 			set { Reg.Set(value); OnPropertyChanged(); }
-		}
-
-		public DateTime LastBrowserScanTime
-		{
-			get => new DateTime(Reg.Get<long>());
-			set { Reg.Set(value.Ticks); OnPropertyChanged(); }
 		}
 
 		public bool UseAutomaticOrdering
@@ -79,7 +75,6 @@ namespace BrowserPicker.Windows
 			OnPropertyChanged(nameof(BrowserList));
 		}
 
-
 		public List<DefaultSetting> Defaults
 		{
 			get;
@@ -94,7 +89,6 @@ namespace BrowserPicker.Windows
 			return setting;
 		}
 
-
 		public void FindBrowsers()
 		{
 			// Prefer 64 bit browsers to 32 bit ones, machine wide installs to user specific ones.
@@ -107,8 +101,11 @@ namespace BrowserPicker.Windows
 			{
 				FindLegacyEdge();
 			}
+		}
 
-			LastBrowserScanTime = DateTime.Now;
+		public async Task Start(CancellationToken cancellationToken)
+		{
+			await Task.Run(() => FindBrowsers(), cancellationToken);
 		}
 
 		/// <summary>
@@ -139,32 +136,38 @@ namespace BrowserPicker.Windows
 		{
 			var root = hive.OpenSubKey(subKey, false);
 			if (root == null)
+			{
 				return;
+			}
 			foreach (var browser in root.GetSubKeyNames().Where(n => n != "BrowserPicker"))
-				GetBrowserDetails(root, browser);
+			{
+				var browserModel = GetBrowserDetails(root, browser);
+				if (browserModel != null)
+				{
+					AddOrUpdateBrowserModel(browserModel);
+				}
+			}
 		}
 
-		private void GetBrowserDetails(RegistryKey root, string browser)
+		private BrowserModel GetBrowserDetails(RegistryKey root, string browser)
 		{
 			var reg = root.OpenSubKey(browser, false);
 			if (reg == null)
-				return;
+			{
+				return null;
+			}
 
 			var (name, icon, shell) = reg.GetBrowser();
 
 			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(shell))
 			{
-				return;
+				return null;
 			}
+
 			var known = WellKnownBrowsers.Lookup(name, shell);
-			if (known != null)
-			{
-				var knownModel = new BrowserModel(known, icon, shell);
-				AddOrUpdateBrowserModel(knownModel);
-				return;
-			}
-			var model = new BrowserModel(name, icon, shell);
-			AddOrUpdateBrowserModel(model);
+			return known != null
+				? new BrowserModel(known, icon, shell)
+				: new BrowserModel(name, icon, shell);
 		}
 
 		private void AddOrUpdateBrowserModel(BrowserModel model)
@@ -294,7 +297,5 @@ namespace BrowserPicker.Windows
 		}
 
 		private static readonly RegistryKey Reg = Registry.CurrentUser.Open("Software", nameof(BrowserPicker));
-
-		public static AppSettings Settings = new AppSettings();
 	}
 }

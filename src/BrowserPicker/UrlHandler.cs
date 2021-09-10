@@ -1,15 +1,17 @@
-﻿using JetBrains.Annotations;
+﻿using BrowserPicker.Framework;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace BrowserPicker
 {
-	public class UrlHandler
+	public class UrlHandler : ModelBase, ILongRunningProcess
 	{
 		[UsedImplicitly]
 		// Design time constructor
@@ -18,15 +20,17 @@ namespace BrowserPicker
 			TargetURL = "https://github.com/mortenn/BrowserPicker";
 		}
 
-		public UrlHandler(string requestedUrl)
+		public UrlHandler(IBrowserPickerConfiguration configuration, string requestedUrl)
 		{
+
 			TargetURL = requestedUrl;
+			this.configuration = configuration;
 		}
 
 		/// <summary>
 		/// Perform some tests on the Target URL to see if it is an URL shortener
 		/// </summary>
-		public async Task ScanURLAsync(CancellationToken cancellationToken)
+		public async Task Start(CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -40,6 +44,9 @@ namespace BrowserPicker
 						uri = new Uri(jump);
 						continue;
 					}
+
+					if (configuration.DisableNetworkAccess)
+						break;
 
 					var shortened = await ResolveShortener(uri, cancellationToken);
 					if (shortened != null)
@@ -114,5 +121,6 @@ namespace BrowserPicker
 			("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),
 			("https://l.facebook.com/l.php", "u")
 		};
+		private readonly string targetURL;
 	}
 }

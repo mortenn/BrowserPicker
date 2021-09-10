@@ -1,14 +1,15 @@
-﻿using System;
+﻿using BrowserPicker.Framework;
 using System.Collections.Generic;
+using System.ComponentModel;
+
 namespace BrowserPicker
 {
-	public interface IBrowserPickerConfiguration
+	public interface IBrowserPickerConfiguration : INotifyPropertyChanged, ILongRunningProcess
 	{
 
 		bool AlwaysPrompt { get; set; }
 		bool DefaultsWhenRunning { get; set; }
 		int UrlLookupTimeoutMilliseconds { get; set; }
-		DateTime LastBrowserScanTime { get; set; }
 		bool UseAutomaticOrdering { get; set; }
 		bool DisableTransparency { get; set; }
 		bool DisableNetworkAccess { get; set; }

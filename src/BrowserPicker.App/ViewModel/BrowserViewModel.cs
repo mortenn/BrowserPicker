@@ -79,7 +79,7 @@ namespace BrowserPicker.ViewModel
 
 		private bool CanLaunch(bool privacy)
 		{
-			return !string.IsNullOrWhiteSpace(view_model.TargetURL) && !(privacy && Model.PrivacyArgs == null);
+			return !string.IsNullOrWhiteSpace(view_model.Url?.TargetURL) && !(privacy && Model.PrivacyArgs == null);
 		}
 
 		private void Launch(bool privacy)
@@ -92,7 +92,7 @@ namespace BrowserPicker.ViewModel
 				}
 
 				var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
-				var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.TargetURL}\"");	
+				var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.Url.TargetURL}\"");	
 				_ = Process.Start(Model.Command, args);
 			}
 			catch

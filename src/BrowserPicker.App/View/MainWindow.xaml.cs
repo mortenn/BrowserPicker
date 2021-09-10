@@ -32,7 +32,7 @@ namespace BrowserPicker.View
 				if (e.Key == Key.Escape)
 					Close();
 
-				if (ViewModel.TargetURL == null)
+				if (ViewModel.Url == null)
 					return;
 
 				int n;
