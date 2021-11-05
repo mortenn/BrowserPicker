@@ -79,6 +79,10 @@ namespace BrowserPicker.Configuration
 					case "Edge":
 						arg = EDGE_PRIVATE_ARG;
 						break;
+					case "Opera":
+					case "Opera Stable":
+						arg = OPERA_PRIVATE_ARG;
+						break;
 				}
 				if (string.IsNullOrEmpty(arg) && !string.IsNullOrEmpty(Command))
 				{
@@ -90,6 +94,8 @@ namespace BrowserPicker.Configuration
 						arg = IE_PRIVATE_ARG;
 					else if (Command.IndexOf("firefox.exe", System.StringComparison.CurrentCultureIgnoreCase) != -1)
 						arg = FIREFOX_PRIVATE_ARG;
+					else if (Command.IndexOf(@"Opera\Launcher.exe", System.StringComparison.CurrentCultureIgnoreCase) != -1)
+						arg = OPERA_PRIVATE_ARG;
 				}
 				return arg;
 			}
@@ -126,6 +132,7 @@ namespace BrowserPicker.Configuration
 					var cmd = Command;
 					if (cmd[0] == '"')
 						cmd = cmd.Split('"')[1];
+					cmd = cmd.Replace(@"Opera\Launcher.exe", @"Opera\Opera.exe");
 					return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(cmd)).Any(p => p.SessionId == session);
 				}
 				catch
@@ -261,6 +268,7 @@ namespace BrowserPicker.Configuration
 		private const string IE_PRIVATE_ARG = "-private ";
 		private const string FIREFOX_PRIVATE_ARG = "-private-window ";
 		private const string CHROME_PRIVATE_ARG = "--incognito ";
+		private const string OPERA_PRIVATE_ARG = "--incognito ";
 		private const string EDGE_PRIVATE_ARG = "-inprivate ";
 	}
 }
