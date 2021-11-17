@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -92,7 +91,16 @@ namespace BrowserPicker
 		}
 
 		public string TargetURL { get; }
-		public string UnderlyingTargetURL { get; private set; }
+
+		public string UnderlyingTargetURL
+		{
+			get => underlying_target_url;
+			set
+			{
+				underlying_target_url = value;
+				OnPropertyChanged();
+			}
+		}
 
 		private HttpClient client;
 
@@ -122,5 +130,7 @@ namespace BrowserPicker
 			("https://l.facebook.com/l.php", "u")
 		};
 		private readonly string targetURL;
+		private readonly IBrowserPickerConfiguration configuration;
+		private string underlying_target_url;
 	}
 }

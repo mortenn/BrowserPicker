@@ -21,7 +21,7 @@ namespace BrowserPicker
 
 		public App()
 		{
-			backgroundTasks.Add(Settings);
+			BackgroundTasks.Add(Settings);
 
 			// Basic unhandled exception catchment
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
@@ -33,7 +33,7 @@ namespace BrowserPicker
 				ViewModel = new ApplicationViewModel(arguments, Settings);
 				if (ViewModel.Url != null)
 				{
-					backgroundTasks.Add(ViewModel.Url);
+					BackgroundTasks.Add(ViewModel.Url);
 				}
 			}
 			catch (Exception exception)
@@ -59,7 +59,7 @@ namespace BrowserPicker
 				// Catch user switching to another window
 				Deactivated += (sender, args) => ViewModel.OnDeactivated();
 
-				LongRunningProcesses = RunLongRunningProcesses();
+				long_running_processes = RunLongRunningProcesses();
 
 				// Open in configuration mode if user started BrowserPicker directly
 				if (ViewModel.Url == null)
@@ -78,7 +78,7 @@ namespace BrowserPicker
 					loadingWindow = ShowLoadingWindow(cts.Token);
 
 					// Wait for long running processes in case they finish quickly
-					await Task.Run(() => LongRunningProcesses.Wait(), cts.Token);
+					await Task.Run(() => long_running_processes.Wait(), cts.Token);
 
 					// cancel the token to prevent showing LoadingWindow if it is not needed and has not been shown already
 					cts.Cancel();
@@ -108,7 +108,7 @@ namespace BrowserPicker
 		{
 			try
 			{
-				var tasks = backgroundTasks.Select(task => task.Start(ApplicationCancellationToken.Token)).ToArray();
+				var tasks = BackgroundTasks.Select(task => task.Start(ApplicationCancellationToken.Token)).ToArray();
 				await Task.WhenAll(tasks);
 			}
 			catch (TaskCanceledException)
@@ -168,7 +168,7 @@ namespace BrowserPicker
 			ApplicationCancellationToken.Cancel();
 			try
 			{
-				LongRunningProcesses?.Wait();
+				long_running_processes?.Wait();
 			}
 			catch (TaskCanceledException)
 			{
@@ -179,7 +179,7 @@ namespace BrowserPicker
 
 		public ApplicationViewModel ViewModel { get; }
 
-		private static readonly List<ILongRunningProcess> backgroundTasks = new List<ILongRunningProcess>();
-		private static Task LongRunningProcesses;
+		private static readonly List<ILongRunningProcess> BackgroundTasks = new List<ILongRunningProcess>();
+		private static Task long_running_processes;
 	}
 }
