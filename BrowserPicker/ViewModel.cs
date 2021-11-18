@@ -107,7 +107,7 @@ namespace BrowserPicker
 		{
 			try
 			{
-				var thread = new Thread(() => Clipboard.SetText(UnderlyingTargetURL));
+				var thread = new Thread(() => Clipboard.SetText(TargetURL));
 				thread.SetApartmentState(ApartmentState.STA);
 				thread.Start();
 				thread.Join();

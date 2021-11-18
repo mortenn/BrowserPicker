@@ -12,7 +12,7 @@ namespace BrowserPicker
 		{
 			var arguments = Environment.GetCommandLineArgs();
 			var forceChoice = false;
-			if(arguments[1] == "/choose")
+			if(arguments.Length > 1 && arguments[1] == "/choose")
 			{
 				TargetURL = arguments[2];
 				forceChoice = true;
