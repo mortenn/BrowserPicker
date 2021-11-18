@@ -23,7 +23,7 @@ namespace BrowserPicker
 			var arguments = Environment.GetCommandLineArgs().Skip(1).ToList();
 			var options = arguments.Where(arg => arg[0] == '/').ToList();
 			TargetURL = arguments.Except(options).FirstOrDefault();
-			ViewModel = new ViewModel(options.Contains("/choose"));
+			ViewModel = new ViewModel(options.Contains("/choose") || TargetURL == null);
 		}
 
 		protected override async void OnStartup(StartupEventArgs e)
