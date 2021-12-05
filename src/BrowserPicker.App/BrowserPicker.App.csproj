@@ -11,15 +11,21 @@
 		<Description>Dynamically pick browser on the fly</Description>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-	  <SelfContained>false</SelfContained>
-		<Configurations>Debug;Release;SignedRelease</Configurations>
+		<Configurations>Debug;Release;SignedRelease;StandaloneRelease</Configurations>
     <ApplicationIcon>Resources\web_icon.ico</ApplicationIcon>
-    <SignAssembly>False</SignAssembly>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 		<Version>2.0.0.1</Version>
 	</PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
     <OutputPath>bin\SignedRelease\</OutputPath>
+    <Optimize>true</Optimize>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StandaloneRelease|AnyCPU'">
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>true</SelfContained>
+		<OutputPath>bin\StandaloneRelease\</OutputPath>
     <Optimize>true</Optimize>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -40,6 +46,9 @@
     <ProjectReference Include="..\BrowserPicker\BrowserPicker.csproj" />
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+		<Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).dll&#xD;&#xA;&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).exe" />
+	</Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)' == 'StandaloneRelease|AnyCPU'">
 		<Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).dll&#xD;&#xA;&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).exe" />
 	</Target>
 </Project>
