@@ -2,17 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>1.9.0</Version>
-    <AssemblyName>BrowserPicker.Common</AssemblyName>
+    <Version>2.0.0</Version>
+		<VersionSuffix>-beta1</VersionSuffix>
+		<AssemblyName>BrowserPicker.Common</AssemblyName>
+    <Configurations>Debug;Release;SignedRelease</Configurations>
   </PropertyGroup>
-
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+		<OutputPath>bin\SignedRelease\</OutputPath>
+		<Optimize>true</Optimize>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == SignedRelease (&#xD;&#xA;  &quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetPath)&#xD;&#xA;)" />
-  </Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+		<Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetPath)" />
+	</Target>
 
 </Project>

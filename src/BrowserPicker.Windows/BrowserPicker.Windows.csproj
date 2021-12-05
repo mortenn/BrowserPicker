@@ -1,14 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
+    <Configurations>Debug;Release;SignedRelease</Configurations>
+		<Version>2.0.0</Version>
+		<VersionSuffix>-beta1</VersionSuffix>
   </PropertyGroup>
-  <ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+		<OutputPath>bin\SignedRelease\</OutputPath>
+		<Optimize>true</Optimize>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<ItemGroup>
     <ProjectReference Include="..\BrowserPicker\BrowserPicker.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
   </ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+		<Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetPath)" />
+	</Target>
 </Project>
