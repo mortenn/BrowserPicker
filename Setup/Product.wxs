@@ -7,6 +7,7 @@
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
 
+		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.TargetPath)"/>
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 		</Feature>
@@ -74,9 +75,6 @@
 			</Component>
 			<Component Guid="*" Win64="yes">
 				<File Name="$(var.BrowserPicker.TargetFileName).config" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Guid="*" Win64="yes">
-				<File Name="JetBrains.Annotations.dll" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>
