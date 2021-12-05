@@ -75,19 +75,15 @@ namespace BrowserPicker
 			).FirstOrDefault(underlyingUrl => underlyingUrl != null);
 		}
 
-		private async Task<string> ResolveShortener(Uri uri, CancellationToken cancellationToken)
+		private static async Task<string> ResolveShortener(Uri uri, CancellationToken cancellationToken)
 		{
 			if (UrlShorteners.All(s => !uri.Host.EndsWith(s)))
 			{
 				return null;
 			}
-			if (client == null)
-			{
-				client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
-			}
 			var response = await client.GetAsync(uri, cancellationToken);
 			var location = response.Headers.Location;
-			return location != null ? location.OriginalString : null;
+			return location?.OriginalString;
 		}
 
 		public string TargetURL { get; }
@@ -102,9 +98,7 @@ namespace BrowserPicker
 			}
 		}
 
-		private HttpClient client;
-
-		private static readonly List<string> UrlShorteners = new List<string>
+		private static readonly List<string> UrlShorteners = new()
 		{
 			"safelinks.protection.outlook.com",
 			"aka.ms",
@@ -123,14 +117,14 @@ namespace BrowserPicker
 			"go.microsoft.com"
 		};
 
-		private static readonly List<(string url, string parameter)> JumpPages = new List<(string url, string parameter)>
+		private static readonly List<(string url, string parameter)> JumpPages = new()
 		{
 			("safelinks.protection.outlook.com", "url"),
 			("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),
 			("https://l.facebook.com/l.php", "u")
 		};
-		private readonly string targetURL;
 		private readonly IBrowserPickerConfiguration configuration;
 		private string underlying_target_url;
+		private static readonly HttpClient client = new(new HttpClientHandler { AllowAutoRedirect = false });
 	}
 }

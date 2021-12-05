@@ -30,7 +30,7 @@ namespace BrowserPicker.Converter
 			var realIconPath = iconPath.Trim('"', '\'', ' ', '\t', '\r', '\n');
 			try
 			{
-				if (!File.Exists(realIconPath) && realIconPath.Contains("%"))
+				if (!File.Exists(realIconPath) && realIconPath.Contains('%'))
 					realIconPath = Environment.ExpandEnvironmentVariables(realIconPath);
 
 				if (!File.Exists(realIconPath))
@@ -65,6 +65,6 @@ namespace BrowserPicker.Converter
 			return null;
 		}
 
-		private readonly Dictionary<string, BitmapFrame> cache = new Dictionary<string, BitmapFrame>();
+		private readonly Dictionary<string, BitmapFrame> cache = new();
 	}
 }
