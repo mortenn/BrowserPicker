@@ -2,8 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Configurations>Debug;Release;SignedRelease</Configurations>
-		<Version>2.0.0</Version>
-		<VersionSuffix>-beta1</VersionSuffix>
+		<Version>2.0.0.1</Version>
   </PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
 		<OutputPath>bin\SignedRelease\</OutputPath>
