@@ -63,6 +63,11 @@ If you browse for the command first, the application will assume the executable 
 
 The name of the application will be attempted to be set automatically based on information in the executable.
 
+Tip for Chrome Users: If you are using multiple Chrome profiles, by default if you choose Chrome it will launch in the last
+profile you launched Chrome with.  To make it possibe for browser picker to select a profile you can create a new browser 
+for each profile, set the program to the chrome executable, and add a command line argument to specify which profile to launch:
+`--profile-directory=Default` for the first profile, `--profile-directory=Profile 1` for the second profile, and so on.
+
 Under the other tab, you can assign a default browser by domain:
 
 ![Screenshot 3](http://i.imgur.com/Ealb42I.png)
