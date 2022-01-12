@@ -9,7 +9,7 @@
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance configuration:Browser,d:IsDesignTimeCreatable=true}"
 	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
-	AllowsTransparency="True" WindowStyle="None"
+	AllowsTransparency="True" WindowStyle="None" Topmost="True"
 	Loaded="BrowserEditor_OnLoaded"
 	ShowInTaskbar="False">
 	<Border CornerRadius="5" BorderBrush="#77FFFFFF" BorderThickness="2" Padding="10" Width="400" MouseLeftButtonDown="DragWindow">
