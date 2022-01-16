@@ -68,7 +68,7 @@ profile you launched Chrome with.  To make it possibe for browser picker to sele
 for each profile, set the program to the chrome executable, and add a command line argument to specify which profile to launch:
 `--profile-directory=Default` for the first profile, `--profile-directory="Profile 1"` for the second profile, and so on.
 
-Please not that arguments with spaces do require "" around them to be properly passed to chrome.
+Please note that arguments with spaces do require "" around them to be properly passed to chrome.
 
 Under the other tab, you can assign a default browser by domain:
 
