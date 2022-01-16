@@ -60,7 +60,7 @@ namespace BrowserPicker.Configuration
 		{
 			get
 			{
-				string arg = null;
+				string arg;
 				switch (Name)
 				{
 					default:
