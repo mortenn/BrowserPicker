@@ -92,8 +92,9 @@ namespace BrowserPicker.ViewModel
 				}
 
 				var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
-				var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.Url.TargetURL}\"");	
-				_ = Process.Start(Model.Command, args);
+				var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.Url.TargetURL}\"");
+				var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
+				_ = Process.Start(process);
 			}
 			catch
 			{
