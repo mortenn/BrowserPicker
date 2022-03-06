@@ -232,7 +232,14 @@ namespace BrowserPicker.Configuration
 					var newArgs = privacy ? PrivacyArgs : string.Empty;
 					args = CombineArgs(args, $"{newArgs}\"{App.TargetURL}\"");
 				}
-				Process.Start(Command, args);
+
+				var process = new ProcessStartInfo(Command)
+				{
+					UseShellExecute = false,
+					FileName = Command,
+					Arguments = args
+				};
+				Process.Start(process);
 			}
 			catch
 			{
