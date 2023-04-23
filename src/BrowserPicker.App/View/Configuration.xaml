@@ -17,7 +17,7 @@
 			<converter:IconFileToImageConverter x:Key="IconConverter" />
 		</ResourceDictionary>
 	</UserControl.Resources>
-	
+
 	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
@@ -127,6 +127,24 @@
 						<TextBlock Text="Set default browser per domain" Foreground="White" Margin="5" />
 						<CheckBox Content="Only when browser is running" IsChecked="{Binding Configuration.DefaultsWhenRunning}" Foreground="White" Margin="5,0,0,5" />
 						<CheckBox Content="Update order in list based on usage" IsChecked="{Binding Configuration.UseAutomaticOrdering}" Foreground="White" Margin="5,0,0,5" />
+						<CheckBox Content="Always use specified browser if no rules below match"  IsChecked="{Binding Configuration.AlwaysUseDefault}" Foreground="White" Margin="5,0,0,5"/>
+						<Grid>
+							<Grid.Style>
+								<Style>
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Configuration.AlwaysUseDefault}" Value="False">
+											<Setter Property="UIElement.Visibility" Value="Collapsed" />
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Grid.Style>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition />
+							</Grid.ColumnDefinitions>
+							<TextBlock Text="Default" Foreground="White" Margin="5,0,0,0" VerticalAlignment="Center" />
+							<ComboBox Grid.Column="1" Margin="5,0,0,0" ItemsSource="{Binding Choices}" SelectedValuePath="Model.Name" DisplayMemberPath="Model.Name" SelectedValue="{Binding Configuration.DefaultBrowser}" />
+						</Grid>
 					</StackPanel>
 					<ScrollViewer Grid.Row="1">
 						<ItemsControl ItemsSource="{Binding Configuration.Defaults}" Name="DefaultsList">
@@ -142,6 +160,9 @@
 											<Style>
 												<Style.Triggers>
 													<DataTrigger Binding="{Binding Fragment}" Value="">
+														<Setter Property="UIElement.Visibility" Value="Collapsed" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Type}" Value="Default">
 														<Setter Property="UIElement.Visibility" Value="Collapsed" />
 													</DataTrigger>
 												</Style.Triggers>

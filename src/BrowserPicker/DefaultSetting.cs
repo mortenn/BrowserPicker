@@ -34,7 +34,7 @@ namespace BrowserPicker
 				IsValid = !string.IsNullOrEmpty(fragment);
 
 				// Skip adding to configuration if empty
-				IsValid = string.IsNullOrWhiteSpace(value);
+				IsValid = !string.IsNullOrWhiteSpace(value);
 				fragment = value;
 				Configure();
 				OnPropertyChanged();
@@ -67,14 +67,19 @@ namespace BrowserPicker
 
 		public DelegateCommand Remove => new DelegateCommand(() => Fragment = string.Empty);
 
+		public MatchType Type { get; private set; } = MatchType.Hostname;
+
 		public int MatchLength(Uri url)
 		{
 			if (!IsValid)
 			{
 				return 0;
 			}
-			switch (type)
+			switch (Type)
 			{
+				case MatchType.Default:
+					return 1;
+
 				case MatchType.Hostname:
 					return url.Host.EndsWith(pattern) ? pattern.Length : 0;
 
@@ -111,19 +116,18 @@ namespace BrowserPicker
 					// Unsupported match type detected, ignore rule
 					return;
 				}
-				type = matchType;
+				Type = matchType;
 				pattern = config[2];
 				return;
 			}
 
 			// Default match type
-			type = MatchType.Hostname;
+			Type = MatchType.Hostname;
 			pattern = fragment;
 		}
 
 		private string fragment;
 		private string browser;
-		private MatchType type = MatchType.Hostname;
 		private string pattern;
 		private bool isValid;
 	}

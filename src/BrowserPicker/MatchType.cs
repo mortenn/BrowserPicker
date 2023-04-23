@@ -4,6 +4,7 @@
 	{
 		Hostname,
 		Prefix,
-		Regex
+		Regex,
+		Default
 	}
 }

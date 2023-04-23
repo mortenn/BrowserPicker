@@ -19,6 +19,8 @@ namespace BrowserPicker
 		void FindBrowsers();
 
 		List<DefaultSetting> Defaults { get; }
+		public bool AlwaysUseDefault { get; set; }
+		public string DefaultBrowser { get; set; }
 		DefaultSetting AddDefault(string fragment, string browser);
 	}
 }

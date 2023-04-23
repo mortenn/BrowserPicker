@@ -46,7 +46,7 @@ namespace BrowserPicker.ViewModel
 			get
 			{
 				var known = WellKnownBrowsers.Lookup(Model.Name, null);
-				return known.PrivacyMode ?? "Open in privacy mode";
+				return known?.PrivacyMode ?? "Open in privacy mode";
 			}
 		}
 

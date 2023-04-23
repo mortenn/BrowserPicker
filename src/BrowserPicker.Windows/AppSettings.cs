@@ -80,6 +80,39 @@ namespace BrowserPicker.Windows
 			get;
 		}
 
+		public bool AlwaysUseDefault
+		{
+			get => Defaults.Any(d => d.Type == MatchType.Default);
+			set
+			{
+				if (value == AlwaysUseDefault)
+					return;
+
+				if (value)
+				{
+					AddDefault("|Default|", null);
+					OnPropertyChanged(nameof(Defaults));
+					OnPropertyChanged();
+					return;
+				}
+
+				Defaults.RemoveAll(d => d.Type == MatchType.Default);
+				OnPropertyChanged(nameof(Defaults));
+				OnPropertyChanged();
+			}
+		}
+
+		public string DefaultBrowser
+		{
+			get => Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser;
+			set
+			{
+				var selection = Defaults.FirstOrDefault(d => d.Type == MatchType.Default);
+				if (selection != null)
+					selection.Browser = value;
+			}
+		}
+
 		public DefaultSetting AddDefault(string fragment, string browser)
 		{
 			var setting = GetDefaultSetting(null, browser);
