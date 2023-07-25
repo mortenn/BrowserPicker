@@ -73,6 +73,7 @@
 										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
 									<Image Margin="20,0,0,0" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" Width="40" Height="40" d:DataContext="{StaticResource DefaultIcon}">
 										<Image.Style>
@@ -106,6 +107,11 @@
 										</Hyperlink>
 									</TextBlock>
 									<TextBlock Grid.Column="3" Margin="10" FontSize="16">
+										<Hyperlink Command="{Binding Edit}">
+											<TextBlock Text="Edit" Foreground="CadetBlue" ToolTip="Edit browser definition" />
+										</Hyperlink>
+									</TextBlock>
+									<TextBlock Grid.Column="4" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Remove}">
 											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
 										</Hyperlink>

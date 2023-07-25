@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using BrowserPicker.Framework;
+using BrowserPicker.View;
 using JetBrains.Annotations;
 
 namespace BrowserPicker.ViewModel
@@ -40,6 +42,40 @@ namespace BrowserPicker.ViewModel
 		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
 		public DelegateCommand Disable => new DelegateCommand(() => Model.Disabled = !Model.Disabled);
 		public DelegateCommand Remove => new DelegateCommand(() => Model.Removed = true);
+		public DelegateCommand Edit => new DelegateCommand(() => OpenEditor(Model));
+
+		private void OpenEditor(BrowserModel model)
+		{
+			var temp = new BrowserModel
+			{
+				Command = Model.Command,
+				CommandArgs = model.CommandArgs,
+				Executable = model.Executable,
+				IconPath = model.IconPath,
+				Name = model.Name,
+				PrivacyArgs = model.PrivacyArgs
+			};
+			var editor = new BrowserEditor(new BrowserViewModel(temp, null));
+			editor.Show();
+			editor.Closing += Editor_Closing;
+		}
+
+		private void Editor_Closing(object sender, CancelEventArgs e)
+		{
+			if ((sender as BrowserEditor)?.DataContext is not BrowserViewModel context)
+			{
+				return;
+			}
+
+			var save = context.Model;
+
+			Model.Command = save.Command;
+			Model.CommandArgs = save.CommandArgs;
+			Model.IconPath = save.IconPath;
+			Model.Name = save.Name;
+			Model.Executable = save.Executable;
+			Model.PrivacyArgs = save.PrivacyArgs;
+		}
 
 		public string PrivacyTooltip
 		{

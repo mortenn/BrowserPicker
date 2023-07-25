@@ -12,7 +12,7 @@
 	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
 	AllowsTransparency="True" WindowStyle="None"
 	Loaded="BrowserEditor_OnLoaded"
-	ShowInTaskbar="False">
+	ShowInTaskbar="False" Topmost="True">
 	<Window.Resources>
 		<ResourceDictionary>
 			<converter:IconFileToImageConverter x:Key="IconConverter" />

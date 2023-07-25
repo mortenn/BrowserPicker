@@ -16,8 +16,18 @@ namespace BrowserPicker.View
 			InitializeComponent();
 		}
 
+		public BrowserEditor(BrowserViewModel viewModel)
+		{
+			InitializeComponent();
+			DataContext = viewModel;
+		}
+
 		private void BrowserEditor_OnLoaded(object sender, RoutedEventArgs e)
 		{
+			if (DataContext != null)
+			{
+				return;
+			}
 			DataContext = new BrowserViewModel(new BrowserModel(), null);
 		}
 
