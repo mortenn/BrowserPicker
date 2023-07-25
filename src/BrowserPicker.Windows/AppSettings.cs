@@ -235,6 +235,10 @@ namespace BrowserPicker.Windows
 		{
 			var key = Reg.Open(nameof(Defaults));
 			var model = (DefaultSetting)sender;
+			if (model.Fragment == null)
+			{
+				return;
+			}
 			switch (e.PropertyName)
 			{
 				case nameof(DefaultSetting.IsValid):

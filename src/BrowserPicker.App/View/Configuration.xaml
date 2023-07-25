@@ -174,7 +174,7 @@
 											<ColumnDefinition Width="Auto" />
 										</Grid.ColumnDefinitions>
 										<TextBox Text="{Binding Fragment}" />
-										<ComboBox Grid.Column="1" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.Choices}" DisplayMemberPath="Name" SelectedValuePath="Name" SelectedValue="{Binding Browser}" />
+										<ComboBox Grid.Column="1" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.Choices}" DisplayMemberPath="Model.Name" SelectedValuePath="Model.Name" SelectedValue="{Binding Browser}" />
 										<TextBlock Grid.Column="2" VerticalAlignment="Center">
 											<Hyperlink Command="{Binding Remove}" ToolTip="Remove this association">
 												<TextBlock Text="X" Margin="5,0" Foreground="Red" />
@@ -192,7 +192,7 @@
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
 						<TextBox Name="NewFragment" Grid.Column="0" />
-						<ComboBox Name="NewDefault" Grid.Column="1" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.Choices}" DisplayMemberPath="Name" SelectedValuePath="Name" />
+						<ComboBox Name="NewDefault" Grid.Column="1" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.Choices}" DisplayMemberPath="Model.Name" SelectedValuePath="Model.Name" />
 						<Button Content="Add" Grid.Column="2" Padding="5,0" Click="AddDefault" />
 					</Grid>
 				</Grid>

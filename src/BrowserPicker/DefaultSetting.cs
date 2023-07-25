@@ -10,6 +10,7 @@ namespace BrowserPicker
 		{
 			this.fragment = fragment;
 			this.browser = browser;
+			this.IsValid = !string.IsNullOrWhiteSpace(fragment);
 			Configure();
 		}
 
