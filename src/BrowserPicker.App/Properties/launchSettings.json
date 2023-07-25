@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Configuration UI": {
+      "commandName": "Project"
+    },
+    "github url": {
+      "commandName": "Project",
+      "commandLineArgs": "https://github.com"
+    }
+  }
+}
