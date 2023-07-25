@@ -209,11 +209,24 @@ namespace BrowserPicker.ViewModel
 			}
 		}
 
+		public DelegateCommand PinWindow => new DelegateCommand(() => Pinned = true);
+
+		public bool Pinned
+		{
+			get => pinned;
+			private set
+			{
+				if (value == pinned) return;
+				pinned = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public EventHandler OnShutdown;
 
 		public void OnDeactivated()
 		{
-			if (!ConfigurationMode && !Debugger.IsAttached)
+			if (!ConfigurationMode && !Debugger.IsAttached && !Pinned)
 			{
 				OnShutdown?.Invoke(this, EventArgs.Empty);
 			}
@@ -254,5 +267,6 @@ namespace BrowserPicker.ViewModel
 		private string edit_url;
 		private bool alt_pressed;
 		private readonly bool force_choice;
+		private bool pinned;
 	}
 }
