@@ -136,7 +136,14 @@ namespace BrowserPicker
 		/// <returns>The loading message window, so it may be closed.</returns>
 		private static async Task<Window> ShowLoadingWindow(CancellationToken cancellationToken)
 		{
-			await Task.Delay(LoadingWindowDelayMilliseconds, cancellationToken);
+			try
+			{
+				await Task.Delay(LoadingWindowDelayMilliseconds, cancellationToken);
+			}
+			catch (TaskCanceledException)
+			{
+				return null;
+			}
 			var window = new LoadingWindow();
 			window.Show();
 			return window;
