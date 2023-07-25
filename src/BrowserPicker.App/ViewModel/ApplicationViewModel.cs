@@ -87,16 +87,20 @@ namespace BrowserPicker.ViewModel
 
 		private void CheckDefaultBrowser()
 		{
+			if (string.IsNullOrWhiteSpace(Url.TargetURL))
+			{
+				return;
+			}
 			var defaults = Configuration.Defaults.ToList();
 			if (defaults.Count <= 0)
 				return;
 
-			var url = new Uri(Url.UnderlyingTargetURL);
+			var url = new Uri(Url.UnderlyingTargetURL ?? Url.TargetURL);
 			var auto = defaults
 				.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
 				.Where(o => o.matchLength > 0)
 				.ToList();
-			if (auto.Count <= 0)
+			if (auto.Count <= 0 || Debugger.IsAttached)
 				return;
 
 			var browser = auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
