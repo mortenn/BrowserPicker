@@ -3,6 +3,7 @@ using System.Windows.Input;
 using JetBrains.Annotations;
 using BrowserPicker.ViewModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BrowserPicker.View
 {
@@ -53,11 +54,13 @@ namespace BrowserPicker.View
 					default: return;
 				}
 
-				if (ViewModel.Choices.Count < n)
+				var choices = ViewModel.Choices.Where(vm => !vm.Model.Disabled).ToArray();
+
+				if (choices.Length < n)
 					return;
 
 				var privacy = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
-				ViewModel.Choices[n - 1].Select.Execute(privacy);
+				choices[n - 1].Select.Execute(privacy);
 			}
 			catch
 			{
