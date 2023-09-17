@@ -30,7 +30,7 @@ namespace BrowserPicker.View
 			}
 			DataContext = new BrowserViewModel(new BrowserModel(), null);
 		}
-
+		 
 		private void Ok_OnClick(object sender, RoutedEventArgs e)
 		{
 			Close();

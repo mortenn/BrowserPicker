@@ -7,14 +7,14 @@
 		<RootNamespace>BrowserPicker</RootNamespace>
     <AssemblyName>BrowserPicker</AssemblyName>
 		<Company>Runsafe</Company>
-		<Copyright>Copyright ©  2017-2021</Copyright>
+		<Copyright>Copyright ©  2017-2023</Copyright>
 		<Description>Dynamically pick browser on the fly</Description>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<Configurations>Debug;Release;SignedRelease;StandaloneRelease</Configurations>
     <ApplicationIcon>Resources\web_icon.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<Version>2.0.0.1</Version>
+		<Version>2.0.0.3</Version>
 	</PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
     <OutputPath>bin\SignedRelease\</OutputPath>
