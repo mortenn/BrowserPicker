@@ -9,7 +9,8 @@ To avoid warnings about unknown publisher, [import](https://stackoverflow.com/qu
 
 ## Configuration
 
-To enable the browser picker window, you need to set Browser Picker as your default browser
+To enable the browser picker window, you need to set Browser Picker as your default browser. 
+The configuration is saved in the Windows registry: `HKEY_CURRENT_USER\Software\BrowserPicker`, if you ever need to manually edit it.
 
 ### Windows 10
 
