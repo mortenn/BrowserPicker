@@ -57,6 +57,7 @@ jobs:
 
     env:
       Solution_Name: BrowserPicker.sln
+      App_Project_Path: src/BrowserPicker.App/BrowserPicker.App.csproj
       Wix_Project_Directory: dist/Setup
       Wix_Project_Path: dist/Setup/Setup.wixproj
 
@@ -80,15 +81,17 @@ jobs:
     #- name: Execute unit tests
     #  run: dotnet test
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: dotnet restore
-
+    # Restore dotnet tools
     - name: Restore tools
       run: dotnet tool restore
 
+    # Restore the application to populate the obj folder with RuntimeIdentifiers
+    - name: Restore the application
+      run: dotnet restore $env:Solution_Name
+
+    # Build and publish the application
     - name: Build application
-      run: dotnet build -c $env:Configuration $env:Solution_Name
+      run: dotnet publish -c $env:Configuration $env:App_Project_Path
       env:
         Configuration: ${{ matrix.configuration }}
 
