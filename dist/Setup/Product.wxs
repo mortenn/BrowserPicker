@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="BrowserPicker" Language="1033" Version="2.0.0.3" Manufacturer="Runsafe"
-					 UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
+	<Package Name="BrowserPicker" Language="1033" Version="2.0.0.3" Manufacturer="Runsafe" UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}" InstallerVersion="200">
+		
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
@@ -13,38 +11,29 @@
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 		</Feature>
-	</Product>
+	</Package>
 
 	<Fragment>
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFiles64Folder">
+			<StandardDirectory Id="ProgramFiles64Folder">
 				<Directory Id="INSTALLFOLDER" Name="BrowserPicker" />
-			</Directory>
-			<Directory Id="ProgramMenuFolder">
-				<Directory Id="ApplicationProgramsFolder" Name="Browser Picker"/>
-			</Directory>
-		</Directory>
-	</Fragment>
+			</StandardDirectory>
+			<StandardDirectory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="Browser Picker" />
+			</StandardDirectory>
+		</Fragment>
 
 	<Fragment>
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
-			<Component Guid="*" Win64="yes">
-				<File Name="$(var.BrowserPicker.App.TargetName).runtimeconfig.json" KeyPath="yes" ProcessorArchitecture="x64" />
+			<Component Bitness="always64">
+				<File Id="runtimeconfig.json" Name="$(var.BrowserPicker.App.TargetName).runtimeconfig.json" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
-			<Component Guid="*" Win64="yes">
-				<File Name="$(var.BrowserPicker.App.TargetName).dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			<Component Bitness="always64">
+				<File Id="BrowserPicker.dll" Name="$(var.BrowserPicker.App.TargetName).dll" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
-			<Component Guid="*" Win64="yes">
+			<Component Bitness="always64">
 				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
-					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.App.TargetName).exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER"/>
-					<Shortcut
-						Directory="ApplicationProgramsFolder"
-						Id="ApplicationStartMenuShortcut"
-						Name="Browser Picker"
-						Description="Awesome Browser Picker"
-						WorkingDirectory="INSTALLFOLDER"
-						Icon="Icon.exe"
-						Advertise="yes"/>
+					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.App.TargetName).exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER" />
+					<Shortcut Directory="ApplicationProgramsFolder" Id="ApplicationStartMenuShortcut" Name="Browser Picker" Description="Awesome Browser Picker" WorkingDirectory="INSTALLFOLDER" Icon="Icon.exe" Advertise="yes" />
 				</File>
 
 				<RegistryValue Root="HKCR" Key="BrowserPicker" Value="BrowserPicker" Type="string" />
@@ -81,8 +70,8 @@
 
 				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
 			</Component>
-			<Component Guid="*" Win64="yes"><File Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" /></Component>
-			<Component Guid="*" Win64="yes"><File Name="$(var.BrowserPicker.Windows.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" /></Component>
+			<Component Bitness="always64"><File Id="BrowserPicker.Common.dll" Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" /></Component>
+			<Component Bitness="always64"><File Id="BrowserPicker.Windows.dll" Name="$(var.BrowserPicker.Windows.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" /></Component>
 		</ComponentGroup>
 	</Fragment>
 </Wix>
