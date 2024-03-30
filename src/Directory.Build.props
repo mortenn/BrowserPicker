@@ -1,0 +1,15 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Version>2.0.0.3</Version>
+		<VersionSuffix>-beta1</VersionSuffix>
+		<Company>Runsafe</Company>
+		<Copyright>Copyright ©  2017-2024</Copyright>
+		<Configurations>Debug;Release</Configurations>
+		<Platforms>x64</Platforms>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+		<OutputPath>bin\SignedRelease\</OutputPath>
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+</Project>

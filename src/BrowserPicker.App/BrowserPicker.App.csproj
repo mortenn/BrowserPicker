@@ -1,42 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-		<TargetType>WinExe</TargetType>
-		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-		<RootNamespace>BrowserPicker</RootNamespace>
+    <TargetType>WinExe</TargetType>
+    <RootNamespace>BrowserPicker</RootNamespace>
     <AssemblyName>BrowserPicker</AssemblyName>
-		<Company>Runsafe</Company>
-		<Copyright>Copyright ©  2017-2023</Copyright>
-		<Description>Dynamically pick browser on the fly</Description>
+    <Description>Dynamically pick browser on the fly</Description>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-		<Configurations>Debug;Release;SignedRelease;StandaloneRelease</Configurations>
     <ApplicationIcon>Resources\web_icon.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<Version>2.0.0.3</Version>
-	</PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
-    <OutputPath>bin\SignedRelease\</OutputPath>
-    <Optimize>true</Optimize>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='StandaloneRelease|AnyCPU'">
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<PublishSingleFile>true</PublishSingleFile>
-		<SelfContained>true</SelfContained>
-		<OutputPath>bin\StandaloneRelease\</OutputPath>
-    <Optimize>true</Optimize>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-	</ItemGroup>
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-	<ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Resources\web_icon.png" />
     <Resource Include="Resources\web_icon.ico" />
     <Resource Include="Resources\privacy.png" />
@@ -45,10 +22,8 @@
     <ProjectReference Include="..\BrowserPicker.Windows\BrowserPicker.Windows.csproj" />
     <ProjectReference Include="..\BrowserPicker\BrowserPicker.csproj" />
   </ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
-		<Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).dll&#xD;&#xA;&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).exe" />
-	</Target>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)|$(Platform)' == 'StandaloneRelease|AnyCPU'">
-		<Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).dll&#xD;&#xA;&quot;C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe&quot; sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $(TargetDir)\$(TargetName).exe" />
-	</Target>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" />
+    <PackageReference Include="System.Drawing.Common" />
+  </ItemGroup>
 </Project>
