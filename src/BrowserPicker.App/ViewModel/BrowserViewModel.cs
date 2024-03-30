@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using BrowserPicker.Framework;
 using BrowserPicker.View;
@@ -38,11 +37,11 @@ namespace BrowserPicker.ViewModel
 			}
 		}
 
-		public DelegateCommand Select => new DelegateCommand(() => Launch(false), () => CanLaunch(false));
-		public DelegateCommand SelectPrivacy => new DelegateCommand(() => Launch(true), () => CanLaunch(true));
-		public DelegateCommand Disable => new DelegateCommand(() => Model.Disabled = !Model.Disabled);
-		public DelegateCommand Remove => new DelegateCommand(() => Model.Removed = true);
-		public DelegateCommand Edit => new DelegateCommand(() => OpenEditor(Model));
+		public DelegateCommand Select => new(() => Launch(false), () => CanLaunch(false));
+		public DelegateCommand SelectPrivacy => new(() => Launch(true), () => CanLaunch(true));
+		public DelegateCommand Disable => new(() => Model.Disabled = !Model.Disabled);
+		public DelegateCommand Remove => new(() => Model.Removed = true);
+		public DelegateCommand Edit => new(() => OpenEditor(Model));
 
 		private void OpenEditor(BrowserModel model)
 		{

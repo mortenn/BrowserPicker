@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using BrowserPicker.Framework;
 using BrowserPicker.View;
 using BrowserPicker.ViewModel;
 using BrowserPicker.Windows;
@@ -15,9 +14,9 @@ namespace BrowserPicker
 	{
 		private const int LoadingWindowDelayMilliseconds = 300;
 
-		public static CancellationTokenSource ApplicationCancellationToken = new CancellationTokenSource();
+		public static CancellationTokenSource ApplicationCancellationToken { get; } = new();
 
-		public static IBrowserPickerConfiguration Settings = new AppSettings();
+		public static IBrowserPickerConfiguration Settings { get; } = new AppSettings();
 
 		public App()
 		{
@@ -104,7 +103,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public async Task RunLongRunningProcesses()
+		public static async Task RunLongRunningProcesses()
 		{
 			try
 			{
@@ -123,8 +122,10 @@ namespace BrowserPicker
 		private void ShowMainWindow()
 		{
 			ViewModel.Initialize();
-			MainWindow = new MainWindow();
-			MainWindow.DataContext = ViewModel;
+			MainWindow = new MainWindow
+			{
+				DataContext = ViewModel
+			};
 			MainWindow.Show();
 			MainWindow.Focus();
 		}
@@ -186,7 +187,7 @@ namespace BrowserPicker
 
 		public ApplicationViewModel ViewModel { get; }
 
-		private static readonly List<ILongRunningProcess> BackgroundTasks = new List<ILongRunningProcess>();
+		private static readonly List<ILongRunningProcess> BackgroundTasks = [];
 		private static Task long_running_processes;
 	}
 }

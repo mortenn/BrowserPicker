@@ -1,5 +1,4 @@
-﻿using BrowserPicker.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BrowserPicker

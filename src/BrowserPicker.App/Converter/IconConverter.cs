@@ -17,9 +17,9 @@ namespace BrowserPicker.Converter
 				return null;
 			
 			var iconPath = value.ToString();
-			if (cache.ContainsKey(iconPath))
+			if (cache.TryGetValue(iconPath, out var cachedIcon))
 			{
-				return cache[iconPath];
+				return cachedIcon;
 			}
 
 			if (string.IsNullOrWhiteSpace(iconPath))
@@ -65,6 +65,6 @@ namespace BrowserPicker.Converter
 			return null;
 		}
 
-		private readonly Dictionary<string, BitmapFrame> cache = new();
+		private readonly Dictionary<string, BitmapFrame> cache = [];
 	}
 }

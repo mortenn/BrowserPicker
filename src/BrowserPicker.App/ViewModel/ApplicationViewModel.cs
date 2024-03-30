@@ -121,7 +121,7 @@ namespace BrowserPicker.ViewModel
 
 		public ICommand Edit => new DelegateCommand(OpenURLEditor);
 
-		public DelegateCommand AddBrowser => new DelegateCommand(AddBrowserManually);
+		public DelegateCommand AddBrowser => new(AddBrowserManually);
 
 		private void AddBrowserManually()
 		{
@@ -133,7 +133,7 @@ namespace BrowserPicker.ViewModel
 		private void Editor_Closing(object sender, CancelEventArgs e)
 		{
 			((Window)sender).Closing -= Editor_Closing;
-			if (!(((Window)sender).DataContext is BrowserViewModel browser))
+			if (sender is not Window { DataContext: BrowserViewModel browser })
 			{
 				return;
 			}
@@ -213,7 +213,7 @@ namespace BrowserPicker.ViewModel
 			}
 		}
 
-		public DelegateCommand PinWindow => new DelegateCommand(() => Pinned = true);
+		public DelegateCommand PinWindow => new(() => Pinned = true);
 
 		public bool Pinned
 		{

@@ -66,7 +66,7 @@ namespace BrowserPicker
 			}
 		}
 
-		public DelegateCommand Remove => new DelegateCommand(() => Fragment = string.Empty);
+		public DelegateCommand Remove => new(() => Fragment = string.Empty);
 
 		public MatchType Type { get; private set; } = MatchType.Hostname;
 
@@ -76,23 +76,14 @@ namespace BrowserPicker
 			{
 				return 0;
 			}
-			switch (Type)
+			return Type switch
 			{
-				case MatchType.Default:
-					return 1;
-
-				case MatchType.Hostname:
-					return url.Host.EndsWith(pattern) ? pattern.Length : 0;
-
-				case MatchType.Prefix:
-					return url.OriginalString.StartsWith(pattern) ? pattern.Length : 0;
-
-				case MatchType.Regex:
-					return Regex.Match(url.OriginalString, pattern).Length;
-
-				default:
-					return 0;
-			}
+				MatchType.Default => 1,
+				MatchType.Hostname => url.Host.EndsWith(pattern) ? pattern.Length : 0,
+				MatchType.Prefix => url.OriginalString.StartsWith(pattern) ? pattern.Length : 0,
+				MatchType.Regex => Regex.Match(url.OriginalString, pattern).Length,
+				_ => 0,
+			};
 		}
 
 		private void Configure()
@@ -111,7 +102,7 @@ namespace BrowserPicker
 					return;
 				}
 
-				var prefix  = fragment.Substring(1, fragment.IndexOf('|', 1) - 1);
+				var prefix = fragment[1..fragment.IndexOf('|', 1)];
 				if (!Enum.TryParse<MatchType>(prefix, true, out var matchType))
 				{
 					// Unsupported match type detected, ignore rule

@@ -58,7 +58,7 @@ namespace BrowserPicker.Windows
 				var name = (string)key.GetValue(null);
 
 				var icon = (string)key.OpenSubKey("DefaultIcon", false)?.GetValue(null);
-				if (icon?.Contains(",") ?? false)
+				if (icon?.Contains(',') ?? false)
 					icon = icon.Split(',')[0];
 				var shell = (string)key.OpenSubKey("shell\\open\\command", false)?.GetValue(null);
 
@@ -75,7 +75,7 @@ namespace BrowserPicker.Windows
 			return key.CreateSubKey(Path.Combine(path), true);
 		}
 
-		private static readonly Dictionary<Type, RegistryValueKind> TypeMap = new Dictionary<Type, RegistryValueKind>
+		private static readonly Dictionary<Type, RegistryValueKind> TypeMap = new()
 		{
 			{ typeof(string), RegistryValueKind.String },
 			{ typeof(int), RegistryValueKind.DWord },

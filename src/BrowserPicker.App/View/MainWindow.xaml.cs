@@ -2,7 +2,6 @@
 using System.Windows.Input;
 using JetBrains.Annotations;
 using BrowserPicker.ViewModel;
-using System.ComponentModel;
 using System.Linq;
 
 namespace BrowserPicker.View

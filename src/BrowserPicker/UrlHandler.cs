@@ -98,8 +98,8 @@ namespace BrowserPicker
 			}
 		}
 
-		private static readonly List<string> UrlShorteners = new()
-		{
+		private static readonly List<string> UrlShorteners =
+		[
 			"safelinks.protection.outlook.com",
 			"aka.ms",
 			"fwd.olsvc.com",
@@ -115,14 +115,14 @@ namespace BrowserPicker
 			"mcaf.ee",
 			"su.pr",
 			"go.microsoft.com"
-		};
+		];
 
-		private static readonly List<(string url, string parameter)> JumpPages = new()
-		{
+		private static readonly List<(string url, string parameter)> JumpPages =
+		[
 			("safelinks.protection.outlook.com", "url"),
 			("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),
 			("https://l.facebook.com/l.php", "u")
-		};
+		];
 		private readonly IBrowserPickerConfiguration configuration;
 		private string underlying_target_url;
 		private static readonly HttpClient client = new(new HttpClientHandler { AllowAutoRedirect = false });

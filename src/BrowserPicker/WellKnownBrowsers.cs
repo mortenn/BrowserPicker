@@ -9,18 +9,18 @@ namespace BrowserPicker
 	{
 		public static IWellKnownBrowser Lookup(string name, string executable)
 		{
-			return List.FirstOrDefault(b => b.Name == name || executable != null && executable.IndexOf(b.Executable, StringComparison.CurrentCultureIgnoreCase) != -1);
+			return List.FirstOrDefault(b => b.Name == name || executable != null && executable.Contains(b.Executable, StringComparison.CurrentCultureIgnoreCase));
 		}
 
-		public static readonly List<IWellKnownBrowser> List = new List<IWellKnownBrowser>
-		{ 
+		public static readonly List<IWellKnownBrowser> List =
+		[
 			new Firefox(),
 			new Chrome(),
 			new MicrosoftEdge(),
 			new Edge(),
 			new InternetExplorer(),
 			new OperaStable()
-		};
+		];
 	}
 
 	public interface IWellKnownBrowser

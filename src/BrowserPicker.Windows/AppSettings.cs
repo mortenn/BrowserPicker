@@ -182,7 +182,7 @@ namespace BrowserPicker.Windows
 			}
 		}
 
-		private BrowserModel GetBrowserDetails(RegistryKey root, string browser)
+		private static BrowserModel GetBrowserDetails(RegistryKey root, string browser)
 		{
 			var reg = root.OpenSubKey(browser, false);
 			if (reg == null)
@@ -263,7 +263,7 @@ namespace BrowserPicker.Windows
 			var list = Reg.SubKey(nameof(BrowserList));
 			if (list == null)
 			{
-				return new List<BrowserModel>();
+				return [];
 			}
 
 			var browsers = list.GetSubKeyNames()
