@@ -102,7 +102,7 @@ namespace BrowserPicker.ViewModel
 
 					var processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Model.Executable ?? cmd));
 
-					return processes.Any(p => p.SessionId == session);
+					return processes.Any(p => p.SessionId == session && p.MainWindowHandle != 0);
 				}
 				catch
 				{
