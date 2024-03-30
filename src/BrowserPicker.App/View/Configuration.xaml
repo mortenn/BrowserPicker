@@ -122,6 +122,12 @@
 					</ItemsControl>
 				</ScrollViewer>
 			</TabItem>
+			<TabItem Header="Behaviour">
+				<StackPanel Orientation="Vertical">
+					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Configuration.AlwaysPrompt}" Foreground="White" Margin="5,0,0,5" />
+					<CheckBox Content="Disable url resolution" IsChecked="{Binding Configuration.DisableNetworkAccess}" Foreground="White" Margin="5,0,0,5" />
+				</StackPanel>
+			</TabItem>
 			<TabItem Header="Defaults">
 				<Grid>
 					<Grid.RowDefinitions>
@@ -133,7 +139,7 @@
 						<TextBlock Text="Set default browser per domain" Foreground="White" Margin="5" />
 						<CheckBox Content="Only when browser is running" IsChecked="{Binding Configuration.DefaultsWhenRunning}" Foreground="White" Margin="5,0,0,5" />
 						<CheckBox Content="Update order in list based on usage" IsChecked="{Binding Configuration.UseAutomaticOrdering}" Foreground="White" Margin="5,0,0,5" />
-						<CheckBox Content="Always use specified browser if no rules below match"  IsChecked="{Binding Configuration.AlwaysUseDefault}" Foreground="White" Margin="5,0,0,5"/>
+						<CheckBox Content="Default browser to always use if no rules below match"  IsChecked="{Binding Configuration.AlwaysUseDefault}" Foreground="White" Margin="5,0,0,5"/>
 						<Grid>
 							<Grid.Style>
 								<Style>
