@@ -73,6 +73,28 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Determine version
+      uses: paulhatch/semantic-version@v5.3.0
+      with:
+        # The prefix to use to identify tags
+        tag_prefix: "v"
+        # A string which, if present in a git commit, indicates that a change represents a
+        # major (breaking) change, supports regular expressions wrapped with '/'
+        major_pattern: "(MAJOR)"
+        major_regexp_flags: ""
+        # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
+        minor_pattern: "(MINOR)"
+        minor_regexp_flags: ""
+        version_format: "${major}.${minor}.${patch}-beta${increment}"
+        change_path: "src/"
+        #namespace: 
+        bump_each_commit: false
+        search_commit_body: false
+        user_format_type: "json"
+        enable_prerelease_mode: false
+        debug: true
+        version_from_branch: false
+
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     #- name: Setup MSBuild.exe
     #  uses: microsoft/setup-msbuild@v2
@@ -103,7 +125,7 @@ jobs:
     #    [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
 
     # Create the app package by building and packaging the Windows Application Packaging project
-    - name: Create the app package
+    - name: Create the installer
       run: dotnet build $env:Wix_Project_Path -c $env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
@@ -114,7 +136,7 @@ jobs:
 
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.3.1
       with:
         name: MSIX ${{ matrix.configuration }} Package
         path: ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}
