@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 namespace BrowserPicker.ViewModel
 {
 	[DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
-	public class BrowserViewModel : ViewModelBase<BrowserModel>
+	public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	{
 		// WPF Designer
 		[UsedImplicitly]

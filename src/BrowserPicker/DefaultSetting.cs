@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace BrowserPicker
 {
-	public class DefaultSetting(MatchType type, string pattern, string browser) : ModelBase, INotifyPropertyChanging
+	public sealed class DefaultSetting(MatchType type, string pattern, string browser) : ModelBase, INotifyPropertyChanging
 	{
 		private string browser = browser;
 		private string pattern = pattern;

@@ -10,7 +10,7 @@ using System.Web;
 
 namespace BrowserPicker
 {
-	public class UrlHandler : ModelBase, ILongRunningProcess
+	public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	{
 		[UsedImplicitly]
 		// Design time constructor

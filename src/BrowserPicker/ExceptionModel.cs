@@ -4,7 +4,7 @@ using System;
 
 namespace BrowserPicker
 {
-	public class ExceptionModel : ModelBase
+	public sealed class ExceptionModel : ModelBase
 	{
 		// WPF Designer
 		[UsedImplicitly]

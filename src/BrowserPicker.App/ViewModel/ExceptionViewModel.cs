@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace BrowserPicker.ViewModel
 {
-	public class ExceptionViewModel : ViewModelBase<ExceptionModel>
+	public sealed class ExceptionViewModel : ViewModelBase<ExceptionModel>
 	{
 		// WPF Designer
 		[UsedImplicitly]

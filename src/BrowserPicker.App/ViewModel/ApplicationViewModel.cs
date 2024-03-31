@@ -17,7 +17,7 @@ using JetBrains.Annotations;
 
 namespace BrowserPicker.ViewModel
 {
-	public class ApplicationViewModel : INotifyPropertyChanged
+	public sealed class ApplicationViewModel : INotifyPropertyChanged
 	{
 		// Used by WPF designer
 		[UsedImplicitly]

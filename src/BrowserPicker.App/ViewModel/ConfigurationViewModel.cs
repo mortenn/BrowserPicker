@@ -42,7 +42,7 @@ namespace BrowserPicker.ViewModel
 				ConfigurationMode = true
 			};
 			Settings.BrowserList.AddRange(ParentViewModel.Choices.Select(m => m.Model));
-			AvailableBrowsers = ParentViewModel.Choices.ToList();
+			AvailableBrowsers = [.. ParentViewModel.Choices];
 			testDefaultsURL = ParentViewModel.Url?.UnderlyingTargetURL ?? ParentViewModel.Url?.TargetURL;
 		}
 

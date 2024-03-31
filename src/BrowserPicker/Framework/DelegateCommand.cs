@@ -5,13 +5,25 @@ using JetBrains.Annotations;
 
 namespace BrowserPicker.Framework
 {
-	[PublicAPI]
-	public class DelegateCommand : ICommand
+	public abstract class DelegateCommandBase : ICommand
 	{
+		protected DelegateCommandBase() { }
+
 		public event EventHandler CanExecuteChanged;
 
-		protected DelegateCommand() { }
+		public abstract bool CanExecute(object parameter);
+		
+		public abstract void Execute(object parameter);
 
+		public void RaiseCanExecuteChanged()
+		{
+			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+		}
+	}
+
+	[PublicAPI]
+	public sealed class DelegateCommand : DelegateCommandBase
+	{
 		public DelegateCommand(Action callback, Func<bool> canExecute = null)
 		{
 			execute = callback;
@@ -24,19 +36,14 @@ namespace BrowserPicker.Framework
 			can_execute = canExecute;
 		}
 
-		public virtual bool CanExecute(object parameter)
+		public override bool CanExecute(object parameter)
 		{
 			return can_execute == null || can_execute();
 		}
 
-		public virtual void Execute(object parameter)
+		public override void Execute(object parameter)
 		{
 			execute();
-		}
-
-		public void RaiseCanExecuteChanged()
-		{
-			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		private readonly Action execute;
@@ -44,7 +51,7 @@ namespace BrowserPicker.Framework
 	}
 
 	[PublicAPI]
-	public class DelegateCommand<T> : DelegateCommand
+	public sealed class DelegateCommand<T> : DelegateCommandBase
 	{
 		public DelegateCommand(Action<T> callback, Func<T, bool> canExecute = null)
 		{

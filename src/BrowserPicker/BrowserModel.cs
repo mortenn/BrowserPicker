@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace BrowserPicker
 {
 	[DebuggerDisplay("{" + nameof(Name) + "}")]
-	public class BrowserModel : ModelBase
+	public sealed class BrowserModel : ModelBase
 	{
 		public BrowserModel() { }
 		

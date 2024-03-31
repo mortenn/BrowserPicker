@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 
 namespace BrowserPicker.Converter
 {
-	public class IconFileToImageConverter : IValueConverter
+	public sealed class IconFileToImageConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{

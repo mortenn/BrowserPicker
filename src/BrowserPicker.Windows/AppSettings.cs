@@ -10,7 +10,7 @@ using Microsoft.Win32;
 
 namespace BrowserPicker.Windows
 {
-	public class AppSettings : ModelBase, IBrowserPickerConfiguration
+	public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		public AppSettings()
 		{
