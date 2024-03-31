@@ -179,6 +179,8 @@
 						RowHeight="32"
 						Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"
 						BorderBrush="{x:Null}"
+						CanUserDeleteRows="False"
+						CanUserAddRows="False"
 						CanUserReorderColumns="False"
 						CanUserResizeColumns="False">
 						<DataGrid.Columns>
@@ -212,6 +214,13 @@
 											SelectedValue="{Binding Browser}"
 											SelectedValuePath="Model.Name"
 											VerticalContentAlignment="Center" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTemplateColumn>
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate DataType="browserPicker:DefaultSetting">
+										<Button Content="X" Command="{Binding Remove}" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
