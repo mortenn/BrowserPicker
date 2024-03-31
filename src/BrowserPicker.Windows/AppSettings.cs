@@ -16,6 +16,7 @@ namespace BrowserPicker.Windows
 		{
 			BrowserList = GetBrowsers();
 			Defaults = GetDefaults();
+			alwaysUseDefault = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
 		}
 
 		public bool AlwaysPrompt
@@ -80,9 +81,11 @@ namespace BrowserPicker.Windows
 			get;
 		}
 
+		private bool alwaysUseDefault;
+
 		public bool AlwaysUseDefault
 		{
-			get => Defaults.Any(d => d.Type == MatchType.Default);
+			get => alwaysUseDefault;
 			set
 			{
 				if (value == AlwaysUseDefault)
@@ -90,15 +93,18 @@ namespace BrowserPicker.Windows
 
 				if (value)
 				{
-					AddDefault(MatchType.Default, string.Empty, null);
-					OnPropertyChanged(nameof(Defaults));
+					alwaysUseDefault = true;
+					if (!Defaults.Any(d => d.Type == MatchType.Default))
+					{
+						AddDefault(MatchType.Default, string.Empty, null);
+					}
 					OnPropertyChanged();
 					return;
 				}
 
-				Defaults.RemoveAll(d => d.Type == MatchType.Default);
-				OnPropertyChanged(nameof(Defaults));
+				alwaysUseDefault = false;
 				OnPropertyChanged();
+				DefaultBrowser = null;
 			}
 		}
 
@@ -108,8 +114,13 @@ namespace BrowserPicker.Windows
 			set
 			{
 				var selection = Defaults.FirstOrDefault(d => d.Type == MatchType.Default);
-				if (selection != null)
+				if (selection != null && value != selection.Browser)
+				{
 					selection.Browser = value;
+					alwaysUseDefault = value != null;
+					OnPropertyChanged(nameof(AlwaysUseDefault));
+				}
+				OnPropertyChanged();
 			}
 		}
 

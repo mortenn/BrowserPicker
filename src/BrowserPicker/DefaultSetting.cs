@@ -19,6 +19,11 @@ namespace BrowserPicker
 				return new(MatchType.Default, string.Empty, browser);
 			}
 
+			if (rule == null)
+			{
+				return new(MatchType.Hostname, rule, browser);
+			}
+
 			var config = rule.Split('|');
 			if (config.Length > 1 && config[0] == string.Empty)
 			{
