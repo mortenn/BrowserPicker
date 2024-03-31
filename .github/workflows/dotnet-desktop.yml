@@ -60,6 +60,7 @@ jobs:
       App_Project_Path: src/BrowserPicker.App/BrowserPicker.App.csproj
       Wix_Project_Directory: dist/Setup
       Wix_Project_Path: dist/Setup/Setup.wixproj
+      signtool: "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe"
 
     steps:
     - name: Checkout
@@ -114,7 +115,7 @@ jobs:
 
     - name: Sign the executable
       run: |
-        signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker.exe
+        & $signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker.exe
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -130,7 +131,7 @@ jobs:
 
     - name: Sign the installer
       run: |
-        signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} dist\Setup\bin\${env:Configuration}\BrowserPicker.msi
+        & $signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} dist\Setup\bin\${env:Configuration}\BrowserPicker.msi
       env:
         Configuration: ${{ matrix.configuration }}
         
