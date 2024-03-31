@@ -79,10 +79,6 @@ jobs:
       with:
         version_format: "${major}.${minor}.${patch}-beta${increment}"
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    #- name: Setup MSBuild.exe
-    #  uses: microsoft/setup-msbuild@v2
-
     # Execute all unit tests in the solution
     #- name: Execute unit tests
     #  run: dotnet test
@@ -111,11 +107,16 @@ jobs:
         increment: ${{ steps.version.outputs.increment }}
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
-    #- name: Decode the pfx
-    #  run: |
-    #    $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-    #    $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
-    #    [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+    - name: Decode the pfx
+      run: |
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        [IO.File]::WriteAllBytes("GitHubActionsWorkflow.pfx", $pfx_cert_byte)
+
+    - name: Sign the executable
+      run: |
+        signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker.exe
+      env:
+        Configuration: ${{ matrix.configuration }}
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Create the installer
@@ -126,10 +127,16 @@ jobs:
         minor: ${{ steps.version.outputs.minor }}
         patch: ${{ steps.version.outputs.patch }}
         increment: ${{ steps.version.outputs.increment }}
+
+    - name: Sign the installer
+      run: |
+        signtool sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} dist\Setup\bin\${env:Configuration}\BrowserPicker.msi
+      env:
+        Configuration: ${{ matrix.configuration }}
         
     # Remove the pfx
-    #- name: Remove the pfx
-    #  run: Remove-Item -path $env:Wap_Project_Directory\GitHubActionsWorkflow.pfx
+    - name: Remove the pfx
+      run: Remove-Item -path GitHubActionsWorkflow.pfx
 
     # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
     - name: Upload build artifacts
