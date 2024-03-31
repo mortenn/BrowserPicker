@@ -86,8 +86,6 @@ jobs:
         minor_pattern: "(MINOR)"
         minor_regexp_flags: ""
         version_format: "${major}.${minor}.${patch}-beta${increment}"
-        change_path: "src/"
-        #namespace: 
         bump_each_commit: false
         search_commit_body: false
         user_format_type: "json"
