@@ -74,24 +74,10 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Determine version
+      id: version
       uses: paulhatch/semantic-version@v5.3.0
       with:
-        # The prefix to use to identify tags
-        tag_prefix: "v"
-        # A string which, if present in a git commit, indicates that a change represents a
-        # major (breaking) change, supports regular expressions wrapped with '/'
-        major_pattern: "(MAJOR)"
-        major_regexp_flags: ""
-        # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
-        minor_pattern: "(MINOR)"
-        minor_regexp_flags: ""
         version_format: "${major}.${minor}.${patch}-beta${increment}"
-        bump_each_commit: false
-        search_commit_body: false
-        user_format_type: "json"
-        enable_prerelease_mode: false
-        debug: true
-        version_from_branch: false
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     #- name: Setup MSBuild.exe
@@ -111,9 +97,13 @@ jobs:
 
     # Build and publish the application
     - name: Build application
-      run: dotnet publish -c $env:Configuration $env:App_Project_Path
+      run: dotnet publish -c $env:Configuration $env:App_Project_Path -p VersionPrefix=${env:major}.${env.minor}.${env.patch} -p VersionSuffix=beta${env.increment}
       env:
         Configuration: ${{ matrix.configuration }}
+        major: ${{ steps.version.outputs.major }}
+        minor: ${{ steps.version.outputs.minor }}
+        patch: ${{ steps.version.outputs.patch }}
+        increment: ${{ steps.version.outputs.increment }}
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     #- name: Decode the pfx
@@ -124,10 +114,14 @@ jobs:
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Create the installer
-      run: dotnet build $env:Wix_Project_Path -c $env:Configuration
+      run: dotnet build $env:Wix_Project_Path -c $env:Configuration -p VersionPrefix=${env:major}.${env.minor}.${env.patch} -p VersionSuffix=beta${env.increment}
       env:
         Configuration: ${{ matrix.configuration }}
-
+        major: ${{ steps.version.outputs.major }}
+        minor: ${{ steps.version.outputs.minor }}
+        patch: ${{ steps.version.outputs.patch }}
+        increment: ${{ steps.version.outputs.increment }}
+        
     # Remove the pfx
     #- name: Remove the pfx
     #  run: Remove-Item -path $env:Wap_Project_Directory\GitHubActionsWorkflow.pfx
@@ -136,5 +130,5 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4.3.1
       with:
-        name: MSIX ${{ matrix.configuration }} Package
+        name: BrowserPicker-${{ steps.version.outputs.version }}-${{ matrix.configuration }}
         path: ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}
