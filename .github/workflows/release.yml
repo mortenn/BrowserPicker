@@ -8,11 +8,6 @@ on:
 jobs:
 
   build:
-
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
@@ -60,9 +55,8 @@ jobs:
 
     # Build and publish the application
     - name: Build application
-      run: dotnet publish -c $env:Configuration $env:App_Project_Path -p VersionPrefix=${env:major}.${env:minor}.${env:patch} -p VersionSuffix=beta${env:increment}
+      run: dotnet publish -c Release $env:App_Project_Path -p VersionPrefix=${env:major}.${env:minor}.${env:patch} -p VersionSuffix=beta${env:increment}
       env:
-        Configuration: ${{ matrix.configuration }}
         major: ${{ steps.version.outputs.major }}
         minor: ${{ steps.version.outputs.minor }}
         patch: ${{ steps.version.outputs.patch }}
@@ -76,15 +70,12 @@ jobs:
 
     - name: Sign the executable
       run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker.exe
-      env:
-        Configuration: ${{ matrix.configuration }}
+        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\Release\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\Release\net8.0-windows\publish\BrowserPicker.exe
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Create the installer
-      run: dotnet build $env:Wix_Project_Path --no-dependencies -c $env:Configuration -p Version=${env:major}.${env:minor}.${env:patch}.${env:increment}
+      run: dotnet build $env:Wix_Project_Path --no-dependencies -c Release -p Version=${env:major}.${env:minor}.${env:patch}.${env:increment}
       env:
-        Configuration: ${{ matrix.configuration }}
         major: ${{ steps.version.outputs.major }}
         minor: ${{ steps.version.outputs.minor }}
         patch: ${{ steps.version.outputs.patch }}
@@ -92,9 +83,7 @@ jobs:
 
     - name: Sign the installer
       run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' dist\Setup\bin\${env:Configuration}\BrowserPicker.msi
-      env:
-        Configuration: ${{ matrix.configuration }}
+        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' dist\Setup\bin\Release\BrowserPicker.msi
         
     # Remove the pfx
     - name: Remove the pfx
@@ -105,11 +94,11 @@ jobs:
       with:
         type: 'zip'
         filename: 'Portable.zip'
-        directory: src/BrowserPicker.App/bin/${env:Configuration}/net8.0-windows/publish
+        directory: src/BrowserPicker.App/bin/Release/net8.0-windows/publish
 
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
         files: |
             ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}
-            src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\Portable.zip
+            src\BrowserPicker.App\bin\Release\net8.0-windows\publish\Portable.zip
