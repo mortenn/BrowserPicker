@@ -115,7 +115,7 @@ jobs:
 
     - name: Sign the executable
       run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker.exe
+        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker.exe
       env:
         Configuration: ${{ matrix.configuration }}
 
@@ -131,7 +131,7 @@ jobs:
 
     - name: Sign the installer
       run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p ${{ secrets.Pfx_Key }} dist\Setup\bin\${env:Configuration}\BrowserPicker.msi
+        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' dist\Setup\bin\${env:Configuration}\BrowserPicker.msi
       env:
         Configuration: ${{ matrix.configuration }}
         
