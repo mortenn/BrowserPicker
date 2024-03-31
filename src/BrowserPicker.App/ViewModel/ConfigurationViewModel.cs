@@ -206,7 +206,7 @@ namespace BrowserPicker.ViewModel
 		{
 			if (e.PropertyName == nameof(Settings.Defaults))
 			{
-				var added = Settings.Defaults.Except(Defaults).ToArray();
+				var added = Settings.Defaults.Except(Defaults).Where(i => i.Type != MatchType.Default).ToArray();
 				if (added.Length > 0)
 				{
 					foreach (var setting in added)
