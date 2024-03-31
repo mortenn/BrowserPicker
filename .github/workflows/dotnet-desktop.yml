@@ -95,6 +95,12 @@ jobs:
         debug: true
         version_from_branch: false
 
+    - name: Set Package Version
+      run: |
+        Write-Output "Version: $env:test"
+      env:
+        test: ${{ steps.version.outputs.debug_output }}
+
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     #- name: Setup MSBuild.exe
     #  uses: microsoft/setup-msbuild@v2
