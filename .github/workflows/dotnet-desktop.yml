@@ -93,7 +93,12 @@ jobs:
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: dotnet restore $env:Solution_Name
+      run: dotnet restore $env:Solution_Name -p VersionPrefix=${env:major}.${env.minor}.${env.patch} -p VersionSuffix=beta${env.increment}
+      env:
+        major: ${{ steps.version.outputs.major }}
+        minor: ${{ steps.version.outputs.minor }}
+        patch: ${{ steps.version.outputs.patch }}
+        increment: ${{ steps.version.outputs.increment }}
 
     # Build and publish the application
     - name: Build application
@@ -114,7 +119,7 @@ jobs:
 
     # Create the app package by building and packaging the Windows Application Packaging project
     - name: Create the installer
-      run: dotnet build $env:Wix_Project_Path -c $env:Configuration -p VersionPrefix=${env:major}.${env.minor}.${env.patch} -p VersionSuffix=beta${env.increment}
+      run: dotnet build $env:Wix_Project_Path --no-dependencies -c $env:Configuration -p Version=${env:major}.${env.minor}.${env.patch}.${env.increment}
       env:
         Configuration: ${{ matrix.configuration }}
         major: ${{ steps.version.outputs.major }}
