@@ -1,8 +1,10 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
-	<Package Name="BrowserPicker" Language="1033" Version="2.0.0.4" Manufacturer="Runsafe" UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}" InstallerVersion="200">
-		
+	<Package Name="BrowserPicker" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Runsafe" UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}" InstallerVersion="200">
 
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MajorUpgrade
+			Schedule="afterInstallInitialize"
+			DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+			AllowSameVersionUpgrades="yes" />
 		<MediaTemplate EmbedCab="yes" />
 
 		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.App.TargetPath)" />

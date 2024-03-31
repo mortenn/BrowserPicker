@@ -3,6 +3,7 @@
 		<OutputName>BrowserPicker</OutputName>
 		<ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
 		<InstallerPlatform>x64</InstallerPlatform>
+		<DefineConstants>ProductVersion=$(Version)</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="WixToolset.NetFx.wixext" Version="4.0.5" />
