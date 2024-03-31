@@ -87,12 +87,39 @@ namespace BrowserPicker.ViewModel
 
 		public ConfigurationViewModel(IBrowserPickerConfiguration settings)
 		{
+			Defaults.CollectionChanged += Defaults_CollectionChanged;
 			Settings = settings;
 			foreach(var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
 			{
 				Defaults.Add(setting);
 			}
 			settings.PropertyChanged += Configuration_PropertyChanged;
+		}
+
+		private void Defaults_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems?.Count > 0)
+			{
+				foreach(var item in e.NewItems.OfType<DefaultSetting>())
+				{
+					item.PropertyChanged += Item_PropertyChanged;
+				}
+			}
+			if (e.OldItems?.Count > 0)
+			{
+				foreach (var item in e.OldItems.OfType<DefaultSetting>())
+				{
+					item.PropertyChanged -= Item_PropertyChanged;
+				}
+			}
+		}
+
+		private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(DefaultSetting.Deleted) && sender is DefaultSetting { Deleted: true } item)
+			{
+				Defaults.Remove(item);
+			}
 		}
 
 		public IBrowserPickerConfiguration Settings { get; init; }
