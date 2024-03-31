@@ -116,5 +116,5 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: MSIX Package
+        name: MSIX ${{ matrix.configuration }} Package
         path: ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}
