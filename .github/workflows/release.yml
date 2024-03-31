@@ -105,7 +105,7 @@ jobs:
       with:
         type: 'zip'
         filename: 'Portable.zip'
-        directory: src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish
+        directory: src/BrowserPicker.App/bin/${env:Configuration}/net8.0-windows/publish
 
     - name: Release
       uses: softprops/action-gh-release@v2
