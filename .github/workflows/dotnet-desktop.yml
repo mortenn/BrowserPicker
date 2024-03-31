@@ -93,13 +93,7 @@ jobs:
         user_format_type: "json"
         enable_prerelease_mode: false
         debug: true
-        version_from_branch: false
-
-    - name: Set Package Version
-      run: |
-        Write-Output "Version: $env:test"
-      env:
-        test: ${{ steps.version.outputs.debug_output }}
+        version_from_branch: true
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     #- name: Setup MSBuild.exe
