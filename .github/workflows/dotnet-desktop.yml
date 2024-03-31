@@ -93,7 +93,7 @@ jobs:
         user_format_type: "json"
         enable_prerelease_mode: false
         debug: true
-        version_from_branch: true
+        version_from_branch: false
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     #- name: Setup MSBuild.exe
