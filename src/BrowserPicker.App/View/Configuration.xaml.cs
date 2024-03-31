@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace BrowserPicker.View
@@ -13,14 +15,25 @@ namespace BrowserPicker.View
 			InitializeComponent();
 		}
 
-		private void AddDefault(object sender, RoutedEventArgs e)
+		private async void Fragment_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
 		{
-			var fragment = NewFragment.Text;
-			var browser = (string)NewDefault.SelectedValue;
-			DefaultsList.Items.Add(App.Settings.AddDefault(fragment, browser));
-			NewFragment.Text = string.Empty;
-			NewFragment.Focus();
-			DefaultsList.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+			HoldoffTimer?.Cancel();
+			CancellationTokenSource instance = new();
+			HoldoffTimer = instance;
+			try
+			{
+				await Task.Delay(HoldoffTime, instance.Token);
+				if (instance.IsCancellationRequested)
+					return;
+				((TextBox)sender).GetBindingExpression(TextBox.TextProperty).UpdateSource();
+			}
+			catch (TaskCanceledException)
+			{
+				// ignored
+			}
 		}
+
+		private static readonly TimeSpan HoldoffTime = TimeSpan.FromMilliseconds(200);
+		private CancellationTokenSource HoldoffTimer = null;
 	}
 }

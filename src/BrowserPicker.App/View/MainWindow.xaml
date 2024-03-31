@@ -18,7 +18,7 @@
 			<Style TargetType="{x:Type Border}">
 				<Setter Property="Background" Value="Transparent" />
 				<Style.Triggers>
-					<DataTrigger Binding="{Binding Configuration.DisableTransparency}" Value="True">
+					<DataTrigger Binding="{Binding Configuration.Settings.DisableTransparency}" Value="True">
 						<Setter Property="Border.Background" Value="Black" />
 					</DataTrigger>
 				</Style.Triggers>
@@ -32,8 +32,8 @@
 				</LinearGradientBrush>
 			</Border.Background>
 			<Grid Margin="10">
-				<view:BrowserList>
-					<view:BrowserList.Style>
+				<Border>
+					<Border.Style>
 						<Style>
 							<Setter Property="UIElement.Visibility" Value="Visible" />
 							<Style.Triggers>
@@ -42,10 +42,11 @@
 								</DataTrigger>
 							</Style.Triggers>
 						</Style>
-					</view:BrowserList.Style>
-				</view:BrowserList>
-				<view:Configuration>
-					<view:Configuration.Style>
+					</Border.Style>
+					<view:BrowserList />
+				</Border>
+				<Border>
+					<Border.Style>
 						<Style>
 							<Setter Property="UIElement.Visibility" Value="Collapsed" />
 							<Style.Triggers>
@@ -54,8 +55,9 @@
 								</DataTrigger>
 							</Style.Triggers>
 						</Style>
-					</view:Configuration.Style>
-				</view:Configuration>
+					</Border.Style>
+					<view:Configuration DataContext="{Binding Configuration}" />
+				</Border>
 			</Grid>
 		</Border>
 	</Border>

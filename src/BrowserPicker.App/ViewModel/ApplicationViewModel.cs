@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
@@ -22,7 +25,17 @@ namespace BrowserPicker.ViewModel
 		{
 			Url = new UrlHandler(App.Settings, "https://github.com/mortenn/BrowserPicker");
 			force_choice = true;
-			Configuration = App.Settings;
+			Configuration = new (App.Settings);
+			Choices = new ObservableCollection<BrowserViewModel>(
+				WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this))
+			);
+		}
+
+		internal ApplicationViewModel(ConfigurationViewModel config)
+		{
+			Url = new UrlHandler(config.Settings, "https://github.com/mortenn/BrowserPicker");
+			force_choice = true;
+			Configuration = config;
 			Choices = new ObservableCollection<BrowserViewModel>(
 				WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this))
 			);
@@ -38,80 +51,76 @@ namespace BrowserPicker.ViewModel
 				Url = new UrlHandler(settings, url);
 			}
 			ConfigurationMode = url == null;
-			Configuration = settings;
-			Configuration.PropertyChanged += Configuration_PropertyChanged;
-			Choices = new ObservableCollection<BrowserViewModel>(Configuration.BrowserList.Select(m => new BrowserViewModel(m, this)));
+			Configuration = new(settings)
+			{
+				ParentViewModel = this
+			};
+			Choices = new ObservableCollection<BrowserViewModel>(settings.BrowserList.Select(m => new BrowserViewModel(m, this)));
 		}
 
 		public UrlHandler Url { get; }
 
-		private void Configuration_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == nameof(Configuration.BrowserList))
-			{
-				var added = Configuration.BrowserList.Where(b => Choices.All(c => c.Model.Name != b.Name)).ToList();
-				if (added.Count > 0)
-				{
-					foreach(var vm in added.Select(m => new BrowserViewModel(m, this)))
-					{
-						Choices.Add(vm);
-					}
-				}
-				var removed = Choices.Where(c => Configuration.BrowserList.All(b => b.Name != c.Model.Name)).ToList();
-				if (removed.Count > 0)
-				{
-					foreach(var m in removed)
-					{
-						Choices.Remove(m);
-					}
-				}
-			}
-		}
-
 		public void Initialize()
 		{
+			if (Keyboard.Modifiers == ModifierKeys.Alt)
+			{
+				return;
+			}
+
 			if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
 			{
 				return;
 			}
-			if (Url != null)
+
+			BrowserViewModel start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
+			if (Debugger.IsAttached)
 			{
-				CheckDefaultBrowser();
+				Debug.WriteLine($"Skipping launch of browser {start.Model.Name} due to debugger being attached");
+				return;
 			}
-			var active = Choices.Where(b => b.IsRunning && !b.Model.Disabled).ToList();
-			if (active.Count == 1)
-			{
-				active[0].Select.Execute(null);
-			}
+			start?.Select.Execute(null);
 		}
 
-		private void CheckDefaultBrowser()
+		internal BrowserViewModel GetBrowserToLaunch(string targetUrl)
 		{
-			if (string.IsNullOrWhiteSpace(Url.TargetURL))
+			if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
 			{
-				return;
+				return null;
 			}
-			var defaults = Configuration.Defaults.ToList();
-			if (defaults.Count <= 0)
-				return;
+			var urlBrowser = GetBrowserToLaunchForUrl(targetUrl);
+			var browser = Choices.FirstOrDefault(c => c.Model.Name == urlBrowser);
+			if (browser != null)
+			{
+				return browser;
+			}
+			var active = Choices.Where(b => b.IsRunning && !b.Model.Disabled).ToList();
+			return active.Count == 1 ? active[0] : null;
+		}
 
-			var url = new Uri(Url.UnderlyingTargetURL ?? Url.TargetURL);
-			var auto = defaults
+		internal string GetBrowserToLaunchForUrl(string targetUrl)
+		{
+			if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))
+				return null;
+
+			Uri url = null;
+			try
+			{
+				url = new Uri(targetUrl);
+			}
+			catch (UriFormatException)
+			{
+				return null;
+			}
+			var auto = Configuration.Settings.Defaults
 				.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
 				.Where(o => o.matchLength > 0)
 				.ToList();
-			if (auto.Count <= 0 || Debugger.IsAttached)
-				return;
+			
+			if (auto.Count <= 0)
+				return null;
 
-			var browser = auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
-			var start = Choices.FirstOrDefault(c => c.Model.Name == browser);
-			if (start == null || Configuration.DefaultsWhenRunning && !start.IsRunning)
-				return;
-
-			start.Select.Execute(null);
+			return auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
 		}
-
-		public ICommand RefreshBrowsers => new DelegateCommand(Configuration.FindBrowsers);
 
 		public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
 
@@ -121,31 +130,7 @@ namespace BrowserPicker.ViewModel
 
 		public ICommand Edit => new DelegateCommand(OpenURLEditor);
 
-		public DelegateCommand AddBrowser => new(AddBrowserManually);
-
-		private void AddBrowserManually()
-		{
-			var editor = new BrowserEditor();
-			editor.Show();
-			editor.Closing += Editor_Closing;
-		}
-
-		private void Editor_Closing(object sender, CancelEventArgs e)
-		{
-			((Window)sender).Closing -= Editor_Closing;
-			if (sender is not Window { DataContext: BrowserViewModel browser })
-			{
-				return;
-			}
-			if (string.IsNullOrEmpty(browser.Model.Name) || string.IsNullOrEmpty(browser.Model.Command))
-			{
-				return;
-			}
-			Choices.Add(browser);
-			Configuration.AddBrowser(browser.Model);
-		}
-
-		public IBrowserPickerConfiguration Configuration { get; }
+		public ConfigurationViewModel Configuration { get; }
 
 		public ObservableCollection<BrowserViewModel> Choices { get; }
 

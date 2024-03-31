@@ -14,12 +14,12 @@ namespace BrowserPicker
 
 		public static readonly List<IWellKnownBrowser> List =
 		[
-			new Firefox(),
-			new Chrome(),
-			new MicrosoftEdge(),
-			new Edge(),
-			new InternetExplorer(),
-			new OperaStable()
+			Firefox.Instance,
+			Chrome.Instance,
+			MicrosoftEdge.Instance,
+			Edge.Instance,
+			InternetExplorer.Instance,
+			OperaStable.Instance
 		];
 	}
 
@@ -32,8 +32,10 @@ namespace BrowserPicker
 		string PrivacyMode { get; }
 	}
 
-	public class Firefox : IWellKnownBrowser
+	public sealed class Firefox : IWellKnownBrowser
 	{
+		public static readonly Firefox Instance = new();
+
 		public string Name => "Mozilla Firefox";
 
 		public string Executable => "firefox.exe";
@@ -45,8 +47,10 @@ namespace BrowserPicker
 		public string PrivacyMode => "Open with private browsing";
 	}
 
-	public class Chrome : IWellKnownBrowser
+	public sealed class Chrome : IWellKnownBrowser
 	{
+		public static readonly Chrome Instance = new();
+
 		public string Name => "Google Chrome";
 
 		public string Executable => "chrome.exe";
@@ -58,55 +62,63 @@ namespace BrowserPicker
 		public string PrivacyMode => "Open incognito";
 	}
 
-	public class MicrosoftEdge : IWellKnownBrowser
+	public sealed class MicrosoftEdge : IWellKnownBrowser
 	{
+		public static readonly MicrosoftEdge Instance = new();
+
 		public string Name => "Microsoft Edge";
 
 		public string Executable => "msedge.exe";
 
 		public string RealExecutable => null;
-	
+
 		public string PrivacyArgs => "-inprivate ";
 
 		public string PrivacyMode => "Open in private mode";
 	}
 
-	public class Edge : IWellKnownBrowser
+	public sealed class Edge : IWellKnownBrowser
 	{
+		public static readonly Edge Instance = new();
+
 		public string Name => "Edge";
 
 		public string Executable => "microsoft-edge:";
 
 		public string RealExecutable => null;
-	
+
 		public string PrivacyArgs => "-private ";
 
 		public string PrivacyMode => "Open in private mode";
 	}
 
-	public class InternetExplorer : IWellKnownBrowser
+	public sealed class InternetExplorer : IWellKnownBrowser
 	{
+		public static readonly InternetExplorer Instance = new();
+
 		public string Name => "Internet Explorer";
 
 		public string Executable => "iexplore.exe";
 
 		public string RealExecutable => null;
-	
+
 		public string PrivacyArgs => "-private ";
 
 		public string PrivacyMode => "Open in private mode";
 	}
 
-	public class OperaStable : IWellKnownBrowser
+	public sealed class OperaStable : IWellKnownBrowser
 	{
+		public static readonly OperaStable Instance = new();
+
 		public string Name => "Opera Stable";
 
 		public string Executable => "Opera\\Launcher.exe";
 
 		public string RealExecutable => "opera.exe";
-	
+
 		public string PrivacyArgs => "--private ";
-	
+
 		public string PrivacyMode => "Open in private mode";
 	}
 }

@@ -1,44 +1,83 @@
 ﻿using BrowserPicker.Framework;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace BrowserPicker
 {
-	public class DefaultSetting : ModelBase
+	public class DefaultSetting(MatchType type, string pattern, string browser) : ModelBase, INotifyPropertyChanging
 	{
-		public DefaultSetting(string fragment, string browser)
+		private string browser = browser;
+		private string pattern = pattern;
+		private MatchType type = type;
+
+		public static DefaultSetting Decode(string rule, string browser)
 		{
-			this.fragment = fragment;
-			this.browser = browser;
-			IsValid = !string.IsNullOrWhiteSpace(fragment);
-			Configure();
+			if (rule == string.Empty)
+			{
+				return new(MatchType.Default, string.Empty, browser);
+			}
+
+			var config = rule.Split('|');
+			if (config.Length > 1 && config[0] == string.Empty)
+			{
+				if (config.Length != 3)
+				{
+					// Unknown format detected, ignore rule
+					return null;
+				}
+
+				var prefix = rule[1..rule.IndexOf('|', 1)];
+				if (!Enum.TryParse<MatchType>(prefix, true, out var matchType))
+				{
+					// Unsupported match type detected, ignore rule
+					return null;
+				}
+				return new(matchType, config[2], browser);
+			}
+
+			// Original hostname match type
+			return new(MatchType.Hostname, rule, browser);
 		}
 
-		/// <summary>
-		/// If Fragment starts with a pipe (|) character then it is of the format
-		///      |type|value
-		/// Otherwise the Fragment is a suffix-match on the URL host name.
-		/// Currently supported Fragment types:
-		///      |prefix|https://example.com/test           This applies a prefix match to the full URL value
-		///      |regex|https://.*\.example\.com/test		This applies a regex match to the full URL value
-		/// </summary>
-		public string Fragment
+		public MatchType Type
 		{
-			get => fragment;
+			get => type;
 			set
 			{
-				if (fragment == value)
+				if (type == value)
 				{
 					return;
 				}
-				// Trigger deletion if fragment is changing
-				IsValid = !string.IsNullOrEmpty(fragment);
-
-				// Skip adding to configuration if empty
-				IsValid = !string.IsNullOrWhiteSpace(value);
-				fragment = value;
-				Configure();
+				OnPropertyChanging(nameof(SettingKey));
+				type = value;
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(SettingKey));
+			}
+		}
+
+		public string SettingKey => ToString();
+
+		public string SettingValue => Browser;
+
+		public bool Deleted { get; set; } = false;
+
+		public string Pattern
+		{
+			get => pattern;
+			set
+			{
+				if (pattern == value)
+				{
+					return;
+				}
+				// Triger deletion of old registry key
+				OnPropertyChanging(nameof(SettingKey));
+				pattern = value;
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(IsValid));
+				OnPropertyChanged(nameof(SettingKey));
 			}
 		}
 
@@ -53,22 +92,16 @@ namespace BrowserPicker
 				}
 				browser = value;
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(SettingValue));
 			}
 		}
 
 		public bool IsValid
 		{
-			get => isValid;
-			set
-			{
-				isValid = value;
-				OnPropertyChanged();
-			}
+			get => !string.IsNullOrWhiteSpace(pattern) || pattern == string.Empty && Type == MatchType.Default;
 		}
 
-		public DelegateCommand Remove => new(() => Fragment = string.Empty);
-
-		public MatchType Type { get; private set; } = MatchType.Hostname;
+		public DelegateCommand Remove => new(() => { Deleted = true; OnPropertyChanged(nameof(Deleted)); });
 
 		public int MatchLength(Uri url)
 		{
@@ -86,41 +119,20 @@ namespace BrowserPicker
 			};
 		}
 
-		private void Configure()
+		public override string ToString() => Type switch
 		{
-			pattern = null;
-			if (!IsValid)
-			{
-				return;
-			}
-			var config = fragment.Split('|');
-			if (config.Length > 1 && config[0] == string.Empty)
-			{
-				if (config.Length != 3)
-				{
-					// Unknown format detected, ignore rule
-					return;
-				}
+			MatchType.Hostname => pattern,
+			MatchType.Default => string.Empty,
+			_ => $"|{Type}|{pattern}"
+		};
 
-				var prefix = fragment[1..fragment.IndexOf('|', 1)];
-				if (!Enum.TryParse<MatchType>(prefix, true, out var matchType))
-				{
-					// Unsupported match type detected, ignore rule
-					return;
-				}
-				Type = matchType;
-				pattern = config[2];
-				return;
-			}
+		public override int GetHashCode() => Type.GetHashCode() ^ pattern.GetHashCode();
 
-			// Default match type
-			Type = MatchType.Hostname;
-			pattern = fragment;
+		private void OnPropertyChanging([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 		}
 
-		private string fragment;
-		private string browser;
-		private string pattern;
-		private bool isValid;
+		public event PropertyChangingEventHandler PropertyChanging;
 	}
 }

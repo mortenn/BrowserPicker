@@ -71,6 +71,6 @@ namespace BrowserPicker
 		/// </summary>
 		/// <param name="fragment">The url fragment to match</param>
 		/// <param name="browser">The browser to use</param>
-		DefaultSetting AddDefault(string fragment, string browser);
+		DefaultSetting AddDefault(MatchType matchType, string pattern, string browser);
 	}
 }

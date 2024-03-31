@@ -69,7 +69,7 @@ namespace BrowserPicker
 
 				// Create a CancellationToken that cancels after the lookup timeout
 				// to limit the amount of time spent looking up underlying URLs
-				cts = new CancellationTokenSource(ViewModel.Configuration.UrlLookupTimeoutMilliseconds);
+				cts = ViewModel.Configuration.GetUrlLookupTimeout();
 				try
 				{
 					// Show LoadingWindow after a small delay

@@ -200,7 +200,7 @@
 					<TextBlock Text="Configure browser list" />
 				</Hyperlink>
 			</TextBlock>
-			<CheckBox Margin="10,0,0,0" IsChecked="{Binding Configuration.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
+			<CheckBox Margin="10,0,0,0" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
 		</StackPanel>
 	</Grid>
 </UserControl>

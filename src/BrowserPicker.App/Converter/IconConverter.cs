@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
@@ -14,7 +15,7 @@ namespace BrowserPicker.Converter
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (value == null)
-				return null;
+				return GetDefaultIcon();
 			
 			var iconPath = value.ToString();
 			if (cache.TryGetValue(iconPath, out var cachedIcon))
@@ -24,7 +25,7 @@ namespace BrowserPicker.Converter
 
 			if (string.IsNullOrWhiteSpace(iconPath))
 			{
-				return null;
+				return GetDefaultIcon();
 			}
 
 			var realIconPath = iconPath.Trim('"', '\'', ' ', '\t', '\r', '\n');
@@ -34,14 +35,14 @@ namespace BrowserPicker.Converter
 					realIconPath = Environment.ExpandEnvironmentVariables(realIconPath);
 
 				if (!File.Exists(realIconPath))
-					return null;
+					return GetDefaultIcon();
 
 				Stream icon;
 				if (realIconPath.EndsWith(".exe") || realIconPath.EndsWith(".dll"))
 				{
 					var iconData = Icon.ExtractAssociatedIcon(realIconPath)?.ToBitmap();
 					if (iconData == null)
-						return null;
+						return GetDefaultIcon();
 					icon = new MemoryStream();
 					iconData.Save(icon, ImageFormat.Png);
 				}
@@ -57,12 +58,17 @@ namespace BrowserPicker.Converter
 			{
 				// ignored
 			}
-			return null;
+			return GetDefaultIcon();
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			return null;
+		}
+
+		private static object GetDefaultIcon()
+		{
+			return Application.Current.TryFindResource("DefaultIcon");
 		}
 
 		private readonly Dictionary<string, BitmapFrame> cache = [];

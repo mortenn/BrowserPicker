@@ -90,7 +90,7 @@ namespace BrowserPicker.Windows
 
 				if (value)
 				{
-					AddDefault("|Default|", null);
+					AddDefault(MatchType.Default, string.Empty, null);
 					OnPropertyChanged(nameof(Defaults));
 					OnPropertyChanged();
 					return;
@@ -113,10 +113,11 @@ namespace BrowserPicker.Windows
 			}
 		}
 
-		public DefaultSetting AddDefault(string fragment, string browser)
+		public DefaultSetting AddDefault(MatchType matchType, string pattern, string browser)
 		{
 			var setting = GetDefaultSetting(null, browser);
-			setting.Fragment = fragment;
+			setting.Type = matchType;
+			setting.Pattern = pattern;
 			Defaults.Add(setting);
 			OnPropertyChanged(nameof(Defaults));
 			return setting;
@@ -138,7 +139,7 @@ namespace BrowserPicker.Windows
 
 		public async Task Start(CancellationToken cancellationToken)
 		{
-			await Task.Run(() => FindBrowsers(), cancellationToken);
+			await Task.Run(FindBrowsers, cancellationToken);
 		}
 
 		/// <summary>
@@ -221,39 +222,66 @@ namespace BrowserPicker.Windows
 		{
 			var key = Reg.Open(nameof(Defaults));
 			var values = key.GetValueNames();
+			if (values.Contains("|Default|"))
+			{
+				var defaultBrowser = key.GetValue("|Default|");
+				key.DeleteValue("|Default|");
+				key.SetValue(string.Empty, defaultBrowser);
+				values = key.GetValueNames();
+			}
 			return values.Select(name => GetDefaultSetting(name, (string)key.GetValue(name))).ToList();
 		}
 
-		private static DefaultSetting GetDefaultSetting(string fragment, string browser)
+		private static DefaultSetting GetDefaultSetting(string key, string value)
 		{
-			var setting = new DefaultSetting(fragment, browser);
+			var setting = DefaultSetting.Decode(key, value);
+			setting.PropertyChanging += DefaultSetting_PropertyChanging;
 			setting.PropertyChanged += DefaultSetting_PropertyChanged;
 			return setting;
+		}
+
+		private static void DefaultSetting_PropertyChanging(object sender, PropertyChangingEventArgs e)
+		{
+			if (e.PropertyName != nameof(DefaultSetting.SettingKey))
+			{
+				return;
+			}
+			var model = (DefaultSetting)sender;
+			if (model.Pattern == null)
+			{
+				return;
+			}
+			var key = Reg.Open(nameof(Defaults));
+			var settingKey = model.SettingKey;
+			if (model.IsValid && key.GetValue(settingKey) != null)
+			{
+				key.DeleteValue(settingKey);
+			}
 		}
 
 		private static void DefaultSetting_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var key = Reg.Open(nameof(Defaults));
 			var model = (DefaultSetting)sender;
-			if (model.Fragment == null)
+			if (model.Pattern == null)
 			{
 				return;
 			}
 			switch (e.PropertyName)
 			{
-				case nameof(DefaultSetting.IsValid):
-					if (model.IsValid)
+				case nameof(DefaultSetting.Deleted) when model.Deleted:
+					var settingKey = model.SettingKey;
+					if (model.IsValid && key.GetValue(settingKey) != null)
 					{
-						key.DeleteValue(model.Fragment);
+						key.DeleteValue(settingKey);
 					}
+					model.PropertyChanging -= DefaultSetting_PropertyChanging;
+					model.PropertyChanged -= DefaultSetting_PropertyChanged;
 					break;
-
-				case nameof(DefaultSetting.Fragment):
-				case nameof(DefaultSetting.Browser):
-					if (model.IsValid)
-					{
-						key.SetValue(model.Fragment, model.Browser ?? string.Empty, RegistryValueKind.String);
-					}
+				
+				case nameof(DefaultSetting.SettingKey) when model.IsValid:
+				case nameof(DefaultSetting.SettingValue) when model.IsValid:
+					key.SetValue(model.SettingKey, model.SettingValue ?? string.Empty, RegistryValueKind.String);
 					break;
 			}
 		}
