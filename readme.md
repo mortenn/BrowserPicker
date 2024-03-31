@@ -10,9 +10,9 @@ To avoid warnings about unknown publisher, [import](https://stackoverflow.com/qu
 ## Configuration
 
 To enable the browser picker window, you need to set Browser Picker as your default browser. 
-The configuration is saved in the Windows registry: `HKEY_CURRENT_USER\Software\BrowserPicker`, if you ever need to manually edit it.
+The configuration is saved in the Windows registry: `HKEY_CURRENT_USER\Software\BrowserPicker`, if you ever need to manually edit it or make a backup.
 
-### Windows 10
+### Windows 10/11
 
 Open the settings app from the start menu, navigate into Apps, select Default apps, then change the Web browser to BrowserPicker.
 
@@ -87,3 +87,8 @@ In addition to the default behaviour to match the end of the URL host, you can a
 - A rule of `|regex|.*/mortenn` applies the `.*/mortenn` to the full URL, so would match `https://github.com/mortenn/BrowserPicker`
 
 If multiple matches are found for a url, the longest match will be used.
+
+# New features under development
+- Brand new configuration UI for defaults
+- Support for a default browser when no default rules match
+- Additional configuration options
