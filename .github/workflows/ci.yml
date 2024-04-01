@@ -98,6 +98,12 @@ jobs:
     - name: Remove the pfx
       run: Remove-Item -path GitHubActionsWorkflow.pfx
 
+    - name: Upload msi
+      uses: actions/upload-artifact@v4.3.1
+      with:
+        name: Setup-${{ steps.version.outputs.version }}-${{ matrix.configuration }}
+        path: ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}/BrowserPicker.msi
+
     - name: Archive Portable
       uses: thedoctor0/zip-release@0.7.5
       with:
@@ -105,10 +111,9 @@ jobs:
         filename: 'Portable.zip'
         directory: src/BrowserPicker.App/bin/${{ matrix.configuration }}/net8.0-windows/publish
 
-    - name: Upload build artifacts
+    - name: Upload portable
       uses: actions/upload-artifact@v4.3.1
       with:
-        name: BrowserPicker-${{ steps.version.outputs.version }}-${{ matrix.configuration }}
-        path: |
-          src/BrowserPicker.App/bin/${{ matrix.configuration }}/net8.0-windows/publish/Portable.zip
-          ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}
+        name: Portable-${{ steps.version.outputs.version }}-${{ matrix.configuration }}
+        path: src/BrowserPicker.App/bin/${{ matrix.configuration }}/net8.0-windows/publish/Portable.zip
+          
