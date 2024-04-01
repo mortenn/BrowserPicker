@@ -31,7 +31,7 @@ jobs:
 
     - name: Determine version
       id: version
-      uses: paulhatch/semantic-version@v5
+      uses: paulhatch/semantic-version@v5.4.0
       with:
         version_format: "${major}.${minor}.${patch}"
 
@@ -124,7 +124,7 @@ jobs:
       id: version
       uses: paulhatch/semantic-version@v5.4.0
       with:
-        version_format: "${major}.${minor}.${patch}-beta${increment}"
+        version_format: "${major}.${minor}.${patch}"
 
     # Execute all unit tests in the solution
     #- name: Execute unit tests
@@ -160,7 +160,7 @@ jobs:
 
     - name: Sign the executable
       run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\win-x64\publish\BrowserPicker.exe
+        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\Release\net8.0-windows\win-x64\publish\BrowserPicker.exe
 
     # Remove the pfx
     - name: Remove the pfx
@@ -184,12 +184,12 @@ jobs:
 
     - name: Determine version
       id: version
-      uses: paulhatch/semantic-version@v5
+      uses: paulhatch/semantic-version@v5.4.0
       with:
         version_format: "${major}.${minor}.${patch}"
 
     - name: Retrieve artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
 
     - name: Package bundle
       run: |
@@ -207,9 +207,9 @@ jobs:
         generate_release_notes: true
         prerelease: true
         files: |
-            BrowserPicker.msi
-            Bundle.zip
-            Portable.zip
-            dist/code_signing.cer
+          Setup-${{ steps.version.outputs.version }}-Release/BrowserPicker.msi
+          Bundle.zip
+          Portable.zip
+          dist/code_signing.cer
 
   
