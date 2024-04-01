@@ -12,8 +12,7 @@ jobs:
       matrix:
         configuration: [Debug, Release]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
 
     env:
       Solution_Name: BrowserPicker.sln
@@ -99,9 +98,17 @@ jobs:
     - name: Remove the pfx
       run: Remove-Item -path GitHubActionsWorkflow.pfx
 
-    # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
+    - name: Archive Portable
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: 'zip'
+        filename: 'Portable.zip'
+        directory: src/BrowserPicker.App/bin/${{ matrix.configuration }}/net8.0-windows/publish
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4.3.1
       with:
         name: BrowserPicker-${{ steps.version.outputs.version }}-${{ matrix.configuration }}
-        path: ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}
+        path: |
+          src/BrowserPicker.App/bin/${{ matrix.configuration }}/net8.0-windows/publish/Portable.zip
+          ${{ env.Wix_Project_Directory }}/bin/${{ matrix.configuration }}
