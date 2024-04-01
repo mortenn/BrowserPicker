@@ -147,6 +147,7 @@
 							<Setter Property="Margin" Value="5,0,0,5"/>
 						</Style>
 					</StackPanel.Resources>
+					<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
 					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
 					<CheckBox Content="Disable url resolution" IsChecked="{Binding Settings.DisableNetworkAccess}" Foreground="White" />
 					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
@@ -160,6 +161,23 @@
 							SelectedValuePath="Model.Name"
 							SelectedValue="{Binding Settings.DefaultBrowser}"
 							Height="22" Margin="5,-4,0,0" />
+					</StackPanel>
+					<CheckBox Content="Disallow network activity" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" />
+					<StackPanel Margin="25,0,0,0">
+						<StackPanel.Style>
+							<Style>
+								<Setter Property="Control.IsEnabled" Value="True" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Settings.DisableNetworkAccess}" Value="True">
+										<Setter Property="Control.IsEnabled" Value="False" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</StackPanel.Style>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Foreground="White" Text="URL resolution timeout: " />
+							<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds}"  />
+						</StackPanel>
 					</StackPanel>
 				</StackPanel>
 			</TabItem>
