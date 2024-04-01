@@ -54,6 +54,7 @@
 		</Grid.RowDefinitions>
 
 		<TabControl Background="#77000000" BorderBrush="#77FFFFFF" VerticalAlignment="Stretch">
+			
 			<TabControl.Resources>
 				<Style TargetType="{x:Type TabItem}">
 					<Setter Property="Template">
@@ -76,6 +77,7 @@
 					</Setter>
 				</Style>
 			</TabControl.Resources>
+			
 			<TabItem Header="Browsers">
 				<ScrollViewer VerticalScrollBarVisibility="Auto">
 					<ItemsControl ItemsSource="{Binding ParentViewModel.Choices}">
@@ -140,6 +142,7 @@
 					</ItemsControl>
 				</ScrollViewer>
 			</TabItem>
+			
 			<TabItem Header="Behaviour">
 				<StackPanel Orientation="Vertical">
 					<StackPanel.Resources>
@@ -176,11 +179,12 @@
 						</StackPanel.Style>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Foreground="White" Text="URL resolution timeout: " />
-							<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds}"  />
+							<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds, UpdateSourceTrigger=PropertyChanged}"  />
 						</StackPanel>
 					</StackPanel>
 				</StackPanel>
 			</TabItem>
+
 			<TabItem Header="Defaults">
 				<Grid>
 					<Grid.RowDefinitions>
@@ -264,6 +268,7 @@
 					</Grid>
 				</Grid>
 			</TabItem>
+
 			<TabItem Header="Test defaults">
 				<Grid>
 					<Grid.RowDefinitions>
@@ -277,16 +282,17 @@
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
 					<TextBlock Text="Url:" Foreground="White" />
-					
+
 					<TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding TestDefaultsURL, UpdateSourceTrigger=PropertyChanged}" />
-					
+
 					<TextBlock Text="Default browser matched:" Grid.Column="0" Grid.Row="2" Foreground="White" />
 					<TextBlock Text="{Binding TestDefaultsResult}" Grid.Column="1" Grid.Row="2" Foreground="LightGreen" />
-					
+
 					<TextBlock Text="Actual browser choice:" Grid.Column="0" Grid.Row="3" Foreground="White" />
 					<TextBlock Text="{Binding TestActualResult}" Grid.Column="1" Grid.Row="3" Foreground="LightGreen" />
 				</Grid>
 			</TabItem>
+
 		</TabControl>
 
 		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
