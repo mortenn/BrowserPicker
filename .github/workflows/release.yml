@@ -160,7 +160,7 @@ jobs:
 
     - name: Sign the executable
       run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\publish\BrowserPicker.exe
+        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\${env:Configuration}\net8.0-windows\win-x64\publish\BrowserPicker.exe
 
     # Remove the pfx
     - name: Remove the pfx
@@ -170,7 +170,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Portable-${{ steps.version.outputs.version }}-Release
-        path: src/BrowserPicker.App/bin/Release/net8.0-windows/publish
+        path: src/BrowserPicker.App/bin/Release/net8.0-windows/win-x64/publish
 
   publish:
     runs-on: ubuntu-latest
