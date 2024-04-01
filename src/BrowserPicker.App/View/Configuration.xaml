@@ -8,7 +8,7 @@
 	xmlns:view="clr-namespace:BrowserPicker.View"
 	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
 	xmlns:browserPicker="clr-namespace:BrowserPicker;assembly=BrowserPicker.Common"
-	xmlns:System="clr-namespace:System;assembly=mscorlib"
+	xmlns:system="clr-namespace:System;assembly=mscorlib"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:ConfigurationViewModel,d:IsDesignTimeCreatable=True}"
 	Height="400" Width="600"
@@ -17,7 +17,7 @@
 		<ResourceDictionary>
 			<converter:IconFileToImageConverter x:Key="IconConverter" />
 
-			<ObjectDataProvider x:Key="MatchTypes" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+			<ObjectDataProvider x:Key="MatchTypes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
 				<ObjectDataProvider.MethodParameters>
 					<x:Type TypeName="browserPicker:MatchType"/>
 				</ObjectDataProvider.MethodParameters>
@@ -149,17 +149,16 @@
 					</StackPanel.Resources>
 					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
 					<CheckBox Content="Disable url resolution" IsChecked="{Binding Settings.DisableNetworkAccess}" Foreground="White" />
-					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.DefaultsWhenRunning}" Foreground="White" />
+					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
 					<CheckBox Content="Update order in browser list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" />
 					<StackPanel Orientation="Horizontal">
-						<CheckBox Content="When no default is configured matching the url, use:" IsChecked="{Binding Settings.AlwaysUseDefault}" Foreground="White" />
+						<CheckBox Content="When no default is configured matching the url, use:" IsChecked="{Binding Settings.UseFallbackDefault}" Foreground="White" />
 						<ComboBox
 							ItemsSource="{Binding ParentViewModel.Choices}"
 							ItemTemplate="{StaticResource BrowserIconAndName}"
 							IsSynchronizedWithCurrentItem="False"
 							SelectedValuePath="Model.Name"
 							SelectedValue="{Binding Settings.DefaultBrowser}"
-							Grid.Column="1"
 							Height="22" Margin="5,-4,0,0" />
 					</StackPanel>
 				</StackPanel>
@@ -290,7 +289,7 @@
 				<TextBlock.Style>
 					<Style>
 						<Style.Triggers>
-							<DataTrigger Binding="{Binding ParentViewModel.TargetURL}" Value="{x:Null}">
+							<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
 								<Setter Property="UIElement.Visibility" Value="Collapsed" />
 							</DataTrigger>
 						</Style.Triggers>
@@ -306,7 +305,7 @@
 					<Style>
 						<Setter Property="UIElement.Visibility" Value="Collapsed" />
 						<Style.Triggers>
-							<DataTrigger Binding="{Binding ParentViewModel.TargetURL}" Value="{x:Null}">
+							<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
 								<Setter Property="UIElement.Visibility" Value="Visible" />
 							</DataTrigger>
 						</Style.Triggers>

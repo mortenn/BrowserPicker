@@ -1,13 +1,12 @@
-﻿namespace BrowserPicker.View
+﻿namespace BrowserPicker.View;
+
+/// <summary>
+/// Interaction logic for Exception.xaml
+/// </summary>
+public partial class ExceptionReport
 {
-	/// <summary>
-	/// Interaction logic for Exception.xaml
-	/// </summary>
-	public partial class ExceptionReport
+	public ExceptionReport()
 	{
-		public ExceptionReport()
-		{
-			InitializeComponent();
-		}
+		InitializeComponent();
 	}
 }

@@ -1,10 +1,9 @@
-﻿namespace BrowserPicker
+﻿namespace BrowserPicker;
+
+public enum MatchType
 {
-	public enum MatchType
-	{
-		Hostname,
-		Prefix,
-		Regex,
-		Default
-	}
+	Hostname,
+	Prefix,
+	Regex,
+	Default
 }

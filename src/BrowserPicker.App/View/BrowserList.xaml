@@ -98,7 +98,7 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate DataType="viewModel:BrowserViewModel">
-						<Button Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
+						<Button Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
 							<Button.Style>
 								<Style>
 									<Setter Property="UIElement.Visibility" Value="Visible" />
@@ -170,7 +170,7 @@
 															<Trigger Property="IsEnabled" Value="False">
 																<Setter Property="UIElement.Visibility" Value="Collapsed" />
 															</Trigger>
-															<DataTrigger Binding="{Binding Path=AltPressed, RelativeSource={RelativeSource AncestorType=UserControl}}">
+															<DataTrigger Binding="{Binding Path=DataContext.AltPressed, RelativeSource={RelativeSource AncestorType=UserControl}}">
 																<Setter Property="BorderBrush" Value="White" />
 																<Setter Property="BorderThickness" Value="1" />
 															</DataTrigger>
