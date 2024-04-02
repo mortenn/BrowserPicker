@@ -138,6 +138,12 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	public bool AlwaysUseDefaults => Settings.AlwaysUseDefaults;
 
+	public bool AutoAddDefault
+	{
+		get => auto_add_default;
+		set => SetProperty(ref auto_add_default, value);
+	}
+
 	public List<BrowserViewModel> AvailableBrowsers { get; init; }
 
 	public ObservableCollection<DefaultSetting> Defaults { get; } = [];
@@ -275,6 +281,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	private MatchType new_match_type = MatchType.Hostname;
 	private string new_fragment;
 	private string new_fragment_browser;
+	private bool auto_add_default;
 	private DelegateCommand add_default;
 	private DelegateCommand refresh_browsers;
 	private DelegateCommand add_browser;

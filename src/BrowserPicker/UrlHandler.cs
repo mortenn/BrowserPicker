@@ -29,6 +29,7 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 		try
 		{
 			var uri = new Uri(TargetURL);
+			HostName = uri.Host;
 			while (true)
 			{
 				var jump = ResolveJumpPage(uri);
@@ -48,6 +49,7 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 					IsShortenedURL = true;
 					UnderlyingTargetURL = shortened;
 					uri = new Uri(shortened);
+					HostName = uri.Host;
 					continue;
 				}
 
@@ -96,6 +98,12 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 		set => SetProperty(ref is_shortened_url, value);
 	}
 
+	public string HostName
+	{
+		get => host_name;
+		set => SetProperty(ref host_name, value);
+	}
+
 	private static readonly List<string> UrlShorteners =
 	[
 		"safelinks.protection.outlook.com",
@@ -124,5 +132,6 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 
 	private string underlying_target_url;
 	private bool is_shortened_url;
+	private string host_name;
 	private static readonly HttpClient Client = new(new HttpClientHandler { AllowAutoRedirect = false });
 }

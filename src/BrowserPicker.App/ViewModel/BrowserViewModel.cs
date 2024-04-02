@@ -126,6 +126,21 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				Model.Usage++;
 			}
 
+			if (parent_view_model.Configuration.AutoAddDefault)
+			{
+				try
+				{
+					view_model.Configuration.NewDefaultBrowser = Model.Name;
+					view_model.Configuration.NewDefaultMatchType = MatchType.Hostname;
+					view_model.Configuration.NewDefaultPattern = view_model.Url.HostName;
+					view_model.Configuration.AddDefault.Execute(null);
+				}
+				catch
+				{
+					// ignored
+				}
+			}
+
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
 			var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.Url.TargetURL}\"");
 			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };

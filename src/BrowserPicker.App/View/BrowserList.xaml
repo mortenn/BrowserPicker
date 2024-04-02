@@ -194,13 +194,27 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 		</ScrollViewer>
-		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+		<Grid Grid.Row="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition />
+			</Grid.RowDefinitions>
 			<TextBlock>
 				<Hyperlink Command="{Binding Configure}" Foreground="White">
 					<TextBlock Text="Configure browser list" />
 				</Hyperlink>
 			</TextBlock>
-			<CheckBox Margin="10,0,0,0" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
-		</StackPanel>
+			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
+			<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsChecked="{Binding Configuration.AutoAddDefault}">
+				<StackPanel Orientation="Vertical">
+					<TextBlock Text="Remember this browser choice next time for the domain:" Foreground="White" />
+					<TextBlock Text="{Binding Url.HostName}" Foreground="White" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" MaxWidth="300" MaxHeight="50" />
+				</StackPanel>
+			</CheckBox>
+		</Grid>
 	</Grid>
 </UserControl>
