@@ -210,9 +210,11 @@
 			</TextBlock>
 			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
 			<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsChecked="{Binding Configuration.AutoAddDefault}">
-				<StackPanel Orientation="Vertical">
-					<TextBlock Text="Remember this browser choice next time for the domain:" Foreground="White" />
-					<TextBlock Text="{Binding Url.HostName}" Foreground="White" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" MaxWidth="300" MaxHeight="50" />
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Foreground="White" TextWrapping="Wrap" MaxWidth="320" MaxHeight="50">
+						<Run Text="Remember my choice for" />
+						<Run Text="{Binding Url.HostName}" />
+					</TextBlock>
 				</StackPanel>
 			</CheckBox>
 		</Grid>
