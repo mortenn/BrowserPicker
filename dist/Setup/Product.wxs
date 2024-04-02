@@ -13,13 +13,24 @@
 	</Package>
 
 	<Fragment>
-			<StandardDirectory Id="ProgramFiles64Folder">
-				<Directory Id="INSTALLFOLDER" Name="BrowserPicker" />
-			</StandardDirectory>
-			<StandardDirectory Id="ProgramMenuFolder">
-				<Directory Id="ApplicationProgramsFolder" Name="Browser Picker" />
-			</StandardDirectory>
-		</Fragment>
+		<netfx:DotNetCompatibilityCheck
+			Id="netCoreStatus"
+		  Property="NETCORESTATUS" RollForward="latestMajor"
+		  RuntimeType="core" Version="8.0.0" Platform="x64" />
+		<Launch
+			Condition="Installed OR NETCORESTATUS=&quot;0&quot;"
+		  Message="[ProductName] requires Microsoft .NET Core - 8.0.0 or greater." />
+	</Fragment>
+
+
+	<Fragment>
+		<StandardDirectory Id="ProgramFiles64Folder">
+			<Directory Id="INSTALLFOLDER" Name="BrowserPicker" />
+		</StandardDirectory>
+		<StandardDirectory Id="ProgramMenuFolder">
+			<Directory Id="ApplicationProgramsFolder" Name="Browser Picker" />
+		</StandardDirectory>
+	</Fragment>
 
 	<Fragment>
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
@@ -69,8 +80,12 @@
 
 				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
 			</Component>
-			<Component Bitness="always64"><File Id="BrowserPicker.Common.dll" Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" /></Component>
-			<Component Bitness="always64"><File Id="BrowserPicker.Windows.dll" Name="$(var.BrowserPicker.Windows.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" /></Component>
+			<Component Bitness="always64">
+				<File Id="BrowserPicker.Common.dll" Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="BrowserPicker.Windows.dll" Name="$(var.BrowserPicker.Windows.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
 		</ComponentGroup>
 	</Fragment>
 </Wix>
