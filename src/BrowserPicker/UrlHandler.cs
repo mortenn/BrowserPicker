@@ -10,14 +10,32 @@ using System.Web;
 
 namespace BrowserPicker;
 
-public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string requestedUrl)
-	: ModelBase, ILongRunningProcess
+public sealed class UrlHandler : ModelBase, ILongRunningProcess
 {
+	public UrlHandler(IBrowserPickerConfiguration configuration, string requestedUrl)
+	{
+		disallow_network = configuration.DisableNetworkAccess;
+		TargetURL = requestedUrl;
+		underlying_target_url = requestedUrl;
+		try
+		{
+			uri = new Uri(requestedUrl);
+			HostName = uri.Host;
+		}
+		catch
+		{
+			// ignored
+		}
+	}
 #if DEBUG
 	[UsedImplicitly]
 	// Design time constructor
-	public UrlHandler() : this(null, "https://github.com/mortenn/BrowserPicker")
+	public UrlHandler()
 	{
+		disallow_network = true;
+		TargetURL = "https://www.github.com/mortenn/BrowserPicker";
+		underlying_target_url = TargetURL;
+		HostName = "extremely-long-domain-example-for-design-time-use.some-long-domain-name.com";
 	}
 #endif
 
@@ -28,7 +46,6 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 	{
 		try
 		{
-			var uri = new Uri(TargetURL);
 			HostName = uri.Host;
 			while (true)
 			{
@@ -37,10 +54,11 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 				{
 					UnderlyingTargetURL = jump;
 					uri = new Uri(jump);
+					HostName = uri.Host;
 					continue;
 				}
 
-				if (configuration.DisableNetworkAccess)
+				if (disallow_network)
 					break;
 
 				var shortened = await ResolveShortener(uri, cancellationToken);
@@ -84,7 +102,7 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 		return location?.OriginalString;
 	}
 
-	public string TargetURL { get; } = requestedUrl;
+	public string TargetURL { get; }
 
 	public string UnderlyingTargetURL
 	{
@@ -130,8 +148,10 @@ public sealed class UrlHandler(IBrowserPickerConfiguration configuration, string
 		("https://l.facebook.com/l.php", "u")
 	];
 
+	private Uri uri;
 	private string underlying_target_url;
 	private bool is_shortened_url;
 	private string host_name;
 	private static readonly HttpClient Client = new(new HttpClientHandler { AllowAutoRedirect = false });
+	private readonly bool disallow_network;
 }

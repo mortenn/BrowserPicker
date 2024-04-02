@@ -19,7 +19,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	public BrowserViewModel(BrowserModel model, ApplicationViewModel viewModel) : base(model)
 	{
 		model.PropertyChanged += Model_PropertyChanged;
-		view_model = viewModel;
+		parent_view_model = viewModel;
 	}
 
 	private void Model_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -114,7 +114,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 
 	private bool CanLaunch(bool privacy)
 	{
-		return !string.IsNullOrWhiteSpace(view_model.Url?.TargetURL) && !(privacy && Model.PrivacyArgs == null);
+		return !string.IsNullOrWhiteSpace(parent_view_model.Url?.TargetURL) && !(privacy && Model.PrivacyArgs == null);
 	}
 
 	private void Launch(bool privacy)
@@ -130,10 +130,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			{
 				try
 				{
-					view_model.Configuration.NewDefaultBrowser = Model.Name;
-					view_model.Configuration.NewDefaultMatchType = MatchType.Hostname;
-					view_model.Configuration.NewDefaultPattern = view_model.Url.HostName;
-					view_model.Configuration.AddDefault.Execute(null);
+					parent_view_model.Configuration.NewDefaultBrowser = Model.Name;
+					parent_view_model.Configuration.NewDefaultMatchType = MatchType.Hostname;
+					parent_view_model.Configuration.NewDefaultPattern = parent_view_model.Url.HostName;
+					parent_view_model.Configuration.AddDefault.Execute(null);
 				}
 				catch
 				{
@@ -142,7 +142,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			}
 
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
-			var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{view_model.Url.TargetURL}\"");
+			var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{parent_view_model.Url.TargetURL}\"");
 			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
 			_ = Process.Start(process);
 		}
@@ -162,5 +162,5 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		return args1 + " " + args2;
 	}
 
-	private readonly ApplicationViewModel view_model;
+	private readonly ApplicationViewModel parent_view_model;
 }

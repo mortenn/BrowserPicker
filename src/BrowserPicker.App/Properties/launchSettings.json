@@ -5,7 +5,7 @@
     },
     "github url": {
       "commandName": "Project",
-      "commandLineArgs": "https://github.com"
+      "commandLineArgs": "https://github.com/mortenn/BrowserPicker"
     }
   }
 }

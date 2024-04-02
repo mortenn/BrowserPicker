@@ -17,7 +17,7 @@ public sealed class ApplicationViewModel : ModelBase
 	[UsedImplicitly]
 	public ApplicationViewModel()
 	{
-		Url = new UrlHandler(App.Settings, "https://github.com/mortenn/BrowserPicker");
+		Url = new UrlHandler();
 		force_choice = true;
 		Configuration = new ConfigurationViewModel(App.Settings);
 		Choices = new ObservableCollection<BrowserViewModel>(
