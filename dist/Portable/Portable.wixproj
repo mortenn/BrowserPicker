@@ -1,6 +1,6 @@
 ﻿<Project Sdk="WixToolset.Sdk/4.0.5">
 	<PropertyGroup>
-		<OutputName>BrowserPicker</OutputName>
+		<OutputName>BrowserPicker-Portable</OutputName>
 		<ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
 		<InstallerPlatform>x64</InstallerPlatform>
 		<DefineConstants>ProductVersion=$(Version)</DefineConstants>

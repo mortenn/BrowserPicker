@@ -23,6 +23,12 @@ jobs:
       with:
         version_format: "${major}.${minor}.${patch}"
 
+    - name: Upload certificate
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/code_signing.cer
+
     outputs:
       version: ${{ steps.version.outputs.version}}
 
@@ -70,7 +76,7 @@ jobs:
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -r win-x64 -p:PublishSingleFile=true"
         package_project: dist/Portable/Portable.wixproj
         package_version: ${{ needs.prepare.outputs.version }}
-        package: dist\Portable\bin\Release\BrowserPicker.msi
+        package: dist\Portable\bin\Release\BrowserPicker-Portable.msi
         package_name: PortableSetup-${{ needs.prepare.outputs.version }}-Release
         package_path: dist/Portable/bin/Release
         binaries: src\BrowserPicker.App\bin\Release\net8.0-windows\win-x64\publish\BrowserPicker.exe
@@ -82,6 +88,11 @@ jobs:
     needs: [prepare, dependent, portable]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Retrieve artifacts
       uses: actions/download-artifact@v4
 
@@ -99,9 +110,8 @@ jobs:
         prerelease: true
         files: |
           DependentSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker.msi
-          PortableSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker.msi
-          Bundle.zip
+          PortableSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker-Portable.msi
+          Dependent.zip
           Portable.zip
           dist/code_signing.cer
-
   
