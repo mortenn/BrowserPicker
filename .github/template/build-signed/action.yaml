@@ -1,0 +1,137 @@
+name: build-signed
+description: builds a signed executable
+
+inputs:
+  configuration:
+    required: true
+    description: "dotnet build configuration"
+    default: "Release"
+  
+  solution_path:
+    required: true
+    description: "The path to the solution file"
+    default: "BrowserPicker.sln"
+
+  project_path:
+    required: true
+    description: "The path to the application project file to publish"
+    default: "src/BrowserPicker.App/BrowserPicker.App.csproj"
+
+  dotnet_args:
+    required: true
+    description: "Extra arguments for dotnet"
+
+  package_project:
+    required: true
+    description: "Path to wixproj to build"
+
+  package_version:
+    required: true
+    description: "MSI package VersionPrefix"
+  
+  package:
+    required: true
+    description: "Path to msi package to build and sign"
+
+  package_name:
+    required: true
+    description: "Name of the uploaded package artifact"
+
+  package_path:
+    required: true
+    description: "Path to the package to upload"
+
+  binaries:
+    required: true
+    description: "Pattern matching binaries to be signed and bundled"
+    default: ""
+  
+  bundle_name:
+    required: true
+    description: "Name of the uploaded bundle artifact"
+  
+  bundle_path:
+    required: true
+    description: "Path to the files to bundle and upload"
+
+  signtool:
+    required: true
+    description: "Path to signtool"
+    default: "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe"
+
+  timestamp_server:
+    required: true
+    description: "Timestamp server for signtool"
+    default: "http://timestamp.digicert.com"
+
+  base64_encoded_pfx:
+    description: 'Base64 encoded pfx file'
+    required: true
+
+  pfx_key:
+    description: 'pfx password'
+    required: true
+
+runs:
+  using: composite
+  steps:
+  - name: Install .NET Core
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: 8.0.x
+
+  # Restore dotnet tools
+  - name: Restore tools
+    shell: bash
+    run: dotnet tool restore
+
+  # Restore the application to populate the obj folder with RuntimeIdentifiers
+  - name: Restore the application
+    shell: bash
+    run: dotnet restore ${{ inputs.solution_path }} ${{ inputs.dotnet_args }}
+
+  # Build and publish the application
+  - name: Build application
+    shell: bash
+    run: dotnet publish -c ${{ inputs.configuration }} ${{ inputs.project_path }} ${{ inputs.dotnet_args }}
+
+  # Decode the base 64 encoded pfx and save the Signing_Certificate
+  - name: Decode the pfx
+    shell: bash
+    run: echo "${{ inputs.base64_encoded_pfx }}" | base64 -d > GitHubActionsWorkflow.pfx
+
+  - name: Sign the executable
+    shell: powershell
+    env:
+      pfx_key: ${{ inputs.pfx_key }}
+    run: |
+      & "${{ inputs.signtool }}" sign /debug /tr ${{ inputs.timestamp_server }} /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p $Env:pfx_key ${{ inputs.binaries }}
+
+  # Create the app package by building and packaging the Windows Application Packaging project
+  - name: Create the installer
+    shell: bash
+    run: dotnet build ${{ inputs.package_project }} --no-dependencies -c ${{ inputs.configuration }} -p Version=${{ inputs.package_version }}
+
+  - name: Sign the installer
+    shell: powershell
+    env:
+      pfx_key: ${{ inputs.pfx_key }}
+    run: |
+      & "${{ inputs.signtool }}" sign /debug /tr ${{ inputs.timestamp_server }} /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p $Env:pfx_key ${{ inputs.package }}
+      
+  # Remove the pfx
+  - name: Remove the pfx
+    shell: bash
+    run: rm GitHubActionsWorkflow.pfx
+
+  - name: Upload msi
+    uses: actions/upload-artifact@v4
+    with:
+      name: ${{ inputs.package_name }}
+      path: ${{ inputs.package_path }}
+
+  - name: Upload bundle
+    uses: actions/upload-artifact@v4
+    with:
+      name: ${{ inputs.bundle_name }}
+      path: ${{ inputs.bundle_path }}

@@ -7,15 +7,28 @@ on:
 
 jobs:
 
+  prepare:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Determine version
+      id: version
+      uses: paulhatch/semantic-version@v5.4.0
+      with:
+        version_format: "${major}.${minor}.${patch}"
+
+    outputs:
+      version: ${{ steps.version.outputs.version}}
+
   dependent:
     runs-on: windows-latest
-
-    env:
-      Solution_Name: BrowserPicker.sln
-      App_Project_Path: src/BrowserPicker.App/BrowserPicker.App.csproj
-      Wix_Project_Directory: dist/Setup
-      Wix_Project_Path: dist/Setup/Setup.wixproj
-      signtool: "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe"
+    needs: prepare
 
     steps:
     - name: Checkout
@@ -23,90 +36,25 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+    - name: Build runtime dependent binaries
+      uses: "./.github/template/build-signed"
       with:
-        dotnet-version: 8.0.x
-
-    - name: Determine version
-      id: version
-      uses: paulhatch/semantic-version@v5.4.0
-      with:
-        version_format: "${major}.${minor}.${patch}"
-
-    # Execute all unit tests in the solution
-    #- name: Execute unit tests
-    #  run: dotnet test
-
-    # Restore dotnet tools
-    - name: Restore tools
-      run: dotnet tool restore
-
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: dotnet restore $env:Solution_Name -p VersionPrefix=${env:major}.${env:minor}.${env:patch} -p VersionSuffix=""
-      env:
-        major: ${{ steps.version.outputs.major }}
-        minor: ${{ steps.version.outputs.minor }}
-        patch: ${{ steps.version.outputs.patch }}
-
-    # Build and publish the application
-    - name: Build application
-      run: dotnet publish -c Release $env:App_Project_Path -p VersionPrefix=${env:major}.${env:minor}.${env:patch} -p VersionSuffix=""
-      env:
-        major: ${{ steps.version.outputs.major }}
-        minor: ${{ steps.version.outputs.minor }}
-        patch: ${{ steps.version.outputs.patch }}
-
-    # Decode the base 64 encoded pfx and save the Signing_Certificate
-    - name: Decode the pfx
-      run: |
-        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-        [IO.File]::WriteAllBytes("GitHubActionsWorkflow.pfx", $pfx_cert_byte)
-
-    - name: Sign the executable
-      run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\Release\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\Release\net8.0-windows\publish\BrowserPicker.exe
-
-    # Create the app package by building and packaging the Windows Application Packaging project
-    - name: Create the installer
-      run: dotnet build $env:Wix_Project_Path --no-dependencies -c Release -p Version=${env:major}.${env:minor}.${env:patch}
-      env:
-        major: ${{ steps.version.outputs.major }}
-        minor: ${{ steps.version.outputs.minor }}
-        patch: ${{ steps.version.outputs.patch }}
-
-    - name: Sign the installer
-      run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' dist\Setup\bin\Release\BrowserPicker.msi
-        
-    # Remove the pfx
-    - name: Remove the pfx
-      run: Remove-Item -path GitHubActionsWorkflow.pfx
-
-    - name: Upload msi
-      uses: actions/upload-artifact@v4
-      with:
-        name: Setup-${{ steps.version.outputs.version }}-Release
-        path: ${{ env.Wix_Project_Directory }}/bin/Release
-  
-    - name: Upload bundle
-      uses: actions/upload-artifact@v4
-      with:
-        name: Bundle-${{ steps.version.outputs.version }}-Release
-        path: src/BrowserPicker.App/bin/Release/net8.0-windows/publish
+        base64_encoded_pfx: ${{ secrets.Base64_Encoded_Pfx }}
+        pfx_key: ${{ secrets.Pfx_Key }}
+        dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }}"
+        package_project: dist/Dependent/Dependent.wixproj
+        package_version: ${{ needs.prepare.outputs.version }}
+        package: dist\Dependent\bin\Release\BrowserPicker.msi
+        package_name: DependentSetup-${{ needs.prepare.outputs.version }}-Release
+        package_path: dist/Dependent/bin/Release
+        binaries: |
+          src\BrowserPicker.App\bin\Release\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\Release\net8.0-windows\publish\BrowserPicker*.exe
+        bundle_name: Dependent-${{ needs.prepare.outputs.version }}-Release
+        bundle_path: src/BrowserPicker.App/bin/Release/net8.0-windows/publish
 
   portable:
-
     runs-on: windows-latest
-
-    env:
-      Solution_Name: BrowserPicker.sln
-      App_Project_Path: src/BrowserPicker.App/BrowserPicker.App.csproj
-      Wix_Project_Directory: dist/Setup
-      Wix_Project_Path: dist/Setup/Setup.wixproj
-      signtool: "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe"
+    needs: prepare
 
     steps:
     - name: Checkout
@@ -114,92 +62,35 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
+    - name: Build runtime independent binaries
+      uses: "./.github/template/build-signed"
       with:
-        dotnet-version: 8.0.x
-
-    - name: Determine version
-      id: version
-      uses: paulhatch/semantic-version@v5.4.0
-      with:
-        version_format: "${major}.${minor}.${patch}"
-
-    # Execute all unit tests in the solution
-    #- name: Execute unit tests
-    #  run: dotnet test
-
-    # Restore dotnet tools
-    - name: Restore tools
-      run: dotnet tool restore
-
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: dotnet restore $env:Solution_Name -p VersionPrefix=${env:major}.${env:minor}.${env:patch} -p VersionSuffix=beta${env:increment} -r win-x64 -p:PublishSingleFile=true
-      env:
-        major: ${{ steps.version.outputs.major }}
-        minor: ${{ steps.version.outputs.minor }}
-        patch: ${{ steps.version.outputs.patch }}
-        increment: ${{ steps.version.outputs.increment }}
-
-    # Build and publish the application
-    - name: Build application
-      run: dotnet publish --no-restore -c Release $env:App_Project_Path -p VersionPrefix=${env:major}.${env:minor}.${env:patch} -p VersionSuffix=beta${env:increment} -r win-x64 -p:PublishSingleFile=true
-      env:
-        major: ${{ steps.version.outputs.major }}
-        minor: ${{ steps.version.outputs.minor }}
-        patch: ${{ steps.version.outputs.patch }}
-        increment: ${{ steps.version.outputs.increment }}
-
-    # Decode the base 64 encoded pfx and save the Signing_Certificate
-    - name: Decode the pfx
-      run: |
-        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
-        [IO.File]::WriteAllBytes("GitHubActionsWorkflow.pfx", $pfx_cert_byte)
-
-    - name: Sign the executable
-      run: |
-        & $env:signtool sign /debug /tr http://timestamp.digicert.com /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p '${{ secrets.Pfx_Key }}' src\BrowserPicker.App\bin\Release\net8.0-windows\win-x64\publish\BrowserPicker.exe
-
-    # Remove the pfx
-    - name: Remove the pfx
-      run: Remove-Item -path GitHubActionsWorkflow.pfx
-
-    - name: Upload portable
-      uses: actions/upload-artifact@v4
-      with:
-        name: Portable-${{ steps.version.outputs.version }}-Release
-        path: src/BrowserPicker.App/bin/Release/net8.0-windows/win-x64/publish
+        base64_encoded_pfx: ${{ secrets.Base64_Encoded_Pfx }}
+        pfx_key: ${{ secrets.Pfx_Key }}
+        dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -r win-x64 -p:PublishSingleFile=true"
+        package_project: dist/Portable/Portable.wixproj
+        package_version: ${{ needs.prepare.outputs.version }}
+        package: dist\Portable\bin\Release\BrowserPicker.msi
+        package_name: PortableSetup-${{ needs.prepare.outputs.version }}-Release
+        package_path: dist/Portable/bin/Release
+        binaries: src\BrowserPicker.App\bin\Release\net8.0-windows\win-x64\publish\BrowserPicker.exe
+        bundle_name: Portable-${{ needs.prepare.outputs.version }}-Release
+        bundle_path: src/BrowserPicker.App/bin/Release/net8.0-windows/win-x64/publish
 
   publish:
     runs-on: ubuntu-latest
-    needs: [dependent, portable]
+    needs: [prepare, dependent, portable]
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Determine version
-      id: version
-      uses: paulhatch/semantic-version@v5.4.0
-      with:
-        version_format: "${major}.${minor}.${patch}"
-
     - name: Retrieve artifacts
       uses: actions/download-artifact@v4
 
-    - name: Package bundle
+    - name: Package bundles
       run: |
-        rm -rf Bundle.zip
-        zip -jr Bundle.zip Bundle-${{ steps.version.outputs.version }}-Release/*
-
-    - name: Package portable
-      run: |
-        rm -rf Portable.zip
-        zip -jr Portable.zip Portable-${{ steps.version.outputs.version }}-Release/*
+        rm -rf *.zip
+        for bundle in Dependent Portable; do
+          zip -jr $bundle.zip $bundle-${{ needs.prepare.outputs.version }}-Release/*
+        done
 
     - name: Release
       uses: softprops/action-gh-release@v2
@@ -207,7 +98,8 @@ jobs:
         generate_release_notes: true
         prerelease: true
         files: |
-          Setup-${{ steps.version.outputs.version }}-Release/BrowserPicker.msi
+          DependentSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker.msi
+          PortableSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker.msi
           Bundle.zip
           Portable.zip
           dist/code_signing.cer

@@ -1,0 +1,85 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
+	<Package Name="BrowserPicker" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Runsafe" UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}" InstallerVersion="200">
+
+		<MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="yes" />
+		<MediaTemplate EmbedCab="yes" />
+
+		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.App.TargetDir)\win-x64\publish\$(var.BrowserPicker.App.TargetName).exe" />
+		<Property Id="ARPPRODUCTICON" Value="Icon.exe" />
+
+		<Feature Id="ProductFeature" Title="Setup" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+	</Package>
+
+	<Fragment>
+		<StandardDirectory Id="ProgramFiles64Folder">
+			<Directory Id="INSTALLFOLDER" Name="BrowserPicker" />
+		</StandardDirectory>
+		<StandardDirectory Id="ProgramMenuFolder">
+			<Directory Id="ApplicationProgramsFolder" Name="Browser Picker" />
+		</StandardDirectory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\win-x64\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
+			<Component Bitness="always64">
+				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
+					<Shortcut Directory="ApplicationProgramsFolder" Id="ApplicationStartMenuShortcut" Name="Browser Picker" Description="Awesome Browser Picker" WorkingDirectory="INSTALLFOLDER" Icon="Icon.exe" Advertise="yes" />
+				</File>
+
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="EditFlags" Value="2" Type="integer" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="FriendlyTypeName" Value="Web URL" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="URL Protocol" Value="" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker\shell" Type="string" Value="open" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker\shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" />
+
+				<!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationDescription" Value="Shows a prompt to let you use different browsers on the fly." Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,0" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationName" Value="Browser Picker" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".html" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".htm" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\StartMenu" Name="StartMenuInternet" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="ftp" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="http" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\URLAssociations" Name="https" Value="BrowserPicker" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\shell" Value="open" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\shell\open\command" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="BrowserPicker" Value="SOFTWARE\BrowserPicker\Capabilities" Type="string" />
+
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker" Type="string" Value="Browser Picker" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\DefaultIcon" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe,0" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="HideIconsCommand" Value="" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="integer" Name="IconsVisible" Value="1" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="ReinstallCommand" Value="" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\InstallInfo" Type="string" Name="ShowIconsCommand" Value="" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell" Type="string" Value="open" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell\open\command" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe" />
+
+				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="aspnetcorev2_inprocess.dll" Name="aspnetcorev2_inprocess.dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="D3DCompiler_47_cor3.dll" Name="D3DCompiler_47_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="PenImc_cor3.dll" Name="PenImc_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="PresentationNative_cor3.dll" Name="PresentationNative_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="vcruntime140_cor3.dll" Name="vcruntime140_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="wpfgfx_cor3.dll" Name="wpfgfx_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>
