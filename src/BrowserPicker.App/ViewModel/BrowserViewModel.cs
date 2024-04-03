@@ -20,6 +20,15 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	{
 		model.PropertyChanged += Model_PropertyChanged;
 		parent_view_model = viewModel;
+		parent_view_model.PropertyChanged += OnParentViewModelChanged;
+	}
+
+	private void OnParentViewModelChanged(object sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(ApplicationViewModel.AltPressed))
+		{
+			OnPropertyChanged(nameof(AltPressed));
+		}
 	}
 
 	private void Model_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -111,6 +120,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			}
 		}
 	}
+
+	public bool AltPressed => parent_view_model.AltPressed;
 
 	private bool CanLaunch(bool privacy)
 	{

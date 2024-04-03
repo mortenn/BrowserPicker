@@ -21,7 +21,7 @@ public partial class MainWindow
 	private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
 	{
 		ViewModel.AltPressed = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
-		}
+	}
 
 	private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
 	{
@@ -37,7 +37,7 @@ public partial class MainWindow
 
 			int n;
 			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-			switch (e.Key)
+			switch (e.Key == Key.System ? e.SystemKey : e.Key)
 			{
 				case Key.Enter:
 				case Key.D1: n = 1; break;
@@ -58,8 +58,14 @@ public partial class MainWindow
 			if (choices.Length < n)
 				return;
 
-			var privacy = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
-			choices[n - 1].Select.Execute(privacy);
+			if (ViewModel.AltPressed)
+			{
+				choices[n - 1].SelectPrivacy.Execute(null);
+			}
+			else
+			{
+				choices[n - 1].Select.Execute(null);
+			}
 		}
 		catch
 		{
