@@ -1,6 +1,5 @@
 ﻿using BrowserPicker.Framework;
 using System.ComponentModel;
-using JetBrains.Annotations;
 using System.Threading;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -8,7 +7,10 @@ using System.Windows.Input;
 using BrowserPicker.View;
 using System.Windows;
 using System.Collections.Generic;
+#if DEBUG
 using System.Threading.Tasks;
+using JetBrains.Annotations;
+#endif
 
 namespace BrowserPicker.ViewModel;
 
@@ -41,7 +43,6 @@ public sealed class ConfigurationViewModel : ModelBase
 			ConfigurationMode = true
 		};
 		Settings.BrowserList.AddRange(ParentViewModel.Choices.Select(m => m.Model));
-		AvailableBrowsers = [.. ParentViewModel.Choices];
 		test_defaults_url = ParentViewModel.Url?.UnderlyingTargetURL ?? ParentViewModel.Url?.TargetURL;
 	}
 
@@ -144,8 +145,6 @@ public sealed class ConfigurationViewModel : ModelBase
 		get => auto_add_default;
 		set => SetProperty(ref auto_add_default, value);
 	}
-
-	public List<BrowserViewModel> AvailableBrowsers { get; init; }
 
 	public ObservableCollection<DefaultSetting> Defaults { get; } = [];
 

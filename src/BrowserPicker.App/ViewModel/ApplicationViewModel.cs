@@ -7,12 +7,15 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Framework;
+#if DEBUG
 using JetBrains.Annotations;
+#endif
 
 namespace BrowserPicker.ViewModel;
 
 public sealed class ApplicationViewModel : ModelBase
 {
+#if DEBUG
 	// Used by WPF designer
 	[UsedImplicitly]
 	public ApplicationViewModel()
@@ -24,7 +27,7 @@ public sealed class ApplicationViewModel : ModelBase
 			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this))
 		);
 	}
-
+	
 	internal ApplicationViewModel(ConfigurationViewModel config)
 	{
 		Url = new UrlHandler(config.Settings, "https://github.com/mortenn/BrowserPicker");
@@ -34,8 +37,9 @@ public sealed class ApplicationViewModel : ModelBase
 			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this))
 		);
 	}
+#endif
 
-	public ApplicationViewModel(List<string> arguments, IBrowserPickerConfiguration settings)
+	public ApplicationViewModel(IReadOnlyCollection<string> arguments, IBrowserPickerConfiguration settings)
 	{
 		var options = arguments.Where(arg => arg[0] == '/').ToList();
 		force_choice = options.Contains("/choose");
@@ -67,11 +71,13 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		BrowserViewModel start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
+#if DEBUG
 		if (Debugger.IsAttached && start != null)
 		{
 			Debug.WriteLine($"Skipping launch of browser {start.Model.Name} due to debugger being attached");
 			return;
 		}
+#endif
 		start?.Select.Execute(null);
 	}
 
@@ -113,7 +119,7 @@ public sealed class ApplicationViewModel : ModelBase
 			.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
 			.Where(o => o.matchLength > 0)
 			.ToList();
-			
+
 		return auto.Count <= 0
 			? null
 			: auto.OrderByDescending(o => o.matchLength).First().rule.Browser;

@@ -101,7 +101,7 @@
 						<Button Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
 							<Button.Style>
 								<Style TargetType="Button">
-									<Setter Property="UIElement.Visibility" Value="Visible" />
+									<Setter Property="Visibility" Value="Visible" />
 									<Style.Triggers>
 										<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
 											<Setter Property="UIElement.Visibility" Value="Collapsed" />
