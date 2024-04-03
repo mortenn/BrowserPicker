@@ -49,6 +49,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		public bool AlwaysPrompt { get; set; } = true;
 		public bool AlwaysUseDefaults { get; set; } = true;
+		public bool AlwaysAskWithoutDefault { get; set; }
 		public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
 		public bool UseAutomaticOrdering { get; set; } = true;
 		public bool DisableTransparency { get; set; } = true;

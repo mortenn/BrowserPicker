@@ -152,9 +152,6 @@
 					</StackPanel.Resources>
 					<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
 					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
-					<CheckBox Content="Disable url resolution" IsChecked="{Binding Settings.DisableNetworkAccess}" Foreground="White" />
-					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
-					<CheckBox Content="Update order in browser list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" />
 					<StackPanel Orientation="Horizontal">
 						<CheckBox Content="When no default is configured matching the url, use:" IsChecked="{Binding Settings.UseFallbackDefault}" Foreground="White" />
 						<ComboBox
@@ -165,6 +162,11 @@
 							SelectedValue="{Binding Settings.DefaultBrowser}"
 							Height="22" Margin="5,-4,0,0" />
 					</StackPanel>
+					<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" Foreground="White" />
+					<CheckBox Content="Disable url resolution" IsChecked="{Binding Settings.DisableNetworkAccess}" Foreground="White" />
+					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
+					<CheckBox Content="Update order in browser list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" />
+
 					<CheckBox Content="Disallow network activity" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" />
 					<StackPanel Margin="25,0,0,0">
 						<StackPanel.Style>

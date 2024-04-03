@@ -31,6 +31,20 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	public bool AlwaysAskWithoutDefault
+	{
+		get => Reg.Get<bool>();
+		set
+		{
+			Reg.Set(value);
+			OnPropertyChanged();
+			if (value && use_fallback_default)
+			{
+				UseFallbackDefault = false;
+			}
+		}
+	}
+
 	public int UrlLookupTimeoutMilliseconds
 	{
 		get => Reg.Get(2000);
@@ -93,6 +107,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 			if (value)
 			{
+				AlwaysAskWithoutDefault = false;
 				use_fallback_default = true;
 				if (Defaults.All(d => d.Type != MatchType.Default))
 				{

@@ -67,7 +67,7 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		BrowserViewModel start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
-		if (Debugger.IsAttached)
+		if (Debugger.IsAttached && start != null)
 		{
 			Debug.WriteLine($"Skipping launch of browser {start.Model.Name} due to debugger being attached");
 			return;
@@ -86,6 +86,10 @@ public sealed class ApplicationViewModel : ModelBase
 		if (browser != null && (Configuration.AlwaysUseDefaults || browser.IsRunning))
 		{
 			return browser;
+		}
+		if (browser == null && Configuration.Settings.AlwaysAskWithoutDefault)
+		{
+			return null;
 		}
 		var active = Choices.Where(b => b.IsRunning && !b.Model.Disabled).ToList();
 		return active.Count == 1 ? active[0] : null;

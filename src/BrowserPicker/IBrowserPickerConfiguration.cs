@@ -16,6 +16,11 @@ public interface IBrowserPickerConfiguration : INotifyPropertyChanged, ILongRunn
 	bool AlwaysUseDefaults { get; set; }
 
 	/// <summary>
+	/// When set to true and there is no matching default browser, the user choice prompt will be shown
+	/// </summary>
+	bool AlwaysAskWithoutDefault { get; set; }
+
+	/// <summary>
 	/// Timeout for resolving underlying url for an address
 	/// </summary>
 	int UrlLookupTimeoutMilliseconds { get; set; }

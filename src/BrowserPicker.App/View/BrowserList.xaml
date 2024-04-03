@@ -215,13 +215,11 @@
 				</Hyperlink>
 			</TextBlock>
 			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
-			<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsChecked="{Binding Configuration.AutoAddDefault}">
-				<StackPanel Orientation="Horizontal">
-					<TextBlock Foreground="White" TextWrapping="Wrap" MaxWidth="320" MaxHeight="50">
-						<Run Text="Remember my choice for" />
-						<Run Text="{Binding Url.HostName}" />
-					</TextBlock>
-				</StackPanel>
+			<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsChecked="{Binding Configuration.AutoAddDefault}" Width="350">
+				<TextBlock Foreground="White" TextWrapping="Wrap" MaxHeight="50">
+					<Run Text="Remember my choice for" />
+					<Run Text="{Binding Url.HostName}" />
+				</TextBlock>
 			</CheckBox>
 		</Grid>
 	</Grid>
