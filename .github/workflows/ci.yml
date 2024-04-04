@@ -82,7 +82,7 @@ jobs:
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -p VersionSuffix=${{ needs.prepare.outputs.version_suffix }} -r win-x64 -p:PublishSingleFile=true"
         package_project: dist/Portable/Portable.wixproj
         package_version: ${{ needs.prepare.outputs.package_version }}
-        package: dist\Portable\bin\${{ matrix.configuration }}\BrowserPicker.msi
+        package: dist\Portable\bin\${{ matrix.configuration }}\BrowserPicker-Portable.msi
         package_name: PortableSetup-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
         package_path: dist/Portable/bin/${{ matrix.configuration }}
         binaries: src\BrowserPicker.App\bin\${{ matrix.configuration }}\net8.0-windows\win-x64\publish\BrowserPicker.exe
