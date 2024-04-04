@@ -56,14 +56,14 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool DisableTransparency { get; set; } = true;
 		public bool DisableNetworkAccess { get; set; } = false;
 
-		public List<BrowserModel> BrowserList { get; init; }
+		public List<BrowserModel> BrowserList { get; init; } = [];
 
-		public List<DefaultSetting> Defaults { get; init; }
+		public List<DefaultSetting> Defaults { get; init; } = [];
 
 		public bool UseFallbackDefault { get; set; } = true;
-		public string DefaultBrowser { get; set; }
+		public string? DefaultBrowser { get; set; }
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 
 		public void AddBrowser(BrowserModel browser)
 		{
@@ -97,7 +97,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		settings.PropertyChanged += Configuration_PropertyChanged;
 	}
 
-	private void Defaults_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+	private void Defaults_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 	{
 		if (e.NewItems?.Count > 0)
 		{
@@ -118,7 +118,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
-	private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName == nameof(DefaultSetting.Deleted) && sender is DefaultSetting { Deleted: true } item)
 		{
@@ -128,7 +128,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public IBrowserPickerConfiguration Settings { get; init; }
 
-	public ApplicationViewModel ParentViewModel { get; init; }
+	public ApplicationViewModel? ParentViewModel { get; init; }
 
 	/// <summary>
 	/// Only read by init code on app startup
@@ -175,19 +175,26 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ICommand RefreshBrowsers => refresh_browsers ??= new DelegateCommand(FindBrowsers);
 
-	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually);
+	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually, () => ParentViewModel != null);
 
 	private void AddBrowserManually()
 	{
-		var editor = new BrowserEditor();
+		if (ParentViewModel == null)
+		{
+			return;
+		}
+		var editor = new BrowserEditor(new BrowserViewModel(new BrowserModel(), ParentViewModel));
 		editor.Show();
 		editor.Closing += Editor_Closing;
 	}
 
-	private void Editor_Closing(object sender, CancelEventArgs e)
+	private void Editor_Closing(object? sender, CancelEventArgs e)
 	{
-		((Window)sender).Closing -= Editor_Closing;
-		if (sender is not Window { DataContext: BrowserViewModel browser })
+		if (sender is Window window)
+		{
+			window.Closing -= Editor_Closing;
+		}
+		if (sender is not Window { DataContext: BrowserViewModel browser } || ParentViewModel == null)
 		{
 			return;
 		}
@@ -210,7 +217,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		OnPropertyChanged(nameof(TestDefaultsResult));
 	}
 
-	private void Configuration_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	private void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
 		{
@@ -226,19 +233,25 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void UpdateSettings()
 	{
-		var added = Settings.BrowserList.Where(b => ParentViewModel.Choices.All(c => c.Model.Name != b.Name)).ToList();
-		if (added.Count > 0)
-		{
-			foreach (var vm in added.Select(m => new BrowserViewModel(m, ParentViewModel)))
-			{
-				ParentViewModel.Choices.Add(vm);
-			}
-		}
-		var removed = ParentViewModel.Choices.Where(c => Settings.BrowserList.All(b => b.Name != c.Model.Name)).ToList();
-		if (removed.Count <= 0)
+		if (ParentViewModel == null)
 		{
 			return;
 		}
+		BrowserViewModel[] added = [..
+			from browser in Settings.BrowserList
+			where ParentViewModel.Choices.All(c => c.Model.Name != browser.Name)
+			select new BrowserViewModel(browser, ParentViewModel)
+		];
+		foreach (var vm in added)
+		{
+			ParentViewModel.Choices.Add(vm);
+		}
+
+		BrowserViewModel[] removed = [..
+			from choice in ParentViewModel.Choices
+			where Settings.BrowserList.All(b => b.Name != choice.Model.Name)
+			select choice
+		];
 		foreach (var m in removed)
 		{
 			ParentViewModel.Choices.Remove(m);
@@ -279,16 +292,16 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 
 	private MatchType new_match_type = MatchType.Hostname;
-	private string new_fragment;
-	private string new_fragment_browser;
+	private string new_fragment = string.Empty;
+	private string new_fragment_browser = string.Empty;
 	private bool auto_add_default;
-	private DelegateCommand add_default;
-	private DelegateCommand refresh_browsers;
-	private DelegateCommand add_browser;
+	private DelegateCommand? add_default;
+	private DelegateCommand? refresh_browsers;
+	private DelegateCommand? add_browser;
 
-	private string test_defaults_url;
+	private string? test_defaults_url;
 
-	public string TestDefaultsURL
+	public string? TestDefaultsURL
 	{
 		get => test_defaults_url;
 		set
@@ -303,7 +316,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
+			return ParentViewModel?.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
 		}
 	}
 
@@ -311,7 +324,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
+			return ParentViewModel?.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
 		}
 	}
 }

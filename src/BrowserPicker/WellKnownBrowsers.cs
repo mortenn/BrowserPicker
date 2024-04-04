@@ -7,7 +7,7 @@ namespace BrowserPicker;
 // Note: I am not entirely happy with the design of this part, but it was the best I can do in a jiffy
 public static class WellKnownBrowsers
 {
-	public static IWellKnownBrowser Lookup(string name, string executable)
+	public static IWellKnownBrowser? Lookup(string? name, string? executable)
 	{
 		return List.FirstOrDefault(b => b.Name == name || executable != null && executable.Contains(b.Executable, StringComparison.CurrentCultureIgnoreCase));
 	}
@@ -27,8 +27,8 @@ public interface IWellKnownBrowser
 {
 	string Name { get; }
 	string Executable { get; }
-	string RealExecutable { get; }
-	string PrivacyArgs { get; }
+	string? RealExecutable { get; }
+	string? PrivacyArgs { get; }
 	string PrivacyMode { get; }
 }
 
@@ -40,9 +40,9 @@ public sealed class Firefox : IWellKnownBrowser
 
 	public string Executable => "firefox.exe";
 
-	public string RealExecutable => null;
+	public string? RealExecutable => null;
 
-	public string PrivacyArgs => "-private-window ";
+	public string? PrivacyArgs => "-private-window ";
 
 	public string PrivacyMode => "Open with private browsing";
 }
@@ -55,9 +55,9 @@ public sealed class Chrome : IWellKnownBrowser
 
 	public string Executable => "chrome.exe";
 
-	public string RealExecutable => null;
+	public string? RealExecutable => null;
 
-	public string PrivacyArgs => "--incognito ";
+	public string? PrivacyArgs => "--incognito ";
 
 	public string PrivacyMode => "Open incognito";
 }
@@ -70,9 +70,9 @@ public sealed class MicrosoftEdge : IWellKnownBrowser
 
 	public string Executable => "msedge.exe";
 
-	public string RealExecutable => null;
+	public string? RealExecutable => null;
 
-	public string PrivacyArgs => "-inprivate ";
+	public string? PrivacyArgs => "-inprivate ";
 
 	public string PrivacyMode => "Open in private mode";
 }
@@ -85,9 +85,9 @@ public sealed class Edge : IWellKnownBrowser
 
 	public string Executable => "microsoft-edge:";
 
-	public string RealExecutable => null;
+	public string? RealExecutable => null;
 
-	public string PrivacyArgs => "-private ";
+	public string? PrivacyArgs => "-private ";
 
 	public string PrivacyMode => "Open in private mode";
 }
@@ -100,9 +100,9 @@ public sealed class InternetExplorer : IWellKnownBrowser
 
 	public string Executable => "iexplore.exe";
 
-	public string RealExecutable => null;
+	public string? RealExecutable => null;
 
-	public string PrivacyArgs => "-private ";
+	public string? PrivacyArgs => "-private ";
 
 	public string PrivacyMode => "Open in private mode";
 }
@@ -115,9 +115,9 @@ public sealed class OperaStable : IWellKnownBrowser
 
 	public string Executable => "Opera\\Launcher.exe";
 
-	public string RealExecutable => "opera.exe";
+	public string? RealExecutable => "opera.exe";
 
-	public string PrivacyArgs => "--private ";
+	public string? PrivacyArgs => "--private ";
 
 	public string PrivacyMode => "Open in private mode";
 }

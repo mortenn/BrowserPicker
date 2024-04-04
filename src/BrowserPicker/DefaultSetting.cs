@@ -6,9 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace BrowserPicker;
 
-public sealed class DefaultSetting(MatchType type, string pattern, string browser) : ModelBase, INotifyPropertyChanging
+public sealed class DefaultSetting(MatchType type, string? pattern, string? browser) : ModelBase, INotifyPropertyChanging
 {
-	public static DefaultSetting Decode(string rule, string browser)
+	public static DefaultSetting? Decode(string? rule, string browser)
 	{
 		if (rule == null)
 		{
@@ -48,13 +48,13 @@ public sealed class DefaultSetting(MatchType type, string pattern, string browse
 		}
 	}
 
-	public string SettingKey => ToString();
+	public string? SettingKey => ToString();
 
-	public string SettingValue => Browser;
+	public string? SettingValue => Browser;
 
 	public bool Deleted { get; set; }
 
-	public string Pattern
+	public string? Pattern
 	{
 		get => pattern;
 		set
@@ -72,7 +72,7 @@ public sealed class DefaultSetting(MatchType type, string pattern, string browse
 		}
 	}
 
-	public string Browser
+	public string? Browser
 	{
 		get => browser;
 		set
@@ -98,26 +98,26 @@ public sealed class DefaultSetting(MatchType type, string pattern, string browse
 		return Type switch
 		{
 			MatchType.Default => 1,
-			MatchType.Hostname => url.Host.EndsWith(pattern) ? pattern.Length : 0,
-			MatchType.Prefix => url.OriginalString.StartsWith(pattern) ? pattern.Length : 0,
-			MatchType.Regex => Regex.Match(url.OriginalString, pattern).Length,
+			MatchType.Hostname when pattern is not null => url.Host.EndsWith(pattern) ? pattern.Length : 0,
+			MatchType.Prefix when pattern is not null => url.OriginalString.StartsWith(pattern) ? pattern.Length : 0,
+			MatchType.Regex when pattern is not null => Regex.Match(url.OriginalString, pattern).Length,
 			_ => 0
 		};
 	}
 
-	public override string ToString() => Type switch
+	public override string? ToString() => Type switch
 	{
 		MatchType.Hostname => pattern,
 		MatchType.Default => string.Empty,
 		_ => $"|{Type}|{pattern}"
 	};
 
-	public override int GetHashCode() => Type.GetHashCode() ^ pattern.GetHashCode();
+	public override int GetHashCode() => Type.GetHashCode() ^ pattern?.GetHashCode() ?? 0;
 
-	private void OnPropertyChanging([CallerMemberName] string propertyName = null)
+	private void OnPropertyChanging([CallerMemberName] string? propertyName = null)
 	{
 		PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 	}
 
-	public event PropertyChangingEventHandler PropertyChanging;
+	public event PropertyChangingEventHandler? PropertyChanging;
 }

@@ -3,6 +3,9 @@ using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.ViewModel;
 using Microsoft.Win32;
+#if DEBUG
+using JetBrains.Annotations;
+#endif
 
 namespace BrowserPicker.View;
 
@@ -11,26 +14,28 @@ namespace BrowserPicker.View;
 /// </summary>
 public partial class BrowserEditor
 {
+#if DEBUG
+	/// <summary>
+	/// Design time constructor
+	/// </summary>
+	[UsedImplicitly]
 	public BrowserEditor()
 	{
 		InitializeComponent();
+		Browser = new BrowserViewModel();
+		DataContext = Browser;
 	}
+#endif
 
 	public BrowserEditor(BrowserViewModel viewModel)
 	{
 		InitializeComponent();
-		DataContext = viewModel;
+		Browser = viewModel;
+		DataContext = Browser;
 	}
 
-	private void BrowserEditor_OnLoaded(object sender, RoutedEventArgs e)
-	{
-		if (DataContext != null)
-		{
-			return;
-		}
-		DataContext = new BrowserViewModel(new BrowserModel(), null);
-	}
-		 
+	public BrowserViewModel Browser { get; init; }
+
 	private void Ok_OnClick(object sender, RoutedEventArgs e)
 	{
 		Close();
@@ -59,7 +64,7 @@ public partial class BrowserEditor
 			try
 			{
 				var name = FileVersionInfo.GetVersionInfo(browser.FileName);
-				Browser.Model.Name = name.FileDescription;
+				Browser.Model.Name = name.FileDescription ?? string.Empty;
 			}
 			catch
 			{
@@ -77,12 +82,10 @@ public partial class BrowserEditor
 			DefaultExt = ".exe",
 			Filter = "Executable Files (*.exe)|*.exe|Icon Files (*.ico)|*.ico|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif|All Files|*.*"
 		};
-		var result = browser.ShowDialog(this);
-		if (result == true)
-			Browser.Model.IconPath = browser.FileName;
+		if (browser.ShowDialog(this) == true)
+			Browser!.Model.IconPath = browser.FileName;
 	}
 
-	private BrowserViewModel Browser => DataContext as BrowserViewModel;
 
 	public void DragWindow(object sender, MouseButtonEventArgs args)
 	{

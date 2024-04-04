@@ -69,7 +69,7 @@ public interface IBrowserPickerConfiguration : INotifyPropertyChanged, ILongRunn
 	/// <summary>
 	/// The browser to use if <see cref="UseFallbackDefault"/> is true and no <see cref="Defaults"/> match the url.
 	/// </summary>
-	public string DefaultBrowser { get; set; }
+	public string? DefaultBrowser { get; set; }
 
 	/// <summary>
 	/// Add a default setting rule to the configuration
@@ -77,5 +77,5 @@ public interface IBrowserPickerConfiguration : INotifyPropertyChanged, ILongRunn
 	/// <param name="matchType">Type of match</param>
 	/// <param name="pattern">The url fragment to match</param>
 	/// <param name="browser">The browser to use</param>
-	DefaultSetting AddDefault(MatchType matchType, string pattern, string browser);
+	DefaultSetting? AddDefault(MatchType matchType, string pattern, string browser);
 }

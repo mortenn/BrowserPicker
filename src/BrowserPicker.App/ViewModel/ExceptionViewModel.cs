@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using System;
 using System.Threading;
 using System.Windows;
-using System.Windows.Input;
 
 namespace BrowserPicker.ViewModel;
 
@@ -21,10 +20,10 @@ public sealed class ExceptionViewModel : ViewModelBase<ExceptionModel>
 		Ok = new DelegateCommand(CloseWindow);
 	}
 
-	public ICommand CopyToClipboard { get; }
-	public ICommand Ok { get; }
+	public DelegateCommand? CopyToClipboard { get; }
+	public DelegateCommand? Ok { get; }
 
-	public EventHandler OnWindowClosed;
+	public EventHandler? OnWindowClosed;
 
 	private void CopyExceptionDetailsToClipboard()
 	{

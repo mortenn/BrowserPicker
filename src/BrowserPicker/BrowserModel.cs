@@ -6,18 +6,22 @@ namespace BrowserPicker;
 [DebuggerDisplay("{" + nameof(Name) + "}")]
 public sealed class BrowserModel : ModelBase
 {
-	public BrowserModel() { }
+	public BrowserModel()
+	{
+		name = string.Empty;
+		command = string.Empty;
+	}
 		
-	public BrowserModel(IWellKnownBrowser known, string icon, string shell)
+	public BrowserModel(IWellKnownBrowser known, string? icon, string shell)
 	{
 		name = known.Name;
+		command = shell;
 		PrivacyArgs = known.PrivacyArgs;
 		Executable = known.RealExecutable;
 		IconPath = icon;
-		Command = shell;
 	}
 
-	public BrowserModel(string name, string icon, string shell)
+	public BrowserModel(string name, string? icon, string shell)
 	{
 		this.name = name;
 		icon_path = icon;
@@ -30,7 +34,7 @@ public sealed class BrowserModel : ModelBase
 		set => SetProperty(ref name, value);
 	}
 
-	public string IconPath
+	public string? IconPath
 	{
 		get => icon_path;
 		set => SetProperty(ref icon_path, value);
@@ -42,19 +46,19 @@ public sealed class BrowserModel : ModelBase
 		set => SetProperty(ref command, value);
 	}
 
-	public string Executable
+	public string? Executable
 	{
 		get => executable;
 		set => SetProperty(ref executable, value);
 	}
 
-	public string CommandArgs
+	public string? CommandArgs
 	{
 		get => command_args;
 		set => SetProperty(ref command_args, value);
 	}
 
-	public string PrivacyArgs
+	public string? PrivacyArgs
 	{
 		get => privacy_args;
 		set => SetProperty(ref privacy_args, value);
@@ -82,9 +86,9 @@ public sealed class BrowserModel : ModelBase
 	private bool disabled;
 	private bool removed;
 	private string name;
-	private string icon_path;
+	private string? icon_path;
 	private string command;
-	private string executable;
-	private string command_args;
-	private string privacy_args;
+	private string? executable;
+	private string? command_args;
+	private string? privacy_args;
 }

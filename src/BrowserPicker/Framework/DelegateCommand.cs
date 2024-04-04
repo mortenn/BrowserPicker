@@ -6,11 +6,11 @@ namespace BrowserPicker.Framework;
 
 public abstract class DelegateCommandBase : ICommand
 {
-	public event EventHandler CanExecuteChanged;
+	public event EventHandler? CanExecuteChanged;
 
-	public abstract bool CanExecute(object parameter);
+	public abstract bool CanExecute(object? parameter);
 		
-	public abstract void Execute(object parameter);
+	public abstract void Execute(object? parameter);
 
 	public void RaiseCanExecuteChanged()
 	{
@@ -19,29 +19,29 @@ public abstract class DelegateCommandBase : ICommand
 }
 
 [PublicAPI]
-public sealed class DelegateCommand(Action callback, Func<bool> canExecute = null) : DelegateCommandBase
+public sealed class DelegateCommand(Action callback, Func<bool>? canExecute = null) : DelegateCommandBase
 {
-	public override bool CanExecute(object parameter)
+	public override bool CanExecute(object? parameter)
 	{
-		return canExecute == null || canExecute();
+		return canExecute?.Invoke() ?? true;
 	}
 
-	public override void Execute(object parameter)
+	public override void Execute(object? parameter)
 	{
 		callback();
 	}
 }
 
 [PublicAPI]
-public sealed class DelegateCommand<T>(Action<T> callback, Func<T, bool> canExecute = null) : DelegateCommandBase
+public sealed class DelegateCommand<T>(Action<T?> callback, Func<T?, bool>? canExecute = null) : DelegateCommandBase where T : class
 {
-	public override bool CanExecute(object parameter)
+	public override bool CanExecute(object? parameter)
 	{
-		return canExecute((T)parameter);
+		return canExecute?.Invoke(parameter as T) ?? true;
 	}
 
-	public override void Execute(object parameter)
+	public override void Execute(object? parameter)
 	{
-		callback((T)parameter);
+		callback(parameter as T);
 	}
 }
