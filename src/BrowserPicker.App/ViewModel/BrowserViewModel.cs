@@ -5,16 +5,23 @@ using System.Linq;
 using System.Windows;
 using BrowserPicker.Framework;
 using BrowserPicker.View;
+#if DEBUG
 using JetBrains.Annotations;
+#endif
 
 namespace BrowserPicker.ViewModel;
 
 [DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
 public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 {
+#if DEBUG
 	// WPF Designer
 	[UsedImplicitly]
-	public BrowserViewModel() : base(new BrowserModel()) { }
+	public BrowserViewModel() : base(new BrowserModel())
+	{
+		parent_view_model = new ApplicationViewModel();
+	}
+#endif
 
 	public BrowserViewModel(BrowserModel model, ApplicationViewModel viewModel) : base(model)
 	{
@@ -23,7 +30,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		parent_view_model.PropertyChanged += OnParentViewModelChanged;
 	}
 
-	private void OnParentViewModelChanged(object sender, PropertyChangedEventArgs e)
+	private void OnParentViewModelChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName == nameof(ApplicationViewModel.AltPressed))
 		{
@@ -31,7 +38,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 	}
 
-	private void Model_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	private void Model_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
 		{
@@ -63,12 +70,12 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			Name = model.Name,
 			PrivacyArgs = model.PrivacyArgs
 		};
-		var editor = new BrowserEditor(new BrowserViewModel(temp, null));
+		var editor = new BrowserEditor(new BrowserViewModel(temp, parent_view_model));
 		editor.Show();
 		editor.Closing += Editor_Closing;
 	}
 
-	private void Editor_Closing(object sender, CancelEventArgs e)
+	private void Editor_Closing(object? sender, CancelEventArgs e)
 	{
 		if ((sender as BrowserEditor)?.DataContext is not BrowserViewModel context)
 		{
@@ -130,6 +137,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 
 	private void Launch(bool privacy)
 	{
+		if (parent_view_model.Url == null)
+		{
+			return;
+		}
 		try
 		{
 			if (App.Settings.UseAutomaticOrdering)
@@ -164,7 +175,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Application.Current?.Shutdown();
 	}
 
-	private static string CombineArgs(string args1, string args2)
+	private static string CombineArgs(string? args1, string args2)
 	{
 		if (string.IsNullOrEmpty(args1))
 		{

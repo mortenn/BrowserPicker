@@ -22,10 +22,11 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		try
 		{
 			uri = new Uri(requestedUrl);
-			HostName = uri.Host;
+			host_name = uri.Host;
 		}
 		catch
 		{
+			host_name = string.Empty;
 			// ignored
 		}
 	}
@@ -36,7 +37,8 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	{
 		disallow_network = true;
 		TargetURL = "https://www.github.com/mortenn/BrowserPicker";
-		underlying_target_url = TargetURL;
+		uri = new Uri(TargetURL);
+		host_name = uri.Host;
 		HostName = "extremely-long-domain-example-for-design-time-use.some-long-domain-name.com";
 	}
 #endif
@@ -48,6 +50,10 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	{
 		try
 		{
+			if (uri == null)
+			{
+				return;
+			}
 			HostName = uri.Host;
 			while (true)
 			{
@@ -83,7 +89,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		}
 	}
 
-	private static string ResolveJumpPage(Uri uri)
+	private static string? ResolveJumpPage(Uri uri)
 	{
 		return (
 			from jumpPage in JumpPages
@@ -93,7 +99,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		).FirstOrDefault(underlyingUrl => underlyingUrl != null);
 	}
 
-	private static async Task<string> ResolveShortener(Uri uri, CancellationToken cancellationToken)
+	private static async Task<string?> ResolveShortener(Uri uri, CancellationToken cancellationToken)
 	{
 		if (UrlShorteners.All(s => !uri.Host.EndsWith(s)))
 		{
@@ -106,7 +112,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 
 	public string TargetURL { get; }
 
-	public string UnderlyingTargetURL
+	public string? UnderlyingTargetURL
 	{
 		get => underlying_target_url;
 		set => SetProperty(ref underlying_target_url, value);
@@ -150,8 +156,8 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		("https://l.facebook.com/l.php", "u")
 	];
 
-	private Uri uri;
-	private string underlying_target_url;
+	private Uri? uri;
+	private string? underlying_target_url;
 	private bool is_shortened_url;
 	private string host_name;
 	private static readonly HttpClient Client = new(new HttpClientHandler { AllowAutoRedirect = false });

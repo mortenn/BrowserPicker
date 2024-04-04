@@ -51,8 +51,8 @@ public partial class App
 		{
 			return;
 		}
-		CancellationTokenSource urlLookup = null;
-		Task<Window> loadingWindow = null;
+		CancellationTokenSource? urlLookup = null;
+		Task<Window?>? loadingWindow = null;
 		try
 		{
 			// Hook up shutdown on the viewmodel to shut down the application
@@ -64,7 +64,7 @@ public partial class App
 			long_running_processes = RunLongRunningProcesses();
 
 			// Open in configuration mode if user started BrowserPicker directly
-			if (ViewModel.Url == null)
+			if (string.IsNullOrWhiteSpace(ViewModel.Url?.TargetURL))
 			{
 				ShowMainWindow();
 				return;
@@ -98,10 +98,9 @@ public partial class App
 		}
 		catch (Exception exception)
 		{
-			try { ViewModel.OnShutdown -= ExitApplication; } catch { /* ignored */ }
 			try { if (urlLookup != null) await urlLookup.CancelAsync(); } catch { /* ignored */ }
 			try { if (loadingWindow != null) (await loadingWindow)?.Close(); } catch { /* ignored */ }
-			try { ViewModel.OnShutdown -= ExitApplication; } catch { /* ignored */ }
+			try { if (ViewModel != null) ViewModel.OnShutdown -= ExitApplication; } catch { /* ignored */ }
 			ShowExceptionReport(exception);
 		}
 	}
@@ -124,7 +123,7 @@ public partial class App
 	/// </summary>
 	private void ShowMainWindow()
 	{
-		ViewModel.Initialize();
+		ViewModel?.Initialize();
 		MainWindow = new MainWindow
 		{
 			DataContext = ViewModel
@@ -138,7 +137,7 @@ public partial class App
 	/// </summary>
 	/// <param name="cancellationToken">token that will cancel when the loading is complete or timed out</param>
 	/// <returns>The loading message window, so it may be closed.</returns>
-	private static async Task<Window> ShowLoadingWindow(CancellationToken cancellationToken)
+	private static async Task<Window?> ShowLoadingWindow(CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -174,7 +173,7 @@ public partial class App
 		_ = MessageBox.Show(unhandledException.ExceptionObject.ToString());
 	}
 
-	private static void ExitApplication(object sender, EventArgs args)
+	private static void ExitApplication(object? sender, EventArgs args)
 	{
 		ApplicationCancellationToken.Cancel();
 		try
@@ -188,8 +187,8 @@ public partial class App
 		Current.Shutdown();
 	}
 
-	public ApplicationViewModel ViewModel { get; }
+	public ApplicationViewModel? ViewModel { get; }
 
 	private static readonly List<ILongRunningProcess> BackgroundTasks = [];
-	private static Task long_running_processes;
+	private static Task? long_running_processes;
 }

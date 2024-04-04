@@ -123,7 +123,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
-	public string DefaultBrowser
+	public string? DefaultBrowser
 	{
 		get => Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser;
 		set
@@ -139,9 +139,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
-	public DefaultSetting AddDefault(MatchType matchType, string pattern, string browser)
+	public DefaultSetting? AddDefault(MatchType matchType, string pattern, string? browser)
 	{
 		var setting = GetDefaultSetting(null, browser);
+		if (setting == null)
+		{
+			return null;
+		}
 		setting.Type = matchType;
 		setting.Pattern = pattern;
 		Defaults.Add(setting);
@@ -184,10 +188,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			return;
 		}
 		var known = WellKnownBrowsers.Lookup("Edge", null);
+		if (known == null)
+		{
+			return;
+		}
 		var appId = Path.GetFileName(targets[0]);
 		var icon = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png");
 		var shell = $"shell:AppsFolder\\{appId}!MicrosoftEdge";
-
 		var model = new BrowserModel(known, icon, shell);
 		AddOrUpdateBrowserModel(model);
 	}
@@ -209,7 +216,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
-	private static BrowserModel GetBrowserDetails(RegistryKey root, string browser)
+	private static BrowserModel? GetBrowserDetails(RegistryKey root, string browser)
 	{
 		var reg = root.OpenSubKey(browser, false);
 		if (reg == null)
@@ -252,7 +259,16 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		{
 			values = ConvertLegacyDefault(key);
 		}
-		return values.Select(name => GetDefaultSetting(name, (string)key.GetValue(name))).ToList();
+
+		return
+		[
+			..
+			from pattern in values
+			where pattern is not null
+			let browser = key.GetValue(pattern) as string
+			where browser is not null
+			select GetDefaultSetting(pattern, browser)
+		];
 	}
 
 	private static string[] ConvertLegacyDefault(RegistryKey key)
@@ -266,21 +282,32 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return key.GetValueNames();
 	}
 
-	private static DefaultSetting GetDefaultSetting(string key, string value)
+	private static DefaultSetting? GetDefaultSetting(string? key, string? value)
 	{
+		if (value == null)
+		{
+			return null;
+		}
 		var setting = DefaultSetting.Decode(key, value);
+		if (setting == null)
+		{
+			return null;
+		}
 		setting.PropertyChanging += DefaultSetting_PropertyChanging;
 		setting.PropertyChanged += DefaultSetting_PropertyChanged;
 		return setting;
 	}
 
-	private static void DefaultSetting_PropertyChanging(object sender, PropertyChangingEventArgs e)
+	private static void DefaultSetting_PropertyChanging(object? sender, PropertyChangingEventArgs e)
 	{
 		if (e.PropertyName != nameof(DefaultSetting.SettingKey))
 		{
 			return;
 		}
-		var model = (DefaultSetting)sender;
+		if (sender is not DefaultSetting model)
+		{
+			return;
+		}
 		if (model.Pattern == null)
 		{
 			return;
@@ -289,14 +316,17 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		var settingKey = model.SettingKey;
 		if (model.IsValid && key.GetValue(settingKey) != null)
 		{
-			key.DeleteValue(settingKey);
+			key.DeleteValue(settingKey ?? string.Empty);
 		}
 	}
 
-	private static void DefaultSetting_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	private static void DefaultSetting_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
+		if (sender is not DefaultSetting model)
+		{
+			return;
+		}
 		var key = Reg.Open(nameof(Defaults));
-		var model = (DefaultSetting)sender;
 		if (model.Pattern == null)
 		{
 			return;
@@ -307,7 +337,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				var settingKey = model.SettingKey;
 				if (model.IsValid && key.GetValue(settingKey) != null)
 				{
-					key.DeleteValue(settingKey);
+					key.DeleteValue(settingKey ?? string.Empty);
 				}
 				model.PropertyChanging -= DefaultSetting_PropertyChanging;
 				model.PropertyChanged -= DefaultSetting_PropertyChanged;
@@ -331,8 +361,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		var browsers = list.GetSubKeyNames()
 			.Select(browser => GetBrowser(list, browser))
 			.Where(browser => browser != null)
-			.OrderByDescending(b => b.Usage)
-			.ToList();
+			.OrderByDescending(b => b!.Usage)!
+			.ToList<BrowserModel>();
 
 		if (browsers.Any(browser => browser.Name.Equals("Microsoft Edge")))
 		{
@@ -348,14 +378,14 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return browsers;
 	}
 
-	private static BrowserModel GetBrowser(RegistryKey list, string name)
+	private static BrowserModel? GetBrowser(RegistryKey list, string name)
 	{
 		var config = list.OpenSubKey(name, false);
 		if (config == null) return null;
 		var browser = new BrowserModel
 		{
 			Name = name,
-			Command = config.Get<string>(null, nameof(BrowserModel.Command)),
+			Command = config.Get<string>(null, nameof(BrowserModel.Command)) ?? string.Empty,
 			Executable = config.Get<string>(null, nameof(BrowserModel.Executable)),
 			CommandArgs = config.Get<string>(null, nameof(BrowserModel.CommandArgs)),
 			PrivacyArgs = config.Get<string>(null, nameof(BrowserModel.PrivacyArgs)),
@@ -364,17 +394,20 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			Disabled = config.Get(false, nameof(BrowserModel.Disabled))
 		};
 		config.Close();
-		if (browser.Command == null)
+		if (string.IsNullOrWhiteSpace(browser.Command))
 			return null;
 
 		browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 		return browser;
 	}
 
-	private static void BrowserConfiguration_PropertyChanged(object sender, PropertyChangedEventArgs e)
+	private static void BrowserConfiguration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		var model = (BrowserModel)sender;
-		var config = Reg.SubKey(nameof(BrowserList), model.Name);
+		if (sender is not BrowserModel model)
+		{
+			return;
+		}
+		var config = Reg.EnsureSubKey(nameof(BrowserList), model.Name);
 		switch (e.PropertyName)
 		{
 			case nameof(BrowserModel.Command): config.Set(model.Command, e.PropertyName); break;
@@ -388,7 +421,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				if (model.Removed)
 				{
 					model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
-					Reg.SubKey(nameof(BrowserList)).DeleteSubKey(model.Name);
+					Reg.SubKey(nameof(BrowserList))?.DeleteSubKey(model.Name);
 				}
 				break;
 			default: return;

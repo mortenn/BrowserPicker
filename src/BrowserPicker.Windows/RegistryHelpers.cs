@@ -8,7 +8,7 @@ namespace BrowserPicker.Windows;
 
 public static class RegistryHelpers
 {
-	public static T Get<T>(this RegistryKey key, T defaultValue = default, [CallerMemberName] string name = null)
+	public static T? Get<T>(this RegistryKey key, T? defaultValue = default, [CallerMemberName] string? name = null)
 	{
 		try
 		{
@@ -24,7 +24,7 @@ public static class RegistryHelpers
 		}
 	}
 
-	public static void Set<T>(this RegistryKey key, T value, [CallerMemberName] string name = null)
+	public static void Set<T>(this RegistryKey key, T value, [CallerMemberName] string? name = null)
 	{
 		if (value == null)
 		{
@@ -46,21 +46,26 @@ public static class RegistryHelpers
 		key.SetValue(name, value, TypeMap[typeof(T)]);
 	}
 
-	public static RegistryKey SubKey(this RegistryKey key, params string[] path)
+	public static RegistryKey? SubKey(this RegistryKey key, params string[] path)
 	{
 		return key.OpenSubKey(Path.Combine(path), true);
 	}
 
-	public static (string name, string icon, string shell) GetBrowser(this RegistryKey key)
+	public static RegistryKey EnsureSubKey(this RegistryKey key, params string[] path)
+	{
+		return key.CreateSubKey(Path.Combine(path), RegistryKeyPermissionCheck.ReadWriteSubTree);
+	}
+
+	public static (string? name, string? icon, string? shell) GetBrowser(this RegistryKey key)
 	{
 		try
 		{
-			var name = (string)key.GetValue(null);
+			var name = (string?)key.GetValue(null);
 
-			var icon = (string)key.OpenSubKey("DefaultIcon", false)?.GetValue(null);
+			var icon = (string?)key.OpenSubKey("DefaultIcon", false)?.GetValue(null);
 			if (icon?.Contains(',') ?? false)
 				icon = icon.Split(',')[0];
-			var shell = (string)key.OpenSubKey(@"shell\open\command", false)?.GetValue(null);
+			var shell = (string?)key.OpenSubKey(@"shell\open\command", false)?.GetValue(null);
 
 			return (name, icon, shell);
 		}

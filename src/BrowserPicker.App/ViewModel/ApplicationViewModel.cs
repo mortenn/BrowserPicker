@@ -24,7 +24,7 @@ public sealed class ApplicationViewModel : ModelBase
 		force_choice = true;
 		Configuration = new ConfigurationViewModel(App.Settings);
 		Choices = new ObservableCollection<BrowserViewModel>(
-			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this))
+			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this))
 		);
 	}
 	
@@ -34,7 +34,7 @@ public sealed class ApplicationViewModel : ModelBase
 		force_choice = true;
 		Configuration = config;
 		Choices = new ObservableCollection<BrowserViewModel>(
-			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, null), this))
+			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this))
 		);
 	}
 #endif
@@ -56,21 +56,21 @@ public sealed class ApplicationViewModel : ModelBase
 		Choices = new ObservableCollection<BrowserViewModel>(settings.BrowserList.Select(m => new BrowserViewModel(m, this)));
 	}
 
-	public UrlHandler Url { get; }
+	public UrlHandler? Url { get; }
 
 	public void Initialize()
 	{
-		if (Keyboard.Modifiers == ModifierKeys.Alt)
+		if (
+			Url == null
+			|| Keyboard.Modifiers == ModifierKeys.Alt
+			|| Configuration.AlwaysPrompt
+			|| ConfigurationMode
+			|| force_choice)
 		{
-			return;
+				return;
 		}
 
-		if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
-		{
-			return;
-		}
-
-		BrowserViewModel start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
+		BrowserViewModel? start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
 #if DEBUG
 		if (Debugger.IsAttached && start != null)
 		{
@@ -81,7 +81,7 @@ public sealed class ApplicationViewModel : ModelBase
 		start?.Select.Execute(null);
 	}
 
-	internal BrowserViewModel GetBrowserToLaunch(string targetUrl)
+	internal BrowserViewModel? GetBrowserToLaunch(string? targetUrl)
 	{
 		if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
 		{
@@ -97,11 +97,11 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			return null;
 		}
-		var active = Choices.Where(b => b.IsRunning && !b.Model.Disabled).ToList();
+		var active = Choices.Where(b => b is { IsRunning: true, Model.Disabled: false }).ToList();
 		return active.Count == 1 ? active[0] : null;
 	}
 
-	internal string GetBrowserToLaunchForUrl(string targetUrl)
+	internal string? GetBrowserToLaunchForUrl(string? targetUrl)
 	{
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))
 			return null;
@@ -177,13 +177,17 @@ public sealed class ApplicationViewModel : ModelBase
 	}
 	*/
 
-	public string EditURL
+	public string? EditURL
 	{
 		get => edit_url;
 		set
 		{
+			if (Url == null)
+			{
+				return;
+			}
 			SetProperty(ref edit_url, value);
-			Url.UnderlyingTargetURL = value;
+			Url.UnderlyingTargetURL = value!;
 		}
 	}
 
@@ -207,7 +211,7 @@ public sealed class ApplicationViewModel : ModelBase
 		private set => SetProperty(ref pinned, value);
 	}
 
-	public EventHandler OnShutdown;
+	public EventHandler? OnShutdown;
 
 	public void OnDeactivated()
 	{
@@ -221,6 +225,10 @@ public sealed class ApplicationViewModel : ModelBase
 	{
 		try
 		{
+			if (Url?.UnderlyingTargetURL == null)
+			{
+				return;
+			}
 			var thread = new Thread(() => Clipboard.SetText(Url.UnderlyingTargetURL));
 			thread.SetApartmentState(ApartmentState.STA);
 			thread.Start();
@@ -235,12 +243,12 @@ public sealed class ApplicationViewModel : ModelBase
 
 	private void OpenURLEditor()
 	{
-		EditURL = Url.UnderlyingTargetURL;
+		EditURL = Url?.UnderlyingTargetURL;
 		OnPropertyChanged(nameof(EditURL));
 	}
 
 	private bool configuration_mode;
-	private string edit_url;
+	private string? edit_url;
 	private bool alt_pressed;
 	private readonly bool force_choice;
 	private bool pinned;
