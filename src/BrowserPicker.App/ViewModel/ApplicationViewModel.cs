@@ -132,6 +132,8 @@ public sealed class ApplicationViewModel : ModelBase
 	public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
 
 	public ICommand Edit => new DelegateCommand(OpenURLEditor);
+	
+	public ICommand EndEdit => new DelegateCommand(CloseURLEditor);
 
 	public ConfigurationViewModel Configuration { get; }
 
@@ -244,6 +246,16 @@ public sealed class ApplicationViewModel : ModelBase
 	private void OpenURLEditor()
 	{
 		EditURL = Url?.UnderlyingTargetURL;
+		OnPropertyChanged(nameof(EditURL));
+	}
+
+	private void CloseURLEditor()
+	{
+		if (Url == null || edit_url == null)
+		{
+			return;
+		}
+		edit_url = null;
 		OnPropertyChanged(nameof(EditURL));
 	}
 
