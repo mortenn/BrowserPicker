@@ -34,9 +34,9 @@
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
+				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
 			</Grid.RowDefinitions>
@@ -48,21 +48,20 @@
 			<TextBlock Text="Name: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Model.Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 
-            <TextBlock Text="Command: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="2" Foreground="White" />
-            <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Model.Command,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-            <Button Content="..." Grid.Row="2" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Command_Browse" />
+			<TextBlock Text="Command: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="2" Foreground="White" />
+			<TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Model.Command,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+			<Button Content="..." Grid.Row="2" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Command_Browse" />
 
-            <TextBlock Text="Command Args: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="3" Foreground="White" />
-            <TextBox Grid.Column="2" Grid.Row="3" Text="{Binding Model.CommandArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-            <Button Content="..." Grid.Row="3" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Command_Browse" />
+			<TextBlock Text="Command Args: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Foreground="White" />
+			<TextBox Grid.Column="2" Grid.Row="3" Text="{Binding Model.CommandArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 
-            <TextBlock Text="Icon: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Foreground="White" />
+			<TextBlock Text="Icon: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Model.IconPath,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 			<Button Content="..." Grid.Row="4" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Icon_Browse" />
 
-			<StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="5">
-				<Button Content="Cancel" Click="Cancel_OnClick" />
-				<Button Content="Ok" Click="Ok_OnClick" Margin="5,0,0,0" />
+			<StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
+				<Button Content="Cancel" Click="Cancel_OnClick" Padding="10,0" />
+				<Button Content="Ok" Click="Ok_OnClick" Padding="10,0" Margin="10,0,0,0" />
 			</StackPanel>
 		</Grid>
 	</Border>

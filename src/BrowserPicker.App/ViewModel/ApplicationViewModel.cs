@@ -147,37 +147,6 @@ public sealed class ApplicationViewModel : ModelBase
 			SetProperty(ref configuration_mode, value);
 		}
 	}
-	/*
-	public string TargetURL
-	{
-		get => target_url;
-		private set
-		{
-			if (Equals(target_url, value))
-			{
-				return;
-			}
-			target_url = value;
-			OnPropertyChanged();
-			OnPropertyChanged(nameof(IsShortenedURL));
-		}
-	}
-
-	public string UnderlyingTargetURL
-	{
-		get => actual_url;
-		set
-		{
-			if (Equals(actual_url, value))
-			{
-				return;
-			}
-			actual_url = value;
-			OnPropertyChanged();
-			OnPropertyChanged(nameof(IsShortenedURL));
-		}
-	}
-	*/
 
 	public string? EditURL
 	{
