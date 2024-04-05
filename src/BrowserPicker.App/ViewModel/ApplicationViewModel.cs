@@ -83,7 +83,7 @@ public sealed class ApplicationViewModel : ModelBase
 
 	internal BrowserViewModel? GetBrowserToLaunch(string? targetUrl)
 	{
-		if (Configuration.AlwaysPrompt || ConfigurationMode || force_choice)
+		if (Configuration.AlwaysPrompt)
 		{
 			return null;
 		}
