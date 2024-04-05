@@ -77,13 +77,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	public void AddBrowser(BrowserModel browser)
 	{
 		var key = Reg.Open(nameof(BrowserList), browser.Name);
-		key.Set(browser.Name);
-		key.Set(browser.Command);
-		key.Set(browser.Executable);
-		key.Set(browser.CommandArgs);
-		key.Set(browser.PrivacyArgs);
-		key.Set(browser.IconPath);
-		key.Set(browser.Usage);
+		key.Set(browser.Name, nameof(browser.Name));
+		key.Set(browser.Command, nameof(browser.Command));
+		key.Set(browser.Executable, nameof(browser.Executable));
+		key.Set(browser.CommandArgs, nameof(browser.CommandArgs));
+		key.Set(browser.PrivacyArgs, nameof(browser.PrivacyArgs));
+		key.Set(browser.IconPath, nameof(browser.IconPath));
+		key.Set(browser.Usage, nameof(browser.Usage));
 		browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 
 		BrowserList.Add(browser);
