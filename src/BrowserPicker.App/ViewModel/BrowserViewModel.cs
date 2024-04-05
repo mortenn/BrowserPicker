@@ -164,7 +164,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			}
 
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
-			var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{parent_view_model.Url.TargetURL}\"");
+			var url = parent_view_model.Url.UnderlyingTargetURL ?? parent_view_model.Url.TargetURL;
+			var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{url}\"");
 			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
 			_ = Process.Start(process);
 		}

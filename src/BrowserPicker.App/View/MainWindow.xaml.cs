@@ -3,6 +3,7 @@ using System.Windows.Input;
 using JetBrains.Annotations;
 using BrowserPicker.ViewModel;
 using System.Linq;
+using System.Windows.Controls;
 
 namespace BrowserPicker.View;
 

@@ -20,16 +20,6 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical">
-			<StackPanel.Style>
-				<Style TargetType="{x:Type StackPanel}">
-					<Setter Property="Visibility" Value="Collapsed" />
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
-							<Setter Property="UIElement.Visibility" Value="Visible" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</StackPanel.Style>
 			<StackPanel Orientation="Horizontal">
 				<Image Source="{StaticResource DefaultIcon}" Height="16" Margin="5" />
 				<TextBlock Margin="0,5">
@@ -46,8 +36,6 @@
 						</Hyperlink.Style>
 						📌
 					</Hyperlink>
-				</TextBlock>
-				<TextBlock Margin="0,5">
 					<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}" ToolTip="Copy the URL to the clipboard">
 						<Hyperlink.Style>
 							<Style>
@@ -61,7 +49,19 @@
 						</Hyperlink.Style>
 						📋
 					</Hyperlink>
-					<Hyperlink Foreground="Silver" TextDecorations="None" Command="{Binding Edit}" ToolTip="Edit the URL before opening it">✏</Hyperlink>
+					<Hyperlink TextDecorations="None" Command="{Binding Edit}" Foreground="Silver" ToolTip="Edit the URL before opening it">
+						<Hyperlink.Style>
+							<Style>
+								<Setter Property="UIElement.Visibility" Value="Collapsed" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
+										<Setter Property="UIElement.Visibility" Value="Visible" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Hyperlink.Style>
+						✏
+					</Hyperlink>
 				</TextBlock>
 				<TextBlock Text="Redirected URL" Foreground="Silver" Margin="5,5,0,0">
 					<TextBlock.Style>
@@ -75,20 +75,34 @@
 					</TextBlock.Style>
 				</TextBlock>
 			</StackPanel>
-			<TextBlock Text="{Binding Url.UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="Wrap"
-								 TextTrimming="CharacterEllipsis" MaxWidth="380" MaxHeight="100" />
+			<TextBlock
+				Text="{Binding Url.UnderlyingTargetURL}" Foreground="White"
+				TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+				Margin="5" MaxWidth="380" MaxHeight="100" />
 		</StackPanel>
-		<TextBox Grid.Row="0" Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow">
-			<TextBox.Style>
-				<Style TargetType="{x:Type TextBox}">
+		<Grid Grid.Row="0">
+			<Grid.Style>
+				<Style TargetType="{x:Type Grid}">
 					<Style.Triggers>
 						<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
 							<Setter Property="UIElement.Visibility" Value="Collapsed" />
 						</DataTrigger>
 					</Style.Triggers>
 				</Style>
-			</TextBox.Style>
-		</TextBox>
+			</Grid.Style>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<TextBox
+				Grid.Row="0" MaxWidth="500" MaxHeight="70"
+				Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}"
+				KeyUp="Editor_KeyUp"
+				HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow" />
+			<TextBlock Grid.Column="1" Margin="5,0,0,0">
+				<Hyperlink Command="{Binding EndEdit}" Foreground="White" TextDecorations="None">✔️</Hyperlink>
+			</TextBlock>
+		</Grid>
 		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 			<ItemsControl ItemsSource="{Binding Choices}">
 				<ItemsControl.ItemsPanel>
