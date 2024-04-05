@@ -129,6 +129,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		set
 		{
 			var selection = Defaults.FirstOrDefault(d => d.Type == MatchType.Default);
+			if (selection == null && !string.IsNullOrWhiteSpace(value))
+			{
+				selection = GetDefaultSetting(string.Empty, string.Empty)!;
+				selection.Type = MatchType.Default;
+				Defaults.Add(selection);
+			}
 			if (selection != null && value != selection.Browser)
 			{
 				selection.Browser = value;
@@ -267,7 +273,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			where pattern is not null
 			let browser = key.GetValue(pattern) as string
 			where browser is not null
-			select GetDefaultSetting(pattern, browser)
+			let setting = GetDefaultSetting(pattern, browser)
+			where setting is not null
+			select setting
 		];
 	}
 
@@ -327,7 +335,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			return;
 		}
 		var key = Reg.Open(nameof(Defaults));
-		if (model.Pattern == null)
+		if (model.SettingKey == null)
 		{
 			return;
 		}
