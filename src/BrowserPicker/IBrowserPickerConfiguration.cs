@@ -1,49 +1,20 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace BrowserPicker;
 
-public interface IBrowserPickerConfiguration : INotifyPropertyChanged, ILongRunningProcess
+public interface IBrowserPickerConfiguration : IApplicationSettings, INotifyPropertyChanged, ILongRunningProcess
 {
 	/// <summary>
-	/// When set to true, disables the automatic selection of a browser
+	/// When true, only urls matching some <see cref="IApplicationSettings.Defaults"/> record will give the user a choice.
+	/// This makes BrowserPicker only seemingly apply for certain urls.
 	/// </summary>
-	bool AlwaysPrompt { get; set; }
+	public bool UseFallbackDefault { get; set; }
 
 	/// <summary>
-	/// When set to false, disable launching the default browser as defined by url pattern if it is not running
+	/// The browser to use if <see cref="UseFallbackDefault"/> is true and no <see cref="IApplicationSettings.Defaults"/> match the url.
 	/// </summary>
-	bool AlwaysUseDefaults { get; set; }
-
-	/// <summary>
-	/// When set to true and there is no matching default browser, the user choice prompt will be shown
-	/// </summary>
-	bool AlwaysAskWithoutDefault { get; set; }
-
-	/// <summary>
-	/// Timeout for resolving underlying url for an address
-	/// </summary>
-	int UrlLookupTimeoutMilliseconds { get; set; }
-
-	/// <summary>
-	/// When set to false, stops reordering the list of browsers based on popularity
-	/// </summary>
-	bool UseAutomaticOrdering { get; set; }
-
-	/// <summary>
-	/// Use transparency for the popup window
-	/// </summary>
-	bool DisableTransparency { get; set; }
-
-	/// <summary>
-	/// Disables all features that call out to the network
-	/// </summary>
-	bool DisableNetworkAccess { get; set; }
-
-	/// <summary>
-	/// The configured list of browsers
-	/// </summary>
-	List<BrowserModel> BrowserList { get; }
+	public string? DefaultBrowser { get; set; }
 
 	/// <summary>
 	/// Add a new browser to the list
@@ -56,26 +27,27 @@ public interface IBrowserPickerConfiguration : INotifyPropertyChanged, ILongRunn
 	void FindBrowsers();
 
 	/// <summary>
-	/// Rules for per url browser defaults
-	/// </summary>
-	List<DefaultSetting> Defaults { get; }
-
-	/// <summary>
-	/// When true, only urls matching some <see cref="Defaults"/> record will give the user a choice.
-	/// This makes BrowserPicker only seemingly apply for certain urls.
-	/// </summary>
-	public bool UseFallbackDefault { get; set; }
-
-	/// <summary>
-	/// The browser to use if <see cref="UseFallbackDefault"/> is true and no <see cref="Defaults"/> match the url.
-	/// </summary>
-	public string? DefaultBrowser { get; set; }
-
-	/// <summary>
 	/// Add a default setting rule to the configuration
 	/// </summary>
 	/// <param name="matchType">Type of match</param>
 	/// <param name="pattern">The url fragment to match</param>
 	/// <param name="browser">The browser to use</param>
 	DefaultSetting? AddDefault(MatchType matchType, string pattern, string browser);
+
+	/// <summary>
+	/// Exports all the configuration to a json file
+	/// </summary>
+	/// <param name="fileName">The full path of a json file</param>
+	Task SaveAsync(string fileName);
+
+	/// <summary>
+	/// Imports all the configuration from a json file
+	/// </summary>
+	/// <param name="fileName">The full path of a json file</param>
+	Task LoadAsync(string fileName);
+
+	/// <summary>
+	/// Logs from backup and restore
+	/// </summary>
+	public string BackupLog { get; }
 }

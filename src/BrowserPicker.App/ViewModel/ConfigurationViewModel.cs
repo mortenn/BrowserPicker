@@ -7,6 +7,10 @@ using System.Windows.Input;
 using BrowserPicker.View;
 using System.Windows;
 using System.Collections.Generic;
+using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+
 #if DEBUG
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -43,7 +47,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			ConfigurationMode = true
 		};
 		Settings.BrowserList.AddRange(ParentViewModel.Choices.Select(m => m.Model));
-		test_defaults_url = ParentViewModel.Url?.UnderlyingTargetURL ?? ParentViewModel.Url?.TargetURL;
+		test_defaults_url = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
 	}
 
 	private sealed class DesignTimeSettings : IBrowserPickerConfiguration
@@ -70,6 +74,8 @@ public sealed class ConfigurationViewModel : ModelBase
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
 		}
 
+		public string BackupLog => "Backup log comes here\nWith multiple lines of text\nmaybe\nsometimes\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...";
+
 		public DefaultSetting AddDefault(MatchType matchType, string pattern, string browser)
 		{
 			return new DefaultSetting(matchType, pattern, browser);
@@ -79,6 +85,16 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 		}
 
+		public Task LoadAsync(string fileName)
+		{
+			throw new UnreachableException();
+		}
+
+		public Task SaveAsync(string fileName)
+		{
+			throw new UnreachableException();
+		}
+
 		public Task Start(CancellationToken cancellationToken)
 		{
 			return Task.CompletedTask;
@@ -86,8 +102,9 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 #endif
 
-	public ConfigurationViewModel(IBrowserPickerConfiguration settings)
+	public ConfigurationViewModel(IBrowserPickerConfiguration settings, ApplicationViewModel parentViewModel)
 	{
+		ParentViewModel = parentViewModel;
 		Defaults.CollectionChanged += Defaults_CollectionChanged;
 		Settings = settings;
 		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
@@ -128,7 +145,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public IBrowserPickerConfiguration Settings { get; init; }
 
-	public ApplicationViewModel? ParentViewModel { get; init; }
+	public ApplicationViewModel ParentViewModel { get; init; }
 
 	/// <summary>
 	/// Only read by init code on app startup
@@ -175,14 +192,46 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ICommand RefreshBrowsers => refresh_browsers ??= new DelegateCommand(FindBrowsers);
 
-	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually, () => ParentViewModel != null);
+	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually);
+
+	public ICommand Backup => backup ??= new DelegateCommand(PerformBackup);
+
+	public ICommand Restore => restore ??= new DelegateCommand(PerformRestore);
+
+	private void PerformBackup()
+	{
+		var browser = new SaveFileDialog
+		{
+			FileName = "BrowserPicker.json",
+			DefaultExt = ".json",
+			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			CheckPathExists = true,
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		};
+		var result = browser.ShowDialog();
+		if (result != true)
+			return;
+		Settings.SaveAsync(browser.FileName);
+	}
+
+	private void PerformRestore()
+	{
+		var browser = new OpenFileDialog
+		{
+			FileName = "BrowserPicker.json",
+			DefaultExt = ".json",
+			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			CheckPathExists = true,
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		};
+		var result = browser.ShowDialog();
+		if (result != true)
+			return;
+		Settings.LoadAsync(browser.FileName);
+	}
 
 	private void AddBrowserManually()
 	{
-		if (ParentViewModel == null)
-		{
-			return;
-		}
 		var editor = new BrowserEditor(new BrowserViewModel(new BrowserModel(), ParentViewModel));
 		editor.Show();
 		editor.Closing += Editor_Closing;
@@ -194,7 +243,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			window.Closing -= Editor_Closing;
 		}
-		if (sender is not Window { DataContext: BrowserViewModel browser } || ParentViewModel == null)
+		if (sender is not Window { DataContext: BrowserViewModel browser })
 		{
 			return;
 		}
@@ -233,10 +282,6 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void UpdateSettings()
 	{
-		if (ParentViewModel == null)
-		{
-			return;
-		}
 		BrowserViewModel[] added = [..
 			from browser in Settings.BrowserList
 			where ParentViewModel.Choices.All(c => c.Model.Name != browser.Name)
@@ -260,20 +305,17 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void UpdateDefaults()
 	{
-		var added = Settings.Defaults.Except(Defaults).Where(i => i.Type != MatchType.Default).ToArray();
-		if (added.Length > 0)
+		DefaultSetting[] added = [..
+			from current in Settings.Defaults.Except(Defaults)
+			where current.Type != MatchType.Default
+			select current
+		];
+		foreach (var setting in added)
 		{
-			foreach (var setting in added)
-			{
-				Defaults.Add(setting);
-			}
+			Defaults.Add(setting);
 		}
-		var removed = Defaults.Except(Settings.Defaults).ToArray();
-		if (removed.Length <= 0)
-		{
-			return;
-		}
-
+		
+		DefaultSetting[] removed = [.. Defaults.Except(Settings.Defaults)];
 		foreach (var setting in removed)
 		{
 			Defaults.Remove(setting);
@@ -298,6 +340,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? add_default;
 	private DelegateCommand? refresh_browsers;
 	private DelegateCommand? add_browser;
+	private DelegateCommand? backup;
+	private DelegateCommand? restore;
 
 	private string? test_defaults_url;
 
@@ -316,7 +360,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel?.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
 		}
 	}
 
@@ -324,7 +368,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel?.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
 		}
 	}
 }

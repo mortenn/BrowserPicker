@@ -54,7 +54,7 @@
 		</Grid.RowDefinitions>
 
 		<TabControl Background="#77000000" BorderBrush="#77FFFFFF" VerticalAlignment="Stretch">
-			
+
 			<TabControl.Resources>
 				<Style TargetType="{x:Type TabItem}">
 					<Setter Property="Template">
@@ -77,7 +77,7 @@
 					</Setter>
 				</Style>
 			</TabControl.Resources>
-			
+
 			<TabItem Header="Browsers">
 				<ScrollViewer VerticalScrollBarVisibility="Auto">
 					<ItemsControl ItemsSource="{Binding ParentViewModel.Choices}">
@@ -142,7 +142,7 @@
 					</ItemsControl>
 				</ScrollViewer>
 			</TabItem>
-			
+
 			<TabItem Header="Behaviour">
 				<StackPanel Orientation="Vertical">
 					<StackPanel.Resources>
@@ -150,8 +150,11 @@
 							<Setter Property="Margin" Value="5,0,0,5"/>
 						</Style>
 					</StackPanel.Resources>
+
 					<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
+
 					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
+
 					<StackPanel Orientation="Horizontal">
 						<CheckBox Content="When no default is configured matching the url, use:" IsChecked="{Binding Settings.UseFallbackDefault}" Foreground="White" />
 						<ComboBox
@@ -162,12 +165,15 @@
 							SelectedValue="{Binding Settings.DefaultBrowser}"
 							Height="22" Margin="5,-4,0,0" />
 					</StackPanel>
+
 					<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" Foreground="White" />
-					<CheckBox Content="Disable url resolution" IsChecked="{Binding Settings.DisableNetworkAccess}" Foreground="White" />
+
 					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
+
 					<CheckBox Content="Update order in browser list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" />
 
-					<CheckBox Content="Disallow network activity" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" />
+					<CheckBox Content="Disallow network activity" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" ToolTip="Disabled url resolution feature" />
+
 					<StackPanel Margin="25,0,0,0">
 						<StackPanel.Style>
 							<Style>
@@ -292,6 +298,23 @@
 
 					<TextBlock Text="Actual browser choice:" Grid.Column="0" Grid.Row="3" Foreground="White" />
 					<TextBlock Text="{Binding TestActualResult}" Grid.Column="1" Grid.Row="3" Foreground="LightGreen" />
+				</Grid>
+			</TabItem>
+
+			<TabItem Header="Backup">
+				<Grid Margin="10" VerticalAlignment="Top">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<TextBlock Text="Back up or restore your BrowserPicker configuration:" Foreground="White" Margin="5" />
+					<Button Content="Export BrowserPicker settings" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Backup}" />
+					<Button Content="Import BrowserPicker settings" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Restore}" />
+					<ScrollViewer Grid.Row="3" Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="5">
+						<TextBlock Text="{Binding Settings.BackupLog}" Foreground="White" TextWrapping="Wrap" />
+					</ScrollViewer>
 				</Grid>
 			</TabItem>
 
