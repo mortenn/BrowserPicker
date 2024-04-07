@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using BrowserPicker.Framework;
@@ -96,6 +97,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	}
 
 	private bool use_fallback_default;
+	private string backup_log = string.Empty;
 
 	public bool UseFallbackDefault
 	{
@@ -176,6 +178,133 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	public Task Start(CancellationToken cancellationToken)
 	{
 		return Task.Run(FindBrowsers, cancellationToken);
+	}
+
+	private static readonly JsonSerializerOptions JsonOptions = new()
+	{
+		WriteIndented = true
+	};
+
+	public async Task SaveAsync(string fileName)
+	{
+		var settings = new SerializableSettings(this);
+		try
+		{
+			await Task.CompletedTask;
+			await using var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write);
+			await JsonSerializer.SerializeAsync(fileStream, settings, JsonOptions);
+			BackupLog += $"Exported configuration to {fileName}\n";
+		}
+		catch(Exception e)
+		{
+			BackupLog += $"Unable to parse backup file: {e.Message}";
+		}
+	}
+
+	public async Task LoadAsync(string fileName)
+	{
+		await using var file = File.OpenRead(fileName);
+		SerializableSettings? settings;
+		try
+		{
+			settings = await JsonSerializer.DeserializeAsync<SerializableSettings>(file, JsonOptions);
+		}
+		catch (Exception ex)
+		{
+			BackupLog += $"Unable to parse backup file: {ex.Message}";
+			return;
+		}
+		if (settings == null)
+		{
+			BackupLog += "Unable to load backup";
+			return;
+		}
+
+		UpdateSettings(settings);
+		UpdateBrowsers(settings.BrowserList);
+		UpdateDefaults(settings.Defaults);
+
+		BackupLog += $"Imported configuration from {fileName}\n";
+	}
+
+	private void UpdateSettings(IApplicationSettings settings)
+	{
+		AlwaysPrompt = settings.AlwaysPrompt;
+		AlwaysUseDefaults = settings.AlwaysUseDefaults;
+		AlwaysAskWithoutDefault = settings.AlwaysAskWithoutDefault;
+		UrlLookupTimeoutMilliseconds = settings.UrlLookupTimeoutMilliseconds;
+		UseAutomaticOrdering = settings.UseAutomaticOrdering;
+		DisableTransparency = settings.DisableTransparency;
+		DisableNetworkAccess = settings.DisableNetworkAccess;
+	}
+
+	public string BackupLog
+	{
+		get => backup_log;
+		private set => SetProperty(ref backup_log, value);
+	}
+
+	private void UpdateBrowsers(List<BrowserModel> browserList)
+	{
+		foreach (var browser in browserList)
+		{
+			var existing = BrowserList.FirstOrDefault(b => !b.Removed && b.Name == browser.Name);
+			if (existing == null || existing.Removed)
+			{
+				AddBrowser(browser);
+				continue;
+			}
+			existing.Disabled = browser.Disabled;
+			existing.Executable = browser.Executable;
+			existing.PrivacyArgs = browser.PrivacyArgs;
+			existing.Usage = browser.Usage;
+			existing.Command = browser.Command;
+			existing.CommandArgs = browser.CommandArgs;
+			existing.IconPath = browser.IconPath;
+		}
+
+		foreach (var browser in BrowserList.Where(b => browserList.All(s => s.Name != b.Name)).ToArray())
+		{
+			browser.Removed = true;
+			BrowserList.Remove(browser);
+		}
+		OnPropertyChanged(nameof(BrowserList));
+	}
+
+	private void UpdateDefaults(List<DefaultSetting> defaults)
+	{
+		var fallback = defaults.FirstOrDefault(d => d.Type == MatchType.Default);
+		UseFallbackDefault = fallback?.Browser != null;
+		DefaultBrowser = fallback?.Browser;
+
+		// Add or update defaults
+		foreach (var setting in defaults)
+		{
+			if (setting == fallback)
+			{
+				continue;
+			}
+			var existing = Defaults.FirstOrDefault(d => d.SettingKey == setting.SettingKey);
+			if (existing == null)
+			{
+				var newSetting = new DefaultSetting(setting.Type, setting.Pattern, null);
+				newSetting.PropertyChanging += DefaultSetting_PropertyChanging;
+				newSetting.PropertyChanged += DefaultSetting_PropertyChanged;
+				Defaults.Add(newSetting);
+				newSetting.Browser = setting.Browser;
+				continue;
+			}
+			existing.Type = setting.Type;
+			existing.Pattern = setting.Pattern;
+			existing.Browser = setting.Browser;
+		}
+
+		// Remove defaults
+		foreach (var setting in Defaults.Where(d => defaults.All(s => s.SettingKey != d.SettingKey)))
+		{
+			setting.Deleted = true;
+		}
+		OnPropertyChanged(nameof(Defaults));
 	}
 
 	/// <summary>

@@ -301,6 +301,23 @@
 				</Grid>
 			</TabItem>
 
+			<TabItem Header="Backup">
+				<Grid Margin="10" VerticalAlignment="Top">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<TextBlock Text="Back up or restore your BrowserPicker configuration:" Foreground="White" Margin="5" />
+					<Button Content="Export BrowserPicker settings" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Backup}" />
+					<Button Content="Import BrowserPicker settings" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Restore}" />
+					<ScrollViewer Grid.Row="3" Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="5">
+						<TextBlock Text="{Binding Settings.BackupLog}" Foreground="White" TextWrapping="Wrap" />
+					</ScrollViewer>
+				</Grid>
+			</TabItem>
+
 		</TabControl>
 
 		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">

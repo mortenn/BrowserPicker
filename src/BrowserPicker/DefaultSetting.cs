@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace BrowserPicker;
@@ -50,10 +51,13 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 		}
 	}
 
+	[JsonIgnore]
 	public string? SettingKey => ToString();
 
+	[JsonIgnore]
 	public string? SettingValue => Browser;
 
+	[JsonIgnore]
 	public bool Deleted
 	{
 		get => deleted;
@@ -94,9 +98,11 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 		}
 	}
 
+	[JsonIgnore]
 	public bool IsValid => !string.IsNullOrWhiteSpace(pattern)
-	                       || pattern == string.Empty && Type == MatchType.Default;
+												 || pattern == string.Empty && Type == MatchType.Default;
 
+	[JsonIgnore]
 	public DelegateCommand Remove => new(() => { Deleted = true; });
 
 	public int MatchLength(Uri url)

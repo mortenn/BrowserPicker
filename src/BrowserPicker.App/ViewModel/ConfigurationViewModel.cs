@@ -7,6 +7,10 @@ using System.Windows.Input;
 using BrowserPicker.View;
 using System.Windows;
 using System.Collections.Generic;
+using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+
 #if DEBUG
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -70,6 +74,8 @@ public sealed class ConfigurationViewModel : ModelBase
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
 		}
 
+		public string BackupLog => "Backup log comes here\nWith multiple lines of text\nmaybe\nsometimes\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...";
+
 		public DefaultSetting AddDefault(MatchType matchType, string pattern, string browser)
 		{
 			return new DefaultSetting(matchType, pattern, browser);
@@ -77,6 +83,16 @@ public sealed class ConfigurationViewModel : ModelBase
 
 		public void FindBrowsers()
 		{
+		}
+
+		public Task LoadAsync(string fileName)
+		{
+			throw new UnreachableException();
+		}
+
+		public Task SaveAsync(string fileName)
+		{
+			throw new UnreachableException();
 		}
 
 		public Task Start(CancellationToken cancellationToken)
@@ -178,12 +194,44 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually);
 
+	public ICommand Backup => backup ??= new DelegateCommand(PerformBackup);
+
+	public ICommand Restore => restore ??= new DelegateCommand(PerformRestore);
+
+	private void PerformBackup()
+	{
+		var browser = new SaveFileDialog
+		{
+			FileName = "BrowserPicker.json",
+			DefaultExt = ".json",
+			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			CheckPathExists = true,
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		};
+		var result = browser.ShowDialog();
+		if (result != true)
+			return;
+		Settings.SaveAsync(browser.FileName);
+	}
+
+	private void PerformRestore()
+	{
+		var browser = new OpenFileDialog
+		{
+			FileName = "BrowserPicker.json",
+			DefaultExt = ".json",
+			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			CheckPathExists = true,
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		};
+		var result = browser.ShowDialog();
+		if (result != true)
+			return;
+		Settings.LoadAsync(browser.FileName);
+	}
+
 	private void AddBrowserManually()
 	{
-		if (ParentViewModel == null)
-		{
-			return;
-		}
 		var editor = new BrowserEditor(new BrowserViewModel(new BrowserModel(), ParentViewModel));
 		editor.Show();
 		editor.Closing += Editor_Closing;
@@ -292,6 +340,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? add_default;
 	private DelegateCommand? refresh_browsers;
 	private DelegateCommand? add_browser;
+	private DelegateCommand? backup;
+	private DelegateCommand? restore;
 
 	private string? test_defaults_url;
 
