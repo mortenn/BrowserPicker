@@ -14,11 +14,16 @@ namespace BrowserPicker;
 
 public sealed class UrlHandler : ModelBase, ILongRunningProcess
 {
-	public UrlHandler(IBrowserPickerConfiguration configuration, string requestedUrl)
+	public UrlHandler(string? requestedUrl, bool disableLookup)
 	{
-		disallow_network = configuration.DisableNetworkAccess;
+		disallow_network = disableLookup;
 		TargetURL = requestedUrl;
 		underlying_target_url = requestedUrl;
+
+		if (requestedUrl == null)
+		{
+			return;
+		}
 		try
 		{
 			uri = new Uri(requestedUrl);
@@ -30,6 +35,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			// ignored
 		}
 	}
+
 #if DEBUG
 	[UsedImplicitly]
 	// Design time constructor
@@ -110,7 +116,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		return location?.OriginalString;
 	}
 
-	public string TargetURL { get; }
+	public string? TargetURL { get; }
 
 	public string? UnderlyingTargetURL
 	{
@@ -124,7 +130,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		set => SetProperty(ref is_shortened_url, value);
 	}
 
-	public string HostName
+	public string? HostName
 	{
 		get => host_name;
 		set => SetProperty(ref host_name, value);
@@ -159,7 +165,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	private Uri? uri;
 	private string? underlying_target_url;
 	private bool is_shortened_url;
-	private string host_name;
+	private string? host_name;
 	private static readonly HttpClient Client = new(new HttpClientHandler { AllowAutoRedirect = false });
 	private readonly bool disallow_network;
 }

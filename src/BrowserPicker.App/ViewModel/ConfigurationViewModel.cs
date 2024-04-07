@@ -43,7 +43,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			ConfigurationMode = true
 		};
 		Settings.BrowserList.AddRange(ParentViewModel.Choices.Select(m => m.Model));
-		test_defaults_url = ParentViewModel.Url?.UnderlyingTargetURL ?? ParentViewModel.Url?.TargetURL;
+		test_defaults_url = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
 	}
 
 	private sealed class DesignTimeSettings : IBrowserPickerConfiguration
@@ -86,8 +86,9 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 #endif
 
-	public ConfigurationViewModel(IBrowserPickerConfiguration settings)
+	public ConfigurationViewModel(IBrowserPickerConfiguration settings, ApplicationViewModel parentViewModel)
 	{
+		ParentViewModel = parentViewModel;
 		Defaults.CollectionChanged += Defaults_CollectionChanged;
 		Settings = settings;
 		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
@@ -128,7 +129,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public IBrowserPickerConfiguration Settings { get; init; }
 
-	public ApplicationViewModel? ParentViewModel { get; init; }
+	public ApplicationViewModel ParentViewModel { get; init; }
 
 	/// <summary>
 	/// Only read by init code on app startup
@@ -175,7 +176,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ICommand RefreshBrowsers => refresh_browsers ??= new DelegateCommand(FindBrowsers);
 
-	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually, () => ParentViewModel != null);
+	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually);
 
 	private void AddBrowserManually()
 	{
@@ -194,7 +195,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			window.Closing -= Editor_Closing;
 		}
-		if (sender is not Window { DataContext: BrowserViewModel browser } || ParentViewModel == null)
+		if (sender is not Window { DataContext: BrowserViewModel browser })
 		{
 			return;
 		}
@@ -233,10 +234,6 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void UpdateSettings()
 	{
-		if (ParentViewModel == null)
-		{
-			return;
-		}
 		BrowserViewModel[] added = [..
 			from browser in Settings.BrowserList
 			where ParentViewModel.Choices.All(c => c.Model.Name != browser.Name)
@@ -260,20 +257,17 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void UpdateDefaults()
 	{
-		var added = Settings.Defaults.Except(Defaults).Where(i => i.Type != MatchType.Default).ToArray();
-		if (added.Length > 0)
+		DefaultSetting[] added = [..
+			from current in Settings.Defaults.Except(Defaults)
+			where current.Type != MatchType.Default
+			select current
+		];
+		foreach (var setting in added)
 		{
-			foreach (var setting in added)
-			{
-				Defaults.Add(setting);
-			}
+			Defaults.Add(setting);
 		}
-		var removed = Defaults.Except(Settings.Defaults).ToArray();
-		if (removed.Length <= 0)
-		{
-			return;
-		}
-
+		
+		DefaultSetting[] removed = [.. Defaults.Except(Settings.Defaults)];
 		foreach (var setting in removed)
 		{
 			Defaults.Remove(setting);
@@ -316,7 +310,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel?.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
 		}
 	}
 
@@ -324,7 +318,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel?.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
 		}
 	}
 }

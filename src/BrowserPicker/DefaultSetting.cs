@@ -8,6 +8,8 @@ namespace BrowserPicker;
 
 public sealed class DefaultSetting(MatchType type, string? pattern, string? browser) : ModelBase, INotifyPropertyChanging
 {
+	private bool deleted;
+
 	public static DefaultSetting? Decode(string? rule, string browser)
 	{
 		if (rule == null)
@@ -52,7 +54,15 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 
 	public string? SettingValue => Browser;
 
-	public bool Deleted { get; set; }
+	public bool Deleted
+	{
+		get => deleted;
+		set
+		{
+			deleted = value;
+			OnPropertyChanged();
+		}
+	}
 
 	public string? Pattern
 	{
@@ -87,7 +97,7 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 	public bool IsValid => !string.IsNullOrWhiteSpace(pattern)
 	                       || pattern == string.Empty && Type == MatchType.Default;
 
-	public DelegateCommand Remove => new(() => { Deleted = true; OnPropertyChanged(nameof(Deleted)); });
+	public DelegateCommand Remove => new(() => { Deleted = true; });
 
 	public int MatchLength(Uri url)
 	{

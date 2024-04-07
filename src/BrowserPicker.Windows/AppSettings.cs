@@ -350,7 +350,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				model.PropertyChanging -= DefaultSetting_PropertyChanging;
 				model.PropertyChanged -= DefaultSetting_PropertyChanged;
 				break;
-				
+
 			case nameof(DefaultSetting.SettingKey) when model.IsValid:
 			case nameof(DefaultSetting.SettingValue) when model.IsValid:
 				key.SetValue(model.SettingKey, model.SettingValue ?? string.Empty, RegistryValueKind.String);
@@ -358,7 +358,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
-	private static List<BrowserModel> GetBrowsers()
+	private List<BrowserModel> GetBrowsers()
 	{
 		var list = Reg.SubKey(nameof(BrowserList));
 		if (list == null)
@@ -386,7 +386,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return browsers;
 	}
 
-	private static BrowserModel? GetBrowser(RegistryKey list, string name)
+	private BrowserModel? GetBrowser(RegistryKey list, string name)
 	{
 		var config = list.OpenSubKey(name, false);
 		if (config == null) return null;
@@ -409,7 +409,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return browser;
 	}
 
-	private static void BrowserConfiguration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	private void BrowserConfiguration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is not BrowserModel model)
 		{
@@ -430,6 +430,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				{
 					model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
 					Reg.SubKey(nameof(BrowserList))?.DeleteSubKey(model.Name);
+					BrowserList.Remove(model);
+					OnPropertyChanged(nameof(BrowserList));
 				}
 				break;
 			default: return;

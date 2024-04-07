@@ -22,7 +22,7 @@ public sealed class ApplicationViewModel : ModelBase
 	{
 		Url = new UrlHandler();
 		force_choice = true;
-		Configuration = new ConfigurationViewModel(App.Settings);
+		Configuration = new ConfigurationViewModel(App.Settings, this);
 		Choices = new ObservableCollection<BrowserViewModel>(
 			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this))
 		);
@@ -30,7 +30,7 @@ public sealed class ApplicationViewModel : ModelBase
 	
 	internal ApplicationViewModel(ConfigurationViewModel config)
 	{
-		Url = new UrlHandler(config.Settings, "https://github.com/mortenn/BrowserPicker");
+		Url = new UrlHandler("https://github.com/mortenn/BrowserPicker", config.Settings.DisableNetworkAccess);
 		force_choice = true;
 		Configuration = config;
 		Choices = new ObservableCollection<BrowserViewModel>(
@@ -44,24 +44,21 @@ public sealed class ApplicationViewModel : ModelBase
 		var options = arguments.Where(arg => arg[0] == '/').ToList();
 		force_choice = options.Contains("/choose");
 		var url = arguments.Except(options).FirstOrDefault();
-		if (url != null)
-		{
-			Url = new UrlHandler(settings, url);
-		}
+		Url = new UrlHandler(url, url == null || settings.DisableNetworkAccess);
 		ConfigurationMode = url == null;
-		Configuration = new ConfigurationViewModel(settings)
+		Configuration = new ConfigurationViewModel(settings, this)
 		{
 			ParentViewModel = this
 		};
 		Choices = new ObservableCollection<BrowserViewModel>(settings.BrowserList.Select(m => new BrowserViewModel(m, this)));
 	}
 
-	public UrlHandler? Url { get; }
+	public UrlHandler Url { get; }
 
 	public void Initialize()
 	{
 		if (
-			Url == null
+			Url.TargetURL == null
 			|| Keyboard.Modifiers == ModifierKeys.Alt
 			|| Configuration.AlwaysPrompt
 			|| ConfigurationMode
@@ -153,10 +150,6 @@ public sealed class ApplicationViewModel : ModelBase
 		get => edit_url;
 		set
 		{
-			if (Url == null)
-			{
-				return;
-			}
 			SetProperty(ref edit_url, value);
 			Url.UnderlyingTargetURL = value!;
 		}
@@ -196,7 +189,7 @@ public sealed class ApplicationViewModel : ModelBase
 	{
 		try
 		{
-			if (Url?.UnderlyingTargetURL == null)
+			if (Url.UnderlyingTargetURL == null)
 			{
 				return;
 			}
@@ -214,13 +207,13 @@ public sealed class ApplicationViewModel : ModelBase
 
 	private void OpenURLEditor()
 	{
-		EditURL = Url?.UnderlyingTargetURL;
+		EditURL = Url.UnderlyingTargetURL;
 		OnPropertyChanged(nameof(EditURL));
 	}
 
 	private void CloseURLEditor()
 	{
-		if (Url == null || edit_url == null)
+		if (edit_url == null)
 		{
 			return;
 		}

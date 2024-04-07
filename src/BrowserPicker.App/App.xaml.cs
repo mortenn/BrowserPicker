@@ -33,7 +33,7 @@ public partial class App
 		try
 		{
 			ViewModel = new ApplicationViewModel(arguments, Settings);
-			if (ViewModel.Url != null)
+			if (ViewModel.Url.TargetURL != null)
 			{
 				BackgroundTasks.Add(ViewModel.Url);
 			}
@@ -64,7 +64,7 @@ public partial class App
 			long_running_processes = RunLongRunningProcesses();
 
 			// Open in configuration mode if user started BrowserPicker directly
-			if (string.IsNullOrWhiteSpace(ViewModel.Url?.TargetURL))
+			if (string.IsNullOrWhiteSpace(ViewModel.Url.TargetURL))
 			{
 				ShowMainWindow();
 				return;

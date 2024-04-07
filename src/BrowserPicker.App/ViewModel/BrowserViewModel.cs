@@ -132,12 +132,12 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 
 	private bool CanLaunch(bool privacy)
 	{
-		return !string.IsNullOrWhiteSpace(parent_view_model.Url?.TargetURL) && !(privacy && Model.PrivacyArgs == null);
+		return !string.IsNullOrWhiteSpace(parent_view_model.Url.TargetURL) && !(privacy && Model.PrivacyArgs == null);
 	}
 
 	private void Launch(bool privacy)
 	{
-		if (parent_view_model.Url == null)
+		if (parent_view_model.Url.TargetURL == null)
 		{
 			return;
 		}
@@ -148,7 +148,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				Model.Usage++;
 			}
 
-			if (parent_view_model.Configuration.AutoAddDefault)
+			if (parent_view_model.Configuration.AutoAddDefault && parent_view_model.Url.HostName != null)
 			{
 				try
 				{

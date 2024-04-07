@@ -83,7 +83,7 @@ public partial class BrowserEditor
 			Filter = "Executable Files (*.exe)|*.exe|Icon Files (*.ico)|*.ico|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif|All Files|*.*"
 		};
 		if (browser.ShowDialog(this) == true)
-			Browser!.Model.IconPath = browser.FileName;
+			Browser.Model.IconPath = browser.FileName;
 	}
 
 
