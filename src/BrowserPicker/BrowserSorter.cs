@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BrowserPicker;
 
@@ -8,16 +9,14 @@ public class BrowserSorter(IApplicationSettings configuration) : IComparer<Brows
 	{
 		if (x == null || y == null)
 		{
-			return x == null && y == null ? 0 : (x == null ? -1 : 1);
+			return x == null && y == null ? 0 : x == null ? -1 : 1;
 		}
-		if (configuration.UseAlphabeticalOrdering)
+
+		return configuration.UseAlphabeticalOrdering switch
 		{
-			return x.Name.CompareTo(y.Name);
-		}
-		if (configuration.UseManualOrdering)
-		{
-			return x.ManualOrder.CompareTo(y.ManualOrder);
-		}
-		return y.Usage.CompareTo(x.Usage);
+			true => string.Compare(x.Name, y.Name, StringComparison.Ordinal),
+			false when configuration.UseManualOrdering => x.ManualOrder.CompareTo(y.ManualOrder),
+			_ => y.Usage.CompareTo(x.Usage)
+		};
 	}
 }

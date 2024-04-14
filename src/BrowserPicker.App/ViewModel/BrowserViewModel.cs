@@ -64,21 +64,21 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 
 	public bool IsManuallyOrdered => !parent_view_model.Configuration.Settings.UseAutomaticOrdering;
 
-	public DelegateCommand Select => select ??= new(() => Launch(false), () => CanLaunch(false));
-	public DelegateCommand SelectPrivacy => selectPrivacy ??= new(() => Launch(true), () => CanLaunch(true));
-	public DelegateCommand Disable => disable ??= new(() => Model.Disabled = !Model.Disabled);
-	public DelegateCommand Remove => remove ??= new(() => Model.Removed = true);
-	public DelegateCommand Edit => edit ??= new(() => OpenEditor(Model));
-	public DelegateCommand MoveUp => moveUp ??= new DelegateCommand(() => Swap(1), () => CanSwap(1));
-	public DelegateCommand MoveDown => moveDown ??= new DelegateCommand(() => Swap(-1), () => CanSwap(-1));
+	public DelegateCommand Select => select ??= new DelegateCommand(() => Launch(false), () => CanLaunch(false));
+	public DelegateCommand SelectPrivacy => select_privacy ??= new DelegateCommand(() => Launch(true), () => CanLaunch(true));
+	public DelegateCommand Disable => disable ??= new DelegateCommand(() => Model.Disabled = !Model.Disabled);
+	public DelegateCommand Remove => remove ??= new DelegateCommand(() => Model.Removed = true);
+	public DelegateCommand Edit => edit ??= new DelegateCommand(() => OpenEditor(Model));
+	public DelegateCommand MoveUp => move_up ??= new DelegateCommand(() => Swap(1), () => CanSwap(1));
+	public DelegateCommand MoveDown => move_down ??= new DelegateCommand(() => Swap(-1), () => CanSwap(-1));
 
 	private DelegateCommand? select;
-	private DelegateCommand? selectPrivacy;
+	private DelegateCommand? select_privacy;
 	private DelegateCommand? disable;
 	private DelegateCommand? remove;
 	private DelegateCommand? edit;
-	private DelegateCommand? moveUp;
-	private DelegateCommand? moveDown;
+	private DelegateCommand? move_up;
+	private DelegateCommand? move_down;
 
 	private bool CanSwap(int offset)
 	{

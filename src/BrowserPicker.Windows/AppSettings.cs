@@ -290,7 +290,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		private set => SetProperty(ref backup_log, value);
 	}
 
-	public IComparer<BrowserModel>? BrowserSorter => sorter;
+	public IComparer<BrowserModel> BrowserSorter => sorter;
 
 	private void UpdateBrowsers(List<BrowserModel> browserList)
 	{
