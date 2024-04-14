@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace BrowserPicker;
@@ -50,4 +51,9 @@ public interface IBrowserPickerConfiguration : IApplicationSettings, INotifyProp
 	/// Logs from backup and restore
 	/// </summary>
 	public string BackupLog { get; }
+
+	/// <summary>
+	/// Sorter used to sort browsers
+	/// </summary>
+	IComparer<BrowserModel>? BrowserSorter { get; }
 }

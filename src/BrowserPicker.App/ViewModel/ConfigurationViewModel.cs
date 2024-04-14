@@ -35,18 +35,23 @@ public sealed class ConfigurationViewModel : ModelBase
 				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name),
 				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
 			],
-			BrowserList = [],
+			BrowserList = [.. WellKnownBrowsers.List.Select(b => new BrowserModel(b, null, string.Empty))],
 			DefaultBrowser = Firefox.Instance.Name
 		};
 		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
 		{
 			Defaults.Add(setting);
 		}
+
 		ParentViewModel = new ApplicationViewModel(this)
 		{
 			ConfigurationMode = true
 		};
-		Settings.BrowserList.AddRange(ParentViewModel.Choices.Select(m => m.Model));
+		var choices = Settings.BrowserList.OrderBy(v => v, new BrowserSorter(Settings)).Select(m => new BrowserViewModel(m, ParentViewModel));
+		foreach(var choice in choices)
+		{
+			ParentViewModel.Choices.Add(choice);
+		}
 		test_defaults_url = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
 	}
 
@@ -56,7 +61,9 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool AlwaysUseDefaults { get; set; } = true;
 		public bool AlwaysAskWithoutDefault { get; set; }
 		public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
-		public bool UseAutomaticOrdering { get; set; } = true;
+		public bool UseAutomaticOrdering { get; set; } = false;
+		public bool UseManualOrdering { get; set; } = false;
+		public bool UseAlphabeticalOrdering { get; set; } = true;
 		public bool DisableTransparency { get; set; } = true;
 		public bool DisableNetworkAccess { get; set; } = false;
 
@@ -75,6 +82,8 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 
 		public string BackupLog => "Backup log comes here\nWith multiple lines of text\nmaybe\nsometimes\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...";
+
+		public IComparer<BrowserModel>? BrowserSorter => null;
 
 		public DefaultSetting AddDefault(MatchType matchType, string pattern, string browser)
 		{
@@ -277,6 +286,19 @@ public sealed class ConfigurationViewModel : ModelBase
 			case nameof(Settings.BrowserList):
 				UpdateSettings();
 				break;
+
+			case nameof(Settings.UseAutomaticOrdering) when Settings.UseAutomaticOrdering:
+				CaptureBrowserOrder();
+				break;
+		}
+	}
+
+	private void CaptureBrowserOrder()
+	{
+		var browsers = Settings.BrowserList.Where(b => !b.Removed).ToArray();
+		foreach (var browser in browsers)
+		{
+			browser.ManualOrder = Settings.BrowserList.IndexOf(browser);
 		}
 	}
 

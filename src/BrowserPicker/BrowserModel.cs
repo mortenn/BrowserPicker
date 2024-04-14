@@ -83,6 +83,12 @@ public sealed class BrowserModel : ModelBase
 		}
 	}
 
+	public int ManualOrder
+	{
+		get => manualOrder;
+		set => SetProperty(ref manualOrder, value);
+	}
+
 	private bool disabled;
 	private bool removed;
 	private string name;
@@ -91,4 +97,5 @@ public sealed class BrowserModel : ModelBase
 	private string? executable;
 	private string? command_args;
 	private string? privacy_args;
+	private int manualOrder;
 }

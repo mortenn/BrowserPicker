@@ -28,6 +28,15 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		model.PropertyChanged += Model_PropertyChanged;
 		parent_view_model = viewModel;
 		parent_view_model.PropertyChanged += OnParentViewModelChanged;
+		parent_view_model.Configuration.Settings.PropertyChanged += Settings_PropertyChanged;
+	}
+
+	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(IApplicationSettings.UseAutomaticOrdering))
+		{
+			OnPropertyChanged(nameof(IsManuallyOrdered));
+		}
 	}
 
 	private void OnParentViewModelChanged(object? sender, PropertyChangedEventArgs e)
@@ -53,11 +62,43 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 	}
 
-	public DelegateCommand Select => new(() => Launch(false), () => CanLaunch(false));
-	public DelegateCommand SelectPrivacy => new(() => Launch(true), () => CanLaunch(true));
-	public DelegateCommand Disable => new(() => Model.Disabled = !Model.Disabled);
-	public DelegateCommand Remove => new(() => Model.Removed = true);
-	public DelegateCommand Edit => new(() => OpenEditor(Model));
+	public bool IsManuallyOrdered => !parent_view_model.Configuration.Settings.UseAutomaticOrdering;
+
+	public DelegateCommand Select => select ??= new(() => Launch(false), () => CanLaunch(false));
+	public DelegateCommand SelectPrivacy => selectPrivacy ??= new(() => Launch(true), () => CanLaunch(true));
+	public DelegateCommand Disable => disable ??= new(() => Model.Disabled = !Model.Disabled);
+	public DelegateCommand Remove => remove ??= new(() => Model.Removed = true);
+	public DelegateCommand Edit => edit ??= new(() => OpenEditor(Model));
+	public DelegateCommand MoveUp => moveUp ??= new DelegateCommand(() => Swap(1), () => CanSwap(1));
+	public DelegateCommand MoveDown => moveDown ??= new DelegateCommand(() => Swap(-1), () => CanSwap(-1));
+
+	private DelegateCommand? select;
+	private DelegateCommand? selectPrivacy;
+	private DelegateCommand? disable;
+	private DelegateCommand? remove;
+	private DelegateCommand? edit;
+	private DelegateCommand? moveUp;
+	private DelegateCommand? moveDown;
+
+	private bool CanSwap(int offset)
+	{
+		var choices = parent_view_model.Choices.Where(vm => !vm.Model.Removed).ToList();
+		var i = choices.IndexOf(this);
+		var ni = i - offset;
+		return ni >= 0 && ni < choices.Count;
+	}
+
+	private void Swap(int offset)
+	{
+		foreach (var choice in parent_view_model.Choices)
+		{
+			choice.Model.ManualOrder = parent_view_model.Choices.IndexOf(choice);
+		}
+		var i = parent_view_model.Choices.IndexOf(this) - offset;
+		var next = parent_view_model.Choices[i];
+		(next.Model.ManualOrder, Model.ManualOrder) = (Model.ManualOrder, next.Model.ManualOrder);
+		parent_view_model.RefreshChoices();
+	}
 
 	private void OpenEditor(BrowserModel model)
 	{

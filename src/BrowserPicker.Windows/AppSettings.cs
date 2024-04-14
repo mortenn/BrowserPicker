@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 {
 	public AppSettings()
 	{
+		sorter = new BrowserSorter(this);
 		BrowserList = GetBrowsers();
 		Defaults = GetDefaults();
 		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
@@ -52,10 +54,53 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	public bool UseManualOrdering
+	{
+		get => Reg.Get(false);
+		set
+		{
+			Reg.Set(value);
+			UpdateOrder(value);
+			OnPropertyChanged();
+		}
+	}
+
 	public bool UseAutomaticOrdering
 	{
 		get => Reg.Get(true);
-		set { Reg.Set(value); OnPropertyChanged(); }
+		set
+		{
+			Reg.Set(value);
+			UpdateOrder(value);
+			OnPropertyChanged();
+		}
+	}
+
+	public bool UseAlphabeticalOrdering
+	{
+		get => Reg.Get(false);
+		set
+		{
+			Reg.Set(value);
+			UpdateOrder(value);
+			OnPropertyChanged();
+		}
+	}
+
+	private void UpdateOrder(bool value, [CallerMemberName] string? setting = null)
+	{
+		if (setting != nameof(UseAutomaticOrdering) && UseAutomaticOrdering && value)
+		{
+			UseAutomaticOrdering = false;
+		}
+		if (setting != nameof(UseManualOrdering) && UseManualOrdering && value)
+		{
+			UseManualOrdering = false;
+		}
+		if (setting != nameof(UseAlphabeticalOrdering) && UseAlphabeticalOrdering && value)
+		{
+			UseAlphabeticalOrdering = false;
+		}
 	}
 
 	public bool DisableTransparency
@@ -98,6 +143,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private bool use_fallback_default;
 	private string backup_log = string.Empty;
+	private readonly BrowserSorter sorter;
 
 	public bool UseFallbackDefault
 	{
@@ -243,6 +289,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		get => backup_log;
 		private set => SetProperty(ref backup_log, value);
 	}
+
+	public IComparer<BrowserModel>? BrowserSorter => sorter;
 
 	private void UpdateBrowsers(List<BrowserModel> browserList)
 	{
@@ -497,9 +545,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 		var browsers = list.GetSubKeyNames()
 			.Select(browser => GetBrowser(list, browser))
-			.Where(browser => browser != null)
-			.OrderByDescending(b => b!.Usage)!
-			.ToList<BrowserModel>();
+			.OfType<BrowserModel>()
+			.OrderBy(v => v, sorter)
+			.ToList();
 
 		if (browsers.Any(browser => browser.Name.Equals("Microsoft Edge")))
 		{
@@ -527,6 +575,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			CommandArgs = config.Get<string>(null, nameof(BrowserModel.CommandArgs)),
 			PrivacyArgs = config.Get<string>(null, nameof(BrowserModel.PrivacyArgs)),
 			IconPath = config.Get<string>(null, nameof(BrowserModel.IconPath)),
+			ManualOrder = config.Get(0, nameof(BrowserModel.ManualOrder)),
 			Usage = config.Get(0, nameof(BrowserModel.Usage)),
 			Disabled = config.Get(false, nameof(BrowserModel.Disabled))
 		};
@@ -554,6 +603,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			case nameof(BrowserModel.IconPath): config.Set(model.IconPath, e.PropertyName); break;
 			case nameof(BrowserModel.Usage): config.Set(model.Usage, e.PropertyName); break;
 			case nameof(BrowserModel.Disabled): config.Set(model.Disabled, e.PropertyName); break;
+			case nameof(BrowserModel.ManualOrder): config.Set(model.ManualOrder, e.PropertyName); break;
 			case nameof(BrowserModel.Removed):
 				if (model.Removed)
 				{
