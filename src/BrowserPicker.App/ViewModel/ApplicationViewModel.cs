@@ -27,15 +27,13 @@ public sealed class ApplicationViewModel : ModelBase
 			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this))
 		);
 	}
-	
+
 	internal ApplicationViewModel(ConfigurationViewModel config)
 	{
 		Url = new UrlHandler("https://github.com/mortenn/BrowserPicker", config.Settings.DisableNetworkAccess);
 		force_choice = true;
 		Configuration = config;
-		Choices = new ObservableCollection<BrowserViewModel>(
-			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this))
-		);
+		Choices = [];
 	}
 #endif
 
@@ -50,7 +48,8 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			ParentViewModel = this
 		};
-		Choices = new ObservableCollection<BrowserViewModel>(settings.BrowserList.Select(m => new BrowserViewModel(m, this)));
+		var choices = settings.BrowserList.Select(m => new BrowserViewModel(m, this)).ToList();
+		Choices = new ObservableCollection<BrowserViewModel>(choices);
 	}
 
 	public UrlHandler Url { get; }
@@ -64,7 +63,7 @@ public sealed class ApplicationViewModel : ModelBase
 			|| ConfigurationMode
 			|| force_choice)
 		{
-				return;
+			return;
 		}
 
 		BrowserViewModel? start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
@@ -129,7 +128,7 @@ public sealed class ApplicationViewModel : ModelBase
 	public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
 
 	public ICommand Edit => new DelegateCommand(OpenURLEditor);
-	
+
 	public ICommand EndEdit => new DelegateCommand(CloseURLEditor);
 
 	public ConfigurationViewModel Configuration { get; }
@@ -219,6 +218,16 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 		edit_url = null;
 		OnPropertyChanged(nameof(EditURL));
+	}
+
+	internal void RefreshChoices()
+	{
+		var newOrder = Choices.OrderBy(c => c.Model, Configuration.Settings.BrowserSorter).ToArray();
+		Choices.Clear();
+		foreach (var choice in newOrder)
+		{
+			Choices.Add(choice);
+		}
 	}
 
 	private bool configuration_mode;

@@ -105,10 +105,28 @@
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
 									<ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource BrowserIcon}" Height="40" Width="40" Margin="20,0,0,0" />
 									<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
-									<TextBlock Grid.Column="2" Margin="10" FontSize="16">
+									<Grid Grid.Column="2" VerticalAlignment="Center">
+										<Grid.Style>
+											<Style TargetType="Grid">
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
+														<Setter Property="Visibility" Value="Collapsed" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Grid.Style>
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<TextBlock FontSize="10"><Hyperlink TextDecorations="None" Command="{Binding MoveUp}">🔼</Hyperlink></TextBlock>
+										<TextBlock FontSize="10" Grid.Row="1"><Hyperlink TextDecorations="None" Command="{Binding MoveDown}">🔽</Hyperlink></TextBlock>
+									</Grid>
+									<TextBlock Grid.Column="3" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Disable}">
 											<TextBlock>
 												<TextBlock.Style>
@@ -126,12 +144,12 @@
 											</TextBlock>
 										</Hyperlink>
 									</TextBlock>
-									<TextBlock Grid.Column="3" Margin="10" FontSize="16">
+									<TextBlock Grid.Column="4" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Edit}">
 											<TextBlock Text="Edit" Foreground="CadetBlue" ToolTip="Edit browser definition" />
 										</Hyperlink>
 									</TextBlock>
-									<TextBlock Grid.Column="4" Margin="10" FontSize="16">
+									<TextBlock Grid.Column="5" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Remove}">
 											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
 										</Hyperlink>
@@ -170,7 +188,9 @@
 
 					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
 
-					<CheckBox Content="Update order in browser list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" />
+					<RadioButton GroupName="OrderBy" Content="Sort list manually" IsChecked="{Binding Settings.UseManualOrdering}" Foreground="White" Margin="6,2" />
+					<RadioButton GroupName="OrderBy" Content="Sort list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" Margin="6,2" />
+					<RadioButton GroupName="OrderBy" Content="Sort list alphabetically" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" Foreground="White" Margin="6,2,4,6" />
 
 					<CheckBox Content="Disallow network activity" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" ToolTip="Disabled url resolution feature" />
 

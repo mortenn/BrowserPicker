@@ -25,9 +25,22 @@ public interface IApplicationSettings
 	int UrlLookupTimeoutMilliseconds { get; set; }
 
 	/// <summary>
+	/// When set to true, lets user reorder the list of browsers manually
+	/// </summary>
+	/// <remarks>Mutually exclusive with <see cref="UseAutomaticOrdering"/> and <see cref="UseAlphabeticalOrdering"/></remarks>
+	bool UseManualOrdering { get; set; }
+
+	/// <summary>
 	/// When set to false, stops reordering the list of browsers based on popularity
 	/// </summary>
+	/// <remarks>Mutually exclusive with <see cref="UseManualOrdering"/> and <see cref="UseAlphabeticalOrdering"/></remarks>
 	bool UseAutomaticOrdering { get; set; }
+
+	/// <summary>
+	/// When set to false, orders the list of browsers based on alphabetical order
+	/// </summary>
+	/// <remarks>Mutually exclusive with <see cref="UseAutomaticOrdering"/> and <see cref="UseManualOrdering"/></remarks>
+	bool UseAlphabeticalOrdering { get; set; }
 
 	/// <summary>
 	/// Use transparency for the popup window
