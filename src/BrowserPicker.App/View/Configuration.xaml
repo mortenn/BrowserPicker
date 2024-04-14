@@ -220,7 +220,6 @@
 											ItemsSource="{Binding Source={StaticResource MatchTypes}}"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedValue="{Binding Type}"
-											SelectedValuePath="Model.Name"
 											VerticalContentAlignment="Center" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
