@@ -329,7 +329,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		DefaultSetting[] added = [..
 			from current in Settings.Defaults.Except(Defaults)
-			where current.Type != MatchType.Default
+			where current.Type != MatchType.Default && !current.Deleted
 			select current
 		];
 		foreach (var setting in added)
