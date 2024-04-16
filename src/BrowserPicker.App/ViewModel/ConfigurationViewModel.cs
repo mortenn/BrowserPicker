@@ -256,16 +256,18 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	internal void UrlOpened(string? hostName, string browser)
 	{
-		if (AutoAddDefault && hostName != null)
+		if (!AutoAddDefault || hostName == null)
 		{
-			try
-			{
-				AddNewDefault(MatchType.Hostname, hostName, browser);
-			}
-			catch
-			{
-				// ignored
-			}
+			return;
+		}
+
+		try
+		{
+			AddNewDefault(MatchType.Hostname, hostName, browser);
+		}
+		catch
+		{
+			// ignored
 		}
 	}
 
