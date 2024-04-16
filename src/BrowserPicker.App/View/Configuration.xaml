@@ -186,7 +186,7 @@
 
 					<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" Foreground="White" />
 
-					<CheckBox Content="Ignore defaults when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
+					<CheckBox Content="Use defaults even when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
 
 					<RadioButton GroupName="OrderBy" Content="Sort list manually" IsChecked="{Binding Settings.UseManualOrdering}" Foreground="White" Margin="6,2" />
 					<RadioButton GroupName="OrderBy" Content="Sort list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" Margin="6,2" />

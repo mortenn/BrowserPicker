@@ -59,7 +59,7 @@ public sealed class ApplicationViewModel : ModelBase
 		if (
 			Url.TargetURL == null
 			|| Keyboard.Modifiers == ModifierKeys.Alt
-			|| Configuration.AlwaysPrompt
+			|| Configuration.Settings.AlwaysPrompt
 			|| ConfigurationMode
 			|| force_choice)
 		{
@@ -79,13 +79,13 @@ public sealed class ApplicationViewModel : ModelBase
 
 	internal BrowserViewModel? GetBrowserToLaunch(string? targetUrl)
 	{
-		if (Configuration.AlwaysPrompt)
+		if (Configuration.Settings.AlwaysPrompt)
 		{
 			return null;
 		}
 		var urlBrowser = GetBrowserToLaunchForUrl(targetUrl);
 		var browser = Choices.FirstOrDefault(c => c.Model.Name == urlBrowser);
-		if (browser != null && (Configuration.AlwaysUseDefaults || browser.IsRunning))
+		if (browser != null && (Configuration.Settings.AlwaysUseDefaults || browser.IsRunning))
 		{
 			return browser;
 		}

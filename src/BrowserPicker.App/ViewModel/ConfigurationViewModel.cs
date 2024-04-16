@@ -156,16 +156,6 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ApplicationViewModel ParentViewModel { get; init; }
 
-	/// <summary>
-	/// Only read by init code on app startup
-	/// </summary>
-	public bool AlwaysPrompt => Settings.AlwaysPrompt;
-
-	/// <summary>
-	/// Only read by init code on app startup
-	/// </summary>
-	public bool AlwaysUseDefaults => Settings.AlwaysUseDefaults;
-
 	public bool AutoAddDefault
 	{
 		get => auto_add_default;
