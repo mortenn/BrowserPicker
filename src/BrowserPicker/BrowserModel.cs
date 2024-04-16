@@ -89,6 +89,12 @@ public sealed class BrowserModel : ModelBase
 		set => SetProperty(ref manual_order, value);
 	}
 
+	public bool ExpandFileUrls
+	{
+		get => expand_file_url;
+		set => SetProperty(ref expand_file_url, value);
+	}
+
 	private bool disabled;
 	private bool removed;
 	private string name;
@@ -98,4 +104,5 @@ public sealed class BrowserModel : ModelBase
 	private string? command_args;
 	private string? privacy_args;
 	private int manual_order;
+	private bool expand_file_url;
 }

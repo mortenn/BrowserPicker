@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -60,7 +61,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			{
 				return;
 			}
-			HostName = uri.Host;
+			HostName = uri.IsFile && !uri.IsUnc ? null : uri.Host;
 			while (true)
 			{
 				var jump = ResolveJumpPage(uri);
@@ -68,7 +69,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 				{
 					UnderlyingTargetURL = jump;
 					uri = new Uri(jump);
-					HostName = uri.Host;
+					HostName = uri.IsFile && !uri.IsUnc ? null : uri.Host;
 					continue;
 				}
 
@@ -81,7 +82,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 					IsShortenedURL = true;
 					UnderlyingTargetURL = shortened;
 					uri = new Uri(shortened);
-					HostName = uri.Host;
+					HostName = uri.IsFile && !uri.IsUnc ? null : uri.Host;
 					continue;
 				}
 
@@ -114,6 +115,19 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		var response = await Client.GetAsync(uri, cancellationToken);
 		var location = response.Headers.Location;
 		return location?.OriginalString;
+	}
+
+	public string? GetTargetUrl(bool expandFileUrls)
+	{
+		if (uri == null)
+		{
+			return null;
+		}
+		if (uri.IsFile && expandFileUrls)
+		{
+			return uri.LocalPath;
+		}
+		return UnderlyingTargetURL ?? TargetURL;
 	}
 
 	public string? TargetURL { get; }

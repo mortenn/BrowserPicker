@@ -131,6 +131,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Model.Name = save.Name;
 		Model.Executable = save.Executable;
 		Model.PrivacyArgs = save.PrivacyArgs;
+		Model.ExpandFileUrls = save.ExpandFileUrls;
 	}
 
 	public string PrivacyTooltip
@@ -189,23 +190,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				Model.Usage++;
 			}
 
-			if (parent_view_model.Configuration.AutoAddDefault && parent_view_model.Url.HostName != null)
-			{
-				try
-				{
-					parent_view_model.Configuration.NewDefaultBrowser = Model.Name;
-					parent_view_model.Configuration.NewDefaultMatchType = MatchType.Hostname;
-					parent_view_model.Configuration.NewDefaultPattern = parent_view_model.Url.HostName;
-					parent_view_model.Configuration.AddDefault.Execute(null);
-				}
-				catch
-				{
-					// ignored
-				}
-			}
+			parent_view_model.Configuration.UrlOpened(parent_view_model.Url.HostName, Model.Name);
 
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
-			var url = parent_view_model.Url.UnderlyingTargetURL ?? parent_view_model.Url.TargetURL;
+			var url = parent_view_model.Url.GetTargetUrl(Model.ExpandFileUrls);
 			var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{url}\"");
 			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
 			_ = Process.Start(process);
