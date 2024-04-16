@@ -6,6 +6,14 @@
     "github url": {
       "commandName": "Project",
       "commandLineArgs": "https://github.com/mortenn/BrowserPicker"
+    },
+    "file url": {
+      "commandName": "Project",
+      "commandLineArgs": "file://c:/windows/win.ini"
+    },
+    "unc url": {
+      "commandName": "Project",
+      "commandLineArgs": "file://server/share/file.txt"
     }
   }
 }
