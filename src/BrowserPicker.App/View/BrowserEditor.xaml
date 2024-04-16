@@ -39,6 +39,7 @@
 				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
+				<RowDefinition />
 			</Grid.RowDefinitions>
 
 			<TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="Add a browser" Foreground="White" HorizontalAlignment="Center" Margin="5" />
@@ -59,7 +60,9 @@
 			<TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Model.IconPath,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 			<Button Content="..." Grid.Row="4" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Icon_Browse" />
 
-			<StackPanel Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
+			<CheckBox Grid.Row="5" Grid.Column="2" Content="Expand file:// urls" IsChecked="{Binding Model.ExpandFileUrls}" Foreground="White" Margin="2,4" />
+
+			<StackPanel Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
 				<Button Content="Cancel" Click="Cancel_OnClick" Padding="10,0" />
 				<Button Content="Ok" Click="Ok_OnClick" Padding="10,0" Margin="10,0,0,0" />
 			</StackPanel>

@@ -48,7 +48,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			ConfigurationMode = true
 		};
 		var choices = Settings.BrowserList.OrderBy(v => v, new BrowserSorter(Settings)).Select(m => new BrowserViewModel(m, ParentViewModel));
-		foreach(var choice in choices)
+		foreach (var choice in choices)
 		{
 			ParentViewModel.Choices.Add(choice);
 		}
@@ -254,15 +254,40 @@ public sealed class ConfigurationViewModel : ModelBase
 		Settings.AddBrowser(browser.Model);
 	}
 
-	private void AddDefaultSetting()
+	internal void UrlOpened(string? hostName, string browser)
 	{
-		if (string.IsNullOrWhiteSpace(NewDefaultPattern) || string.IsNullOrWhiteSpace(NewDefaultBrowser))
+		if (!AutoAddDefault || hostName == null)
 		{
 			return;
 		}
-		Settings.AddDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser);
-		NewDefaultPattern = string.Empty;
+
+		try
+		{
+			AddNewDefault(MatchType.Hostname, hostName, browser);
+		}
+		catch
+		{
+			// ignored
+		}
+	}
+
+	internal bool AddNewDefault(MatchType matchType, string pattern, string browser)
+	{
+		if (string.IsNullOrWhiteSpace(pattern) || string.IsNullOrWhiteSpace(browser))
+		{
+			return false;
+		}
+		Settings.AddDefault(matchType, pattern, browser);
 		OnPropertyChanged(nameof(TestDefaultsResult));
+		return true;
+	}
+
+	private void AddDefaultSetting()
+	{
+		if (AddNewDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser))
+		{
+			NewDefaultPattern = string.Empty;
+		}
 	}
 
 	private void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -326,7 +351,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			Defaults.Add(setting);
 		}
-		
+
 		DefaultSetting[] removed = [.. Defaults.Except(Settings.Defaults)];
 		foreach (var setting in removed)
 		{

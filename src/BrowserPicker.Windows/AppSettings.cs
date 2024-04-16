@@ -130,6 +130,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		key.Set(browser.PrivacyArgs, nameof(browser.PrivacyArgs));
 		key.Set(browser.IconPath, nameof(browser.IconPath));
 		key.Set(browser.Usage, nameof(browser.Usage));
+		key.Set(browser.ExpandFileUrls, nameof(browser.ExpandFileUrls));
 		browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 
 		BrowserList.Add(browser);
@@ -577,7 +578,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			IconPath = config.Get<string>(null, nameof(BrowserModel.IconPath)),
 			ManualOrder = config.Get(0, nameof(BrowserModel.ManualOrder)),
 			Usage = config.Get(0, nameof(BrowserModel.Usage)),
-			Disabled = config.Get(false, nameof(BrowserModel.Disabled))
+			Disabled = config.Get(false, nameof(BrowserModel.Disabled)),
+			ExpandFileUrls = config.Get(false, nameof(BrowserModel.ExpandFileUrls))
 		};
 		config.Close();
 		if (string.IsNullOrWhiteSpace(browser.Command))
@@ -604,6 +606,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			case nameof(BrowserModel.Usage): config.Set(model.Usage, e.PropertyName); break;
 			case nameof(BrowserModel.Disabled): config.Set(model.Disabled, e.PropertyName); break;
 			case nameof(BrowserModel.ManualOrder): config.Set(model.ManualOrder, e.PropertyName); break;
+			case nameof(BrowserModel.ExpandFileUrls): config.Set(model.ExpandFileUrls, e.PropertyName); break;
 			case nameof(BrowserModel.Removed):
 				if (model.Removed)
 				{
