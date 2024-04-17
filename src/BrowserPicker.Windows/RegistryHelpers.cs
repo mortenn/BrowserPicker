@@ -24,6 +24,15 @@ public static class RegistryHelpers
 		}
 	}
 
+	public static bool GetBool(this RegistryKey key, bool defaultValue = default, [CallerMemberName] string? name = null)
+	{
+		var value = key.GetValue(name);
+		if (value == null)
+			return defaultValue;
+		
+		return ((int)value) == 1;
+	}
+
 	public static void Set<T>(this RegistryKey key, T value, [CallerMemberName] string? name = null)
 	{
 		if (value == null)
