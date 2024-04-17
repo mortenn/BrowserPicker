@@ -89,6 +89,8 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 					continue;
 				}
 
+				var application = await ResolveApplication(uri, cancellationToken);
+
 				await FindIcon(cancellationToken);
 				break;
 			}
@@ -173,6 +175,26 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		return location?.OriginalString;
 	}
 
+	private static async Task<string?> ResolveApplication(Uri uri, CancellationToken cancellationToken)
+	{
+		return null;
+
+		/*if (Applications.All(s => !uri.Host.EndsWith(s)))
+		{
+		}
+		var response = await Client.GetAsync(uri, cancellationToken);
+		if (response.Headers.Location != null)
+		{
+			response = await Client.GetAsync(response.Headers.Location, cancellationToken);
+		}
+		if (!response.IsSuccessStatusCode)
+		{
+			return null;
+		}
+		var content = response.Content.ReadAsStringAsync();
+		return null;*/
+	}
+
 	public string? GetTargetUrl(bool expandFileUrls)
 	{
 		if (uri == null)
@@ -244,6 +266,11 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		("safelinks.protection.outlook.com", "url"),
 		("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),
 		("https://l.facebook.com/l.php", "u")
+	];
+
+	private static readonly List<string> Applications =
+	[
+		/* "slack.com" // Horrible to handle, need custom code, see https://api.slack.com/reference/deep-linking */
 	];
 
 	private Uri? uri;
