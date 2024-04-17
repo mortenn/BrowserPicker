@@ -64,6 +64,12 @@ public sealed class BrowserModel : ModelBase
 		set => SetProperty(ref privacy_args, value);
 	}
 
+	public char? KeyBinding
+	{
+		get => key_binding;
+		set => SetProperty(ref key_binding, value);
+	}
+
 	public int Usage { get; set; }
 
 	public bool Disabled
@@ -103,6 +109,7 @@ public sealed class BrowserModel : ModelBase
 	private string? executable;
 	private string? command_args;
 	private string? privacy_args;
+	private char? key_binding;
 	private int manual_order;
 	private bool expand_file_url;
 }

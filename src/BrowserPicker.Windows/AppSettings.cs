@@ -121,6 +121,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	public bool CustomKeybindings
+	{
+		get => Reg.GetBool();
+		set { Reg.Set(value); OnPropertyChanged(); }
+	}
+
 	public string[] UrlShorteners
 	{
 		get => Reg.Get<string[]>() ?? [];

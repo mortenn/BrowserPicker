@@ -68,6 +68,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool UseAlphabeticalOrdering { get; set; } = true;
 		public bool DisableTransparency { get; set; } = true;
 		public bool DisableNetworkAccess { get; set; } = false;
+		public bool CustomKeybindings { get; set; } = false;
 
 		public string[] UrlShorteners { get; set; } = [..UrlHandler.DefaultUrlShorteners, "example.com"];
 

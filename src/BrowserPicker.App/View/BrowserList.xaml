@@ -114,7 +114,7 @@
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
 					<DataTemplate DataType="viewModel:BrowserViewModel">
-						<Button Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
+						<Button Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}" Margin="2">
 							<Button.Style>
 								<Style TargetType="Button">
 									<Setter Property="Visibility" Value="Visible" />

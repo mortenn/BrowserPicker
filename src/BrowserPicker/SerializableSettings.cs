@@ -32,6 +32,7 @@ public sealed class SerializableSettings : IApplicationSettings
 	public int UrlLookupTimeoutMilliseconds { get; set; }
 	public bool DisableTransparency { get; set; }
 	public bool DisableNetworkAccess { get; set; }
+	public bool CustomKeybindings { get; set; }
 	public string[] UrlShorteners { get; set; } = [];
 	public List<BrowserModel> BrowserList { get; set; } = [];
 	public List<DefaultSetting> Defaults { get; set; } = [];

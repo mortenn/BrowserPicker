@@ -3,6 +3,7 @@ using System.Windows.Input;
 using JetBrains.Annotations;
 using BrowserPicker.ViewModel;
 using System.Linq;
+using System;
 
 namespace BrowserPicker.View;
 
@@ -25,6 +26,10 @@ public partial class MainWindow
 
 	private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
 	{
+		if (ViewModel.ConfigurationMode)
+		{
+			return;
+		}
 		try
 		{
 			ViewModel.AltPressed = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
@@ -35,41 +40,62 @@ public partial class MainWindow
 			if (ViewModel.Url.TargetURL == null)
 				return;
 
-			int n;
-			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-			switch (e.Key == Key.System ? e.SystemKey : e.Key)
+			var key = e.Key == Key.System ? e.SystemKey : e.Key;
+			if (App.Settings.CustomKeybindings)
 			{
-				case Key.Enter:
-				case Key.D1: n = 1; break;
-				case Key.D2: n = 2; break;
-				case Key.D3: n = 3; break;
-				case Key.D4: n = 4; break;
-				case Key.D5: n = 5; break;
-				case Key.D6: n = 6; break;
-				case Key.D7: n = 7; break;
-				case Key.D8: n = 8; break;
-				case Key.D9: n = 9; break;
-				case Key.C: ViewModel.CopyUrl.Execute(null); return;
-				default: return;
-			}
-
-			var choices = ViewModel.Choices.Where(vm => !vm.Model.Disabled).ToArray();
-
-			if (choices.Length < n)
+				var browser = ViewModel.Choices.FirstOrDefault(vm => !vm.Model.Disabled && vm.Model.KeyBinding == ((char)key));
+				if (browser != null)
+				{
+					Launch(browser);
+				}
 				return;
+			}
 
-			if (ViewModel.AltPressed)
-			{
-				choices[n - 1].SelectPrivacy.Execute(null);
-			}
-			else
-			{
-				choices[n - 1].Select.Execute(null);
-			}
+			DefaultKeyBindings(key);
 		}
 		catch
 		{
 			// ignored
+		}
+	}
+
+	private void DefaultKeyBindings(Key key)
+	{
+		int n;
+		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+		switch (key)
+		{
+			case Key.Enter:
+			case Key.D1: n = 1; break;
+			case Key.D2: n = 2; break;
+			case Key.D3: n = 3; break;
+			case Key.D4: n = 4; break;
+			case Key.D5: n = 5; break;
+			case Key.D6: n = 6; break;
+			case Key.D7: n = 7; break;
+			case Key.D8: n = 8; break;
+			case Key.D9: n = 9; break;
+			case Key.C: ViewModel.CopyUrl.Execute(null); return;
+			default: return;
+		}
+
+		var choices = ViewModel.Choices.Where(vm => !vm.Model.Disabled).ToArray();
+
+		if (choices.Length < n)
+			return;
+
+		Launch(choices[n - 1]);
+	}
+
+	private void Launch(BrowserViewModel choice)
+	{
+		if (ViewModel.AltPressed)
+		{
+			choice.SelectPrivacy.Execute(null);
+		}
+		else
+		{
+			choice.Select.Execute(null);
 		}
 	}
 

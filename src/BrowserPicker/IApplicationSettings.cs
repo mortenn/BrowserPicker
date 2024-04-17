@@ -58,6 +58,11 @@ public interface IApplicationSettings
 	bool DisableNetworkAccess { get; set; }
 
 	/// <summary>
+	/// Enables custom keybindings for browsers
+	/// </summary>
+	bool CustomKeybindings { get; set; }
+
+	/// <summary>
 	/// List of host names known to be url shorteners
 	/// </summary>
 	string[] UrlShorteners { get; set; }
