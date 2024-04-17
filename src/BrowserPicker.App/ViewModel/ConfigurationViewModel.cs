@@ -263,6 +263,8 @@ public sealed class ConfigurationViewModel : ModelBase
 		Settings.UrlShorteners = [..Settings.UrlShorteners, domain!];
 		NewUrlShortener = string.Empty;
 		OnPropertyChanged(nameof(NewUrlShortener));
+		OnPropertyChanged(nameof(DefaultUrlShorteners));
+		OnPropertyChanged(nameof(AdditionalUrlShorteners));
 	}
 
 	private bool CanRemoveShortener(string? domain) => !string.IsNullOrWhiteSpace(domain) && Settings.UrlShorteners.Contains(domain) && !UrlHandler.DefaultUrlShorteners.Contains(domain);
@@ -275,6 +277,8 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 
 		Settings.UrlShorteners = Settings.UrlShorteners.Except([domain!]).ToArray();
+		OnPropertyChanged(nameof(DefaultUrlShorteners));
+		OnPropertyChanged(nameof(AdditionalUrlShorteners));
 	}
 
 	private void Editor_Closing(object? sender, CancelEventArgs e)

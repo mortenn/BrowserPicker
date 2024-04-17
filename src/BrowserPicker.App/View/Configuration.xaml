@@ -423,8 +423,8 @@
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
-						<TextBox Text="{Binding NewUrlShortener, UpdateSourceTrigger=PropertyChanged}" />
-						<Button Grid.Column="1" Grid.Row="0" Content="Add" Padding="10,0" Command="{Binding AddShortener}" CommandParameter="{Binding NewUrlShortener}" />
+						<TextBox Text="{Binding NewUrlShortener}" x:Name="newShortener" />
+						<Button Grid.Column="1" Grid.Row="0" Content="Add" Padding="10,0" Command="{Binding AddShortener}" CommandParameter="{Binding Text, ElementName=newShortener}" />
 						<Button Grid.Column="2" Grid.Row="0" Content="Remove" Padding="10,0" Command="{Binding RemoveShortener}" CommandParameter="{Binding SelectedItem, ElementName=urlShorteners}" />
 					</Grid>
 				</Grid>
