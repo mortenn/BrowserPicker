@@ -5,6 +5,11 @@ namespace BrowserPicker;
 public interface IApplicationSettings
 {
 	/// <summary>
+	/// First time the user launches the application
+	/// </summary>
+	bool FirstTime { get; set; }
+
+	/// <summary>
 	/// When set to true, disables the automatic selection of a browser
 	/// </summary>
 	bool AlwaysPrompt { get; set; }

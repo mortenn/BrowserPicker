@@ -22,6 +22,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
 	}
 
+	public bool FirstTime
+	{
+		get => Reg.GetBool(true);
+		set { Reg.Set(value); OnPropertyChanged(); }
+	}
+
 	public bool AlwaysPrompt
 	{
 		get => Reg.Get<bool>();
