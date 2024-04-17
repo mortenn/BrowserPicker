@@ -18,9 +18,18 @@ namespace BrowserPicker;
 
 public sealed class UrlHandler : ModelBase, ILongRunningProcess
 {
-	public UrlHandler(string? requestedUrl, bool disableLookup)
+	public UrlHandler(string? requestedUrl, IApplicationSettings settings)
 	{
-		disallow_network = disableLookup;
+		disallow_network = requestedUrl == null || settings.DisableNetworkAccess;
+		url_shorteners = [..settings.UrlShorteners];
+
+		// Add new ones to config as requested
+		var newShorteners = DefaultUrlShorteners.Except(url_shorteners).ToArray();
+		if (newShorteners.Length > 0)
+		{
+			settings.UrlShorteners = [..settings.UrlShorteners, ..newShorteners];
+		}
+		
 		TargetURL = requestedUrl;
 		underlying_target_url = requestedUrl;
 
@@ -46,6 +55,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	public UrlHandler()
 	{
 		disallow_network = true;
+		url_shorteners = [..DefaultUrlShorteners];
 		TargetURL = "https://www.github.com/mortenn/BrowserPicker";
 		uri = new Uri(TargetURL);
 		host_name = uri.Host;
@@ -162,9 +172,9 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		).FirstOrDefault(underlyingUrl => underlyingUrl != null);
 	}
 
-	private static async Task<string?> ResolveShortener(Uri uri, CancellationToken cancellationToken)
+	private async Task<string?> ResolveShortener(Uri uri, CancellationToken cancellationToken)
 	{
-		if (UrlShorteners.All(s => !uri.Host.EndsWith(s)))
+		if (url_shorteners.All(s => !uri.Host.EndsWith(s)))
 		{
 			return null;
 		}
@@ -220,7 +230,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 
 	public string? DisplayURL => UnderlyingTargetURL ?? TargetURL;
 
-	private static readonly List<string> UrlShorteners =
+	public static readonly string[] DefaultUrlShorteners =
 	[
 		"safelinks.protection.outlook.com",
 		"aka.ms",
@@ -251,6 +261,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	private bool is_shortened_url;
 	private string? host_name;
 	private byte[]? fav_icon;
+	private readonly List<string> url_shorteners;
 	private static readonly HttpClient Client = new(new HttpClientHandler { AllowAutoRedirect = false });
 	private readonly bool disallow_network;
 }

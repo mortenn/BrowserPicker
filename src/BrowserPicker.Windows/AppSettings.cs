@@ -121,6 +121,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	public string[] UrlShorteners
+	{
+		get => Reg.Get<string[]>() ?? [];
+		set { Reg.Set(value); OnPropertyChanged(); }
+	}
+
 	public List<BrowserModel> BrowserList
 	{
 		get;

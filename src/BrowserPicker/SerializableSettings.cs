@@ -16,6 +16,7 @@ public sealed class SerializableSettings : IApplicationSettings
 		UseAutomaticOrdering = applicationSettings.UseAutomaticOrdering;
 		DisableTransparency = applicationSettings.DisableTransparency;
 		DisableNetworkAccess = applicationSettings.DisableNetworkAccess;
+		UrlShorteners = applicationSettings.UrlShorteners;
 		BrowserList = [.. applicationSettings.BrowserList.Where(b => !b.Removed)];
 		Defaults = [.. applicationSettings.Defaults.Where(d => !d.Deleted && !string.IsNullOrWhiteSpace(d.Browser))];
 	}
@@ -31,6 +32,7 @@ public sealed class SerializableSettings : IApplicationSettings
 	public int UrlLookupTimeoutMilliseconds { get; set; }
 	public bool DisableTransparency { get; set; }
 	public bool DisableNetworkAccess { get; set; }
+	public string[] UrlShorteners { get; set; } = [];
 	public List<BrowserModel> BrowserList { get; set; } = [];
 	public List<DefaultSetting> Defaults { get; set; } = [];
 
