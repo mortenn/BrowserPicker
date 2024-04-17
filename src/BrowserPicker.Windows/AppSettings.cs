@@ -56,7 +56,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public bool UseManualOrdering
 	{
-		get => Reg.Get(false);
+		get => Reg.Get<bool>();
 		set
 		{
 			Reg.Set(value);
@@ -67,7 +67,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public bool UseAutomaticOrdering
 	{
-		get => Reg.Get(true);
+		get => Reg.GetBool(true);
 		set
 		{
 			Reg.Set(value);
@@ -78,7 +78,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public bool UseAlphabeticalOrdering
 	{
-		get => Reg.Get(false);
+		get => Reg.Get<bool>();
 		set
 		{
 			Reg.Set(value);
@@ -105,13 +105,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public bool DisableTransparency
 	{
-		get => Reg.Get(false);
+		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
 	public bool DisableNetworkAccess
 	{
-		get => Reg.Get(false);
+		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
@@ -578,8 +578,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			IconPath = config.Get<string>(null, nameof(BrowserModel.IconPath)),
 			ManualOrder = config.Get(0, nameof(BrowserModel.ManualOrder)),
 			Usage = config.Get(0, nameof(BrowserModel.Usage)),
-			Disabled = config.Get(false, nameof(BrowserModel.Disabled)),
-			ExpandFileUrls = config.Get(false, nameof(BrowserModel.ExpandFileUrls))
+			Disabled = config.GetBool(false, nameof(BrowserModel.Disabled)),
+			ExpandFileUrls = config.GetBool(false, nameof(BrowserModel.ExpandFileUrls))
 		};
 		config.Close();
 		if (string.IsNullOrWhiteSpace(browser.Command))
