@@ -75,10 +75,12 @@
 					</TextBlock.Style>
 				</TextBlock>
 			</StackPanel>
-			<TextBlock
-				Text="{Binding Url.UnderlyingTargetURL}" Foreground="White"
-				TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
-				Margin="5" MaxWidth="380" MaxHeight="100" />
+			<Border Background="DarkGray" CornerRadius="5" Padding="2" Margin="2">
+				<TextBlock Foreground="Black" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="380" MaxHeight="100">
+					<Image Source="{Binding Url.FavIcon}" Height="16" Width="16" Margin="0,-3" />
+					<Run Text="{Binding Url.DisplayURL, Mode=OneWay}" />
+				</TextBlock>
+			</Border>
 		</StackPanel>
 		<Grid Grid.Row="0">
 			<Grid.Style>
