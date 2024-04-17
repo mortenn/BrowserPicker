@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using BrowserPicker.View;
 using BrowserPicker.ViewModel;
 using BrowserPicker.Windows;
@@ -27,6 +28,7 @@ public partial class App
 
 		// Basic unhandled exception catchment
 		AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+		DispatcherUnhandledException += OnDispatcherUnhandledException;
 
 		// Get command line arguments and initialize ViewModel
 		var arguments = Environment.GetCommandLineArgs().Skip(1).ToList();
@@ -85,16 +87,19 @@ public partial class App
 				// cancel the token to prevent showing LoadingWindow if it is not needed and has not been shown already
 				await urlLookup.CancelAsync();
 
+				ShowMainWindow();
+
 				// close loading window if it got opened
-				(await loadingWindow)?.Close();
+				var waited = await loadingWindow;
+				waited?.Close();
 			}
 			catch (TaskCanceledException)
 			{
-				// ignored
+				// Open up the browser picker window
+				ShowMainWindow();
 			}
 
-			// Open up the browser picker window
-			ShowMainWindow();
+
 		}
 		catch (Exception exception)
 		{
@@ -111,6 +116,10 @@ public partial class App
 		{
 			var tasks = BackgroundTasks.Select(task => task.Start(ApplicationCancellationToken.Token)).ToArray();
 			await Task.WhenAll(tasks);
+			foreach (var task in tasks)
+			{
+				await task;
+			}
 		}
 		catch (TaskCanceledException)
 		{
@@ -171,6 +180,12 @@ public partial class App
 	{
 		ApplicationCancellationToken.Cancel();
 		_ = MessageBox.Show(unhandledException.ExceptionObject.ToString());
+	}
+
+	private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+	{
+		ApplicationCancellationToken.Cancel();
+		_ = MessageBox.Show(e.Exception.ToString());
 	}
 
 	private static void ExitApplication(object? sender, EventArgs args)
