@@ -6,6 +6,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Text.RegularExpressions;
+
+
 
 #if DEBUG
 using JetBrains.Annotations;
@@ -86,6 +89,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 					continue;
 				}
 
+				await FindIcon(cancellationToken);
 				break;
 			}
 		}
@@ -94,6 +98,58 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			// TaskCanceledException occurs when the CancellationToken is triggered before the request completes
 			// In this case, end the lookup to avoid poor user experience
 		}
+	}
+
+	private async Task FindIcon(CancellationToken cancellationToken)
+	{
+		var timeout = new CancellationTokenSource(2000);
+		using var _ = cancellationToken.Register(timeout.Cancel);
+		try
+		{
+			var pageUri = new Uri(underlying_target_url ?? TargetURL ?? "about:blank");
+			if (pageUri.IsFile)
+			{
+				return;
+			}
+			var result = await Client.GetAsync(pageUri, timeout.Token);
+			if (!result.IsSuccessStatusCode)
+				return;
+
+			var content = await result.Content.ReadAsStringAsync(timeout.Token);
+			var match = Pattern.HtmlLink().Match(content);
+			if (!match.Success)
+			{
+				await TryLoadIcon(new Uri(pageUri, "/favicon.ico").AbsoluteUri, timeout.Token);
+				return;
+			}
+			var link = Pattern.LinkHref().Match(match.Value);
+			if (!link.Success)
+			{
+				return;
+			}
+			await TryLoadIcon(link.Groups[0].Value, timeout.Token);
+		}
+		catch (HttpRequestException)
+		{
+			// ignored
+		}
+		catch (RegexMatchTimeoutException)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+		}
+		catch (TaskCanceledException)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				throw;
+			}
+		}
+	}
+
+	private async Task TryLoadIcon(string iconUrl, CancellationToken cancellationToken)
+	{
+		var icon = await Client.GetAsync(iconUrl, cancellationToken);
+		FavIcon = await icon.Content.ReadAsByteArrayAsync(cancellationToken);
 	}
 
 	private static string? ResolveJumpPage(Uri uri)
@@ -135,7 +191,13 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	public string? UnderlyingTargetURL
 	{
 		get => underlying_target_url;
-		set => SetProperty(ref underlying_target_url, value);
+		set
+		{
+			if (SetProperty(ref underlying_target_url, value))
+			{
+				OnPropertyChanged(nameof(DisplayURL));
+			}
+		}
 	}
 
 	public bool IsShortenedURL
@@ -149,6 +211,14 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		get => host_name;
 		set => SetProperty(ref host_name, value);
 	}
+
+	public byte[]? FavIcon
+	{
+		get => fav_icon;
+		private set => SetProperty(ref fav_icon, value);
+	}
+
+	public string? DisplayURL => UnderlyingTargetURL ?? TargetURL;
 
 	private static readonly List<string> UrlShorteners =
 	[
@@ -180,6 +250,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	private string? underlying_target_url;
 	private bool is_shortened_url;
 	private string? host_name;
+	private byte[]? fav_icon;
 	private static readonly HttpClient Client = new(new HttpClientHandler { AllowAutoRedirect = false });
 	private readonly bool disallow_network;
 }
