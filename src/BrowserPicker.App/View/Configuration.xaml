@@ -79,86 +79,105 @@
 			</TabControl.Resources>
 
 			<TabItem Header="Browsers">
-				<ScrollViewer VerticalScrollBarVisibility="Auto">
-					<ItemsControl ItemsSource="{Binding ParentViewModel.Choices}">
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<StackPanel Orientation="Vertical" CanVerticallyScroll="True" />
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
-						<ItemsControl.ItemTemplate>
-							<DataTemplate DataType="viewModel:BrowserViewModel">
-								<Grid>
-									<Grid.Style>
-										<Style>
-											<Setter Property="UIElement.Visibility" Value="Visible" />
-											<Style.Triggers>
-												<DataTrigger Binding="{Binding Model.Removed}" Value="True">
-													<Setter Property="UIElement.Visibility" Value="Collapsed" />
-												</DataTrigger>
-											</Style.Triggers>
-										</Style>
-									</Grid.Style>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-									</Grid.ColumnDefinitions>
-									<ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource BrowserIcon}" Height="40" Width="40" Margin="20,0,0,0" />
-									<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
-									<Grid Grid.Column="2" VerticalAlignment="Center">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<ScrollViewer VerticalScrollBarVisibility="Auto">
+						<ItemsControl ItemsSource="{Binding ParentViewModel.Choices}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Orientation="Vertical" CanVerticallyScroll="True" />
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate DataType="viewModel:BrowserViewModel">
+									<Grid>
 										<Grid.Style>
-											<Style TargetType="Grid">
+											<Style>
+												<Setter Property="UIElement.Visibility" Value="Visible" />
 												<Style.Triggers>
-													<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
-														<Setter Property="Visibility" Value="Collapsed" />
+													<DataTrigger Binding="{Binding Model.Removed}" Value="True">
+														<Setter Property="UIElement.Visibility" Value="Collapsed" />
 													</DataTrigger>
 												</Style.Triggers>
 											</Style>
 										</Grid.Style>
-										<Grid.RowDefinitions>
-											<RowDefinition Height="Auto" />
-											<RowDefinition Height="Auto" />
-										</Grid.RowDefinitions>
-										<TextBlock FontSize="10"><Hyperlink TextDecorations="None" Command="{Binding MoveUp}">🔼</Hyperlink></TextBlock>
-										<TextBlock FontSize="10" Grid.Row="1"><Hyperlink TextDecorations="None" Command="{Binding MoveDown}">🔽</Hyperlink></TextBlock>
-									</Grid>
-									<TextBlock Grid.Column="3" Margin="10" FontSize="16">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+										</Grid.ColumnDefinitions>
+										<ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource BrowserIcon}" Height="40" Width="40" Margin="20,0,0,0" />
+										<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
+										<Grid Grid.Column="2" VerticalAlignment="Center">
+											<Grid.Style>
+												<Style TargetType="Grid">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
+															<Setter Property="Visibility" Value="Collapsed" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Grid.Style>
+											<Grid.RowDefinitions>
+												<RowDefinition Height="Auto" />
+												<RowDefinition Height="Auto" />
+											</Grid.RowDefinitions>
+											<TextBlock FontSize="10"><Hyperlink TextDecorations="None" Command="{Binding MoveUp}">🔼</Hyperlink></TextBlock>
+											<TextBlock FontSize="10" Grid.Row="1"><Hyperlink TextDecorations="None" Command="{Binding MoveDown}">🔽</Hyperlink></TextBlock>
+										</Grid>
+										<TextBlock Grid.Column="3" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Disable}">
 											<TextBlock>
-												<TextBlock.Style>
-													<Style>
-														<Setter Property="TextBlock.Foreground" Value="Green" />
-														<Setter Property="TextBlock.Text" Value="Enabled" />
-														<Style.Triggers>
-															<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
-																<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
-																<Setter Property="TextBlock.Text" Value="Disabled" />
-															</DataTrigger>
-														</Style.Triggers>
-													</Style>
-												</TextBlock.Style>
+													<TextBlock.Style>
+														<Style>
+															<Setter Property="TextBlock.Foreground" Value="Green" />
+															<Setter Property="TextBlock.Text" Value="Enabled" />
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
+																	<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
+																	<Setter Property="TextBlock.Text" Value="Disabled" />
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</TextBlock.Style>
 											</TextBlock>
 										</Hyperlink>
 									</TextBlock>
-									<TextBlock Grid.Column="4" Margin="10" FontSize="16">
+										<TextBlock Grid.Column="4" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Edit}">
 											<TextBlock Text="Edit" Foreground="CadetBlue" ToolTip="Edit browser definition" />
 										</Hyperlink>
 									</TextBlock>
-									<TextBlock Grid.Column="5" Margin="10" FontSize="16">
+										<TextBlock Grid.Column="5" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Remove}">
 											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
 										</Hyperlink>
 									</TextBlock>
-								</Grid>
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>
-				</ScrollViewer>
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+					<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
+						<TextBlock>
+							<Hyperlink Command="{Binding AddBrowser}" Foreground="White">
+								<TextBlock Text="Add browser" />
+							</Hyperlink>
+						</TextBlock>
+
+						<TextBlock Margin="10,0,0,0">
+							<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
+								<TextBlock Text="Refresh browser list" />
+							</Hyperlink>
+						</TextBlock>
+					</StackPanel>
+				</Grid>
 			</TabItem>
 
 			<TabItem Header="Behaviour">
@@ -341,19 +360,7 @@
 
 		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
 
-			<TextBlock>
-				<Hyperlink Command="{Binding AddBrowser}" Foreground="White">
-					<TextBlock Text="Add browser" />
-				</Hyperlink>
-			</TextBlock>
-
-			<TextBlock Margin="10,0,0,0">
-				<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
-					<TextBlock Text="Refresh browser list" />
-				</Hyperlink>
-			</TextBlock>
-
-			<TextBlock Margin="10,0,0,0">
+			<TextBlock Padding="4">
 				<TextBlock.Style>
 					<Style>
 						<Style.Triggers>
@@ -368,7 +375,7 @@
 				</Hyperlink>
 			</TextBlock>
 
-			<TextBlock Margin="10,0,0,0">
+			<TextBlock Padding="4">
 				<TextBlock.Style>
 					<Style>
 						<Setter Property="UIElement.Visibility" Value="Collapsed" />
