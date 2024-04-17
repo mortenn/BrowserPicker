@@ -30,7 +30,7 @@ public sealed class ApplicationViewModel : ModelBase
 
 	internal ApplicationViewModel(ConfigurationViewModel config)
 	{
-		Url = new UrlHandler("https://github.com/mortenn/BrowserPicker", config.Settings.DisableNetworkAccess);
+		Url = new UrlHandler("https://github.com/mortenn/BrowserPicker", config.Settings);
 		force_choice = true;
 		Configuration = config;
 		Choices = [];
@@ -42,7 +42,7 @@ public sealed class ApplicationViewModel : ModelBase
 		var options = arguments.Where(arg => arg[0] == '/').ToList();
 		force_choice = options.Contains("/choose");
 		var url = arguments.Except(options).FirstOrDefault();
-		Url = new UrlHandler(url, url == null || settings.DisableNetworkAccess);
+		Url = new UrlHandler(url, settings);
 		ConfigurationMode = url == null;
 		Configuration = new ConfigurationViewModel(settings, this)
 		{

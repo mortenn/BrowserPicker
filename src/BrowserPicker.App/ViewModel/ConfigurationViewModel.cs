@@ -69,6 +69,8 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool DisableTransparency { get; set; } = true;
 		public bool DisableNetworkAccess { get; set; } = false;
 
+		public string[] UrlShorteners { get; set; } = [..UrlHandler.DefaultUrlShorteners, "example.com"];
+
 		public List<BrowserModel> BrowserList { get; init; } = [];
 
 		public List<DefaultSetting> Defaults { get; init; } = [];
@@ -158,6 +160,10 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ApplicationViewModel ParentViewModel { get; init; }
 
+	public static string[] DefaultUrlShorteners => UrlHandler.DefaultUrlShorteners;
+
+	public string[] AdditionalUrlShorteners => Settings.UrlShorteners.Except(DefaultUrlShorteners).ToArray();
+
 	public bool Welcome { get; internal set; }
 
 	public bool AutoAddDefault
@@ -201,6 +207,10 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ICommand Restore => restore ??= new DelegateCommand(PerformRestore);
 
+	public ICommand AddShortener => add_shortener ??= new DelegateCommand<string>(AddUrlShortener, CanAddShortener);
+
+	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
+
 	private void PerformBackup()
 	{
 		var browser = new SaveFileDialog
@@ -238,6 +248,37 @@ public sealed class ConfigurationViewModel : ModelBase
 		var editor = new BrowserEditor(new BrowserViewModel(new BrowserModel(), ParentViewModel));
 		editor.Show();
 		editor.Closing += Editor_Closing;
+	}
+
+	public string NewUrlShortener { get; set; } = string.Empty;
+
+	private bool CanAddShortener(string? domain) => !(string.IsNullOrWhiteSpace(domain) || Settings.UrlShorteners.Contains(domain));
+
+	private void AddUrlShortener(string? domain)
+	{
+		if (!CanAddShortener(domain))
+		{
+			return;
+		}
+		Settings.UrlShorteners = [..Settings.UrlShorteners, domain!];
+		NewUrlShortener = string.Empty;
+		OnPropertyChanged(nameof(NewUrlShortener));
+		OnPropertyChanged(nameof(DefaultUrlShorteners));
+		OnPropertyChanged(nameof(AdditionalUrlShorteners));
+	}
+
+	private bool CanRemoveShortener(string? domain) => !string.IsNullOrWhiteSpace(domain) && Settings.UrlShorteners.Contains(domain) && !UrlHandler.DefaultUrlShorteners.Contains(domain);
+	
+	private void RemoveUrlShortener(string? domain)
+	{
+		if (!CanRemoveShortener(domain))
+		{
+			return;
+		}
+
+		Settings.UrlShorteners = Settings.UrlShorteners.Except([domain!]).ToArray();
+		OnPropertyChanged(nameof(DefaultUrlShorteners));
+		OnPropertyChanged(nameof(AdditionalUrlShorteners));
 	}
 
 	private void Editor_Closing(object? sender, CancelEventArgs e)
@@ -383,6 +424,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? add_browser;
 	private DelegateCommand? backup;
 	private DelegateCommand? restore;
+	private DelegateCommand<string>? add_shortener;
+	private DelegateCommand<string>? remove_shortener;
 
 	private string? test_defaults_url;
 

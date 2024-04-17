@@ -58,6 +58,11 @@ public interface IApplicationSettings
 	bool DisableNetworkAccess { get; set; }
 
 	/// <summary>
+	/// List of host names known to be url shorteners
+	/// </summary>
+	string[] UrlShorteners { get; set; }
+
+	/// <summary>
 	/// The configured list of browsers
 	/// </summary>
 	List<BrowserModel> BrowserList { get; }

@@ -93,6 +93,7 @@ public static class RegistryHelpers
 	{
 		{ typeof(string), RegistryValueKind.String },
 		{ typeof(int), RegistryValueKind.DWord },
-		{ typeof(long), RegistryValueKind.QWord }
+		{ typeof(long), RegistryValueKind.QWord },
+		{ typeof(string[]), RegistryValueKind.MultiString }
 	};
 }
