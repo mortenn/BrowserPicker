@@ -14,6 +14,10 @@
     "unc url": {
       "commandName": "Project",
       "commandLineArgs": "file://server/share/file.txt"
+    },
+    "long url": {
+      "commandName": "Project",
+      "commandLineArgs": "https://extremely-long-domain-example-for-design-time-use.some-long-domain-name.com/with-a-long-query-path/Lorem-ipsum-dolor-sit-amet,-consectetur-adipiscing-elit.-Integer-fermentum,-ipsum-quis-cursus-finibus,-turpis-lectus-tincidunt-elit,-eget-consectetur-tellus-leo-eget-neque.-Praesent.?and-a-param-for-good-measure=42"
     }
   }
 }
