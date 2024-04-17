@@ -8,6 +8,7 @@ public sealed class SerializableSettings : IApplicationSettings
 {
 	public SerializableSettings(IApplicationSettings applicationSettings)
 	{
+		FirstTime = applicationSettings.FirstTime;
 		AlwaysPrompt = applicationSettings.AlwaysPrompt;
 		AlwaysUseDefaults = applicationSettings.AlwaysUseDefaults;
 		AlwaysAskWithoutDefault = applicationSettings.AlwaysAskWithoutDefault;
@@ -23,6 +24,7 @@ public sealed class SerializableSettings : IApplicationSettings
 	{
 	}
 
+	public bool FirstTime { get; set; }
 	public bool AlwaysPrompt { get; set; }
 	public bool AlwaysUseDefaults { get; set; }
 	public bool AlwaysAskWithoutDefault { get; set; }

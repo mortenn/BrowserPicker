@@ -54,7 +54,17 @@
 		</Grid.RowDefinitions>
 
 		<TabControl Background="#77000000" BorderBrush="#77FFFFFF" VerticalAlignment="Stretch">
-
+			<TabControl.Style>
+				<Style TargetType="TabControl">
+					<Setter Property="SelectedIndex" Value="1" />
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Welcome}" Value="True">
+							<Setter Property="SelectedIndex" Value="0" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</TabControl.Style>
+			
 			<TabControl.Resources>
 				<Style TargetType="{x:Type TabItem}">
 					<Setter Property="Template">
@@ -77,6 +87,36 @@
 					</Setter>
 				</Style>
 			</TabControl.Resources>
+
+			<TabItem Header="Welcome">
+				<TabItem.Style>
+					<Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+						<Setter Property="Visibility" Value="Collapsed" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Welcome}" Value="True">
+								<Setter Property="Visibility" Value="Visible" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TabItem.Style>
+				<TextBlock Foreground="White" Margin="4" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Light">
+					Welcome to Browser Picker, hope you enjoy my little app!<LineBreak />
+					I've gone ahead and opened up the settings window,<LineBreak />
+					so you can have a look around before you get started :)
+					<LineBreak />
+					<LineBreak />
+					Please give it a ⭐ on github, so you will get notified when a new release is made.
+					<LineBreak />
+					<LineBreak />
+					Should you run into any kind of trouble or get an idea,<LineBreak />
+					please visit <Hyperlink Foreground="LightBlue">github.com/mortenn/BrowserPicker</Hyperlink> and file an issue!<LineBreak />
+					<LineBreak />
+					Be seeing you!
+					<LineBreak />
+					<LineBreak />
+					<Run FontSize="8">This message will self destruct in 10 seconds</Run>
+				</TextBlock>
+			</TabItem>
 
 			<TabItem Header="Browsers">
 				<Grid>

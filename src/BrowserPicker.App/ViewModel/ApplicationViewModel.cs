@@ -56,6 +56,14 @@ public sealed class ApplicationViewModel : ModelBase
 
 	public void Initialize()
 	{
+		if (Configuration.Settings.FirstTime)
+		{
+			Configuration.Welcome = true;
+			ConfigurationMode = true;
+			Configuration.Settings.FirstTime = false;
+			return;
+		}
+
 		if (
 			Url.TargetURL == null
 			|| Keyboard.Modifiers == ModifierKeys.Alt

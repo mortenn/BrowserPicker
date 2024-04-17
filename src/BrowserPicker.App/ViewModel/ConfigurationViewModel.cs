@@ -38,6 +38,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			BrowserList = [.. WellKnownBrowsers.List.Select(b => new BrowserModel(b, null, string.Empty))],
 			DefaultBrowser = Firefox.Instance.Name
 		};
+		Welcome = true;
 		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
 		{
 			Defaults.Add(setting);
@@ -57,6 +58,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private sealed class DesignTimeSettings : IBrowserPickerConfiguration
 	{
+		public bool FirstTime { get; set; } = false;
 		public bool AlwaysPrompt { get; set; } = true;
 		public bool AlwaysUseDefaults { get; set; } = true;
 		public bool AlwaysAskWithoutDefault { get; set; }
@@ -155,6 +157,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	public IBrowserPickerConfiguration Settings { get; init; }
 
 	public ApplicationViewModel ParentViewModel { get; init; }
+
+	public bool Welcome { get; internal set; }
 
 	public bool AutoAddDefault
 	{
