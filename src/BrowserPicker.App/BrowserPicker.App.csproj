@@ -12,9 +12,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\web_icon.png" />
     <Resource Include="Resources\web_icon.ico" />
     <Resource Include="Resources\privacy.png" />

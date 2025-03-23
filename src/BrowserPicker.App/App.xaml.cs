@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,8 +23,28 @@ public partial class App
 
 	public static IBrowserPickerConfiguration Settings { get; } = new AppSettings();
 
+	private class InvalidUTF8Patch : EncodingProvider
+	{
+		public override Encoding? GetEncoding(int codepage)
+		{
+			return null;
+		}
+
+		public override Encoding? GetEncoding(string name)
+		{
+			return name.ToLowerInvariant().Replace("-", "") switch
+			{
+				"utf8" => Encoding.UTF8,
+				"windows1251" => Encoding.GetEncoding("windows-1251"),
+				_ => null
+			};
+		}
+	}
+
 	public App()
 	{
+		Encoding.RegisterProvider(new InvalidUTF8Patch());
+
 		BackgroundTasks.Add(Settings);
 
 		// Basic unhandled exception catchment
