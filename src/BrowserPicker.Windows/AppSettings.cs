@@ -322,6 +322,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			existing.Command = browser.Command;
 			existing.CommandArgs = browser.CommandArgs;
 			existing.IconPath = browser.IconPath;
+			existing.ManualOverride = browser.ManualOverride;
 		}
 
 		foreach (var browser in BrowserList.Where(b => browserList.All(s => s.Name != b.Name)).ToArray())
@@ -591,7 +592,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			ManualOrder = config.Get(0, nameof(BrowserModel.ManualOrder)),
 			Usage = config.Get(0, nameof(BrowserModel.Usage)),
 			Disabled = config.GetBool(false, nameof(BrowserModel.Disabled)),
-			ExpandFileUrls = config.GetBool(false, nameof(BrowserModel.ExpandFileUrls))
+			ExpandFileUrls = config.GetBool(false, nameof(BrowserModel.ExpandFileUrls)),
+			ManualOverride = config.GetBool(false, nameof(BrowserModel.ManualOverride))
 		};
 		config.Close();
 		if (string.IsNullOrWhiteSpace(browser.Command))
@@ -619,6 +621,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			case nameof(BrowserModel.Disabled): config.Set(model.Disabled, e.PropertyName); break;
 			case nameof(BrowserModel.ManualOrder): config.Set(model.ManualOrder, e.PropertyName); break;
 			case nameof(BrowserModel.ExpandFileUrls): config.Set(model.ExpandFileUrls, e.PropertyName); break;
+			case nameof(BrowserModel.ManualOverride): config.Set(model.ManualOverride, e.PropertyName); break;
 			case nameof(BrowserModel.Removed):
 				if (model.Removed)
 				{

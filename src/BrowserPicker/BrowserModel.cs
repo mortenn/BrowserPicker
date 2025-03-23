@@ -11,7 +11,7 @@ public sealed class BrowserModel : ModelBase
 		name = string.Empty;
 		command = string.Empty;
 	}
-		
+
 	public BrowserModel(IWellKnownBrowser known, string? icon, string shell)
 	{
 		name = known.Name;
@@ -95,6 +95,12 @@ public sealed class BrowserModel : ModelBase
 		set => SetProperty(ref expand_file_url, value);
 	}
 
+	public bool ManualOverride
+	{
+		get => manual_override;
+		set => SetProperty(ref manual_override, value);
+	}
+
 	private bool disabled;
 	private bool removed;
 	private string name;
@@ -105,4 +111,5 @@ public sealed class BrowserModel : ModelBase
 	private string? privacy_args;
 	private int manual_order;
 	private bool expand_file_url;
+	private bool manual_override;
 }
