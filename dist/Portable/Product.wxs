@@ -63,9 +63,6 @@
 				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
 			</Component>
 			<Component Bitness="always64">
-				<File Id="aspnetcorev2_inprocess.dll" Name="aspnetcorev2_inprocess.dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
 				<File Id="D3DCompiler_47_cor3.dll" Name="D3DCompiler_47_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 			<Component Bitness="always64">
