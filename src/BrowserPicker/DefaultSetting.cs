@@ -117,6 +117,7 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 			MatchType.Hostname when pattern is not null => url.Host.EndsWith(pattern) ? pattern.Length : 0,
 			MatchType.Prefix when pattern is not null => url.OriginalString.StartsWith(pattern) ? pattern.Length : 0,
 			MatchType.Regex when pattern is not null => Regex.Match(url.OriginalString, pattern).Length,
+			MatchType.Contains when pattern is not null => url.OriginalString.Contains(pattern) ? pattern.Length : 0,
 			_ => 0
 		};
 	}

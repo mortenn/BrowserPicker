@@ -5,5 +5,6 @@ public enum MatchType
 	Hostname,
 	Prefix,
 	Regex,
-	Default
+	Default,
+	Contains
 }
