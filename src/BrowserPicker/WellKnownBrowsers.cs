@@ -19,6 +19,7 @@ public static class WellKnownBrowsers
 	[
 		FirefoxDevEdition.Instance,
 		Firefox.Instance,
+		ChromeDevEdition.Instance,
 		Chrome.Instance,
 		MicrosoftEdge.Instance,
 		Edge.Instance,
@@ -71,6 +72,21 @@ public sealed class Chrome : IWellKnownBrowser
 	public static readonly Chrome Instance = new();
 
 	public string Name => "Google Chrome";
+
+	public string Executable => "chrome.exe";
+
+	public string? RealExecutable => null;
+
+	public string PrivacyArgs => "--incognito ";
+
+	public string PrivacyMode => "Open incognito";
+}
+
+public sealed class ChromeDevEdition : IWellKnownBrowser
+{
+	public static readonly ChromeDevEdition Instance = new();
+
+	public string Name => "Google Chrome Dev";
 
 	public string Executable => "chrome.exe";
 
