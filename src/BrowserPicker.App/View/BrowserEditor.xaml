@@ -40,6 +40,7 @@
 				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
+				<RowDefinition />
 			</Grid.RowDefinitions>
 
 			<TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="Add a browser" Foreground="White" HorizontalAlignment="Center" Margin="5" />
@@ -62,7 +63,10 @@
 
 			<CheckBox Grid.Row="5" Grid.Column="2" Content="Expand file:// urls" IsChecked="{Binding Model.ExpandFileUrls}" Foreground="White" Margin="2,4" />
 
-			<StackPanel Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
+			<TextBlock Text="Privacy Args: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Foreground="White" />
+			<TextBox Grid.Column="2" Grid.Row="6" Text="{Binding Model.PrivacyArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+
+			<StackPanel Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
 				<Button Content="Cancel" Click="Cancel_OnClick" Padding="10,0" />
 				<Button Content="Ok" Click="Ok_OnClick" Padding="10,0" Margin="10,0,0,0" />
 			</StackPanel>
