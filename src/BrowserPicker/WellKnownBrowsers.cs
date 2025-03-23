@@ -9,11 +9,15 @@ public static class WellKnownBrowsers
 {
 	public static IWellKnownBrowser? Lookup(string? name, string? executable)
 	{
-		return List.FirstOrDefault(b => b.Name == name || executable != null && executable.Contains(b.Executable, StringComparison.CurrentCultureIgnoreCase));
+		return List.FirstOrDefault(b => b.Name == name)
+			?? List.FirstOrDefault(b => executable != null
+				&& executable.Contains(b.Executable, StringComparison.CurrentCultureIgnoreCase)
+			);
 	}
 
 	public static readonly List<IWellKnownBrowser> List =
 	[
+		FirefoxDevEdition.Instance,
 		Firefox.Instance,
 		Chrome.Instance,
 		MicrosoftEdge.Instance,
@@ -37,6 +41,21 @@ public sealed class Firefox : IWellKnownBrowser
 	public static readonly Firefox Instance = new();
 
 	public string Name => "Mozilla Firefox";
+
+	public string Executable => "firefox.exe";
+
+	public string? RealExecutable => null;
+
+	public string PrivacyArgs => "-private-window ";
+
+	public string PrivacyMode => "Open with private browsing";
+}
+
+public sealed class FirefoxDevEdition : IWellKnownBrowser
+{
+	public static readonly FirefoxDevEdition Instance = new();
+
+	public string Name => "Firefox Developer Edition";
 
 	public string Executable => "firefox.exe";
 
