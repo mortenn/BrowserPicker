@@ -154,13 +154,24 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				if (Model.Command == "microsoft-edge:" || Model.Command.Contains("MicrosoftEdge"))
 					return Process.GetProcessesByName("MicrosoftEdge").Any(p => p.SessionId == session);
 
-				var cmd = Model.Command;
-				if (cmd[0] == '"')
-					cmd = cmd.Split('"')[1];
+				string target;
+				switch (Model.Executable)
+				{
+					case null:
+						var cmd = Model.Command;
+						if (cmd[0] == '"')
+							cmd = cmd.Split('"')[1];
 
-				var processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Model.Executable ?? cmd));
+						target = cmd;
+						break;
+					
+					default:
+						target = Model.Executable;
+						break;
+				}
 
-				return processes.Any(p => p.SessionId == session && p.MainWindowHandle != 0);
+				return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(target))
+					.Any(p => p.SessionId == session && p.MainWindowHandle != 0 && p.MainModule?.FileName == target);
 			}
 			catch
 			{
