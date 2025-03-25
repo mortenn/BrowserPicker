@@ -19,10 +19,10 @@
 		<netfx:DotNetCompatibilityCheck
 			Id="netCoreStatus"
 		  Property="NETCORESTATUS" RollForward="latestMajor"
-		  RuntimeType="core" Version="8.0.0" Platform="x64" />
+		  RuntimeType="core" Version="9.0.0" Platform="x64" />
 		<Launch
 			Condition="Installed OR NETCORESTATUS=&quot;0&quot;"
-		  Message="[ProductName] requires Microsoft .NET Core - 8.0.0 or greater." />
+		  Message="[ProductName] requires Microsoft .NET Core - 9.0.0 or greater." />
 	</Fragment>
 
 
