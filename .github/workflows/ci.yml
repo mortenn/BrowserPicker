@@ -54,9 +54,9 @@ jobs:
         package_name: DependentSetup-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
         package_path: dist/Dependent/bin/${{ matrix.configuration }}
         binaries: |
-          src\BrowserPicker.App\bin\${{ matrix.configuration }}\net8.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${{ matrix.configuration }}\net8.0-windows\publish\BrowserPicker*.exe
+          src\BrowserPicker.App\bin\${{ matrix.configuration }}\net9.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\${{ matrix.configuration }}\net9.0-windows\publish\BrowserPicker*.exe
         bundle_name: Dependent-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
-        bundle_path: src/BrowserPicker.App/bin/${{ matrix.configuration }}/net8.0-windows/publish
+        bundle_path: src/BrowserPicker.App/bin/${{ matrix.configuration }}/net9.0-windows/publish
 
   portable:
     
@@ -85,6 +85,6 @@ jobs:
         package: dist\Portable\bin\${{ matrix.configuration }}\BrowserPicker-Portable.msi
         package_name: PortableSetup-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
         package_path: dist/Portable/bin/${{ matrix.configuration }}
-        binaries: src\BrowserPicker.App\bin\${{ matrix.configuration }}\net8.0-windows\win-x64\publish\BrowserPicker.exe
+        binaries: src\BrowserPicker.App\bin\${{ matrix.configuration }}\net9.0-windows\win-x64\publish\BrowserPicker.exe
         bundle_name: Portable-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
-        bundle_path: src/BrowserPicker.App/bin/${{ matrix.configuration }}/net8.0-windows/win-x64/publish
+        bundle_path: src/BrowserPicker.App/bin/${{ matrix.configuration }}/net9.0-windows/win-x64/publish

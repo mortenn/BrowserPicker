@@ -78,7 +78,7 @@ runs:
   - name: Install .NET Core
     uses: actions/setup-dotnet@v4
     with:
-      dotnet-version: 8.0.x
+      dotnet-version: 9.x
 
   # Restore dotnet tools
   - name: Restore tools
