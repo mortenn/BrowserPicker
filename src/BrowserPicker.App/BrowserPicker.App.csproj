@@ -22,6 +22,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="System.Drawing.Common" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+    <Page Update="Resources\ResourceDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

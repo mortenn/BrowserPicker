@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations" Version="2024.3.0" />
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
     <PackageVersion Include="System.Drawing.Common" Version="9.0.3" />
   </ItemGroup>
 </Project>

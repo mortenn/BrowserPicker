@@ -21,7 +21,7 @@
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical">
 			<StackPanel Orientation="Horizontal">
-				<Image Source="{StaticResource DefaultIcon}" Height="16" Margin="5" />
+				<Image Source="{DynamicResource DefaultIcon}" Height="16" Margin="5" />
 				<TextBlock Margin="0,5">
 					<Hyperlink TextDecorations="None" Command="{Binding PinWindow}" ToolTip="Pins the window, making it not close on lost focus">
 						<Hyperlink.Style>
@@ -153,13 +153,13 @@
 												<ColumnDefinition Width="*" />
 												<ColumnDefinition Width="Auto" />
 											</Grid.ColumnDefinitions>
-											<Image Margin="20,0,0,0" Width="40" Height="40" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{StaticResource DefaultIcon}">
+											<Image Margin="20,0,0,0" Width="40" Height="40" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
 												<Image.Style>
 													<Style TargetType="{x:Type Image}">
 														<Setter Property="Source" Value="{Binding}" />
 														<Style.Triggers>
 															<DataTrigger Binding="{Binding}" Value="{x:Null}">
-																<Setter Property="Source" Value="{StaticResource DefaultIcon}" />
+																<Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
 															</DataTrigger>
 														</Style.Triggers>
 													</Style>
@@ -202,7 +202,7 @@
 																	</Style.Triggers>
 																</Style>
 															</Border.Style>
-															<Image Source="{StaticResource PrivacyShield}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+															<Image Source="{DynamicResource PrivacyShield}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 														</Border>
 													</ControlTemplate>
 												</Button.Template>
