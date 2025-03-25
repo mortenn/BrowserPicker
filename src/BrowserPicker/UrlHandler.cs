@@ -172,13 +172,13 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		).FirstOrDefault(underlyingUrl => underlyingUrl != null);
 	}
 
-	private async Task<string?> ResolveShortener(Uri uri, CancellationToken cancellationToken)
+	private async Task<string?> ResolveShortener(Uri shortenerUri, CancellationToken cancellationToken)
 	{
-		if (url_shorteners.All(s => !uri.Host.EndsWith(s)))
+		if (url_shorteners.All(s => !shortenerUri.Host.EndsWith(s)))
 		{
 			return null;
 		}
-		var response = await Client.GetAsync(uri, cancellationToken);
+		var response = await Client.GetAsync(shortenerUri, cancellationToken);
 		var location = response.Headers.Location;
 		return location?.OriginalString;
 	}

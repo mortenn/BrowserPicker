@@ -7,8 +7,12 @@ using System.Text.RegularExpressions;
 
 namespace BrowserPicker;
 
-public sealed class DefaultSetting(MatchType type, string? pattern, string? browser) : ModelBase, INotifyPropertyChanging
+public sealed class DefaultSetting(MatchType initialType, string? initialPattern, string? initialBrowser) : ModelBase, INotifyPropertyChanging
 {
+	private readonly Guid id = Guid.NewGuid();
+	private MatchType type = initialType;
+	private string? pattern = initialPattern;
+	private string? browser = initialBrowser;
 	private bool deleted;
 
 	public static DefaultSetting? Decode(string? rule, string browser)
@@ -21,14 +25,16 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 		return config.Length switch
 		{
 			// Default browser choice
-			1 when rule == string.Empty => new DefaultSetting(MatchType.Default, string.Empty, browser),
+			1 when rule == string.Empty
+				=> new DefaultSetting(MatchType.Default, string.Empty, browser),
 			
 			// Original hostname match type
-			<= 1 => new DefaultSetting(MatchType.Hostname, rule, browser),
+			<= 1
+				=> new DefaultSetting(MatchType.Hostname, rule, browser),
 			
 			// New configuration format using MatchType
-			3 when Enum.TryParse<MatchType>(rule[1..rule.IndexOf('|', 1)], true, out var matchType) => new DefaultSetting(
-				matchType, config[2], browser),
+			3 when Enum.TryParse<MatchType>(rule[1..rule.IndexOf('|', 1)], true, out var matchType)
+				=> new DefaultSetting(matchType, config[2], browser),
 			
 			// Unsupported format, ignore
 			_ => null
@@ -100,7 +106,7 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 
 	[JsonIgnore]
 	public bool IsValid => !string.IsNullOrWhiteSpace(pattern)
-												 || pattern == string.Empty && Type == MatchType.Default;
+		|| pattern == string.Empty && Type == MatchType.Default;
 
 	[JsonIgnore]
 	public DelegateCommand Remove => new(() => { Deleted = true; });
@@ -129,7 +135,7 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 		_ => $"|{Type}|{pattern}"
 	};
 
-	public override int GetHashCode() => Type.GetHashCode() ^ pattern?.GetHashCode() ?? 0;
+	public override int GetHashCode() => Type.GetHashCode() ^ id.GetHashCode();
 
 	private void OnPropertyChanging([CallerMemberName] string? propertyName = null)
 	{

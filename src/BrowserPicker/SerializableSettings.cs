@@ -33,8 +33,8 @@ public sealed class SerializableSettings : IApplicationSettings
 	public bool DisableTransparency { get; set; }
 	public bool DisableNetworkAccess { get; set; }
 	public string[] UrlShorteners { get; set; } = [];
-	public List<BrowserModel> BrowserList { get; set; } = [];
-	public List<DefaultSetting> Defaults { get; set; } = [];
+	public List<BrowserModel> BrowserList { get; init; } = [];
+	public List<DefaultSetting> Defaults { get; init; } = [];
 
 	public SortOrder SortBy { get; set; }
 

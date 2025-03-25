@@ -20,7 +20,7 @@ public partial class BrowserList
 
 	private void Editor_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
 	{
-		if (e.Key is not (System.Windows.Input.Key.Enter or System.Windows.Input.Key.Return))
+		if (e.Key is not (System.Windows.Input.Key.Enter))
 		{
 			return;
 		}

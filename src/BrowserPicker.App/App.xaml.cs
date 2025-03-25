@@ -19,7 +19,7 @@ public partial class App
 	/// <summary>
 	/// This CancellationToken gets cancelled when the application exits
 	/// </summary>
-	public static CancellationTokenSource ApplicationCancellationToken { get; } = new();
+	private static CancellationTokenSource ApplicationCancellationToken { get; } = new();
 
 	public static IBrowserPickerConfiguration Settings { get; } = new AppSettings();
 
@@ -67,7 +67,29 @@ public partial class App
 		}
 	}
 
-	protected override async void OnStartup(StartupEventArgs e)
+	protected override void OnStartup(StartupEventArgs e)
+	{
+		var worker = StartupBackgroundTasks();
+		worker.ContinueWith(CheckBackgroundTasks);
+	}
+
+	/// <summary>
+	/// This method should never be called, as the StartupBackgroundTasks has robust exception handling
+	/// </summary>
+	private static void CheckBackgroundTasks(Task task)
+	{
+		if (task.IsFaulted)
+		{
+			MessageBox.Show(
+				task.Exception?.ToString() ?? string.Empty,
+				"Error",
+				MessageBoxButton.OK,
+				MessageBoxImage.Error
+			);
+		}
+	}
+	
+	private async Task StartupBackgroundTasks()
 	{
 		// Something failed during startup, abort.
 		if (ViewModel == null)
@@ -119,8 +141,6 @@ public partial class App
 				// Open up the browser picker window
 				ShowMainWindow();
 			}
-
-
 		}
 		catch (Exception exception)
 		{
@@ -131,7 +151,7 @@ public partial class App
 		}
 	}
 
-	public static async Task RunLongRunningProcesses()
+	private static async Task RunLongRunningProcesses()
 	{
 		try
 		{

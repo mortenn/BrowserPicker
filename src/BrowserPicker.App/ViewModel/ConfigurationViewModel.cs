@@ -89,9 +89,8 @@ public sealed class ConfigurationViewModel : ModelBase
 
 		public IComparer<BrowserModel>? BrowserSorter => null;
 
-		public DefaultSetting AddDefault(MatchType matchType, string pattern, string browser)
+		public void AddDefault(MatchType matchType, string pattern, string browser)
 		{
-			return new DefaultSetting(matchType, pattern, browser);
 		}
 
 		public void FindBrowsers()
@@ -156,7 +155,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
-	public IBrowserPickerConfiguration Settings { get; init; }
+	public IBrowserPickerConfiguration Settings { get; }
 
 	public ApplicationViewModel ParentViewModel { get; init; }
 
@@ -316,7 +315,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
-	internal bool AddNewDefault(MatchType matchType, string pattern, string browser)
+	private bool AddNewDefault(MatchType matchType, string pattern, string browser)
 	{
 		if (string.IsNullOrWhiteSpace(pattern) || string.IsNullOrWhiteSpace(browser))
 		{
@@ -409,7 +408,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		return new CancellationTokenSource(Settings.UrlLookupTimeoutMilliseconds);
 	}
 
-	internal void FindBrowsers()
+	private void FindBrowsers()
 	{
 		Settings.FindBrowsers();
 		OnPropertyChanged(nameof(TestDefaultsResult));

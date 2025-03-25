@@ -87,7 +87,7 @@ public partial class MainWindow
 		Top = (h - e.NewSize.Height) / 2;
 	}
 
-	public void DragWindow(object sender, MouseButtonEventArgs args)
+	private void DragWindow(object sender, MouseButtonEventArgs args)
 	{
 		DragMove();
 	}

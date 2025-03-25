@@ -33,7 +33,7 @@ public interface IBrowserPickerConfiguration : IApplicationSettings, INotifyProp
 	/// <param name="matchType">Type of match</param>
 	/// <param name="pattern">The url fragment to match</param>
 	/// <param name="browser">The browser to use</param>
-	DefaultSetting? AddDefault(MatchType matchType, string pattern, string browser);
+	void AddDefault(MatchType matchType, string pattern, string browser);
 
 	/// <summary>
 	/// Exports all the configuration to a json file

@@ -34,7 +34,7 @@ public partial class BrowserEditor
 		DataContext = Browser;
 	}
 
-	public BrowserViewModel Browser { get; init; }
+	private BrowserViewModel Browser { get; }
 
 	private void Ok_OnClick(object sender, RoutedEventArgs e)
 	{
@@ -87,7 +87,7 @@ public partial class BrowserEditor
 	}
 
 
-	public void DragWindow(object sender, MouseButtonEventArgs args)
+	private void DragWindow(object sender, MouseButtonEventArgs args)
 	{
 		DragMove();
 	}

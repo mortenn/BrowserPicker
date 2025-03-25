@@ -206,18 +206,17 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
-	public DefaultSetting? AddDefault(MatchType matchType, string pattern, string? browser)
+	public void AddDefault(MatchType matchType, string pattern, string? browser)
 	{
 		var setting = GetDefaultSetting(null, browser);
 		if (setting == null)
 		{
-			return null;
+			return;
 		}
 		setting.Type = matchType;
 		setting.Pattern = pattern;
 		Defaults.Add(setting);
 		OnPropertyChanged(nameof(Defaults));
-		return setting;
 	}
 
 	public void FindBrowsers()
@@ -286,7 +285,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		BackupLog += $"Imported configuration from {fileName}\n";
 	}
 
-	private void UpdateSettings(IApplicationSettings settings)
+	private void UpdateSettings(SerializableSettings settings)
 	{
 		AlwaysPrompt = settings.AlwaysPrompt;
 		AlwaysUseDefaults = settings.AlwaysUseDefaults;
