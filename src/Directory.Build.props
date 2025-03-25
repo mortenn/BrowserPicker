@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
+		<TargetFramework>net9.0-windows</TargetFramework>
 		<VersionPrefix>2.0.0.4</VersionPrefix>
 		<VersionSuffix>-beta1</VersionSuffix>
 		<Company>Runsafe</Company>
