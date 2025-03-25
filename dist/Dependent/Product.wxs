@@ -38,7 +38,10 @@
 	<Fragment>
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
 			<Component Bitness="always64">
-				<util:EventSource Id="EventSourceComponent" Name="BrowserPicker" Log="Application" KeyPath="yes"/>
+				<util:EventSource
+						Name="BrowserPicker" Log="Application"
+						EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR64]EventLogMessages.dll"
+						KeyPath="yes"/>
 			</Component>
 			<Component Bitness="always64">
 				<File Id="runtimeconfig.json" Name="$(var.BrowserPicker.App.TargetName).runtimeconfig.json" KeyPath="yes" ProcessorArchitecture="x64" />
