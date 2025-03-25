@@ -204,3 +204,15 @@ There is even a handy dandy tool for verifying your settings,
 just paste that url into the big white text box and get instant feedback on the browser selection process:
 
 ![Example of the test defaults interface in use](docs/config_defaults_test_no_match.png)
+
+### Logging
+BrowserPicker uses ILogger with EventLog support.
+
+To get detailed logs, please either change appsettings.json or set the environment variable `Logging__EventLog__LogLevel__BrowserPicker` to either `Information` or `Debug`
+By default, only warnings or higher level events get logged.
+
+If you are using the archived version rather than the installer package,
+you will need to run this powershell command before logs will appear:
+
+```New-EventLog -LogName Application -Source BrowserPicker```
+` 

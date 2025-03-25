@@ -7,6 +7,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Framework;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -15,6 +18,8 @@ namespace BrowserPicker.ViewModel;
 
 public sealed class ApplicationViewModel : ModelBase
 {
+	private static readonly ILogger<ApplicationViewModel> Logger = App.Services.GetRequiredService<ILogger<ApplicationViewModel>>();
+	
 #if DEBUG
 	// Used by WPF designer
 	[UsedImplicitly]
@@ -30,7 +35,7 @@ public sealed class ApplicationViewModel : ModelBase
 
 	internal ApplicationViewModel(ConfigurationViewModel config)
 	{
-		Url = new UrlHandler("https://github.com/mortenn/BrowserPicker", config.Settings);
+		Url = new UrlHandler(NullLogger<UrlHandler>.Instance, "https://github.com/mortenn/BrowserPicker", config.Settings);
 		force_choice = true;
 		Configuration = config;
 		Choices = [];
@@ -42,7 +47,8 @@ public sealed class ApplicationViewModel : ModelBase
 		var options = arguments.Where(arg => arg[0] == '/').ToList();
 		force_choice = options.Contains("/choose");
 		var url = arguments.Except(options).FirstOrDefault();
-		Url = new UrlHandler(url, settings);
+		// TODO Refactor to use IoC
+		Url = new UrlHandler(App.Services.GetRequiredService<ILogger<UrlHandler>>(), url, settings);
 		ConfigurationMode = url == null;
 		Configuration = new ConfigurationViewModel(settings, this)
 		{
@@ -75,6 +81,8 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		BrowserViewModel? start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
+		Logger.LogAutomationChoice(start?.Model.Name);
+
 #if DEBUG
 		if (Debugger.IsAttached && start != null)
 		{
@@ -89,26 +97,33 @@ public sealed class ApplicationViewModel : ModelBase
 	{
 		if (Configuration.Settings.AlwaysPrompt)
 		{
+			Logger.LogAutomationAlwaysPrompt();
 			return null;
 		}
 		var urlBrowser = GetBrowserToLaunchForUrl(targetUrl);
 		var browser = Choices.FirstOrDefault(c => c.Model.Name == urlBrowser);
+		Logger.LogAutomationBrowserSelected(browser?.Model.Name, browser?.IsRunning);
 		if (browser != null && (Configuration.Settings.AlwaysUseDefaults || browser.IsRunning))
 		{
 			return browser;
 		}
 		if (browser == null && Configuration.Settings.AlwaysAskWithoutDefault)
 		{
+			Logger.LogAutomationAlwaysPromptWithoutDefaults();
 			return null;
 		}
 		var active = Choices.Where(b => b is { IsRunning: true, Model.Disabled: false }).ToList();
+		Logger.LogAutomationRunningCount(active.Count);
 		return active.Count == 1 ? active[0] : null;
 	}
 
 	internal string? GetBrowserToLaunchForUrl(string? targetUrl)
 	{
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))
+		{
+			Logger.LogAutomationNoDefaultsConfigured();
 			return null;
+		}
 
 		Uri url;
 		try
@@ -124,6 +139,8 @@ public sealed class ApplicationViewModel : ModelBase
 			.Where(o => o.matchLength > 0)
 			.ToList();
 
+		Logger.LogAutomationMatchesFound(auto.Count);
+		
 		return auto.Count <= 0
 			? null
 			: auto.OrderByDescending(o => o.matchLength).First().rule.Browser;

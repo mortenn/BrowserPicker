@@ -21,7 +21,7 @@ public partial class App
 	/// </summary>
 	private static CancellationTokenSource ApplicationCancellationToken { get; } = new();
 
-	public static IBrowserPickerConfiguration Settings { get; } = new AppSettings();
+	public static IBrowserPickerConfiguration Settings { get; set; } = null!;
 
 	private class InvalidUTF8Patch : EncodingProvider
 	{
@@ -244,6 +244,7 @@ public partial class App
 	}
 
 	public ApplicationViewModel? ViewModel { get; }
+	public static IServiceProvider Services { get; set; } = null!;
 
 	private static readonly List<ILongRunningProcess> BackgroundTasks = [];
 	private static Task? long_running_processes;

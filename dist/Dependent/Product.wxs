@@ -1,4 +1,7 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
+﻿<Wix
+	xmlns="http://wixtoolset.org/schemas/v4/wxs"
+	xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx"
+	xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 	<Package Name="BrowserPicker" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Runsafe" UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}" InstallerVersion="200">
 
 		<MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="yes" />
@@ -35,10 +38,16 @@
 	<Fragment>
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
 			<Component Bitness="always64">
+				<util:EventSource Id="EventSourceComponent" Name="BrowserPicker" Log="Application" KeyPath="yes"/>
+			</Component>
+			<Component Bitness="always64">
 				<File Id="runtimeconfig.json" Name="$(var.BrowserPicker.App.TargetName).runtimeconfig.json" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 			<Component Bitness="always64">
 				<File Id="BrowserPicker.dll" Name="$(var.BrowserPicker.App.TargetName).dll" KeyPath="yes" ProcessorArchitecture="x64" />
+			</Component>
+			<Component Bitness="always64">
+				<File Id="appsettings.json" Name="appsettings.json" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 			<Component Bitness="always64">
 				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">

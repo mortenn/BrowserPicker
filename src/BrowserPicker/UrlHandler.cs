@@ -7,7 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Text.RegularExpressions;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 
 #if DEBUG
@@ -18,9 +19,14 @@ namespace BrowserPicker;
 
 public sealed class UrlHandler : ModelBase, ILongRunningProcess
 {
-	public UrlHandler(string? requestedUrl, IApplicationSettings settings)
+	private readonly ILogger logger;
+	
+	public UrlHandler(ILogger<UrlHandler> logger, string? requestedUrl, IApplicationSettings settings)
 	{
+		this.logger = logger;
+		logger.LogRequestedUrl(requestedUrl);
 		disallow_network = requestedUrl == null || settings.DisableNetworkAccess;
+		logger.LogNetworkAccessDisabled(disallow_network);
 		url_shorteners = [..settings.UrlShorteners];
 
 		// Add new ones to config as requested
@@ -54,6 +60,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	// Design time constructor
 	public UrlHandler()
 	{
+		logger = NullLogger.Instance;
 		disallow_network = true;
 		url_shorteners = [..DefaultUrlShorteners];
 		TargetURL = "https://www.github.com/mortenn/BrowserPicker";
@@ -80,6 +87,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 				var jump = ResolveJumpPage(uri);
 				if (jump != null)
 				{
+					logger.LogJumpUrl(uri);
 					UnderlyingTargetURL = jump;
 					uri = new Uri(jump);
 					HostName = uri.IsFile && !uri.IsUnc ? null : uri.Host;
@@ -92,6 +100,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 				var shortened = await ResolveShortener(uri, cancellationToken);
 				if (shortened != null)
 				{
+					logger.LogShortenedUrl(shortened);
 					IsShortenedURL = true;
 					UnderlyingTargetURL = shortened;
 					uri = new Uri(shortened);
@@ -123,20 +132,27 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			}
 			var result = await Client.GetAsync(pageUri, timeout.Token);
 			if (!result.IsSuccessStatusCode)
+			{
+				logger.LogFaviconFailed(result.StatusCode);
 				return;
+			}
 
 			var content = await result.Content.ReadAsStringAsync(timeout.Token);
 			var match = Pattern.HtmlLink().Match(content);
 			if (!match.Success)
 			{
+				logger.LogDefaultFavicon();
 				await TryLoadIcon(new Uri(pageUri, "/favicon.ico").AbsoluteUri, timeout.Token);
 				return;
 			}
 			var link = Pattern.LinkHref().Match(match.Value);
 			if (!link.Success)
 			{
+				logger.LogFaviconNotFound();
 				return;
 			}
+
+			logger.LogFaviconFound(link.Groups[0].Value);
 			await TryLoadIcon(link.Groups[0].Value, timeout.Token);
 		}
 		catch (HttpRequestException)
@@ -159,7 +175,13 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	private async Task TryLoadIcon(string iconUrl, CancellationToken cancellationToken)
 	{
 		var icon = await Client.GetAsync(iconUrl, cancellationToken);
-		FavIcon = await icon.Content.ReadAsByteArrayAsync(cancellationToken);
+		if (icon.IsSuccessStatusCode)
+		{
+			logger.LogFaviconLoaded(iconUrl);
+			FavIcon = await icon.Content.ReadAsByteArrayAsync(cancellationToken);
+			return;
+		}
+		logger.LogFaviconFailed(icon.StatusCode);
 	}
 
 	private static string? ResolveJumpPage(Uri uri)

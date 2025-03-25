@@ -8,14 +8,18 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using BrowserPicker.Framework;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 namespace BrowserPicker.Windows;
 
 public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 {
-	public AppSettings()
+	private readonly ILogger<AppSettings> logger;
+
+	public AppSettings(ILogger<AppSettings> logger)
 	{
+		this.logger = logger;
 		sorter = new BrowserSorter(this);
 		BrowserList = GetBrowsers();
 		Defaults = GetDefaults();
@@ -146,6 +150,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 
 		BrowserList.Add(browser);
+		logger.LogBrowserAdded(browser.Name);
 		OnPropertyChanged(nameof(BrowserList));
 	}
 
@@ -216,6 +221,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		setting.Type = matchType;
 		setting.Pattern = pattern;
 		Defaults.Add(setting);
+		logger.LogDefaultSettingAdded(matchType.ToString(), pattern, browser);
 		OnPropertyChanged(nameof(Defaults));
 	}
 
@@ -627,6 +633,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 					model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
 					Reg.SubKey(nameof(BrowserList))?.DeleteSubKey(model.Name);
 					BrowserList.Remove(model);
+					logger.LogBrowserRemoved(model.Name);
 					OnPropertyChanged(nameof(BrowserList));
 				}
 				break;
