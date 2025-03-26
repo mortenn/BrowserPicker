@@ -100,7 +100,7 @@ jobs:
       run: |
         rm -rf *.zip
         for bundle in Dependent Portable; do
-          zip -jr $bundle.zip $bundle-${{ needs.prepare.outputs.version }}-Release/*
+          (cd $bundle-${{ needs.prepare.outputs.version }}-Release; zip -r ../$bundle.zip *)
         done
 
     - name: Release
