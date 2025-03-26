@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using BrowserPicker.ViewModel;
 using Microsoft.Win32;
@@ -71,6 +74,7 @@ public partial class BrowserEditor
 				// ignored
 			}
 		}
+
 		if (string.IsNullOrEmpty(Browser.Model.IconPath))
 			Browser.Model.IconPath = browser.FileName;
 	}
@@ -90,5 +94,59 @@ public partial class BrowserEditor
 	private void DragWindow(object sender, MouseButtonEventArgs args)
 	{
 		DragMove();
+	}
+
+	private void OnCustomKeyBindDown(object sender, KeyEventArgs e)
+	{
+		e.Handled = true;
+		// Blacklisted keys
+		// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+		switch (e.Key)
+		{
+			case Key.LeftAlt:
+			case Key.LeftCtrl:
+			case Key.LeftShift:
+			case Key.RightAlt:
+			case Key.RightCtrl:
+			case Key.RightShift:
+			case Key.System:
+			case Key.LWin:
+			case Key.Apps:
+			case Key.Capital:
+			case Key.NumLock:
+			case Key.Scroll:
+			case Key.OemClear:
+			case Key.DeadCharProcessed:
+			case Key.ImeProcessed:
+			case Key.ImeConvert:
+			case Key.C:
+			case Key.Return:
+				return;
+		}
+
+		var key = TypeDescriptor.GetConverter(typeof(Key)).ConvertToInvariantString(e.Key) ?? string.Empty;
+		if (key == string.Empty || e.Key == Key.Escape)
+		{
+			((TextBox)sender).Text = string.Empty;
+			return;
+		}
+
+		var modifier = string.Empty;
+		if (e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control))
+		{
+			modifier = "Ctrl+";
+		}
+
+		if (e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Shift))
+		{
+			modifier += "Shift+";
+		}
+
+		((TextBox)sender).Text = modifier + key;
+	}
+
+	private void OnCustomKeyBindUp(object sender, KeyEventArgs e)
+	{
+		e.Handled = true;
 	}
 }

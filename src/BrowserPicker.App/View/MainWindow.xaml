@@ -13,6 +13,9 @@
 	AllowsTransparency="True" WindowStyle="None"
 	WindowState="Normal" Topmost="True" KeyDown="MainWindow_OnKeyDown"
 	KeyUp="MainWindow_OnKeyUp" ShowInTaskbar="False" SizeChanged="Window_SizeChanged">
+	<Window.InputBindings>
+		<KeyBinding Command="{Binding CopyUrl}" Gesture="Ctrl+C" />
+	</Window.InputBindings>
 	<Border CornerRadius="5">
 		<Border.Style>
 			<Style TargetType="{x:Type Border}">

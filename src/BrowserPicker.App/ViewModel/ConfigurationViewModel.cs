@@ -74,6 +74,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public List<BrowserModel> BrowserList { get; init; } = [];
 
 		public List<DefaultSetting> Defaults { get; init; } = [];
+		public List<KeyBinding> KeyBindings { get; } = [];
 
 		public bool UseFallbackDefault { get; set; } = true;
 		public string? DefaultBrowser { get; set; }

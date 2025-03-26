@@ -71,4 +71,9 @@ public interface IApplicationSettings
 	/// Rules for per url browser defaults
 	/// </summary>
 	List<DefaultSetting> Defaults { get; }
+	
+	/// <summary>
+	/// Manual keybindings
+	/// </summary>
+	List<KeyBinding> KeyBindings { get; }
 }

@@ -147,6 +147,14 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		key.Set(browser.IconPath, nameof(browser.IconPath));
 		key.Set(browser.Usage, nameof(browser.Usage));
 		key.Set(browser.ExpandFileUrls, nameof(browser.ExpandFileUrls));
+		key.Set(browser.ManualOverride, nameof(browser.ManualOverride));
+		
+		var keyBind = Reg.Open(nameof(browser.CustomKeyBind));
+		keyBind.Set(browser.Name, browser.CustomKeyBind);
+		foreach (var other in BrowserList.Where(other => other.CustomKeyBind == browser.CustomKeyBind))
+		{
+			other.CustomKeyBind = string.Empty;
+		}
 		browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
 
 		BrowserList.Add(browser);
@@ -157,6 +165,21 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	public List<DefaultSetting> Defaults
 	{
 		get;
+	}
+
+	public List<KeyBinding> KeyBindings
+	{
+		get
+		{
+			var keyBind = Reg.Open(nameof(BrowserModel.CustomKeyBind));
+			return (
+				from key in keyBind.GetValueNames()
+				where key != string.Empty
+				let browser = keyBind.Get<string>(null, key)
+				where browser != null
+				select new KeyBinding(key, browser)
+			).ToList();
+		}
 	}
 
 	private bool use_fallback_default;
@@ -287,6 +310,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		UpdateSettings(settings);
 		UpdateBrowsers(settings.BrowserList);
 		UpdateDefaults(settings.Defaults);
+		UpdateKeybinds(settings.KeyBindings);
 
 		BackupLog += $"Imported configuration from {fileName}\n";
 	}
@@ -328,6 +352,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			existing.CommandArgs = browser.CommandArgs;
 			existing.IconPath = browser.IconPath;
 			existing.ManualOverride = browser.ManualOverride;
+			existing.CustomKeyBind = browser.CustomKeyBind;
 		}
 
 		foreach (var browser in BrowserList.Where(b => browserList.All(s => s.Name != b.Name)).ToArray())
@@ -372,6 +397,19 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			setting.Deleted = true;
 		}
 		OnPropertyChanged(nameof(Defaults));
+	}
+
+	private void UpdateKeybinds(List<KeyBinding> keyBindings)
+	{
+		foreach (var binding in keyBindings)
+		{
+			var browser = BrowserList.FirstOrDefault(b => b.Name == binding.Browser);
+			if (browser == null)
+			{
+				continue;
+			}
+			browser.CustomKeyBind = binding.Key;
+		}
 	}
 
 	/// <summary>
@@ -585,6 +623,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	private BrowserModel? GetBrowser(RegistryKey list, string name)
 	{
 		var config = list.OpenSubKey(name, false);
+		var keyBind = Reg.Open(nameof(BrowserModel.CustomKeyBind));
 		if (config == null) return null;
 		var browser = new BrowserModel
 		{
@@ -598,7 +637,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			Usage = config.Get(0, nameof(BrowserModel.Usage)),
 			Disabled = config.GetBool(false, nameof(BrowserModel.Disabled)),
 			ExpandFileUrls = config.GetBool(false, nameof(BrowserModel.ExpandFileUrls)),
-			ManualOverride = config.GetBool(false, nameof(BrowserModel.ManualOverride))
+			ManualOverride = config.GetBool(false, nameof(BrowserModel.ManualOverride)),
+			CustomKeyBind = keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == name) ?? string.Empty
 		};
 		config.Close();
 		if (string.IsNullOrWhiteSpace(browser.Command))
@@ -635,6 +675,22 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 					BrowserList.Remove(model);
 					logger.LogBrowserRemoved(model.Name);
 					OnPropertyChanged(nameof(BrowserList));
+				}
+				break;
+			case nameof(BrowserModel.CustomKeyBind):
+				var keyBind = Reg.Open(nameof(model.CustomKeyBind));
+				var remove =
+					from binding in keyBind.GetValueNames()
+					where keyBind.Get<string>(null, binding) == model.Name
+					select binding;
+				foreach (var binding in remove)
+				{
+					keyBind.DeleteValue(binding);
+				}
+				keyBind.Set(model.Name, model.CustomKeyBind);
+				foreach (var other in BrowserList.Where(other => other != model && other.CustomKeyBind == model.CustomKeyBind))
+				{
+					other.CustomKeyBind = string.Empty;
 				}
 				break;
 			default: return;

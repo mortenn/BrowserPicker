@@ -109,7 +109,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			Executable = model.Executable,
 			IconPath = model.IconPath,
 			Name = model.Name,
-			PrivacyArgs = model.PrivacyArgs
+			PrivacyArgs = model.PrivacyArgs,
+			CustomKeyBind = model.CustomKeyBind
 		};
 		var editor = new BrowserEditor(new BrowserViewModel(temp, parent_view_model));
 		editor.Show();
@@ -132,6 +133,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Model.Executable = save.Executable;
 		Model.PrivacyArgs = save.PrivacyArgs;
 		Model.ExpandFileUrls = save.ExpandFileUrls;
+		Model.CustomKeyBind = save.CustomKeyBind;
 	}
 
 	public string PrivacyTooltip

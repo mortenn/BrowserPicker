@@ -19,6 +19,9 @@ public sealed class SerializableSettings : IApplicationSettings
 		UrlShorteners = applicationSettings.UrlShorteners;
 		BrowserList = [.. applicationSettings.BrowserList.Where(b => !b.Removed)];
 		Defaults = [.. applicationSettings.Defaults.Where(d => !d.Deleted && !string.IsNullOrWhiteSpace(d.Browser))];
+		KeyBindings = applicationSettings.KeyBindings
+			.Where(kb => applicationSettings.BrowserList.Any(b => b.Name == kb.Browser && b.Removed == false))
+			.ToList();
 	}
 
 	public SerializableSettings()
@@ -35,6 +38,7 @@ public sealed class SerializableSettings : IApplicationSettings
 	public string[] UrlShorteners { get; set; } = [];
 	public List<BrowserModel> BrowserList { get; init; } = [];
 	public List<DefaultSetting> Defaults { get; init; } = [];
+	public List<KeyBinding> KeyBindings { get; init; } = [];
 
 	public SortOrder SortBy { get; set; }
 

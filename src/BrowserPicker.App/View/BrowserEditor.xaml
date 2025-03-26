@@ -12,12 +12,13 @@
 	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
 	AllowsTransparency="True" WindowStyle="None"
 	ShowInTaskbar="False" Topmost="True">
+	
 	<Window.Resources>
 		<ResourceDictionary>
 			<converter:IconFileToImageConverter x:Key="IconConverter" />
 		</ResourceDictionary>
 	</Window.Resources>
-	<Border CornerRadius="5" BorderBrush="#77FFFFFF" BorderThickness="2" Padding="10" Width="400" MouseLeftButtonDown="DragWindow">
+	<Border CornerRadius="5" BorderBrush="#77FFFFFF" BorderThickness="2" Padding="10" MinWidth="400" MouseLeftButtonDown="DragWindow">
 		<Border.Background>
 			<LinearGradientBrush EndPoint="0,1">
 				<GradientStop Offset="0" Color="#cc272727" />
@@ -33,6 +34,7 @@
 				<ColumnDefinition Width="20" />
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
+				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
 				<RowDefinition />
@@ -69,7 +71,24 @@
 
 			<CheckBox Grid.Row="7" Grid.Column="2" Content="Disable automatic updates" IsChecked="{Binding Model.ManualOverride}" Foreground="White" Margin="2,4" />
 
-			<StackPanel Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
+			<TextBlock Text="Hotkey:" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Foreground="White" />
+			<Grid Grid.Column="2" Grid.Row="8">
+				<TextBox Text="{Binding Model.CustomKeyBind,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" KeyDown="OnCustomKeyBindDown" KeyUp="OnCustomKeyBindUp" />
+				<TextBlock VerticalAlignment="Center" Margin="5,0" Text="(Automatic)" Foreground="Silver" IsHitTestVisible="False">
+					<TextBlock.Style>
+						<Style>
+							<Setter Property="UIElement.Visibility" Value="Collapsed" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding Model.CustomKeyBind}" Value="">
+									<Setter Property="UIElement.Visibility" Value="Visible" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</TextBlock.Style>
+				</TextBlock>
+			</Grid>
+			
+			<StackPanel Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
 				<Button Content="Cancel" Click="Cancel_OnClick" Padding="10,0" />
 				<Button Content="Ok" Click="Ok_OnClick" Padding="10,0" Margin="10,0,0,0" />
 			</StackPanel>

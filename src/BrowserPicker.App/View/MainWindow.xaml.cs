@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Dynamic;
+using System.Windows;
 using System.Windows.Input;
 using JetBrains.Annotations;
 using BrowserPicker.ViewModel;
@@ -28,6 +30,25 @@ public partial class MainWindow
 		try
 		{
 			ViewModel.AltPressed = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+			if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && e.Key != Key.LeftShift && e.Key != Key.RightShift)
+			{
+				var binding = 
+					(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl) ? "Ctrl+" : string.Empty)
+					+ (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) ? "Shift+" : string.Empty)
+					+ TypeDescriptor.GetConverter(typeof(Key)).ConvertToInvariantString(e.Key);
+
+				var configured = ViewModel.Choices.FirstOrDefault(vm => vm.Model.CustomKeyBind == binding);
+				if (configured != null)
+				{
+					if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+					{
+						configured.SelectPrivacy.Execute(null);
+						return;
+					}
+					configured.Select.Execute(null);
+					return;
+				}
+			}
 
 			if (e.Key == Key.Escape)
 				Close();
