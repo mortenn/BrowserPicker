@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Threading;
 using BrowserPicker.View;
 using BrowserPicker.ViewModel;
-using BrowserPicker.Windows;
 
 namespace BrowserPicker;
 

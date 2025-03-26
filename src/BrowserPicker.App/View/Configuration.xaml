@@ -24,13 +24,13 @@
 			</ObjectDataProvider>
 
 			<DataTemplate x:Key="BrowserIcon" DataType="{x:Type viewModel:BrowserViewModel}">
-				<Image Margin="0,0,0,0" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{StaticResource DefaultIcon}">
+				<Image Margin="0,0,0,0" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
 					<Image.Style>
 						<Style TargetType="{x:Type Image}">
 							<Setter Property="Source" Value="{Binding}" />
 							<Style.Triggers>
 								<DataTrigger Binding="{Binding}" Value="{x:Null}">
-									<Setter Property="Source" Value="{StaticResource DefaultIcon}" />
+									<Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
 								</DataTrigger>
 							</Style.Triggers>
 						</Style>
