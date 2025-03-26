@@ -35,7 +35,6 @@ public partial class App
 			return name.ToLowerInvariant().Replace("-", "") switch
 			{
 				"utf8" => Encoding.UTF8,
-				"windows1251" => Encoding.GetEncoding("windows-1251"),
 				_ => null
 			};
 		}
@@ -44,7 +43,7 @@ public partial class App
 	public App()
 	{
 		Encoding.RegisterProvider(new InvalidUTF8Patch());
-
+		Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 		BackgroundTasks.Add(Settings);
 
 		// Basic unhandled exception catchment

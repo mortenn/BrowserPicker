@@ -3,6 +3,10 @@
     "Configuration UI": {
       "commandName": "Project"
     },
+    "rutracker": {
+      "commandName": "Project",
+      "commandLineArgs": "https://rutracker.org/forum/viewtopic.php?t=6350891"
+    },
     "github url": {
       "commandName": "Project",
       "commandLineArgs": "https://github.com/mortenn/BrowserPicker"
