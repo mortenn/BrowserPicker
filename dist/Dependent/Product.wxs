@@ -37,20 +37,16 @@
 
 	<Fragment>
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
+
+			<Files Include="**">
+				<Exclude Files="$(var.BrowserPicker.App.TargetName).exe" />
+			</Files>
+			
 			<Component Bitness="always64">
 				<util:EventSource
 						Name="BrowserPicker" Log="Application"
 						EventMessageFile="[NETFRAMEWORK40FULLINSTALLROOTDIR64]EventLogMessages.dll"
 						KeyPath="yes"/>
-			</Component>
-			<Component Bitness="always64">
-				<File Id="runtimeconfig.json" Name="$(var.BrowserPicker.App.TargetName).runtimeconfig.json" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="BrowserPicker.dll" Name="$(var.BrowserPicker.App.TargetName).dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="appsettings.json" Name="appsettings.json" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 			<Component Bitness="always64">
 				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
@@ -91,12 +87,6 @@
 				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell\open\command" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe" />
 
 				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="BrowserPicker.Common.dll" Name="$(var.BrowserPicker.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="BrowserPicker.Windows.dll" Name="$(var.BrowserPicker.Windows.TargetFileName)" KeyPath="yes" ProcessorArchitecture="x64" />
 			</Component>
 		</ComponentGroup>
 	</Fragment>

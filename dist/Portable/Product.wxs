@@ -25,6 +25,11 @@
 
 	<Fragment>
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\win-x64\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
+
+			<Files Include="**">
+				<Exclude Files="$(var.BrowserPicker.App.TargetName).exe" />
+			</Files>
+			
 			<Component Bitness="always64">
 				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
 					<Shortcut Directory="ApplicationProgramsFolder" Id="ApplicationStartMenuShortcut" Name="Browser Picker" Description="Awesome Browser Picker" WorkingDirectory="INSTALLFOLDER" Icon="Icon.exe" Advertise="yes" />
@@ -63,27 +68,6 @@
 				<RegistryValue Root="HKLM" Key="SOFTWARE\Clients\StartMenuInternet\BrowserPicker\shell\open\command" Type="string" Value="[INSTALLFOLDER]BrowserPicker.exe" />
 
 				<RemoveFolder Id="removeApplicationFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="D3DCompiler_47_cor3.dll" Name="D3DCompiler_47_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="PenImc_cor3.dll" Name="PenImc_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="PresentationNative_cor3.dll" Name="PresentationNative_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="vcruntime140_cor3.dll" Name="vcruntime140_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="wpfgfx_cor3.dll" Name="wpfgfx_cor3.dll" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<File Id="appsettings.json" Name="appsettings.json" KeyPath="yes" ProcessorArchitecture="x64" />
-			</Component>
-			<Component Bitness="always64">
-				<util:EventSource Id="EventSourceComponent" Name="BrowserPicker" Log="Application" KeyPath="yes"/>
 			</Component>
 		</ComponentGroup>
 	</Fragment>
