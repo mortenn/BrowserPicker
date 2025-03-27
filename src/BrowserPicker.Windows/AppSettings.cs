@@ -26,24 +26,28 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
 	}
 
+	/// <inheritdoc />
 	public bool FirstTime
 	{
 		get => Reg.GetBool(true);
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <inheritdoc />
 	public bool AlwaysPrompt
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <inheritdoc />
 	public bool AlwaysUseDefaults
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <inheritdoc />
 	public bool AlwaysAskWithoutDefault
 	{
 		get => Reg.Get<bool>();
@@ -58,12 +62,14 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public int UrlLookupTimeoutMilliseconds
 	{
 		get => Reg.Get(2000);
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <inheritdoc />
 	public bool UseManualOrdering
 	{
 		get => Reg.Get<bool>();
@@ -75,6 +81,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public bool UseAutomaticOrdering
 	{
 		get => Reg.GetBool(true);
@@ -86,6 +93,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public bool UseAlphabeticalOrdering
 	{
 		get => Reg.Get<bool>();
@@ -113,29 +121,34 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public bool DisableTransparency
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <inheritdoc />
 	public bool DisableNetworkAccess
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <inheritdoc />
 	public string[] UrlShorteners
 	{
 		get => Reg.Get<string[]>() ?? [];
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <inheritdoc />
 	public List<BrowserModel> BrowserList
 	{
 		get;
 	}
 
+	/// <inheritdoc />
 	public void AddBrowser(BrowserModel browser)
 	{
 		var key = Reg.Open(nameof(BrowserList), browser.Name);
@@ -162,11 +175,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(BrowserList));
 	}
 
+	/// <inheritdoc />
 	public List<DefaultSetting> Defaults
 	{
 		get;
 	}
 
+	/// <inheritdoc />
 	public List<KeyBinding> KeyBindings
 	{
 		get
@@ -186,6 +201,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	private string backup_log = string.Empty;
 	private readonly BrowserSorter sorter;
 
+	/// <inheritdoc />
 	public bool UseFallbackDefault
 	{
 		get => use_fallback_default;
@@ -212,6 +228,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public string? DefaultBrowser
 	{
 		get => Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser;
@@ -234,6 +251,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public void AddDefault(MatchType matchType, string pattern, string? browser)
 	{
 		var setting = GetDefaultSetting(null, browser);
@@ -248,6 +266,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(Defaults));
 	}
 
+	/// <inheritdoc />
 	public void FindBrowsers()
 	{
 		// Prefer 64 bit browsers to 32 bit ones, machine wide installations to user specific ones.
@@ -262,6 +281,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public Task Start(CancellationToken cancellationToken)
 	{
 		return Task.Run(FindBrowsers, cancellationToken);
@@ -272,6 +292,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		WriteIndented = true
 	};
 
+	/// <inheritdoc />
 	public async Task SaveAsync(string fileName)
 	{
 		var settings = new SerializableSettings(this);
@@ -288,6 +309,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <inheritdoc />
 	public async Task LoadAsync(string fileName)
 	{
 		await using var file = File.OpenRead(fileName);
@@ -326,12 +348,14 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		DisableNetworkAccess = settings.DisableNetworkAccess;
 	}
 
+	/// <inheritdoc />
 	public string BackupLog
 	{
 		get => backup_log;
 		private set => SetProperty(ref backup_log, value);
 	}
 
+	/// <inheritdoc />
 	public IComparer<BrowserModel> BrowserSorter => sorter;
 
 	private void UpdateBrowsers(List<BrowserModel> browserList)

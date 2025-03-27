@@ -16,12 +16,19 @@ using JetBrains.Annotations;
 
 namespace BrowserPicker.ViewModel;
 
+/// <summary>
+/// Represents the main view model for the application. Manages application state, 
+/// configuration, and browser selection behavior.
+/// </summary>
 public sealed class ApplicationViewModel : ModelBase
 {
 	private static readonly ILogger<ApplicationViewModel> Logger = App.Services.GetRequiredService<ILogger<ApplicationViewModel>>();
 	
 #if DEBUG
-	// Used by WPF designer
+	/// <summary>
+	/// Default constructor used for WPF designer support.
+	/// Initializes the URL handler, configuration, and sets up default browser choices.
+	/// </summary>
 	[UsedImplicitly]
 	public ApplicationViewModel()
 	{
@@ -33,6 +40,11 @@ public sealed class ApplicationViewModel : ModelBase
 		);
 	}
 
+	/// <summary>
+	/// Alternate constructor primarily meant for WPF designer support.
+	/// Initializes URL handler, configuration, and an empty browser choices list.
+	/// </summary>
+	/// <param name="config">The configuration view model to initialize the application state.</param>
 	internal ApplicationViewModel(ConfigurationViewModel config)
 	{
 		Url = new UrlHandler(NullLogger<UrlHandler>.Instance, "https://github.com/mortenn/BrowserPicker", config.Settings);
@@ -42,6 +54,11 @@ public sealed class ApplicationViewModel : ModelBase
 	}
 #endif
 
+	/// <summary>
+	/// Main constructor for initializing the view model with command-line arguments and application settings.
+	/// </summary>
+	/// <param name="arguments">Command-line arguments passed to the application.</param>
+	/// <param name="settings">Configuration settings for the browser picker.</param>
 	public ApplicationViewModel(IReadOnlyCollection<string> arguments, IBrowserPickerConfiguration settings)
 	{
 		var options = arguments.Where(arg => arg[0] == '/').ToList();
@@ -60,6 +77,10 @@ public sealed class ApplicationViewModel : ModelBase
 
 	public UrlHandler Url { get; }
 
+	/// <summary>
+	/// Initializes the application state. Handles first-time setup, configuration mode, 
+	/// and optional automatic browser launch based on URL and settings.
+	/// </summary>
 	public void Initialize()
 	{
 		if (Configuration.Settings.FirstTime)
@@ -93,6 +114,11 @@ public sealed class ApplicationViewModel : ModelBase
 		start?.Select.Execute(null);
 	}
 
+	/// <summary>
+	/// Determines and retrieves the appropriate browser to launch based on the provided URL.
+	/// </summary>
+	/// <param name="targetUrl">The URL to match against browser rules and settings.</param>
+	/// <returns>The browser view model to launch, or null if none is chosen.</returns>
 	internal BrowserViewModel? GetBrowserToLaunch(string? targetUrl)
 	{
 		if (Configuration.Settings.AlwaysPrompt)
@@ -117,6 +143,11 @@ public sealed class ApplicationViewModel : ModelBase
 		return active.Count == 1 ? active[0] : null;
 	}
 
+	/// <summary>
+	/// Matches the given URL against configured rules to determine the preferred browser for the URL.
+	/// </summary>
+	/// <param name="targetUrl">The URL to evaluate against browser rules.</param>
+	/// <returns>The name of the preferred browser for the URL, or null if none is found.</returns>
 	internal string? GetBrowserToLaunchForUrl(string? targetUrl)
 	{
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))
@@ -146,20 +177,47 @@ public sealed class ApplicationViewModel : ModelBase
 			: auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
 	}
 
+	/// <summary>
+	/// Toggles the application's configuration mode state.
+	/// </summary>
 	public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
 
+	/// <summary>
+	/// Closes the application by triggering the shutdown event.
+	/// </summary>
 	public ICommand Exit => new DelegateCommand(() => OnShutdown?.Invoke(this, EventArgs.Empty));
 
+	/// <summary>
+	/// Copies the currently targeted URL to the system clipboard.
+	/// </summary>
 	public ICommand CopyUrl => new DelegateCommand(PerformCopyUrl);
 
+	/// <summary>
+	/// Opens the URL editor, allowing the user to modify the currently targeted URL.
+	/// </summary>
 	public ICommand Edit => new DelegateCommand(OpenURLEditor);
 
+	/// <summary>
+	/// Closes the URL editor, saving any changes made to the targeted URL.
+	/// </summary>
 	public ICommand EndEdit => new DelegateCommand(CloseURLEditor);
-
+	
+	/// <summary>
+	/// Gets the view model responsible for managing application configuration settings.
+	/// Provides access to user preferences and saved browser configurations.
+	/// </summary>
 	public ConfigurationViewModel Configuration { get; }
 
+	/// <summary>
+	/// Gets the list of browsers presented to the user.
+	/// Allowing the user to select a browser based on specific criteria or preferences.
+	/// </summary>
 	public ObservableCollection<BrowserViewModel> Choices { get; }
 
+	/// <summary>
+	/// Gets or sets a value indicating whether the application is in configuration mode.
+	/// Configuration mode displays settings and bypasses automatic browser selection during startup.
+	/// </summary>
 	public bool ConfigurationMode
 	{
 		get => configuration_mode;
@@ -169,6 +227,10 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// Gets or sets the URL being edited by the user, backing the URL editor functionality.
+	/// Changes take effect in the underlying URL handler.
+	/// </summary>
 	public string? EditURL
 	{
 		get => edit_url;
@@ -179,28 +241,50 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// Gets or sets a value indicating whether the targeted URL has been successfully copied to the clipboard.
+	/// Used to indicate the url was copied in the View.
+	/// </summary>
 	public bool Copied
 	{
 		get => copied;
 		set => SetProperty(ref copied, value);
 	}
 
+	/// <summary>
+	/// Gets or sets a value indicating whether the Alt key is pressed, signalling the users intent to activate privacy mode.
+	/// </summary>
 	public bool AltPressed
 	{
 		get => alt_pressed;
 		set => SetProperty(ref alt_pressed, value);
 	}
-
+	
+	/// <summary>
+	/// Pins the window, keeping it around while the user does something else.
+	/// </summary>
 	public DelegateCommand PinWindow => new(() => Pinned = true);
 
+	/// <summary>
+	/// Gets or sets a value indicating whether the main application window is pinned.
+	/// When pinned, the application bypasses certain automatic shutdown conditions.
+	/// </summary>
 	public bool Pinned
 	{
 		get => pinned;
 		private set => SetProperty(ref pinned, value);
 	}
-
+	
+	/// <summary>
+	/// Event triggered to initiate application shutdown. 
+	/// It is wired to the <see cref="App.ExitApplication" /> method to terminate the application.
+	/// </summary>
 	public EventHandler? OnShutdown;
 
+	/// <summary>
+	/// Performs application shutdown when the main window becomes inactive, 
+	/// unless specific conditions like configuration mode or pinning are met.
+	/// </summary>
 	public void OnDeactivated()
 	{
 		if (!ConfigurationMode && !Debugger.IsAttached && !Pinned)
@@ -209,6 +293,9 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// Copies the underlying target URL to the clipboard in a thread-safe manner.
+	/// </summary>
 	private void PerformCopyUrl()
 	{
 		try
@@ -229,12 +316,18 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// Opens the editor for the current URL, preparing it for user modifications.
+	/// </summary>
 	private void OpenURLEditor()
 	{
 		EditURL = Url.UnderlyingTargetURL;
 		OnPropertyChanged(nameof(EditURL));
 	}
 
+	/// <summary>
+	/// Closes the URL editor and clears the edit state.
+	/// </summary>
 	private void CloseURLEditor()
 	{
 		if (edit_url == null)
@@ -245,6 +338,9 @@ public sealed class ApplicationViewModel : ModelBase
 		OnPropertyChanged(nameof(EditURL));
 	}
 
+	/// <summary>
+	/// Reorders the list of browser choices based on the user's settings.
+	/// </summary>
 	internal void RefreshChoices()
 	{
 		var newOrder = Choices.OrderBy(c => c.Model, Configuration.Settings.BrowserSorter).ToArray();

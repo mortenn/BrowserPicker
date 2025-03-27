@@ -18,10 +18,16 @@ using JetBrains.Annotations;
 
 namespace BrowserPicker.ViewModel;
 
+/// <summary>
+/// Represents the view model for configuring browser behavior and default settings
+/// in the BrowserPicker application.
+/// </summary>
 public sealed class ConfigurationViewModel : ModelBase
 {
 #if DEBUG
-	// Used by WPF designer
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class for the WPF designer with design-time data.
+	/// </summary>
 	[UsedImplicitly]
 	public ConfigurationViewModel()
 	{
@@ -115,6 +121,11 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 #endif
 
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class with specified settings and parent view model.
+	/// </summary>
+	/// <param name="settings">The browser picker configuration settings.</param>
+	/// <param name="parentViewModel">The parent application view model.</param>
 	public ConfigurationViewModel(IBrowserPickerConfiguration settings, ApplicationViewModel parentViewModel)
 	{
 		ParentViewModel = parentViewModel;
@@ -127,6 +138,11 @@ public sealed class ConfigurationViewModel : ModelBase
 		settings.PropertyChanged += Configuration_PropertyChanged;
 	}
 
+	/// <summary>
+	/// Handles changes in the Defaults collection and updates property change handlers.
+	/// </summary>
+	/// <param name="sender">The collection that triggered the event.</param>
+	/// <param name="e">The event data related to the collection changes.</param>
 	private void Defaults_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 	{
 		if (e.NewItems?.Count > 0)
@@ -148,6 +164,12 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// Handles property change events for individual <see cref="DefaultSetting"/> items.
+	/// Removes items from the Defaults collection if they are marked as deleted.
+	/// </summary>
+	/// <param name="sender">The default setting item triggering the event.</param>
+	/// <param name="e">Details of the property that was changed.</param>
 	private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName == nameof(DefaultSetting.Deleted) && sender is DefaultSetting { Deleted: true } item)
@@ -156,24 +178,49 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// Gets the configuration settings.
+	/// </summary>
 	public IBrowserPickerConfiguration Settings { get; }
 
+	/// <summary>
+	/// Gets the parent application ViewModel associated with this configuration.
+	/// </summary>
 	public ApplicationViewModel ParentViewModel { get; init; }
 
+	/// <summary>
+	/// Gets the default URL shorteners recognized by the application.
+	/// </summary>
 	public static string[] DefaultUrlShorteners => UrlHandler.DefaultUrlShorteners;
 
+	/// <summary>
+	/// Gets additional URL shorteners configured by the user that are not in the default list.
+	/// </summary>
 	public string[] AdditionalUrlShorteners => Settings.UrlShorteners.Except(DefaultUrlShorteners).ToArray();
 
+	/// <summary>
+	/// Gets or sets a value indicating whether the welcome message should be displayed to the user.
+	/// </summary>
 	public bool Welcome { get; internal set; }
 
+	/// <summary>
+	/// Gets or sets a value indicating whether defaults should be automatically added
+	/// based on user behavior.
+	/// </summary>
 	public bool AutoAddDefault
 	{
 		get => auto_add_default;
 		set => SetProperty(ref auto_add_default, value);
 	}
 
+	/// <summary>
+	/// Gets the collection of default settings used by the browser picker.
+	/// </summary>
 	public ObservableCollection<DefaultSetting> Defaults { get; } = [];
 
+	/// <summary>
+	/// Gets or sets the match type for defining a new default setting.
+	/// </summary>
 	public MatchType NewDefaultMatchType
 	{
 		get => new_match_type;
@@ -211,6 +258,9 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
 
+	/// <summary>
+	/// Prompts the user to select a backup file location and saves the current settings.
+	/// </summary>
 	private void PerformBackup()
 	{
 		var browser = new SaveFileDialog
@@ -227,6 +277,9 @@ public sealed class ConfigurationViewModel : ModelBase
 		Settings.SaveAsync(browser.FileName);
 	}
 
+	/// <summary>
+	/// Prompts the user to select a backup file and restores settings from it.
+	/// </summary>
 	private void PerformRestore()
 	{
 		var browser = new OpenFileDialog
@@ -327,6 +380,9 @@ public sealed class ConfigurationViewModel : ModelBase
 		return true;
 	}
 
+	/// <summary>
+	/// Adds a new default setting based on the currently defined properties.
+	/// </summary>
 	private void AddDefaultSetting()
 	{
 		if (AddNewDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser))
