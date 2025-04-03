@@ -44,8 +44,6 @@ jobs:
     - name: Build runtime dependent binaries
       uses: "./.github/template/build-signed"
       with:
-        base64_encoded_pfx: ${{ secrets.Base64_Encoded_Pfx }}
-        pfx_key: ${{ secrets.Pfx_Key }}
         configuration: ${{ matrix.configuration }}
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -p VersionSuffix=${{ needs.prepare.outputs.version_suffix }}"
         package_project: dist/Dependent/Dependent.wixproj
@@ -76,8 +74,6 @@ jobs:
     - name: Build runtime portable binaries
       uses: "./.github/template/build-signed"
       with:
-        base64_encoded_pfx: ${{ secrets.Base64_Encoded_Pfx }}
-        pfx_key: ${{ secrets.Pfx_Key }}
         configuration: ${{ matrix.configuration }}
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -p VersionSuffix=${{ needs.prepare.outputs.version_suffix }} -r win-x64 -p:PublishSingleFile=true"
         package_project: dist/Portable/Portable.wixproj

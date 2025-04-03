@@ -54,24 +54,6 @@ inputs:
     required: true
     description: "Path to the files to bundle and upload"
 
-  signtool:
-    required: true
-    description: "Path to signtool"
-    default: "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe"
-
-  timestamp_server:
-    required: true
-    description: "Timestamp server for signtool"
-    default: "http://timestamp.digicert.com"
-
-  base64_encoded_pfx:
-    description: 'Base64 encoded pfx file'
-    required: true
-
-  pfx_key:
-    description: 'pfx password'
-    required: true
-
 runs:
   using: composite
   steps:
@@ -95,34 +77,10 @@ runs:
     shell: bash
     run: dotnet publish -c ${{ inputs.configuration }} ${{ inputs.project_path }} ${{ inputs.dotnet_args }}
 
-  # Decode the base 64 encoded pfx and save the Signing_Certificate
-  - name: Decode the pfx
-    shell: bash
-    run: echo "${{ inputs.base64_encoded_pfx }}" | base64 -d > GitHubActionsWorkflow.pfx
-
-  - name: Sign the executable
-    shell: powershell
-    env:
-      pfx_key: ${{ inputs.pfx_key }}
-    run: |
-      & "${{ inputs.signtool }}" sign /debug /tr ${{ inputs.timestamp_server }} /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p $Env:pfx_key ${{ inputs.binaries }}
-
   # Create the app package by building and packaging the Windows Application Packaging project
   - name: Create the installer
     shell: bash
     run: dotnet build ${{ inputs.package_project }} --no-dependencies -c ${{ inputs.configuration }} -p Version=${{ inputs.package_version }}
-
-  - name: Sign the installer
-    shell: powershell
-    env:
-      pfx_key: ${{ inputs.pfx_key }}
-    run: |
-      & "${{ inputs.signtool }}" sign /debug /tr ${{ inputs.timestamp_server }} /td sha256 /fd sha256 /f GitHubActionsWorkflow.pfx /p $Env:pfx_key ${{ inputs.package }}
-      
-  # Remove the pfx
-  - name: Remove the pfx
-    shell: bash
-    run: rm GitHubActionsWorkflow.pfx
 
   - name: Upload msi
     uses: actions/upload-artifact@v4

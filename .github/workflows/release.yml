@@ -45,8 +45,6 @@ jobs:
     - name: Build runtime dependent binaries
       uses: "./.github/template/build-signed"
       with:
-        base64_encoded_pfx: ${{ secrets.Base64_Encoded_Pfx }}
-        pfx_key: ${{ secrets.Pfx_Key }}
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }}"
         package_project: dist/Dependent/Dependent.wixproj
         package_version: ${{ needs.prepare.outputs.version }}
@@ -71,8 +69,6 @@ jobs:
     - name: Build runtime independent binaries
       uses: "./.github/template/build-signed"
       with:
-        base64_encoded_pfx: ${{ secrets.Base64_Encoded_Pfx }}
-        pfx_key: ${{ secrets.Pfx_Key }}
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -r win-x64 -p:PublishSingleFile=true"
         package_project: dist/Portable/Portable.wixproj
         package_version: ${{ needs.prepare.outputs.version }}
@@ -113,6 +109,4 @@ jobs:
           DependentSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker.msi
           PortableSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker-Portable.msi
           Dependent.zip
-          Portable.zip
-          dist/code_signing.cer
-  
+          Portable.zip  
