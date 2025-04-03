@@ -174,7 +174,12 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			IconPath = model.IconPath,
 			Name = model.Name,
 			PrivacyArgs = model.PrivacyArgs,
-			CustomKeyBind = model.CustomKeyBind
+			CustomKeyBind = model.CustomKeyBind,
+			ManualOverride = model.ManualOverride,
+			Disabled = model.Disabled,
+			ManualOrder = model.ManualOrder,
+			Usage = model.Usage,
+			ExpandFileUrls = model.ExpandFileUrls
 		};
 		var editor = new BrowserEditor(new BrowserViewModel(temp, parent_view_model));
 		editor.Show();

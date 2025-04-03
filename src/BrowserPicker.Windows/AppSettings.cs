@@ -506,6 +506,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		var update = BrowserList.FirstOrDefault(m => m.Name.Equals(model.Name, StringComparison.CurrentCultureIgnoreCase));
 		if (update != null)
 		{
+			if (update.ManualOverride)
+			{
+				return;
+			}
 			update.Command = model.Command;
 			update.CommandArgs = model.CommandArgs;
 			update.PrivacyArgs = model.PrivacyArgs;
