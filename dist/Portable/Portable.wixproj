@@ -18,22 +18,6 @@
 			<RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
 			<RefTargetDir>INSTALLFOLDER</RefTargetDir>
 		</ProjectReference>
-		<ProjectReference Include="..\..\src\BrowserPicker.Windows\BrowserPicker.Windows.csproj">
-			<Name>BrowserPicker.Windows</Name>
-			<Project>{c3ce17ea-baae-4de7-afb2-319d50ecb2c8}</Project>
-			<Private>True</Private>
-			<DoNotHarvest>True</DoNotHarvest>
-			<RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-			<RefTargetDir>INSTALLFOLDER</RefTargetDir>
-		</ProjectReference>
-		<ProjectReference Include="..\..\src\BrowserPicker\BrowserPicker.csproj">
-			<Name>BrowserPicker</Name>
-			<Project>{d7695535-9c0d-4983-b8f7-09b067347e7e}</Project>
-			<Private>True</Private>
-			<DoNotHarvest>True</DoNotHarvest>
-			<RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-			<RefTargetDir>INSTALLFOLDER</RefTargetDir>
-		</ProjectReference>
 	</ItemGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
 		<DefineConstants>Debug</DefineConstants>
