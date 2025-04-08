@@ -1,4 +1,4 @@
-﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+﻿<Project Sdk="WixToolset.Sdk/6.0.0">
 	<PropertyGroup>
 		<OutputName>BrowserPicker-Portable</OutputName>
 		<ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
@@ -6,8 +6,8 @@
 		<DefineConstants>ProductVersion=$(Version)</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" />
-		<PackageReference Include="WixToolset.Util.wixext"  Version="5.0.2" />
+		<PackageReference Include="WixToolset.NetFx.wixext" Version="6.0.0" />
+		<PackageReference Include="WixToolset.Util.wixext" Version="6.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\BrowserPicker.App\BrowserPicker.App.csproj">
