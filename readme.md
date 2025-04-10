@@ -13,7 +13,7 @@ You can find the latest release on [github](https://github.com/mortenn/BrowserPi
 To enable the browser picker window, you need to set Browser Picker as your default browser. 
 
 ### .NET Runtime dependent binary
-BrowserPicker.msi and Bundle.zip are JIT compiled and require you have the [.NET 9.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
+BrowserPicker.msi and Dependent.zip are JIT compiled and require you have the [.NET 9.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
 Direct links: [64bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x64-installer), [32bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x86-installer).
 
 #### Native image generation
