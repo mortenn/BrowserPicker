@@ -128,7 +128,7 @@ public sealed class DefaultSetting(MatchType type, string? pattern, string? brow
 		_ => $"|{Type}|{pattern}"
 	};
 
-	public override int GetHashCode() => Type.GetHashCode() ^ pattern?.GetHashCode() ?? 0;
+	public override int GetHashCode() => HashCode.Combine(Type, pattern);
 
 	private void OnPropertyChanging([CallerMemberName] string? propertyName = null)
 	{

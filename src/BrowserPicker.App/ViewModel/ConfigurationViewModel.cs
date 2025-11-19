@@ -35,7 +35,15 @@ public sealed class ConfigurationViewModel : ModelBase
 				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name),
 				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
 			],
-			BrowserList = [.. WellKnownBrowsers.List.Select(b => new BrowserModel(b, null, string.Empty))],
+			BrowserList = [.. WellKnownBrowsers.List.Select(b => new BrowserModel
+			{
+				Name = b.Name,
+				Command = string.Empty,
+				Executable = b.RealExecutable,
+				IconPath = null,
+				PrivacyArgs = b.PrivacyArgs
+			})],
+
 			DefaultBrowser = Firefox.Instance.Name
 		};
 		Welcome = true;
@@ -245,7 +253,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void AddBrowserManually()
 	{
-		var editor = new BrowserEditor(new BrowserViewModel(new BrowserModel(), ParentViewModel));
+		var editor = new BrowserEditor(new BrowserViewModel(new BrowserModel { Name = string.Empty, Command = string.Empty }, ParentViewModel));
 		editor.Show();
 		editor.Closing += Editor_Closing;
 	}

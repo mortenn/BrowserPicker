@@ -14,6 +14,9 @@ namespace BrowserPicker.Windows;
 
 public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 {
+	/// <summary>
+	/// Initializes a new instance of the <see cref="AppSettings"/> class and loads persisted browsers, defaults and sorter.
+	/// </summary>
 	public AppSettings()
 	{
 		sorter = new BrowserSorter(this);
@@ -22,24 +25,37 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
 	}
 
+	/// <summary>
+	/// Indicates whether this is the first time the application has been run.
+	/// Stored in the user registry.
+	/// </summary>
 	public bool FirstTime
 	{
 		get => Reg.GetBool(true);
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <summary>
+	/// When true, always prompt the user to choose a browser instead of automatically selecting one.
+	/// </summary>
 	public bool AlwaysPrompt
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <summary>
+	/// When true, always use configured defaults rather than attempting to auto-select a running browser.
+	/// </summary>
 	public bool AlwaysUseDefaults
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <summary>
+	/// When true and there is no matching default, the user will be asked to choose a browser.
+	/// </summary>
 	public bool AlwaysAskWithoutDefault
 	{
 		get => Reg.Get<bool>();
@@ -54,12 +70,18 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Timeout in milliseconds for looking up and resolving URLs.
+	/// </summary>
 	public int UrlLookupTimeoutMilliseconds
 	{
 		get => Reg.Get(2000);
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <summary>
+	/// When true, the user can manually order the list of browsers. Mutually exclusive with other ordering modes.
+	/// </summary>
 	public bool UseManualOrdering
 	{
 		get => Reg.Get<bool>();
@@ -71,6 +93,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// When true, the application will order browsers automatically based on usage.
+	/// </summary>
 	public bool UseAutomaticOrdering
 	{
 		get => Reg.GetBool(true);
@@ -82,6 +107,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// When true, the application will order browsers alphabetically.
+	/// </summary>
 	public bool UseAlphabeticalOrdering
 	{
 		get => Reg.Get<bool>();
@@ -93,6 +121,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Update other ordering settings to ensure mutual exclusivity when one ordering setting changes.
+	/// </summary>
+	/// <param name="value">The new value being applied to the calling ordering property.</param>
+	/// <param name="setting">The name of the calling property (automatically provided).</param>
 	private void UpdateOrder(bool value, [CallerMemberName] string? setting = null)
 	{
 		if (setting != nameof(UseAutomaticOrdering) && UseAutomaticOrdering && value)
@@ -109,29 +142,45 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// When true, transparency is disabled for the UI.
+	/// </summary>
 	public bool DisableTransparency
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <summary>
+	/// When true, network access features are disabled.
+	/// </summary>
 	public bool DisableNetworkAccess
 	{
 		get => Reg.Get<bool>();
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <summary>
+	/// Hosts a list of known URL shortener host names.
+	/// </summary>
 	public string[] UrlShorteners
 	{
 		get => Reg.Get<string[]>() ?? [];
 		set { Reg.Set(value); OnPropertyChanged(); }
 	}
 
+	/// <summary>
+	/// The in-memory list of discovered and configured browsers.
+	/// </summary>
 	public List<BrowserModel> BrowserList
 	{
 		get;
 	}
 
+	/// <summary>
+	/// Adds a browser to the persisted browser list and wires up property change handling.
+	/// </summary>
+	/// <param name="browser">The browser model to add.</param>
 	public void AddBrowser(BrowserModel browser)
 	{
 		var key = Reg.Open(nameof(BrowserList), browser.Name);
@@ -158,6 +207,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	private string backup_log = string.Empty;
 	private readonly BrowserSorter sorter;
 
+	/// <summary>
+	/// When true, only URLs matching some <see cref="Defaults"/> record will give the user a choice.
+	/// This makes BrowserPicker only apply for certain URLs.
+	/// </summary>
 	public bool UseFallbackDefault
 	{
 		get => use_fallback_default;
@@ -184,6 +237,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// The browser identifier used as a fallback when <see cref="UseFallbackDefault"/> is true.
+	/// </summary>
 	public string? DefaultBrowser
 	{
 		get => Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser;
@@ -206,6 +262,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Adds a default setting rule to the Defaults collection.
+	/// </summary>
+	/// <param name="matchType">The type of match to use for the default rule.</param>
+	/// <param name="pattern">The pattern used to match URLs.</param>
+	/// <param name="browser">The browser identifier to use when the rule matches.</param>
+	/// <returns>The created <see cref="DefaultSetting"/> or null when creation fails.</returns>
 	public DefaultSetting? AddDefault(MatchType matchType, string pattern, string? browser)
 	{
 		var setting = GetDefaultSetting(null, browser);
@@ -220,6 +283,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return setting;
 	}
 
+	/// <summary>
+	/// Scans the Windows registry for installed browsers and detects legacy Edge when appropriate.
+	/// </summary>
 	public void FindBrowsers()
 	{
 		// Prefer 64 bit browsers to 32 bit ones, machine wide installations to user specific ones.
@@ -234,6 +300,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Starts long running background tasks for the settings object.
+	/// </summary>
+	/// <param name="cancellationToken">Cancellation token to stop the operation.</param>
+	/// <returns>A task representing the running operation.</returns>
 	public Task Start(CancellationToken cancellationToken)
 	{
 		return Task.Run(FindBrowsers, cancellationToken);
@@ -244,6 +315,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		WriteIndented = true
 	};
 
+	/// <summary>
+	/// Saves the current configuration to the specified JSON file asynchronously.
+	/// </summary>
+	/// <param name="fileName">The full path to the file to save.</param>
+	/// <returns>A task that completes when the save operation finishes.</returns>
 	public async Task SaveAsync(string fileName)
 	{
 		var settings = new SerializableSettings(this);
@@ -260,6 +336,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Loads configuration from the specified JSON file asynchronously and updates current settings.
+	/// </summary>
+	/// <param name="fileName">The full path to the file to load.</param>
+	/// <returns>A task that completes when the load operation finishes.</returns>
 	public async Task LoadAsync(string fileName)
 	{
 		await using var file = File.OpenRead(fileName);
@@ -286,6 +367,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		BackupLog += $"Imported configuration from {fileName}\n";
 	}
 
+	/// <summary>
+	/// Apply settings from an <see cref="IApplicationSettings"/> instance to this settings instance.
+	/// </summary>
+	/// <param name="settings">Source settings to apply.</param>
 	private void UpdateSettings(IApplicationSettings settings)
 	{
 		AlwaysPrompt = settings.AlwaysPrompt;
@@ -297,14 +382,24 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		DisableNetworkAccess = settings.DisableNetworkAccess;
 	}
 
+	/// <summary>
+	/// Log from backup and restore operations.
+	/// </summary>
 	public string BackupLog
 	{
 		get => backup_log;
 		private set => SetProperty(ref backup_log, value);
 	}
 
+	/// <summary>
+	/// The comparer used to sort browsers in the UI.
+	/// </summary>
 	public IComparer<BrowserModel> BrowserSorter => sorter;
 
+	/// <summary>
+	/// Update the current browser list using a list imported from a backup, merging, adding and removing as needed.
+	/// </summary>
+	/// <param name="browserList">The list of browsers to merge into the current list.</param>
 	private void UpdateBrowsers(List<BrowserModel> browserList)
 	{
 		foreach (var browser in browserList)
@@ -332,6 +427,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(BrowserList));
 	}
 
+	/// <summary>
+	/// Update the default rules collection with rules imported from a backup.
+	/// </summary>
+	/// <param name="defaults">The list of defaults to merge into the current defaults.</param>
 	private void UpdateDefaults(List<DefaultSetting> defaults)
 	{
 		var fallback = defaults.FirstOrDefault(d => d.Type == MatchType.Default);
@@ -369,8 +468,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	}
 
 	/// <summary>
-	/// This is used to detect the old Edge browser.
-	/// If the computer has the new Microsoft Edge browser installed, this should never be called.
+	/// Detects the legacy Windows 10 Edge app and adds it as a browser model when the modern Edge is not present.
 	/// </summary>
 	private void FindLegacyEdge()
 	{
@@ -391,10 +489,22 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		var appId = Path.GetFileName(targets[0]);
 		var icon = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png");
 		var shell = $"shell:AppsFolder\\{appId}!MicrosoftEdge";
-		var model = new BrowserModel(known, icon, shell);
+		var model = new BrowserModel
+		{
+			Name = known.Name,
+			Command = shell,
+			Executable = known.RealExecutable,
+			PrivacyArgs = known.PrivacyArgs,
+			IconPath = icon
+		};
 		AddOrUpdateBrowserModel(model);
 	}
 
+	/// <summary>
+	/// Enumerates subkeys under the specified registry path and attempts to create browser models for each entry.
+	/// </summary>
+	/// <param name="hive">The root registry hive to search.</param>
+	/// <param name="subKey">The subkey path to enumerate.</param>
 	private void EnumerateBrowsers(RegistryKey hive, string subKey)
 	{
 		var root = hive.OpenSubKey(subKey, false);
@@ -412,6 +522,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Reads browser metadata from the specified registry subkey and returns a browser model when valid.
+	/// </summary>
+	/// <param name="root">Registry key containing the browser entry.</param>
+	/// <param name="browser">The subkey name for the browser entry.</param>
+	/// <returns>A <see cref="BrowserModel"/> when a valid browser is found; otherwise null.</returns>
 	private static BrowserModel? GetBrowserDetails(RegistryKey root, string browser)
 	{
 		var reg = root.OpenSubKey(browser, false);
@@ -429,10 +545,26 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 		var known = WellKnownBrowsers.Lookup(name, shell);
 		return known != null
-			? new BrowserModel(known, icon, shell)
-			: new BrowserModel(name, icon, shell);
+			? new BrowserModel
+			{
+				Name = known.Name,
+				Command = shell,
+				Executable = known.RealExecutable,
+				PrivacyArgs = known.PrivacyArgs,
+				IconPath = icon
+			}
+			: new BrowserModel
+			{
+				Name = name,
+				Command = shell,
+				IconPath = icon
+			};
 	}
 
+	/// <summary>
+	/// Adds a new browser model to the list or updates an existing model with the same name.
+	/// </summary>
+	/// <param name="model">The browser model to add or update.</param>
 	private void AddOrUpdateBrowserModel(BrowserModel model)
 	{
 		var update = BrowserList.FirstOrDefault(m => m.Name.Equals(model.Name, StringComparison.CurrentCultureIgnoreCase));
@@ -447,6 +579,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		AddBrowser(model);
 	}
 
+	/// <summary>
+	/// Loads default rules from registry, converting legacy default entries when present.
+	/// </summary>
+	/// <returns>A list of <see cref="DefaultSetting"/> representing persisted defaults.</returns>
 	private static List<DefaultSetting> GetDefaults()
 	{
 		var key = Reg.Open(nameof(Defaults));
@@ -469,6 +605,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		];
 	}
 
+	/// <summary>
+	/// Converts an old-style default registry value into the current format and returns the updated value names.
+	/// </summary>
+	/// <param name="key">Registry key containing the defaults.</param>
+	/// <returns>The updated list of value names after conversion.</returns>
 	private static string[] ConvertLegacyDefault(RegistryKey key)
 	{
 		var defaultBrowser = key.GetValue("|Default|");
@@ -480,6 +621,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return key.GetValueNames();
 	}
 
+	/// <summary>
+	/// Creates a <see cref="DefaultSetting"/> from a registry key/value pair and wires up change notifications.
+	/// </summary>
+	/// <param name="key">The registry key name for the default (may be null).</param>
+	/// <param name="value">The registry stored value to decode.</param>
+	/// <returns>The decoded <see cref="DefaultSetting"/>, or null if unable to decode.</returns>
 	private static DefaultSetting? GetDefaultSetting(string? key, string? value)
 	{
 		if (value == null)
@@ -496,6 +643,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return setting;
 	}
 
+	/// <summary>
+	/// Handles <see cref="DefaultSetting.PropertyChanging"/> events to remove legacy registry values when keys change.
+	/// </summary>
+	/// <param name="sender">Event sender, expected to be a <see cref="DefaultSetting"/>.</param>
+	/// <param name="e">Property changing event args.</param>
 	private static void DefaultSetting_PropertyChanging(object? sender, PropertyChangingEventArgs e)
 	{
 		if (e.PropertyName != nameof(DefaultSetting.SettingKey))
@@ -518,6 +670,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Handles <see cref="DefaultSetting.PropertyChanged"/> events to persist changes to the registry or remove deleted rules.
+	/// </summary>
+	/// <param name="sender">Event sender, expected to be a <see cref="DefaultSetting"/>.</param>
+	/// <param name="e">Property changed event args.</param>
 	private static void DefaultSetting_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is not DefaultSetting model)
@@ -548,6 +705,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	/// <summary>
+	/// Reads the persisted list of browsers from the registry and returns them sorted.
+	/// </summary>
+	/// <returns>A list of <see cref="BrowserModel"/> instances loaded from the registry.</returns>
 	private List<BrowserModel> GetBrowsers()
 	{
 		var list = Reg.SubKey(nameof(BrowserList));
@@ -576,6 +737,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return browsers;
 	}
 
+	/// <summary>
+	/// Reads a single browser configuration from the given registry key.
+	/// </summary>
+	/// <param name="list">The registry key containing the browser entries.</param>
+	/// <param name="name">The subkey name for the browser.</param>
+	/// <returns>A <see cref="BrowserModel"/> when the entry is valid; otherwise null.</returns>
 	private BrowserModel? GetBrowser(RegistryKey list, string name)
 	{
 		var config = list.OpenSubKey(name, false);
@@ -601,6 +768,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return browser;
 	}
 
+	/// <summary>
+	/// Persists property changes from a <see cref="BrowserModel"/> to the registry and handles removal.
+	/// </summary>
+	/// <param name="sender">The browser model that changed.</param>
+	/// <param name="e">The property change event args.</param>
 	private void BrowserConfiguration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is not BrowserModel model)

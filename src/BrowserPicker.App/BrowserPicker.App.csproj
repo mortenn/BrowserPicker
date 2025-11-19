@@ -23,8 +23,4 @@
     <ProjectReference Include="..\BrowserPicker.Windows\BrowserPicker.Windows.csproj" />
     <ProjectReference Include="..\BrowserPicker\BrowserPicker.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" />
-    <PackageReference Include="System.Drawing.Common" />
-  </ItemGroup>
 </Project>

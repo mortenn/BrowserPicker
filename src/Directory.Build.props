@@ -1,10 +1,10 @@
 <Project>
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
+		<TargetFramework>net10.0-windows</TargetFramework>
 		<VersionPrefix>2.0.0.4</VersionPrefix>
 		<VersionSuffix>-beta1</VersionSuffix>
 		<Company>Runsafe</Company>
-		<Copyright>Copyright ©  2017-2024</Copyright>
+		<Copyright>Copyright ©  2017-2025</Copyright>
 		<Configurations>Debug;Release</Configurations>
 		<Platforms>x64</Platforms>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>

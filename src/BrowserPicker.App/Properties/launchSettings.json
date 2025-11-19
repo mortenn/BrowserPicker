@@ -7,6 +7,10 @@
       "commandName": "Project",
       "commandLineArgs": "https://github.com/mortenn/BrowserPicker"
     },
+		"vg.no": {
+      "commandName": "Project",
+      "commandLineArgs": "https://vg.no"
+    },
     "file url": {
       "commandName": "Project",
       "commandLineArgs": "file://c:/windows/win.ini"

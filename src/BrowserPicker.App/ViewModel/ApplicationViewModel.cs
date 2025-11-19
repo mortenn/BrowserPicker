@@ -24,7 +24,16 @@ public sealed class ApplicationViewModel : ModelBase
 		force_choice = true;
 		Configuration = new ConfigurationViewModel(App.Settings, this);
 		Choices = new ObservableCollection<BrowserViewModel>(
-			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this))
+			WellKnownBrowsers.List.Select(b => new BrowserViewModel(
+				new BrowserModel
+				{
+					Name = b.Name,
+					Command = string.Empty,
+					IconPath = null,
+					PrivacyArgs = b.PrivacyArgs,
+				},
+				this
+			))
 		);
 	}
 

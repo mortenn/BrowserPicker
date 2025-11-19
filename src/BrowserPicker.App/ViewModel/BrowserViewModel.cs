@@ -17,7 +17,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 #if DEBUG
 	// WPF Designer
 	[UsedImplicitly]
-	public BrowserViewModel() : base(new BrowserModel())
+	public BrowserViewModel() : base(new BrowserModel { Name = "Sample", Command = string.Empty })
 	{
 		parent_view_model = new ApplicationViewModel();
 	}
