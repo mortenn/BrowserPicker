@@ -23,7 +23,7 @@
 			<StackPanel Orientation="Horizontal">
 				<Image Source="{DynamicResource DefaultIcon}" Height="16" Margin="5" />
 				<TextBlock Margin="0,5">
-					<Hyperlink TextDecorations="None" Command="{Binding PinWindow}" ToolTip="Pins the window, making it not close on lost focus">
+					<Hyperlink TextDecorations="None" Command="{Binding PinWindow}" ToolTip="固定窗口，使其在失去焦点时不会关闭">
 						<Hyperlink.Style>
 							<Style>
 								<Setter Property="Hyperlink.Foreground" Value="Silver" />
@@ -36,7 +36,7 @@
 						</Hyperlink.Style>
 						📌
 					</Hyperlink>
-					<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}" ToolTip="Copy the URL to the clipboard">
+					<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}" ToolTip="将 URL 复制到剪贴板">
 						<Hyperlink.Style>
 							<Style>
 								<Setter Property="Hyperlink.Foreground" Value="Silver" />
@@ -49,7 +49,7 @@
 						</Hyperlink.Style>
 						📋
 					</Hyperlink>
-					<Hyperlink TextDecorations="None" Command="{Binding Edit}" Foreground="Silver" ToolTip="Edit the URL before opening it">
+					<Hyperlink TextDecorations="None" Command="{Binding Edit}" Foreground="Silver" ToolTip="在打开前编辑 URL">
 						<Hyperlink.Style>
 							<Style>
 								<Setter Property="UIElement.Visibility" Value="Collapsed" />
