@@ -16,26 +16,7 @@
 
 要启用浏览器选择器窗口，需将 “浏览器选择器” 设为系统默认浏览器。
 
-### 依赖 .NET 运行时的安装包
-
-BrowserPicker.msi 和 Dependent.zip 为即时编译（JIT）版本，需安装 [.NET 9.0 桌面运行时](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) 才能使用。
-直接下载链接：[64 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x64-installer)、[32 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x86-installer)。
-
-#### 原生镜像生成
-
-安装过程中，`BrowserPicker.msi` 会执行 ngen 工具为你的电脑生成原生镜像，这能显著提升可执行文件的启动速度。若你选择压缩包版本，可运行命令 `ngen install BrowserPicker.exe` 以获得相同优化效果。
-
-### 便携版安装包
-
-若不想在电脑上安装 .NET 运行时，可下载包含运行时的便携版。
-
-`BrowserPicker-Portable.msi` 和 `Portable.zip` 包含适用于 win-x64 系统的可执行文件，且已嵌入 .NET 运行时。该版本文件体积会显著增大，但无需额外安装运行时即可使用。
-
-### 签名证书
-
-为避免 “未知发布者” 警告，可先将提供的证书导入你的证书存储区，导入方法参考 [此处](https://stackoverflow.com/questions/49039136/powershell-script-to-install-trusted-publisher-certificates)。
-
-### 手动设置步骤
+手动设置步骤：
 
 1.从开始菜单打开 “设置” 应用；
 2.进入 “应用” 选项；
