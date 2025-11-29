@@ -500,7 +500,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "用户选择";
 		}
 	}
 
@@ -508,7 +508,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "用户选择";
 		}
 	}
 }

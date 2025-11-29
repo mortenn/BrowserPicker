@@ -46,35 +46,35 @@
 				<RowDefinition />
 			</Grid.RowDefinitions>
 
-			<TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="Add a browser" Foreground="White" HorizontalAlignment="Center" Margin="5" />
+			<TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="添加浏览器" Foreground="White" HorizontalAlignment="Center" Margin="5" />
 
 			<Image Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="32" MaxHeight="32" Source="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" />
 
-			<TextBlock Text="Name: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Foreground="White" />
+			<TextBlock Text="名称: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Model.Name,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 
-			<TextBlock Text="Command: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="2" Foreground="White" />
+			<TextBlock Text="文件目标: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="2" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Model.Command,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-			<Button Content="..." Grid.Row="2" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Command_Browse" />
+			<Button Content="..." Grid.Row="2" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="浏览文件位置" Click="Command_Browse" />
 
-			<TextBlock Text="Command Args: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Foreground="White" />
+			<TextBlock Text="启动选项: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="3" Text="{Binding Model.CommandArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 
-			<TextBlock Text="Icon: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Foreground="White" />
+			<TextBlock Text="图标: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="4" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Model.IconPath,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
-			<Button Content="..." Grid.Row="4" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="Browse" Click="Icon_Browse" />
+			<Button Content="..." Grid.Row="4" Grid.Column="3" Margin="2" FontSize="8" VerticalAlignment="Stretch" ToolTip="浏览文件位置" Click="Icon_Browse" />
 
-			<CheckBox Grid.Row="5" Grid.Column="2" Content="Expand file:// urls" IsChecked="{Binding Model.ExpandFileUrls}" Foreground="White" Margin="2,4" />
+			<CheckBox Grid.Row="5" Grid.Column="2" Content="展开 file:// 网址" IsChecked="{Binding Model.ExpandFileUrls}" Foreground="White" Margin="2,4" />
 
-			<TextBlock Text="Privacy Args: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Foreground="White" />
+			<TextBlock Text="隐私参数: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="6" Text="{Binding Model.PrivacyArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 
-			<CheckBox Grid.Row="7" Grid.Column="2" Content="Disable automatic updates" IsChecked="{Binding Model.ManualOverride}" Foreground="White" Margin="2,4" />
+			<CheckBox Grid.Row="7" Grid.Column="2" Content="禁用自动更新" IsChecked="{Binding Model.ManualOverride}" Foreground="White" Margin="2,4" />
 
-			<TextBlock Text="Hotkey:" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Foreground="White" />
+			<TextBlock Text="快捷键:" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Foreground="White" />
 			<Grid Grid.Column="2" Grid.Row="8">
 				<TextBox Text="{Binding Model.CustomKeyBind,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" KeyDown="OnCustomKeyBindDown" KeyUp="OnCustomKeyBindUp" />
-				<TextBlock VerticalAlignment="Center" Margin="5,0" Text="(Automatic)" Foreground="Silver" IsHitTestVisible="False">
+				<TextBlock VerticalAlignment="Center" Margin="5,0" Text="(自动)" Foreground="Silver" IsHitTestVisible="False">
 					<TextBlock.Style>
 						<Style>
 							<Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -89,8 +89,8 @@
 			</Grid>
 			
 			<StackPanel Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
-				<Button Content="Cancel" Click="Cancel_OnClick" Padding="10,0" />
-				<Button Content="Ok" Click="Ok_OnClick" Padding="10,0" Margin="10,0,0,0" />
+				<Button Content="取消" Click="Cancel_OnClick" Padding="10,0" />
+				<Button Content="确认" Click="Ok_OnClick" Padding="10,0" Margin="10,0,0,0" />
 			</StackPanel>
 		</Grid>
 	</Border>

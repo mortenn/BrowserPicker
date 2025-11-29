@@ -112,4 +112,9 @@ public partial class MainWindow
 	{
 		DragMove();
 	}
+
+	private void BrowserList_Loaded(object sender, RoutedEventArgs e)
+	{
+
+	}
 }

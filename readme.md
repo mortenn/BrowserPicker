@@ -10,7 +10,7 @@
 
 ## 安装
 
-你可在 [GitHub](https://github.com/XTsat/BrowserPicker/releases) 上获取最新版本。
+你可在 [GitHub](https://github.com/XTsat/BrowserPicker_zh/releases) 上获取最新版本。
 
 ### 设置默认浏览器
 
@@ -18,7 +18,8 @@
 
 ### 依赖 .NET 运行时的安装包
 
-BrowserPicker.msi 和 Dependent.zip 为即时编译（JIT）版本，需安装 [.NET 9.0 桌面运行时](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) 才能使用。直接下载链接：[64 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x64-installer)、[32 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x86-installer)。
+BrowserPicker.msi 和 Dependent.zip 为即时编译（JIT）版本，需安装 [.NET 9.0 桌面运行时](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) 才能使用。
+直接下载链接：[64 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x64-installer)、[32 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x86-installer)。
 
 #### 原生镜像生成
 
@@ -127,15 +128,15 @@ BrowserPicker.msi 和 Dependent.zip 为即时编译（JIT）版本，需安装 [
 
 应用名称会尝试根据可执行文件中的信息自动设置。
 
-##### Chrome 配置文件
+##### chromium 配置文件
 
-Chrome 用户提示：若你使用多个 Chrome 配置文件，默认情况下选择 Chrome 时，会使用上次启动 Chrome 时的配置文件。
+chromium 内核浏览器用户提示：若你使用多个配置文件，默认情况下选择浏览器时，会使用上次启动时的配置文件。
 
-若想让浏览器选择器能指定配置文件，可为每个配置文件创建一个 “新浏览器” 条目：将程序路径设为 Chrome 可执行文件，并添加命令行参数指定要启动的配置文件，例如：
+若想让浏览器选择器能指定配置文件，可为每个配置文件创建一个 “新浏览器” 条目：将程序路径设为 Chrome / Edge 可执行文件，并添加命令行参数指定要启动的配置文件，例如：
 
-- 第一个配置文件：--profile-directory=Default
-- 第二个配置文件：--profile-directory="Profile 1"
-- 第三个配置文件：--profile-directory="Profile 2"
+- 第一个配置文件：`--profile-directory=Default`
+- 第二个配置文件：`--profile-directory="Profile 1"`
+- 第三个配置文件：`--profile-directory="Profile 2"`
     以此类推。
 
 注意：含空格的参数需用英文双引号（" "）包裹，才能正确传递给 Chrome。
@@ -150,9 +151,9 @@ Firefox 也支持类似的配置文件设置。
 
 ![“行为” 标签页下所有选项的截图](docs/config_behaviour.png)
 
-> [ ] 关闭透明度
+> [ ] 切换纯黑边框
 
-勾选后，浏览器选择器会使用纯色黑色背景，提升文字可读性。
+勾选后，浏览器选择器会使用纯色黑色边框。
 
 > [ ] 始终显示浏览器选择窗口
 
@@ -162,7 +163,7 @@ Firefox 也支持类似的配置文件设置。
 
 配置后，除非为当前链接设置了默认浏览器，否则浏览器选择器会始终使用此处指定的浏览器。
 
-> [ ] 无匹配默认浏览器时始终询问
+> [ ] 即使浏览器未运行也使用默认设置
 
 启用此选项后，浏览器选择器仅会使用匹配的默认浏览器；若无匹配项，则显示选择窗口。
 
@@ -198,17 +199,17 @@ Firefox 也支持类似的配置文件设置。
 
 ![显示四种匹配类型（主机名、前缀、正则表达式、默认）的下拉菜单示意图](docs/config_defaults_match_type.png)
 
-##### 主机名匹配
+##### 主机名匹配（Hostname match）
 
 规则会匹配链接 **主机名** 部分的末尾。
 
 例如，`hub.com` 会匹配 `https://www.github.com/mortenn/BrowserPicker`，但不会匹配 `https://example.com/cgi-bin/hub.com`
 
-##### 前缀匹配
+##### 前缀匹配（Prefix match）
 
 规则会匹配链接的开头。例如，`https://github.com/mortenn` 会匹配 `https://github.com/mortenn/BrowserPicker`，但不会匹配 `https://www.github.com/mortenn/BrowserPicker`
 
-##### 正则表达式匹配
+##### 正则表达式匹配（Regex match）
 
 规则使用 .NET 正则表达式，会对整个链接执行匹配。详情可参考 [.NET 正则表达式文档](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions)。
 

@@ -63,7 +63,7 @@
 						✏
 					</Hyperlink>
 				</TextBlock>
-				<TextBlock Text="Redirected URL" Foreground="Silver" Margin="5,5,0,0">
+				<TextBlock Text="重定向 URL" Foreground="Silver" Margin="5,5,0,0">
 					<TextBlock.Style>
 						<Style>
 							<Style.Triggers>
@@ -227,15 +227,12 @@
 			</Grid.RowDefinitions>
 			<TextBlock>
 				<Hyperlink Command="{Binding Configure}" Foreground="White">
-					<TextBlock Text="Configure browser list" />
+					<TextBlock Text="配置浏览器列表" />
 				</Hyperlink>
 			</TextBlock>
-			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
+			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="总是询问" Foreground="White" Checked="CheckBox_Checked" />
 			<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsChecked="{Binding Configuration.AutoAddDefault}" Width="350">
-				<TextBlock Foreground="White" TextWrapping="Wrap" MaxHeight="50">
-					<Run Text="Remember my choice for" />
-					<Run Text="{Binding Url.HostName}" />
-				</TextBlock>
+				<TextBlock Foreground="White" TextWrapping="Wrap" MaxHeight="50" Text="记住我的选择"/>
 			</CheckBox>
 		</Grid>
 	</Grid>

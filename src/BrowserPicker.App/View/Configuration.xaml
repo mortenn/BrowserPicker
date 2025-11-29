@@ -100,25 +100,25 @@
 					</Style>
 				</TabItem.Style>
 				<TextBlock Foreground="White" Margin="4" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Light">
-					Welcome to Browser Picker, hope you enjoy my little app!<LineBreak />
-					I've gone ahead and opened up the settings window,<LineBreak />
-					so you can have a look around before you get started :)
+					欢迎使用浏览器选择器，希望你喜欢这个应用！<LineBreak />
+					我已经打开了设置窗口，<LineBreak />
+					这样你就可以开始前先看看周围啦 :)
 					<LineBreak />
 					<LineBreak />
-					Please give it a ⭐ on github, so you will get notified when a new release is made.
+					请在 GitHub 上给它点个 star ⭐，这样当有新版本发布时你就会收到通知。
 					<LineBreak />
 					<LineBreak />
-					Should you run into any kind of trouble or get an idea,<LineBreak />
-					please visit <Hyperlink Foreground="LightBlue">github.com/mortenn/BrowserPicker</Hyperlink> and file an issue!<LineBreak />
+					如果您遇到任何问题或有了什么想法，<LineBreak />
+					请访问 <Hyperlink Foreground="LightBlue">github.com/XTsat/BrowserPicker_zh</Hyperlink> 提交问题！<LineBreak />
 					<LineBreak />
-					Be seeing you!
+					回头见！
 					<LineBreak />
 					<LineBreak />
-					<Run FontSize="8">This message will self destruct in 10 seconds</Run>
+					<Run FontSize="8">这条消息将在 10 秒后自动销毁</Run>
 				</TextBlock>
 			</TabItem>
 
-			<TabItem Header="Browsers">
+			<TabItem Header="浏览器">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition />
@@ -177,11 +177,11 @@
 													<TextBlock.Style>
 														<Style>
 															<Setter Property="TextBlock.Foreground" Value="Green" />
-															<Setter Property="TextBlock.Text" Value="Enabled" />
+															<Setter Property="TextBlock.Text" Value="启用" />
 															<Style.Triggers>
 																<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
 																	<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
-																	<Setter Property="TextBlock.Text" Value="Disabled" />
+																	<Setter Property="TextBlock.Text" Value="禁用" />
 																</DataTrigger>
 															</Style.Triggers>
 														</Style>
@@ -191,12 +191,12 @@
 									</TextBlock>
 										<TextBlock Grid.Column="4" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Edit}">
-											<TextBlock Text="Edit" Foreground="CadetBlue" ToolTip="Edit browser definition" />
+											<TextBlock Text="编辑" Foreground="CadetBlue" ToolTip="编辑浏览器定义" />
 										</Hyperlink>
 									</TextBlock>
 										<TextBlock Grid.Column="5" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Remove}">
-											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
+											<TextBlock Text="X" Foreground="Red" ToolTip="从列表中移除浏览器" />
 										</Hyperlink>
 									</TextBlock>
 									</Grid>
@@ -207,20 +207,20 @@
 					<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
 						<TextBlock>
 							<Hyperlink Command="{Binding AddBrowser}" Foreground="White">
-								<TextBlock Text="Add browser" />
+								<TextBlock Text="添加浏览器" />
 							</Hyperlink>
 						</TextBlock>
 
 						<TextBlock Margin="10,0,0,0">
 							<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
-								<TextBlock Text="Refresh browser list" />
+								<TextBlock Text="刷新浏览器列表" />
 							</Hyperlink>
 						</TextBlock>
 					</StackPanel>
 				</Grid>
 			</TabItem>
 
-			<TabItem Header="Behaviour">
+			<TabItem Header="行为">
 				<StackPanel Orientation="Vertical">
 					<StackPanel.Resources>
 						<Style TargetType="{x:Type CheckBox}">
@@ -228,12 +228,12 @@
 						</Style>
 					</StackPanel.Resources>
 
-					<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
+					<CheckBox Content="切换纯黑边框" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
 
-					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
+					<CheckBox Content="始终显示浏览器选择窗口" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
 
 					<StackPanel Orientation="Horizontal">
-						<CheckBox Content="When no default is configured matching the url, use:" IsChecked="{Binding Settings.UseFallbackDefault}" Foreground="White" />
+						<CheckBox Content="当无匹配链接的默认浏览器时，使用：" IsChecked="{Binding Settings.UseFallbackDefault}" Foreground="White" />
 						<ComboBox
 							ItemsSource="{Binding ParentViewModel.Choices}"
 							ItemTemplate="{StaticResource BrowserIconAndName}"
@@ -243,15 +243,15 @@
 							Height="22" Margin="5,-4,0,0" />
 					</StackPanel>
 
-					<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" Foreground="White" />
+					<CheckBox Content="无匹配默认浏览器时始终询问" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" Foreground="White" />
 
-					<CheckBox Content="Use defaults even when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
+					<CheckBox Content="即使浏览器未运行也使用默认设置" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
 
-					<RadioButton GroupName="OrderBy" Content="Sort list manually" IsChecked="{Binding Settings.UseManualOrdering}" Foreground="White" Margin="6,2" />
-					<RadioButton GroupName="OrderBy" Content="Sort list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" Margin="6,2" />
-					<RadioButton GroupName="OrderBy" Content="Sort list alphabetically" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" Foreground="White" Margin="6,2,4,6" />
+					<RadioButton GroupName="OrderBy" Content="手动排序" IsChecked="{Binding Settings.UseManualOrdering}" Foreground="White" Margin="6,2" />
+					<RadioButton GroupName="OrderBy" Content="根据使用情况排序" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" Margin="6,2" />
+					<RadioButton GroupName="OrderBy" Content="按字母顺序排序" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" Foreground="White" Margin="6,2,4,6" />
 
-					<CheckBox Content="Disallow network activity" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" ToolTip="Disabled url resolution feature" />
+					<CheckBox Content="禁用链接解析" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" ToolTip="Disabled url resolution feature" />
 
 					<StackPanel Margin="25,0,0,0">
 						<StackPanel.Style>
@@ -265,21 +265,21 @@
 							</Style>
 						</StackPanel.Style>
 						<StackPanel Orientation="Horizontal">
-							<TextBlock Foreground="White" Text="URL resolution timeout: " />
+							<TextBlock Foreground="White" Text="链接解析超时时间(毫秒)：" />
 							<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds, UpdateSourceTrigger=PropertyChanged}"  />
 						</StackPanel>
 					</StackPanel>
 				</StackPanel>
 			</TabItem>
 
-			<TabItem Header="Defaults">
+			<TabItem Header="默认值">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
-					<TextBlock Text="Set default browser per domain" Foreground="White" Margin="5" />
+					<TextBlock Text="按域名设置默认浏览器" Foreground="White" Margin="5" />
 					<DataGrid
 						ItemsSource="{Binding Defaults}"
 						Grid.Row="1"
@@ -292,7 +292,7 @@
 						CanUserReorderColumns="False"
 						CanUserResizeColumns="False">
 						<DataGrid.Columns>
-							<DataGridTemplateColumn Header="Match by">
+							<DataGridTemplateColumn Header="匹配              ">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
@@ -303,7 +303,7 @@
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Pattern" Binding="{Binding Pattern}" Width="*">
+							<DataGridTextColumn Header="模式" Binding="{Binding Pattern}" Width="*">
 								<DataGridTextColumn.ElementStyle>
 									<Style TargetType="TextBlock">
 										<Setter Property="VerticalAlignment" Value="Center" />
@@ -311,7 +311,7 @@
 									</Style>
 								</DataGridTextColumn.ElementStyle>
 							</DataGridTextColumn>
-							<DataGridTemplateColumn Header="Browser" Width="55" SortMemberPath="Model.Name">
+							<DataGridTemplateColumn Header="浏览器" Width="55" SortMemberPath="Model.Name">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
@@ -350,12 +350,12 @@
 							SelectedValue="{Binding NewDefaultBrowser}"
 							SelectedValuePath="Model.Name"
 							Grid.Column="2" Height="22" />
-						<Button Content="Add" Grid.Column="3" Padding="5,0" Command="{Binding AddDefault}" />
+						<Button Content="添加" Grid.Column="3" Padding="5,0" Command="{Binding AddDefault}" />
 					</Grid>
 				</Grid>
 			</TabItem>
 
-			<TabItem Header="Test defaults">
+			<TabItem Header="测试链接">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -367,19 +367,19 @@
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
-					<TextBlock Text="Url:" Foreground="White" />
+					<TextBlock Text="链接：" Foreground="White" />
 
 					<TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding TestDefaultsURL, UpdateSourceTrigger=PropertyChanged}" />
 
-					<TextBlock Text="Default browser matched:" Grid.Column="0" Grid.Row="2" Foreground="White" />
+					<TextBlock Text="默认浏览器匹配：" Grid.Column="0" Grid.Row="2" Foreground="White" />
 					<TextBlock Text="{Binding TestDefaultsResult}" Grid.Column="1" Grid.Row="2" Foreground="LightGreen" />
 
-					<TextBlock Text="Actual browser choice:" Grid.Column="0" Grid.Row="3" Foreground="White" />
+					<TextBlock Text="当前浏览器选择：" Grid.Column="0" Grid.Row="3" Foreground="White" />
 					<TextBlock Text="{Binding TestActualResult}" Grid.Column="1" Grid.Row="3" Foreground="LightGreen" />
 				</Grid>
 			</TabItem>
 
-			<TabItem Header="Backup">
+			<TabItem Header="备份">
 				<Grid Margin="10" VerticalAlignment="Top">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -387,16 +387,16 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
-					<TextBlock Text="Back up or restore your BrowserPicker configuration:" Foreground="White" Margin="5" />
-					<Button Content="Export BrowserPicker settings" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Backup}" />
-					<Button Content="Import BrowserPicker settings" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Restore}" />
+					<TextBlock Text="备份或恢复您的 BrowserPicker 配置：" Foreground="White" Margin="5" />
+					<Button Content="导出设置" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Backup}" />
+					<Button Content="导入设置" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Restore}" />
 					<ScrollViewer Grid.Row="3" Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="5">
 						<TextBlock Text="{Binding Settings.BackupLog}" Foreground="White" TextWrapping="Wrap" />
 					</ScrollViewer>
 				</Grid>
 			</TabItem>
 
-			<TabItem Header="URL shorteners">
+			<TabItem Header="URL 缩短器">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -408,13 +408,13 @@
 						<ColumnDefinition />
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
-					<TextBlock Foreground="White" Text="These domains are known URL shorteners and gets probed on launch unless disallowed by settings" Grid.ColumnSpan="2" />
-					
-					<TextBlock Foreground="White" Text="Default shorteners" Grid.Row="1" Grid.Column="0" Margin="5" />
-					<ListBox Grid.Row="2" Grid.Column="0" ItemsSource="{Binding DefaultUrlShorteners}" SelectionMode="Single" />
-					<TextBlock Grid.Row="3" Grid.Column="0" FontSize="10" Text="ℹ️ Some additional jump pages not shown above" ToolTip="Some pages, such as outlook safelinks, have special handling where the target url is in the query string, these are not listed in this list, as they require additional information in code." Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+					<TextBlock Foreground="White" Text="这些域名是已知的网址缩短服务，除非通过设置禁止，否则会在启动时进行探测。" Grid.ColumnSpan="2" />
 
-					<TextBlock Foreground="White" Text="Additional shorteners" Grid.Row="1" Grid.Column="1" Margin="5" />
+					<TextBlock Foreground="White" Text="默认缩短工具" Grid.Row="1" Grid.Column="0" Margin="5" />
+					<ListBox Grid.Row="2" Grid.Column="0" ItemsSource="{Binding DefaultUrlShorteners}" SelectionMode="Single" />
+					<TextBlock Grid.Row="3" Grid.Column="0" FontSize="10" Text="ℹ️ 以上未显示一些额外的跳转页面" ToolTip="有些页面（例如 Outlook 安全链接）有特殊的处理方式，目标 URL 位于查询字符串中，这些页面未列入此列表，因为它们需要在代码中提供额外的信息。" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+					<TextBlock Foreground="White" Text="其他缩短工具" Grid.Row="1" Grid.Column="1" Margin="5" />
 					<ListBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AdditionalUrlShorteners}" x:Name="UrlShorteners" SelectionMode="Single" />
 					
 					<Grid Grid.Row="3" Grid.Column="1">
@@ -424,8 +424,8 @@
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
 						<TextBox Text="{Binding NewUrlShortener}" x:Name="NewShortener" />
-						<Button Grid.Column="1" Grid.Row="0" Content="Add" Padding="10,0" Command="{Binding AddShortener}" CommandParameter="{Binding Text, ElementName=NewShortener}" />
-						<Button Grid.Column="2" Grid.Row="0" Content="Remove" Padding="10,0" Command="{Binding RemoveShortener}" CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}" />
+						<Button Grid.Column="1" Grid.Row="0" Content="添加" Padding="10,0" Command="{Binding AddShortener}" CommandParameter="{Binding Text, ElementName=NewShortener}" />
+						<Button Grid.Column="2" Grid.Row="0" Content="移除" Padding="10,0" Command="{Binding RemoveShortener}" CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}" />
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -461,7 +461,7 @@
 					</Style>
 				</TextBlock.Style>
 				<Hyperlink Command="{Binding ParentViewModel.Exit}" Foreground="White">
-					<TextBlock Text="Done" />
+					<TextBlock Text="退出程序" />
 				</Hyperlink>
 			</TextBlock>
 
