@@ -1,219 +1,240 @@
-# Browser Picker
-A default browser replacement for windows to let you pick your preferred browser on the fly or in accordance with your own rules.
+# 浏览器选择器（Browser Picker）
 
-![Screenshot of browserpicker with three options, of which 2 are running and 1 is not](docs/selector_two_running.png)
+[English](/readme_en.md) | 中文
 
-You can easily configure it to use Firefox for `github.com` and `slashdot.org`, but leave Edge to handle `microsoft.com`  
-and even let Internet Explorer handle that old internal LOB app you'd rather not use but must.
+一款适用于 Windows 系统的默认浏览器替代工具，可让你选择偏好的浏览器，或根据自定义规则自动选择浏览器。
 
-## Installation
-You can find the latest release on [github](https://github.com/mortenn/BrowserPicker/releases).
+![浏览器选择器的截图，显示三个选项，其中 2 个处于运行状态，1 个未运行](docs/selector_two_running.png)
 
-### Default browser
-To enable the browser picker window, you need to set Browser Picker as your default browser. 
+你可以轻松配置规则：例如用 Firefox 打开 `GitHub.com` 和 `slashdot.org`，用 Edge 处理 `microsoft.com`，甚至可以让 Internet Explorer 打开那款你不想用但又必须使用的旧版内部业务线（LOB）应用。
 
-### .NET Runtime dependent binary
-BrowserPicker.msi and Dependent.zip are JIT compiled and require you have the [.NET 9.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
-Direct links: [64bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x64-installer), [32bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x86-installer).
+## 安装
 
-#### Native image generation
-As part of installation, `BrowserPicker.msi` will execute ngen to build a native image for your computer.  
-This significantly enhances launch times for the executable.  
-If you prefer the bundle, you may run `ngen install BrowserPicker.exe` to get the same benefit.
+你可在 [GitHub](https://github.com/XTsat/BrowserPicker/releases) 上获取最新版本。
 
-### Portable binary
-If you do not want to have the .net runtime installed on your computer, you may download the Portable version, which includes the runtime.
+### 设置默认浏览器
 
-`BrowserPicker-Portable.msi` and `Portable.zip` contain a win-x64 binary executable with embedded .NET runtime.  
-This makes the file sizes quite significantly larger, but you do not need an additional runtime to use these.
+要启用浏览器选择器窗口，需将 “浏览器选择器” 设为系统默认浏览器。
 
-### Signing certificate
-To avoid warnings about unknown publisher, you may [import](https://stackoverflow.com/questions/49039136/powershell-script-to-install-trusted-publisher-certificates) the provided certificate into your certificate store first.
+### 依赖 .NET 运行时的安装包
 
-### Manual steps
-You need to open the settings app from the start menu, navigate into Apps, select Default apps, then change the Web browser to BrowserPicker.  
-Please ensure BrowserPicker can be started before you do this.
+BrowserPicker.msi 和 Dependent.zip 为即时编译（JIT）版本，需安装 [.NET 9.0 桌面运行时](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) 才能使用。直接下载链接：[64 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x64-installer)、[32 位系统](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x86-installer)。
 
-## Usage
+#### 原生镜像生成
 
-When you open a link outside a browser, one of these things will happen, in order:
+安装过程中，`BrowserPicker.msi` 会执行 ngen 工具为你的电脑生成原生镜像，这能显著提升可执行文件的启动速度。若你选择压缩包版本，可运行命令 `ngen install BrowserPicker.exe` 以获得相同优化效果。
 
-1. If you have previously selected `Always ask`, the browser selection window is shown.
-2. If you have set up a configuration rule matching the url being opened, the selected browser will be launched with the url.
-3. If you only have one browser running, the link will be opened in that browser.
-4. If you have configured a default browser, it will be asked to open the url.
-3. Otherwise, you will be presented with a simple window asking you which browser you want to use.  
+### 便携版安装包
 
-The url is shown at the top of the window, and if it matches a list of known url shorteners, BrowserPicker will expand this address and show you the real one after a short delay.
-If you do not want BrowserPicker to perform this operation (it will call the internet), you may disable this feature in the settings.
+若不想在电脑上安装 .NET 运行时，可下载包含运行时的便携版。
 
-### Copy url
-You can click the clipboard icon at the top to copy the url without opening it
+`BrowserPicker-Portable.msi` 和 `Portable.zip` 包含适用于 win-x64 系统的可执行文件，且已嵌入 .NET 运行时。该版本文件体积会显著增大，但无需额外安装运行时即可使用。
 
-### Edit url
-You can click the pencil icon at the top of the window to edit or copy the url before visiting it or cancelling:
+### 签名证书
 
-![Screenshot of truncated url being edited](docs/selector_edit_url.png)
-![Screenshot of updated url in window](docs/selector_edited_url.png)
+为避免 “未知发布者” 警告，可先将提供的证书导入你的证书存储区，导入方法参考 [此处](https://stackoverflow.com/questions/49039136/powershell-script-to-install-trusted-publisher-certificates)。
 
-### Keyboard shortcuts
+### 手动设置步骤
 
-When this window is open and has focus, you can use the following keyboard shortcuts:
+1.从开始菜单打开 “设置” 应用；
+2.进入 “应用” 选项；
+3.选择 “默认应用”；
+4.将 “网页浏览器” 改为 “浏览器选择器”。
+    **注意**：执行此操作前，请确保 “浏览器选择器” 可正常启动。
 
-`[enter]` or `[1]` Pick the first browser in the list
+## 使用方法
 
-`[2]` Pick the second browser in the list
+当你在浏览器外打开链接时，会按以下优先级触发操作：
 
-...
+1. 若此前选择过 **始终询问**，则显示浏览器选择窗口
+2. 若已配置与当前链接匹配的规则，则用指定浏览器打开该链接
+3. 若仅有一个浏览器处于运行状态，则在该浏览器中打开链接
+4. 若已配置默认浏览器，则调用默认浏览器打开链接
+5. 若以上情况均不满足，则显示简易窗口，让你选择要使用的浏览器
 
-`[9]` Pick the ninth browser in the list
+链接地址会显示在窗口顶部：若该地址属于已知短链接服务，浏览器选择器会在短暂延迟后解析真实地址并显示。
+若你不希望浏览器选择器执行此操作（该操作需连接网络），可在设置中禁用此功能。
 
-If you keep `[alt]` pressed while hitting one of these, the browser will be opened in privacy mode.
+### 复制链接
 
-`[esc]` Abort and close window
+点击窗口顶部的剪贴板图标，可复制链接地址而不打开链接。
 
-If you click outside the window such that it loses focus, it will close without opening the url in any browser.
+### 编辑链接
 
-Each browser that supports it, has a blue shield button on the right side.
-Browsers currently supporting privacy mode are firefox, internet explorer, chrome, and edge.
+点击窗口顶部的铅笔图标，可在访问或取消访问链接前编辑或复制链接地址：
 
-Currently running browsers will have their name in bold, whilst browsers not currently running will have their names in cursive.
+![截断链接的编辑界面截图](docs/selector_edit_url.png)
+![窗口中已更新链接的截图](docs/selector_edited_url.png)
 
-As you use the application, it keeps count of how many times you selected each browser. This information is used to show you your browsers in your preferred order automatically.
+### 键盘快捷键
 
-At the bottom of the window, there is a checkbox to enable "always ask" and a hyperlink to open settings.
+当浏览器选择窗口处于打开并获得焦点的状态时，可使用以下快捷键：
+按住 [Alt] 键并按下数字键，可在隐私模式下打开对应浏览器。
 
-## Settings
-By simply launching BrowserPicker from the start menu or double clicking the `BrowserPicker.exe` file, you will be presented with a GUI to configure the behaviour.
-The configuration is saved in the Windows registry: `HKEY_CURRENT_USER\Software\BrowserPicker`, if you ever need to manually edit it or make a backup.
+- [Enter] 或 [1]：选择列表中的第一个浏览器
+- [2]：选择列表中的第二个浏览器
+- ...
+- [9]：选择列表中的第九个浏览器
+- [Esc]：取消操作并关闭窗口
 
-![Screenshot of the browser configuration interface with three browsers](docs/config_list.png)
+若点击窗口外部导致窗口失去焦点，窗口会关闭且不会用任何浏览器打开链接。
 
-### Browsers
+当前处于运行状态的浏览器，其名称会以粗体显示；未运行的浏览器，名称会以斜体显示。
 
-The browser list shows you the browsers BrowserPicker has been configured or detected to use.
+在你使用该应用的过程中，它会统计你选择各浏览器的次数，并根据这些数据自动按你的偏好顺序排列浏览器列表。
 
-#### Disabling browsers
-You can disable a browser by clicking `Enabled`, this will hide the browser from the selection list.
+窗口底部有一个 **始终询问** 复选框，以及一个用于打开设置界面的超链接。
 
-![Screenshot of a red hyperlink saying Disabled](docs/config_disabled.png)
+## 设置
 
-#### Removing browsers
-If you click the red X, you may remove a browser.
+从开始菜单启动 “浏览器选择器”，或双击 `BrowserPicker.exe` 文件，即可打开图形化界面（GUI）配置其行为。
 
-Do note that if it was automatically detected, it will return to the list the next time auto configuration is performed.
+配置信息保存在 Windows 注册表中，路径为 `HKEY_CURRENT_USER\Software\BrowserPicker`，你可在此路径下手动编辑配置或创建备份。
 
-#### Automatic configuration
-The `Refresh broser list` function gets automatically executed in the background when you use BrowserPicker.
-This helps it discovering newly installed browsers, in case a new browser has been installed,
+![包含三个浏览器的浏览器配置界面截图](docs/config_list.png)
 
-#### Manually adding browser
-You may click the hyperlink `Add browser` to open a popup where you may manually add a browser that has not been detected - or some other tool that isn't a browser.
+### 浏览器
 
-You can click the buttons behind the input boxes to bring up the file picker interface of windows to select the executable or icon file you want to use.
+浏览器列表显示 “浏览器选择器” 已配置或检测到的可用浏览器。
 
-![Screenshot of user interface for entering parameters for a new browser](docs/config_add_browser.png)
-![Screenshot of filled user interface](docs/config_add_browser_exe_picked.png)
+#### 禁用浏览器
 
-![List of configured browsers including notepad as an option](docs/config_list_with_notepad.png)
+点击 **已启用（Enabled）** 可禁用对应浏览器，禁用后该浏览器会从选择列表中隐藏。
 
-If you browse for the command first, the application will assume the executable also has an icon, and prefill that box.
+![显示 “已禁用” 字样的红色超链接截图](docs/config_disabled.png)
 
-The name of the application will be attempted to be set automatically based on information in the executable.
+#### 删除浏览器
 
-##### Chrome profiles
+点击红色 “X” 图标可删除对应浏览器。
 
-Tip for Chrome Users: If you are using multiple Chrome profiles, by default if you choose Chrome it will launch in the last
-profile you launched Chrome with.  To make it possibe for browser picker to select a profile you can create a new browser 
-for each profile, set the program to the chrome executable, and add a command line argument to specify which profile to launch:
-`--profile-directory=Default` for the first profile, `--profile-directory="Profile 1"` for the second profile, and so on.
+注意：若该浏览器是自动检测到的，下次执行自动配置时会重新出现在列表中。
 
-Please note that arguments with spaces do require "" around them to be properly passed to chrome.
+#### 自动配置
 
-##### Firefox profiles
+使用 “浏览器选择器” 时，**刷新浏览器列表** 功能会在后台自动执行，帮助检测新安装的浏览器。
 
-Similar configuration should be possible for firefox.
+#### 手动添加浏览器
 
-### Behaviour
-This tab contains various settings that govern how BrowserPicker operates.
+点击 **添加浏览器** 超链接，会弹出一个窗口，你可在此手动添加未被检测到的浏览器，或添加非浏览器类工具。
+点击输入框后方的按钮，可打开 Windows 文件选择界面，选择要使用的可执行文件或图标文件。
 
-![Screenshot of all the options under the behaviour tab](docs/config_behaviour.png)
+![用于输入新浏览器参数的用户界面截图](docs/config_add_browser.png)
+![已填写内容的用户界面截图](docs/config_add_browser_exe_picked.png)
 
-> [ ] Turn off transparency
+![包含 “记事本” 作为选项的已配置浏览器列表](docs/config_list_with_notepad.png)
 
-This will make BrowserPicker have a simple black background, to help with legibility
+若你先选择可执行文件，应用会默认该文件包含图标，并自动填充图标文件输入框。
 
-> [ ] Always show browser selection window
+应用名称会尝试根据可执行文件中的信息自动设置。
 
-This option is also available on the browser selection window. When enabled, BrowserPicker will always ask the user to make a choice.
+##### Chrome 配置文件
 
-> [ ] When no default is configured matching the url, use: [__v]
+Chrome 用户提示：若你使用多个 Chrome 配置文件，默认情况下选择 Chrome 时，会使用上次启动 Chrome 时的配置文件。
 
-When configured, BrowserPicker will always use this browser unless a default browser has been configured for that url.
+若想让浏览器选择器能指定配置文件，可为每个配置文件创建一个 “新浏览器” 条目：将程序路径设为 Chrome 可执行文件，并添加命令行参数指定要启动的配置文件，例如：
 
-> [ ] Always ask when no default is matching url
+- 第一个配置文件：--profile-directory=Default
+- 第二个配置文件：--profile-directory="Profile 1"
+- 第三个配置文件：--profile-directory="Profile 2"
+    以此类推。
 
-This option makes it so BrowserPicker will only pick matched default browsers and otherwise show the selection window.
+注意：含空格的参数需用英文双引号（" "）包裹，才能正确传递给 Chrome。
 
-> [ ] Disable url resolution
+##### Firefox 配置文件
 
+Firefox 也支持类似的配置文件设置。
 
-> [ ] Ignore defaults when browser is not running
+### 行为
 
-When enabled, configured default browsers only apply when they are already running.
+此标签页包含控制 “浏览器选择器” 运行方式的各类设置。
 
-> [ ] Update order in browser list based on usage
+![“行为” 标签页下所有选项的截图](docs/config_behaviour.png)
 
-This option will make your list of browsers automatically sorted by how often you pick them.
+> [ ] 关闭透明度
 
-> [ ] Disallow network activity
+勾选后，浏览器选择器会使用纯色黑色背景，提升文字可读性。
 
-BrowserPicker may perform DNS and HTTP calls to probe the specified url in order to check if the url redirects elsewhere.  
-This option turns this feature off, preventing BrowserPicker to call the network when you launch a url.
+> [ ] 始终显示浏览器选择窗口
 
-> URL resolution timeout: [_____]
+此选项在浏览器选择窗口中也可设置。启用后，浏览器选择器会始终提示你选择浏览器。
 
-You may adjust for how long BrowserPicker attempts to resolve an url here.
+> [ ] 当无匹配链接的默认浏览器时，使用：[__v]
 
-### Defaults
-The defaults tab lets you configure rules to map certain urls to certain browsers.
+配置后，除非为当前链接设置了默认浏览器，否则浏览器选择器会始终使用此处指定的浏览器。
 
-![Illustration of the empty list of default browser choices](docs/config_defaults_empty.png)
+> [ ] 无匹配默认浏览器时始终询问
 
-##### Match types
-There exists four different match types, but you cannot use Default, that is reserved for use elsewhere.  
-The option will eventually get hidden in the interface, but for now it becomes Hostname when selected.
+启用此选项后，浏览器选择器仅会使用匹配的默认浏览器；若无匹配项，则显示选择窗口。
 
-![Illustration of a dropdown showing the four match types Hostname, Prefix, Regex and Default](docs/config_defaults_match_type.png)
+> [ ] 禁用链接解析
+>
+> [ ] 浏览器未运行时忽略默认设置
 
-###### Hostname match
-The pattern will match the end of the hostname part of the url, ie. `hub.com` would match `https://www.github.com/mortenn/BrowserPicker`, but not `https://example.com/cgi-bin/hub.com`
+启用后，已配置的默认浏览器仅在处于运行状态时才生效。
 
-###### Prefix match
-The pattern will match the beginning of the url, ie. `https://github.com/mortenn` would match `https://github.com/mortenn/BrowserPicker` but not `https://www.github.com/mortenn/BrowserPicker`
+> [ ] 根据使用情况更新浏览器列表顺序
 
-###### Regex match
-The pattern is a .NET regular expression and will be executed against the url, see [.NET regular expressions](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions) for details.
+启用后，浏览器列表会根据你的选择频率自动排序。
 
-##### Browser
-The selected browser will be the one to launch for matched urls.
+> [ ] 禁止网络活动
 
-![Illustration of a dropdown showing each browser icon](docs/config_defaults_browsers.png)
+浏览器选择器可能会通过 DNS 查询和 HTTP 请求探测链接，以检查该链接是否存在重定向。
 
-### Test defaults
-There is even a handy dandy tool for verifying your settings,  
-just paste that url into the big white text box and get instant feedback on the browser selection process:
+勾选此选项可关闭该功能，避免浏览器选择器在打开链接时连接网络。
 
-![Example of the test defaults interface in use](docs/config_defaults_test_no_match.png)
+> 链接解析超时时间：[___]
 
-### Logging
-BrowserPicker uses ILogger with EventLog support.
+在此处调整浏览器选择器尝试解析链接的最长时间。
 
-To get detailed logs, please either change appsettings.json or set the environment variable `Logging__EventLog__LogLevel__BrowserPicker` to either `Information` or `Debug`
-By default, only warnings or higher level events get logged.
+### 默认规则
 
-If you are using the archived version rather than the installer package,
-you will need to run this powershell command before logs will appear:
+此标签页可配置规则，将特定链接与指定浏览器关联。
 
-```New-EventLog -LogName Application -Source BrowserPicker```
-` 
+![默认浏览器选择规则空列表示意图](docs/config_defaults_empty.png)
+
+#### 匹配类型
+
+共有四种匹配类型，其中 **默认（Default）** 类型为预留选项，暂不可用。该选项最终会从界面中隐藏，目前选择后会自动转为 **主机名（Hostname）** 匹配类型。
+
+![显示四种匹配类型（主机名、前缀、正则表达式、默认）的下拉菜单示意图](docs/config_defaults_match_type.png)
+
+##### 主机名匹配
+
+规则会匹配链接 **主机名** 部分的末尾。
+
+例如，`hub.com` 会匹配 `https://www.github.com/mortenn/BrowserPicker`，但不会匹配 `https://example.com/cgi-bin/hub.com`
+
+##### 前缀匹配
+
+规则会匹配链接的开头。例如，`https://github.com/mortenn` 会匹配 `https://github.com/mortenn/BrowserPicker`，但不会匹配 `https://www.github.com/mortenn/BrowserPicker`
+
+##### 正则表达式匹配
+
+规则使用 .NET 正则表达式，会对整个链接执行匹配。详情可参考 [.NET 正则表达式文档](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions)。
+
+#### 匹配浏览器
+
+选择匹配链接后要启动的浏览器。
+
+![显示各浏览器图标的下拉菜单示意图](docs/config_defaults_browsers.png)
+
+### 测试默认规则
+
+界面提供了便捷的规则验证工具：
+在白色文本框中粘贴链接，即可即时查看浏览器选择结果（验证规则是否生效）：
+
+![“测试默认规则” 界面的使用示例](docs/config_defaults_test_no_match.png)
+
+### 日志
+
+浏览器选择器使用 ILogger 记录日志，并支持事件日志（EventLog）功能。
+
+如需详细日志，可通过以下两种方式操作：
+
+- 修改 appsettings.json 文件
+- 将环境变量 `Logging__EventLog__LogLevel__BrowserPicker` 设置为 **Information（信息级）** 或 **Debug（调试级）**。
+
+默认情况下，仅记录警告（Warning）及更高级别的事件。
+
+若你使用的是压缩包版本（非安装包），需先运行以下 PowerShell 命令，日志才能正常显示：
+`New-EventLog -LogName Application -Source BrowserPicker`
