@@ -88,7 +88,7 @@
 				</Style>
 			</TabControl.Resources>
 
-			<TabItem Header="Welcome">
+			<TabItem Header="欢迎">
 				<TabItem.Style>
 					<Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
 						<Setter Property="Visibility" Value="Collapsed" />
@@ -228,7 +228,7 @@
 						</Style>
 					</StackPanel.Resources>
 
-					<CheckBox Content="切换纯黑边框" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
+					<CheckBox Content="使用纯黑背景" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
 
 					<CheckBox Content="始终显示浏览器选择窗口" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
 
@@ -445,7 +445,7 @@
 					</Style>
 				</TextBlock.Style>
 				<Hyperlink Command="{Binding ParentViewModel.Configure}" Foreground="White">
-					<TextBlock Text="Done" />
+					<TextBlock Text="关闭" />
 				</Hyperlink>
 			</TextBlock>
 

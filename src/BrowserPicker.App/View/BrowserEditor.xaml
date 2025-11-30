@@ -66,10 +66,10 @@
 
 			<CheckBox Grid.Row="5" Grid.Column="2" Content="展开 file:// 网址" IsChecked="{Binding Model.ExpandFileUrls}" Foreground="White" Margin="2,4" />
 
-			<TextBlock Text="隐私参数: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Foreground="White" />
+			<TextBlock Text="无痕参数: " VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Foreground="White" />
 			<TextBox Grid.Column="2" Grid.Row="6" Text="{Binding Model.PrivacyArgs,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="2" />
 
-			<CheckBox Grid.Row="7" Grid.Column="2" Content="禁用自动更新" IsChecked="{Binding Model.ManualOverride}" Foreground="White" Margin="2,4" />
+			<CheckBox Grid.Row="7" Grid.Column="2" Content="禁用自动更新（修改默认配置请打开）" IsChecked="{Binding Model.ManualOverride}" Foreground="White" Margin="2,4" />
 
 			<TextBlock Text="快捷键:" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Foreground="White" />
 			<Grid Grid.Column="2" Grid.Row="8">
