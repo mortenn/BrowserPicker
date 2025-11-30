@@ -23,7 +23,7 @@
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<TextBlock Foreground="White" Margin="20" FontSize="18">Scanning URL...</TextBlock>
+			<TextBlock Foreground="White" Margin="20" FontSize="18">扫描 URL...</TextBlock>
 			<TextBlock Grid.Row="1" Text="{Binding Url.UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" MaxWidth="380" />
 		</Grid>
 	</Border>

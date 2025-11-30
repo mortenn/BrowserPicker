@@ -301,11 +301,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			await Task.CompletedTask;
 			await using var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write);
 			await JsonSerializer.SerializeAsync(fileStream, settings, JsonOptions);
-			BackupLog += $"Exported configuration to {fileName}\n";
+			BackupLog += $"配置导出至 {fileName}\n";
 		}
 		catch(Exception e)
 		{
-			BackupLog += $"Unable to parse backup file: {e.Message}";
+			BackupLog += $"无法解析备份文件： {e.Message}";
 		}
 	}
 
@@ -320,12 +320,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 		catch (Exception ex)
 		{
-			BackupLog += $"Unable to parse backup file: {ex.Message}";
+			BackupLog += $"无法解析备份文件： {ex.Message}";
 			return;
 		}
 		if (settings == null)
 		{
-			BackupLog += "Unable to load backup";
+			BackupLog += "无法加载备份";
 			return;
 		}
 
@@ -334,7 +334,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		UpdateDefaults(settings.Defaults);
 		UpdateKeybinds(settings.KeyBindings);
 
-		BackupLog += $"Imported configuration from {fileName}\n";
+		BackupLog += $"导入配置自 {fileName}\n";
 	}
 
 	private void UpdateSettings(SerializableSettings settings)

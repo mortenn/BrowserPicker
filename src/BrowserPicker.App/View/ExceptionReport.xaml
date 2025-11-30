@@ -7,7 +7,7 @@
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:ExceptionViewModel,d:IsDesignTimeCreatable=True}"
-	Title="An unhandled exception has occurred" SizeToContent="WidthAndHeight">
+	Title="发生了一个未处理的异常" SizeToContent="WidthAndHeight">
 	<Window.Resources>
 		<ResourceDictionary>
 			<DataTemplate DataType="{x:Type sys:Exception}">
@@ -74,16 +74,16 @@
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical">
-			<TextBlock Text="Unfortunately, BrowserPicker has crashed." />
-			<TextBlock Text="Please submit a bug report on https://github.com/mortenn/BrowserPicker." />
-			<TextBlock Margin="0,4,0,0" Text="Exception details:" />
+			<TextBlock Text="很抱歉，BrowserPicker 崩溃了。" />
+			<TextBlock Text="请在 https://github.com/mortenn/BrowserPicker 提交错误报告。" />
+			<TextBlock Margin="0,4,0,0" Text="异常详情：" />
 		</StackPanel>
 		<Border Grid.Row="1" Margin="5">
 			<ContentPresenter Content="{Binding Model.Exception}" />
 		</Border>
 		<StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
-			<Button Content="Copy to clipboard" Command="{Binding CopyToClipboard}" Margin="4" Padding="10,0" />
-			<Button Content="Ok" Command="{Binding Ok}" Margin="4" Padding="10,0" />
+			<Button Content="复制到剪贴板" Command="{Binding CopyToClipboard}" Margin="4" Padding="10,0" />
+			<Button Content="确认" Command="{Binding Ok}" Margin="4" Padding="10,0" />
 		</StackPanel>
 	</Grid>
 </Window>

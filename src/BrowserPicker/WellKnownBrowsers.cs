@@ -79,7 +79,7 @@ public sealed class Chrome : IWellKnownBrowser
 
 	public string PrivacyArgs => "--incognito ";
 
-	public string PrivacyMode => "Open incognito";
+	public string PrivacyMode => "无痕模式打开";
 }
 
 public sealed class ChromeDevEdition : IWellKnownBrowser
@@ -94,7 +94,7 @@ public sealed class ChromeDevEdition : IWellKnownBrowser
 
 	public string PrivacyArgs => "--incognito ";
 
-	public string PrivacyMode => "Open incognito";
+	public string PrivacyMode => "无痕模式打开";
 }
 
 public sealed class MicrosoftEdge : IWellKnownBrowser
@@ -109,7 +109,7 @@ public sealed class MicrosoftEdge : IWellKnownBrowser
 
 	public string PrivacyArgs => "-inprivate ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => "无痕模式打开";
 }
 
 public sealed class Edge : IWellKnownBrowser
@@ -124,7 +124,7 @@ public sealed class Edge : IWellKnownBrowser
 
 	public string PrivacyArgs => "-private ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => "无痕模式打开";
 }
 
 public sealed class InternetExplorer : IWellKnownBrowser
@@ -139,7 +139,7 @@ public sealed class InternetExplorer : IWellKnownBrowser
 
 	public string PrivacyArgs => "-private ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => "无痕模式打开";
 }
 
 public sealed class OperaStable : IWellKnownBrowser
@@ -154,5 +154,5 @@ public sealed class OperaStable : IWellKnownBrowser
 
 	public string PrivacyArgs => "--private ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => "无痕模式打开";
 }
