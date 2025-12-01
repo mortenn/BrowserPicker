@@ -220,7 +220,7 @@
 				</Grid>
 			</TabItem>
 
-			<TabItem Header="行为">
+			<TabItem Header="设置">
 				<StackPanel Orientation="Vertical">
 					<StackPanel.Resources>
 						<Style TargetType="{x:Type CheckBox}">
@@ -270,10 +270,28 @@
 						</StackPanel>
 					</StackPanel>
 					<Button Content="设置默认浏览器" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" Margin="5" Padding="5" Click="OpenDefaultAppsSettings_Click" />
+					<!-- 注册按钮 -->
+					<Button Content="注册打开方式" 
+							Grid.Row="1" 
+							Grid.Column="3" 
+							HorizontalAlignment="Left"
+							Margin="10 0 0 0" 
+							Padding="5"
+							Click="RegisterOpenWith_Click" />
+
+					<!-- 移除按钮（新增） -->
+					<Button Content="移除打开方式" 
+							Grid.Row="1" 
+							Grid.Column="4" 
+							HorizontalAlignment="Left"
+							Margin="10 0 0 0" 
+							Padding="5"
+							Click="UnregisterOpenWith_Click" />
+
 				</StackPanel>
 			</TabItem>
 
-			<TabItem Header="默认值">
+			<TabItem Header="浏览器匹配">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
