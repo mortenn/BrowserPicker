@@ -269,6 +269,7 @@
 							<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds, UpdateSourceTrigger=PropertyChanged}"  />
 						</StackPanel>
 					</StackPanel>
+					<Button Content="设置默认浏览器" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" Margin="5" Padding="5" Click="OpenDefaultAppsSettings_Click" />
 				</StackPanel>
 			</TabItem>
 
