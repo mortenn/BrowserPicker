@@ -4,7 +4,7 @@ English | [中文](/readme.md)
 
 A default browser replacement for windows to let you pick your preferred browser on the fly or in accordance with your own rules.
 
-![Screenshot of browserpicker with three options, of which 2 are running and 1 is not](docs/selector_two_running.png)
+![Screenshot of browserpicker with three options, of which 2 are running and 1 is not](docs/en/selector_two_running.png)
 
 You can easily configure it to use Firefox for `github.com` and `slashdot.org`, but leave Edge to handle `microsoft.com`  
 and even let Internet Explorer handle that old internal LOB app you'd rather not use but must.
@@ -65,8 +65,8 @@ You can click the clipboard icon at the top to copy the url without opening it
 
 You can click the pencil icon at the top of the window to edit or copy the url before visiting it or cancelling:
 
-![Screenshot of truncated url being edited](docs/selector_edit_url.png)
-![Screenshot of updated url in window](docs/selector_edited_url.png)
+![Screenshot of truncated url being edited](docs/en/selector_edit_url.png)
+![Screenshot of updated url in window](docs/en/selector_edited_url.png)
 
 ### Keyboard shortcuts
 
@@ -100,7 +100,7 @@ At the bottom of the window, there is a checkbox to enable "always ask" and a hy
 By simply launching BrowserPicker from the start menu or double clicking the `BrowserPicker.exe` file, you will be presented with a GUI to configure the behaviour.
 The configuration is saved in the Windows registry: `HKEY_CURRENT_USER\Software\BrowserPicker`, if you ever need to manually edit it or make a backup.
 
-![Screenshot of the browser configuration interface with three browsers](docs/config_list.png)
+![Screenshot of the browser configuration interface with three browsers](docs/en/config_list.png)
 
 ### Browsers
 
@@ -110,7 +110,7 @@ The browser list shows you the browsers BrowserPicker has been configured or det
 
 You can disable a browser by clicking `Enabled`, this will hide the browser from the selection list.
 
-![Screenshot of a red hyperlink saying Disabled](docs/config_disabled.png)
+![Screenshot of a red hyperlink saying Disabled](docs/en/config_disabled.png)
 
 #### Removing browsers
 
@@ -129,10 +129,10 @@ You may click the hyperlink `Add browser` to open a popup where you may manually
 
 You can click the buttons behind the input boxes to bring up the file picker interface of windows to select the executable or icon file you want to use.
 
-![Screenshot of user interface for entering parameters for a new browser](docs/config_add_browser.png)
-![Screenshot of filled user interface](docs/config_add_browser_exe_picked.png)
+![Screenshot of user interface for entering parameters for a new browser](docs/en/config_add_browser.png)
+![Screenshot of filled user interface](docs/en/config_add_browser_exe_picked.png)
 
-![List of configured browsers including notepad as an option](docs/config_list_with_notepad.png)
+![List of configured browsers including notepad as an option](docs/en/config_list_with_notepad.png)
 
 If you browse for the command first, the application will assume the executable also has an icon, and prefill that box.
 
@@ -155,7 +155,7 @@ Similar configuration should be possible for firefox.
 
 This tab contains various settings that govern how BrowserPicker operates.
 
-![Screenshot of all the options under the behaviour tab](docs/config_behaviour.png)
+![Screenshot of all the options under the behaviour tab](docs/en/config_behaviour.png)
 
 > [ ] Turn off transparency
 
@@ -196,14 +196,14 @@ You may adjust for how long BrowserPicker attempts to resolve an url here.
 
 The defaults tab lets you configure rules to map certain urls to certain browsers.
 
-![Illustration of the empty list of default browser choices](docs/config_defaults_empty.png)
+![Illustration of the empty list of default browser choices](docs/en/config_defaults_empty.png)
 
 #### Match types
 
 There exists four different match types, but you cannot use Default, that is reserved for use elsewhere.  
 The option will eventually get hidden in the interface, but for now it becomes Hostname when selected.
 
-![Illustration of a dropdown showing the four match types Hostname, Prefix, Regex and Default](docs/config_defaults_match_type.png)
+![Illustration of a dropdown showing the four match types Hostname, Prefix, Regex and Default](docs/en/config_defaults_match_type.png)
 
 ##### Hostname match
 
@@ -221,14 +221,14 @@ The pattern is a .NET regular expression and will be executed against the url, s
 
 The selected browser will be the one to launch for matched urls.
 
-![Illustration of a dropdown showing each browser icon](docs/config_defaults_browsers.png)
+![Illustration of a dropdown showing each browser icon](docs/en/config_defaults_browsers.png)
 
 ### Test defaults
 
 There is even a handy dandy tool for verifying your settings,  
 just paste that url into the big white text box and get instant feedback on the browser selection process:
 
-![Example of the test defaults interface in use](docs/config_defaults_test_no_match.png)
+![Example of the test defaults interface in use](docs/en/config_defaults_test_no_match.png)
 
 ### Logging
 

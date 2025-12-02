@@ -4,7 +4,7 @@
 
 一款适用于 Windows 系统的默认浏览器替代工具，可让你选择偏好的浏览器，或根据自定义规则自动选择浏览器。
 
-![浏览器选择器的截图，显示三个选项，其中 2 个处于运行状态，1 个未运行](docs/selector_two_running.png)
+![浏览器选择器的截图](docs/zh/selector_two_running.png)
 
 你可以轻松配置规则：例如用 Firefox 打开 `GitHub.com` 和 `slashdot.org`，用 Edge 处理 `microsoft.com`，甚至可以让 Internet Explorer 打开那款你不想用但又必须使用的旧版内部业务线（LOB）应用。
 
@@ -45,8 +45,7 @@
 
 点击窗口顶部的铅笔图标，可在访问或取消访问链接前编辑或复制链接地址：
 
-![截断链接的编辑界面截图](docs/selector_edit_url.png)
-![窗口中已更新链接的截图](docs/selector_edited_url.png)
+![窗口中已更新链接的截图](docs/zh/selector_edited_url.png)
 
 ### 键盘快捷键
 
@@ -73,7 +72,7 @@
 
 配置信息保存在 Windows 注册表中，路径为 `HKEY_CURRENT_USER\Software\BrowserPicker`，你可在此路径下手动编辑配置或创建备份。
 
-![包含三个浏览器的浏览器配置界面截图](docs/config_list.png)
+![包含三个浏览器的浏览器配置界面截图](docs/zh/config_list.png)
 
 ### 浏览器
 
@@ -82,8 +81,6 @@
 #### 禁用浏览器
 
 点击 **已启用（Enabled）** 可禁用对应浏览器，禁用后该浏览器会从选择列表中隐藏。
-
-![显示 “已禁用” 字样的红色超链接截图](docs/config_disabled.png)
 
 #### 删除浏览器
 
@@ -100,10 +97,8 @@
 点击 **添加浏览器** 超链接，会弹出一个窗口，你可在此手动添加未被检测到的浏览器，或添加非浏览器类工具。
 点击输入框后方的按钮，可打开 Windows 文件选择界面，选择要使用的可执行文件或图标文件。
 
-![用于输入新浏览器参数的用户界面截图](docs/config_add_browser.png)
-![已填写内容的用户界面截图](docs/config_add_browser_exe_picked.png)
+![用于输入新浏览器参数的用户界面截图](docs/zh/config_add_browser.png)
 
-![包含 “记事本” 作为选项的已配置浏览器列表](docs/config_list_with_notepad.png)
 
 若你先选择可执行文件，应用会默认该文件包含图标，并自动填充图标文件输入框。
 
@@ -126,11 +121,11 @@ chromium 内核浏览器用户提示：若你使用多个配置文件，默认�
 
 Firefox 也支持类似的配置文件设置。
 
-### 行为
+### 设置
 
 此标签页包含控制 “浏览器选择器” 运行方式的各类设置。
 
-![“行为” 标签页下所有选项的截图](docs/config_behaviour.png)
+![“行为” 标签页下所有选项的截图](docs/zh/config_behaviour.png)
 
 > [ ] 使用纯黑背景
 
@@ -168,17 +163,17 @@ Firefox 也支持类似的配置文件设置。
 
 在此处调整浏览器选择器尝试解析链接的最长时间。
 
-### 默认规则
+### 浏览器匹配
 
 此标签页可配置规则，将特定链接与指定浏览器关联。
 
-![默认浏览器选择规则空列表示意图](docs/config_defaults_empty.png)
+![默认浏览器选择规则空列表示意图](docs/zh/config_defaults_empty.png)
 
 #### 匹配类型
 
 共有四种匹配类型，其中 **默认（Default）** 类型为预留选项，暂不可用。该选项最终会从界面中隐藏，目前选择后会自动转为 **主机名（Hostname）** 匹配类型。
 
-![显示四种匹配类型（主机名、前缀、正则表达式、默认）的下拉菜单示意图](docs/config_defaults_match_type.png)
+![显示四种匹配类型（主机名、前缀、正则表达式、默认）的下拉菜单示意图](docs/zh/config_defaults_match_type.png)
 
 ##### 主机名匹配（Hostname match）
 
@@ -198,14 +193,14 @@ Firefox 也支持类似的配置文件设置。
 
 选择匹配链接后要启动的浏览器。
 
-![显示各浏览器图标的下拉菜单示意图](docs/config_defaults_browsers.png)
+![显示各浏览器图标的下拉菜单示意图](docs/zh/config_defaults_browsers.png)
 
 ### 测试默认规则
 
 界面提供了便捷的规则验证工具：
 在白色文本框中粘贴链接，即可即时查看浏览器选择结果（验证规则是否生效）：
 
-![“测试默认规则” 界面的使用示例](docs/config_defaults_test_no_match.png)
+![“测试默认规则” 界面的使用示例](docs/zh/config_defaults_test_no_match.png)
 
 ### 日志
 
