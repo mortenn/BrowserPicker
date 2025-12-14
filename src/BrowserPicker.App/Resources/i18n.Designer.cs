@@ -187,15 +187,6 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 An unhandled exception has occurred 的本地化字符串。
-        /// </summary>
-        public static string BoxCrashedTitle {
-            get {
-                return ResourceManager.GetString("BoxCrashedTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Scanning URL... 的本地化字符串。
         /// </summary>
         public static string BoxLoadingScanningURL {
@@ -300,6 +291,15 @@ namespace BrowserPicker.Resources {
         public static string BtnRemove {
             get {
                 return ResourceManager.GetString("BtnRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法获取应用程序文件名 的本地化字符串。
+        /// </summary>
+        public static string CsConfigConfigurationNameErorr {
+            get {
+                return ResourceManager.GetString("CsConfigConfigurationNameErorr", resourceCulture);
             }
         }
         
@@ -628,7 +628,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Welcome to Browser Picker, hope you enjoy my little app! 的本地化字符串。
+        ///   查找类似 Welcome to BrowserPicker! 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText1 {
             get {
@@ -637,7 +637,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 This message will self destruct in 10 seconds 的本地化字符串。
+        ///   查找类似 This message will automatically disappear after 10 seconds 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText10 {
             get {
@@ -646,7 +646,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 I&apos;ve gone ahead and opened up the settings window, 的本地化字符串。
+        ///   查找类似 Here is the software settings window, 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText2 {
             get {
@@ -655,7 +655,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 so you can have a look around before you get started :) 的本地化字符串。
+        ///   查找类似 This software can select a customized browser when opening a link 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText3 {
             get {
@@ -664,7 +664,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Please give it a ⭐ on github, so you will get notified when a new release is made. 的本地化字符串。
+        ///   查找类似 If you think this software is helpful to you 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText4 {
             get {
@@ -673,7 +673,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Should you run into any kind of trouble or get an idea, 的本地化字符串。
+        ///   查找类似 Welcome to GitHub give a star☆ 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText5 {
             get {
@@ -682,7 +682,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 please visit 的本地化字符串。
+        ///   查找类似 If you encounter software problems or have new ideas, please visit the project to submit an issue! 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText6 {
             get {
@@ -691,7 +691,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 github.com/mortenn/BrowserPicker 的本地化字符串。
+        ///   查找类似 www.github.com/mortenn/BrowserPicker 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText7 {
             get {
@@ -700,7 +700,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 and file an issue! 的本地化字符串。
+        ///   查找类似 If you want to contribute to i18n, you can star this project and create a Resource.resx resource file in your own language. 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText8 {
             get {
@@ -709,7 +709,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Be seeing you! 的本地化字符串。
+        ///   查找类似 www.github.com/XTsat/BrowserPicker_i18n 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText9 {
             get {
@@ -804,6 +804,24 @@ namespace BrowserPicker.Resources {
         public static string WindowsTitle {
             get {
                 return ResourceManager.GetString("WindowsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 An unhandled exception has occurred 的本地化字符串。
+        /// </summary>
+        public static string WindowsTitleCrashed {
+            get {
+                return ResourceManager.GetString("WindowsTitleCrashed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Edit Browser 的本地化字符串。
+        /// </summary>
+        public static string WindowsTitleEdit {
+            get {
+                return ResourceManager.GetString("WindowsTitleEdit", resourceCulture);
             }
         }
     }

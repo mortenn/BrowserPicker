@@ -118,8 +118,8 @@
             </TabControl.Resources>
 
             <TabItem Header="{x:Static properties:i18n.TopNameWelcome}">
-                <TabItem.Style>
-                    <Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
+                <!--<TabItem.Style>-->
+                <!--<Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
                         <Setter Property="Visibility" Value="Collapsed" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Welcome}" Value="True">
@@ -127,28 +127,42 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </TabItem.Style>
+                </TabItem.Style>-->
                 <TextBlock
-                    Margin="4"
+                    Width="548"
+                    Height="304"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="16"
                     FontWeight="Light"
                     Foreground="White"
                     TextWrapping="Wrap">
-                    "{x:Static properties:i18n.NameWelcomeText1}"<LineBreak />
-                    "{x:Static properties:i18n.NameWelcomeText2}"<LineBreak />
-                    "{x:Static properties:i18n.NameWelcomeText3}"<LineBreak />
-                    <LineBreak />
-                    "{x:Static properties:i18n.NameWelcomeText4}"<LineBreak />
-                    <LineBreak />
-                    "{x:Static properties:i18n.NameWelcomeText5}"<LineBreak />
-                    "{x:Static properties:i18n.NameWelcomeText6}"<Hyperlink Foreground="LightBlue">"{x:Static properties:i18n.NameWelcomeText7}"</Hyperlink>
-                    "{x:Static properties:i18n.NameWelcomeText8}"<LineBreak />
-                    <LineBreak />
-                    "{x:Static properties:i18n.NameWelcomeText9}"<LineBreak />
-                    <LineBreak />
-                    <Run FontSize="8">"{x:Static properties:i18n.NameWelcomeText10}"</Run>
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText1}" /><LineBreak /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText2}" /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText3}" /><LineBreak /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText4}" /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText5}" /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText6}" /><LineBreak />
+                    <Hyperlink
+                        Foreground="LightBlue"
+                        MouseEnter="OnMouseEnter"
+                        MouseLeave="OnMouseLeave"
+                        NavigateUri="{Binding Source={x:Static properties:i18n.NameWelcomeText7}}"
+                        RequestNavigate="Hyperlink_RequestNavigate"
+                        TextDecorations="None">
+                        <Run Text="{x:Static properties:i18n.NameWelcomeText7}" />
+                    </Hyperlink><LineBreak /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText8}" /><LineBreak />
+                    <Hyperlink
+                        Foreground="LightBlue"
+                        MouseEnter="OnMouseEnter"
+                        MouseLeave="OnMouseLeave"
+                        NavigateUri="{Binding Source={x:Static properties:i18n.NameWelcomeText9}}"
+                        RequestNavigate="Hyperlink_RequestNavigate"
+                        TextDecorations="None">
+                        <Run Text="{x:Static properties:i18n.NameWelcomeText9}" />
+                    </Hyperlink><LineBreak /><LineBreak />
+                    <!--<Run FontSize="8" Text="&quot;" /><Run FontSize="8" Text="{x:Static properties:i18n.NameWelcomeText10}" /><Run FontSize="8" Text="&quot;" />-->
                 </TextBlock>
             </TabItem>
 

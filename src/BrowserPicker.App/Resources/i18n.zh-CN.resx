@@ -117,11 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="TopNameBrowsers" xml:space="preserve">
-    <value>浏览器</value>
-  </data>
   <data name="WindowsTitle" xml:space="preserve">
     <value>浏览器选择器</value>
+  </data>
+  <data name="TopNameBrowsers" xml:space="preserve">
+    <value>浏览器</value>
   </data>
   <data name="TopNameWelcome" xml:space="preserve">
     <value>欢迎</value>
@@ -142,28 +142,31 @@
     <value>URL 缩短器</value>
   </data>
   <data name="NameWelcomeText1" xml:space="preserve">
-    <value>欢迎使用中文版浏览器选择器！</value>
+    <value>欢迎使用浏览器选择器！</value>
   </data>
   <data name="NameWelcomeText2" xml:space="preserve">
-    <value>这里是设置窗口，</value>
+    <value>这里是软件的设置窗口，</value>
   </data>
   <data name="NameWelcomeText3" xml:space="preserve">
-    <value>欢迎使用我汉化的中文版的软件</value>
+    <value>本软件可以在打开链接的时候选择自定义的浏览器</value>
   </data>
   <data name="NameWelcomeText4" xml:space="preserve">
-    <value>请在 GitHub 上为汉化点个 star ⭐。</value>
+    <value>如果你认为这个软件对你有帮助</value>
+  </data>
+  <data name="NameWelcomeText5" xml:space="preserve">
+    <value>欢迎在 GitHub 上为汉化和原始仓库点个 star☆</value>
   </data>
   <data name="NameWelcomeText6" xml:space="preserve">
-    <value>下面是汉化仓库</value>
+    <value>如果你对多语言有什么意见也可以反馈，</value>
   </data>
   <data name="NameWelcomeText7" xml:space="preserve">
-    <value>github.com/XTsat/BrowserPicker_zh</value>
+    <value>https://github.com/XTsat/BrowserPicker_i18n</value>
   </data>
   <data name="NameWelcomeText8" xml:space="preserve">
-    <value>如果您遇到任何问题或有什么想法，请访问原始项目提交问题！</value>
+    <value>如果您遇到软件问题或有什么新想法，请访问原始项目提交问题！</value>
   </data>
   <data name="NameWelcomeText9" xml:space="preserve">
-    <value>github.com/mortenn/BrowserPicker</value>
+    <value>https://github.com/mortenn/BrowserPicker</value>
   </data>
   <data name="NameWelcomeText10" xml:space="preserve">
     <value>这条消息将在 10 秒后自动消失</value>
@@ -235,7 +238,7 @@
     <value>按域名设置默认浏览器</value>
   </data>
   <data name="NameDefaultsMatchHeaderMatch" xml:space="preserve">
-    <value>匹    配</value>
+    <value>匹配            </value>
   </data>
   <data name="NameDefaultsMatchHeaderPattern" xml:space="preserve">
     <value>模式</value>
@@ -253,7 +256,7 @@
     <value>当前浏览器选择：</value>
   </data>
   <data name="NameBackupText" xml:space="preserve">
-    <value>备份或恢复您的 BrowserPicker 配置：</value>
+    <value>备份或恢复您的浏览器选择器配置：</value>
   </data>
   <data name="NameBackupBtnExport" xml:space="preserve">
     <value>导出设置</value>
@@ -345,11 +348,11 @@
   <data name="BoxOpenBrowserBoxRememberChoice" xml:space="preserve">
     <value>记住我的选择</value>
   </data>
-  <data name="BoxCrashedTitle" xml:space="preserve">
+  <data name="WindowsTitleCrashed" xml:space="preserve">
     <value>发生了一个未处理的异常</value>
   </data>
   <data name="BoxCrashedText1" xml:space="preserve">
-    <value>很抱歉，BrowserPicker 崩溃了。</value>
+    <value>很抱歉，浏览器选择器崩溃了。</value>
   </data>
   <data name="BoxCrashedText2" xml:space="preserve">
     <value>请在 https://github.com/mortenn/BrowserPicker 提交错误报告。</value>
@@ -363,7 +366,10 @@
   <data name="BoxLoadingScanningURL" xml:space="preserve">
     <value>扫描 URL...</value>
   </data>
-  <data name="NameWelcomeText5" xml:space="preserve">
-    <value>如果你对汉化有什么意见或是想要 star，</value>
+  <data name="WindowsTitleEdit" xml:space="preserve">
+    <value>编辑浏览器</value>
+  </data>
+  <data name="CsConfigConfigurationNameErorr" xml:space="preserve">
+    <value>无法获取应用程序文件名</value>
   </data>
 </root>

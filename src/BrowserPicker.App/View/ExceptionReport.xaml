@@ -7,7 +7,7 @@
     xmlns:properties="clr-namespace:BrowserPicker.Resources"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
-    Title="{x:Static properties:i18n.BoxCrashedTitle}"
+    Title="{x:Static properties:i18n.WindowsTitleCrashed}"
     d:DataContext="{d:DesignInstance viewModel:ExceptionViewModel,
                                      d:IsDesignTimeCreatable=True}"
     SizeToContent="WidthAndHeight"

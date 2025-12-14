@@ -117,11 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="TopNameBrowsers" xml:space="preserve">
-    <value>Browsers</value>
-  </data>
   <data name="WindowsTitle" xml:space="preserve">
     <value>Browser Picker</value>
+  </data>
+  <data name="TopNameBrowsers" xml:space="preserve">
+    <value>Browsers</value>
   </data>
   <data name="TopNameWelcome" xml:space="preserve">
     <value>Welcome</value>
@@ -142,43 +142,43 @@
     <value>URL shorteners</value>
   </data>
   <data name="NameWelcomeText1" xml:space="preserve">
-    <value>Welcome to Browser Picker, hope you enjoy my little app!</value>
+    <value>Welcome to BrowserPicker!</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText2" xml:space="preserve">
-    <value>I've gone ahead and opened up the settings window,</value>
+    <value>Here is the software settings window,</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText3" xml:space="preserve">
-    <value>so you can have a look around before you get started :)</value>
+    <value>This software can select a customized browser when opening a link</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText4" xml:space="preserve">
-    <value>Please give it a ⭐ on github, so you will get notified when a new release is made.</value>
+    <value>If you think this software is helpful to you</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText5" xml:space="preserve">
-    <value>Should you run into any kind of trouble or get an idea,</value>
+    <value>Welcome to GitHub give a star☆</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText6" xml:space="preserve">
-    <value>please visit</value>
+    <value>If you encounter software problems or have new ideas, please visit the project to submit an issue!</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText7" xml:space="preserve">
-    <value>github.com/mortenn/BrowserPicker</value>
+    <value>https://github.com/mortenn/BrowserPicker</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText8" xml:space="preserve">
-    <value>and file an issue!</value>
+    <value>If you want to contribute to i18n, you can star this project and create a Resource.resx resource file in your own language.</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText9" xml:space="preserve">
-    <value>Be seeing you!</value>
+    <value>https://github.com/XTsat/BrowserPicker_i18n</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameWelcomeText10" xml:space="preserve">
-    <value>This message will self destruct in 10 seconds</value>
+    <value>This message will automatically disappear after 10 seconds</value>
     <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
   </data>
   <data name="NameBrowsersBtnEnabled" xml:space="preserve">
@@ -249,6 +249,7 @@
   </data>
   <data name="NameDefaultsMatchHeaderMatch" xml:space="preserve">
     <value>Match by</value>
+    <comment>@MutedRule(WhiteSpaceTail)</comment>
   </data>
   <data name="NameDefaultsMatchHeaderPattern" xml:space="preserve">
     <value>Pattern</value>
@@ -358,7 +359,7 @@
   <data name="BoxOpenBrowserBoxRememberChoice" xml:space="preserve">
     <value>Remember my choice for</value>
   </data>
-  <data name="BoxCrashedTitle" xml:space="preserve">
+  <data name="WindowsTitleCrashed" xml:space="preserve">
     <value>An unhandled exception has occurred</value>
   </data>
   <data name="BoxCrashedText1" xml:space="preserve">
@@ -375,5 +376,11 @@
   </data>
   <data name="BoxLoadingScanningURL" xml:space="preserve">
     <value>Scanning URL...</value>
+  </data>
+  <data name="WindowsTitleEdit" xml:space="preserve">
+    <value>Edit Browser</value>
+  </data>
+  <data name="CsConfigConfigurationNameErorr" xml:space="preserve">
+    <value>无法获取应用程序文件名</value>
   </data>
 </root>

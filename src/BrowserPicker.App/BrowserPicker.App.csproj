@@ -10,6 +10,7 @@
     <ApplicationIcon>Resources\web_icon.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <Nullable>enable</Nullable>
+    <AssemblyTitle></AssemblyTitle>
   </PropertyGroup>
   <ItemGroup>
     <Resource Include="Resources\web_icon.png" />

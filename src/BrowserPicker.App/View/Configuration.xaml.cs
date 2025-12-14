@@ -4,12 +4,69 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
 using Microsoft.Win32;
 
 namespace BrowserPicker.View;
 
 public partial class Configuration
 {
+
+	private void OnMouseEnter(object sender, MouseEventArgs e)
+	{
+		var hyperlink = sender as Hyperlink;
+		if (hyperlink != null)
+		{
+			hyperlink.TextDecorations = TextDecorations.Underline;
+		}
+	}
+
+	private void OnMouseLeave(object sender, MouseEventArgs e)
+	{
+		var hyperlink = sender as Hyperlink;
+		if (hyperlink != null)
+		{
+			hyperlink.TextDecorations = null;
+		}
+	}
+
+	private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+	{
+		try
+		{
+			string url = e.Uri.ToString();
+
+			// 相对 URL 自动补充
+			if (!e.Uri.IsAbsoluteUri)
+			{
+				if (url.StartsWith("/"))
+				{
+					url = "https://github.com" + url;
+				}
+				else
+				{
+					url = "https://" + url;
+				}
+			}
+			else if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+			{
+				url = "https://" + url;
+			}
+
+			Process.Start(new ProcessStartInfo(url)
+			{
+				UseShellExecute = true
+			});
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show($"无法打开链接 '{e.Uri}': {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+		}
+	}
+
+
+
 	// 外壳刷新API
 	[DllImport("shell32.dll", SetLastError = true)]
 	private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
@@ -33,11 +90,12 @@ public partial class Configuration
 	{
 		InitializeComponent();
 		// 确保路径非空
+		string msg = BrowserPicker.Resources.i18n.CsConfigConfigurationNameErorr;
 		var entryAssembly = Assembly.GetEntryAssembly();
 		_appPath = !string.IsNullOrEmpty(Environment.ProcessPath)
 			? Environment.ProcessPath
 			: Path.Combine(AppContext.BaseDirectory, Path.GetFileName(AppName + ".exe"));
-		_appExeName = Path.GetFileName(_appPath) ?? throw new InvalidOperationException("无法获取应用程序文件名");
+		_appExeName = Path.GetFileName(_appPath) ?? throw new InvalidOperationException(msg);
 	}
 
 	// 注册按钮点击事件
@@ -49,7 +107,7 @@ public partial class Configuration
 			CreateProgId(ProgIdHtml, "HTML文件", isUrl: false);
 			CreateProgId(ProgIdUrl, "URL链接", isUrl: true);
 
-			// 2. 注册文件类型（仅操作CurrentUser路径）
+			// 2. 注册文件类型（仅User）
 			foreach (var ext in _fileTypes)
 			{
 				RegisterFileType(ext, ext == ".url" ? ProgIdUrl : ProgIdHtml);
