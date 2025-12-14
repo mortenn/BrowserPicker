@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TopNameBrowsers" xml:space="preserve">
+    <value>浏览器</value>
+  </data>
+  <data name="WindowsTitle" xml:space="preserve">
+    <value>浏览器选择器</value>
+  </data>
+  <data name="TopNameWelcome" xml:space="preserve">
+    <value>欢迎</value>
+  </data>
+  <data name="TopNameSetting" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="TopNameDefaultsMatch" xml:space="preserve">
+    <value>浏览器匹配</value>
+  </data>
+  <data name="TopNameTestDefaults" xml:space="preserve">
+    <value>测试链接</value>
+  </data>
+  <data name="TopNameBackup" xml:space="preserve">
+    <value>备份</value>
+  </data>
+  <data name="TopNameUrlShorteners" xml:space="preserve">
+    <value>URL 缩短器</value>
+  </data>
+  <data name="NameWelcomeText1" xml:space="preserve">
+    <value>欢迎使用中文版浏览器选择器！</value>
+  </data>
+  <data name="NameWelcomeText2" xml:space="preserve">
+    <value>这里是设置窗口，</value>
+  </data>
+  <data name="NameWelcomeText3" xml:space="preserve">
+    <value>欢迎使用我汉化的中文版的软件</value>
+  </data>
+  <data name="NameWelcomeText4" xml:space="preserve">
+    <value>请在 GitHub 上为汉化点个 star ⭐。</value>
+  </data>
+  <data name="NameWelcomeText6" xml:space="preserve">
+    <value>下面是汉化仓库</value>
+  </data>
+  <data name="NameWelcomeText7" xml:space="preserve">
+    <value>github.com/XTsat/BrowserPicker_zh</value>
+  </data>
+  <data name="NameWelcomeText8" xml:space="preserve">
+    <value>如果您遇到任何问题或有什么想法，请访问原始项目提交问题！</value>
+  </data>
+  <data name="NameWelcomeText9" xml:space="preserve">
+    <value>github.com/mortenn/BrowserPicker</value>
+  </data>
+  <data name="NameWelcomeText10" xml:space="preserve">
+    <value>这条消息将在 10 秒后自动消失</value>
+  </data>
+  <data name="NameBrowsersBtnEnabled" xml:space="preserve">
+    <value>启用</value>
+  </data>
+  <data name="NameBrowsersBtnDisabled" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+  <data name="NameBrowsersBtnEdit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="NameBrowsersBtnEditTip" xml:space="preserve">
+    <value>编辑浏览器定义</value>
+  </data>
+  <data name="NameBrowsersBtnRemove" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="NameBrowsersBtnRemoveTip" xml:space="preserve">
+    <value>从列表中移除浏览器</value>
+  </data>
+  <data name="NameBrowsersBtnAddBrowser" xml:space="preserve">
+    <value>添加浏览器</value>
+  </data>
+  <data name="NameBrowsersBtnRefreshBrowserList" xml:space="preserve">
+    <value>刷新浏览器列表</value>
+  </data>
+  <data name="NameSettingBoxAlwaysShow" xml:space="preserve">
+    <value>始终显示浏览器选择窗口</value>
+  </data>
+  <data name="NameSettingBoxDefaultMatching" xml:space="preserve">
+    <value>当无匹配链接的默认浏览器时，使用：</value>
+  </data>
+  <data name="NameSettingBoxDefaultsNotRunning" xml:space="preserve">
+    <value>即使浏览器未运行也使用默认设置</value>
+  </data>
+  <data name="NameSettingBoxNoDefaultMatching" xml:space="preserve">
+    <value>无匹配默认浏览器时始终询问</value>
+  </data>
+  <data name="NameSettingBoxTransparency" xml:space="preserve">
+    <value>使用纯黑背景</value>
+  </data>
+  <data name="NameSettingBtnSortManually" xml:space="preserve">
+    <value>手动排序</value>
+  </data>
+  <data name="NameSettingBtnSortUsage" xml:space="preserve">
+    <value>根据使用情况排序</value>
+  </data>
+  <data name="NameSettingBtnSortAlphabetically" xml:space="preserve">
+    <value>按字母顺序排序</value>
+  </data>
+  <data name="NameSettingBoxDisallowNetworkActivity" xml:space="preserve">
+    <value>禁用链接解析</value>
+  </data>
+  <data name="NameSettingTextBoxUrlResolutionTimeout" xml:space="preserve">
+    <value>链接解析超时时间(毫秒)：</value>
+  </data>
+  <data name="NameSettingBtnDefaultBrowser" xml:space="preserve">
+    <value>设置默认浏览器</value>
+  </data>
+  <data name="NameSettingBtnRegAddOpen" xml:space="preserve">
+    <value>注册打开方式</value>
+  </data>
+  <data name="NameSettingBtnRegRemoveOpen" xml:space="preserve">
+    <value>移除打开方式</value>
+  </data>
+  <data name="NameDefaultsMatchTextSetDefaultBrowser" xml:space="preserve">
+    <value>按域名设置默认浏览器</value>
+  </data>
+  <data name="NameDefaultsMatchHeaderMatch" xml:space="preserve">
+    <value>匹    配</value>
+  </data>
+  <data name="NameDefaultsMatchHeaderPattern" xml:space="preserve">
+    <value>模式</value>
+  </data>
+  <data name="NameDefaultsMatchHeaderBrowser" xml:space="preserve">
+    <value>浏览器</value>
+  </data>
+  <data name="NameTestDefaultsTextUri" xml:space="preserve">
+    <value>链接：</value>
+  </data>
+  <data name="NameTestDefaultsTextDefaultMatched" xml:space="preserve">
+    <value>默认浏览器匹配：</value>
+  </data>
+  <data name="NameTestDefaultsTextActualChoice" xml:space="preserve">
+    <value>当前浏览器选择：</value>
+  </data>
+  <data name="NameBackupText" xml:space="preserve">
+    <value>备份或恢复您的 BrowserPicker 配置：</value>
+  </data>
+  <data name="NameBackupBtnExport" xml:space="preserve">
+    <value>导出设置</value>
+  </data>
+  <data name="NameBackupBtnImport" xml:space="preserve">
+    <value>导入设置</value>
+  </data>
+  <data name="NameUrlShortenersTextTitle" xml:space="preserve">
+    <value>这些域名是已知的网址缩短服务，除非通过设置禁止，否则会在启动时进行探测</value>
+  </data>
+  <data name="NameUrlShortenersHeaderDefault" xml:space="preserve">
+    <value>默认缩短工具</value>
+  </data>
+  <data name="NameUrlShortenersHeaderAdditional" xml:space="preserve">
+    <value>其他缩短工具</value>
+  </data>
+  <data name="NameUrlShortenersTextDefault" xml:space="preserve">
+    <value>ℹ️ 以上未显示一些额外的跳转页面</value>
+  </data>
+  <data name="NameUrlShortenersTextTipDefault" xml:space="preserve">
+    <value>有些页面（例如 Outlook 安全链接）有特殊的处理方式，目标 URL 位于查询字符串中，这些页面未列入此列表，因为它们需要在代码中提供额外的信息。</value>
+  </data>
+  <data name="BtnAdd" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="BtnRemove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="TopNameDone" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="TopNameExit" xml:space="preserve">
+    <value>退出程序</value>
+  </data>
+  <data name="BoxAddBrowserName" xml:space="preserve">
+    <value>名称: </value>
+  </data>
+  <data name="BoxAddBrowserCommand" xml:space="preserve">
+    <value>文件目标: </value>
+  </data>
+  <data name="BoxAddBrowserCommandArgs" xml:space="preserve">
+    <value>启动选项: </value>
+  </data>
+  <data name="BoxAddBrowserTipBrowseLocations" xml:space="preserve">
+    <value>浏览文件位置</value>
+  </data>
+  <data name="BoxAddBrowserIcon" xml:space="preserve">
+    <value>图标: </value>
+  </data>
+  <data name="BoxAddBrowserBoxExpandUrls" xml:space="preserve">
+    <value>展开 file:// 网址</value>
+  </data>
+  <data name="BoxAddBrowserPrivacyArgs" xml:space="preserve">
+    <value>无痕参数: </value>
+  </data>
+  <data name="BoxAddBrowserDisableUpdates" xml:space="preserve">
+    <value>禁用自动更新（修改默认配置请打开）</value>
+  </data>
+  <data name="BoxAddBrowserHotkey" xml:space="preserve">
+    <value>快捷键: </value>
+  </data>
+  <data name="BoxAddBrowserHotkeyTip" xml:space="preserve">
+    <value>(自动)</value>
+  </data>
+  <data name="BtnOk" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="BtnCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="BoxOpenBrowserTipPin" xml:space="preserve">
+    <value>固定窗口，使其在失去焦点时不会关闭</value>
+  </data>
+  <data name="BoxOpenBrowserTipCopyUrl" xml:space="preserve">
+    <value>将 URL 复制到剪贴板</value>
+  </data>
+  <data name="BoxOpenBrowserTipEditUrl" xml:space="preserve">
+    <value>在打开前编辑 URL</value>
+  </data>
+  <data name="BoxOpenBrowserRedirectedUrl" xml:space="preserve">
+    <value>重定向 URL</value>
+  </data>
+  <data name="BoxOpenBrowserBtnConfigure" xml:space="preserve">
+    <value>配置浏览器列表</value>
+  </data>
+  <data name="BoxOpenBrowserBoxAlwaysAsk" xml:space="preserve">
+    <value>总是询问</value>
+  </data>
+  <data name="BoxOpenBrowserBoxRememberChoice" xml:space="preserve">
+    <value>记住我的选择</value>
+  </data>
+  <data name="BoxCrashedTitle" xml:space="preserve">
+    <value>发生了一个未处理的异常</value>
+  </data>
+  <data name="BoxCrashedText1" xml:space="preserve">
+    <value>很抱歉，BrowserPicker 崩溃了。</value>
+  </data>
+  <data name="BoxCrashedText2" xml:space="preserve">
+    <value>请在 https://github.com/mortenn/BrowserPicker 提交错误报告。</value>
+  </data>
+  <data name="BoxCrashedTextInfo" xml:space="preserve">
+    <value>异常详情：</value>
+  </data>
+  <data name="BoxCrashedClipboard" xml:space="preserve">
+    <value>复制到剪贴板</value>
+  </data>
+  <data name="BoxLoadingScanningURL" xml:space="preserve">
+    <value>扫描 URL...</value>
+  </data>
+  <data name="NameWelcomeText5" xml:space="preserve">
+    <value>如果你对汉化有什么意见或是想要 star，</value>
+  </data>
+</root>

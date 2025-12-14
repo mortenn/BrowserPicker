@@ -1,89 +1,113 @@
-﻿<Window x:Class="BrowserPicker.View.ExceptionReport"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
-	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-	mc:Ignorable="d"
-	d:DataContext="{d:DesignInstance viewModel:ExceptionViewModel,d:IsDesignTimeCreatable=True}"
-	Title="发生了一个未处理的异常" SizeToContent="WidthAndHeight">
-	<Window.Resources>
-		<ResourceDictionary>
-			<DataTemplate DataType="{x:Type sys:Exception}">
-				<Border>
-					<StackPanel>
-						<StackPanel Orientation="Vertical">
-							<StackPanel Orientation="Horizontal">
-								<ToggleButton FontSize="10" Padding="2,0" Margin="0,0,2,0" Width="15" Height="15" x:Name="toggleButton">
-									<ToggleButton.Style>
-										<Style TargetType="ToggleButton">
-											<Setter Property="Content" Value="+" />
-											<Style.Triggers>
-												<DataTrigger Binding="{Binding InnerException}" Value="{x:Null}">
-													<Setter Property="UIElement.Visibility" Value="Collapsed" />
-												</DataTrigger>
-												<DataTrigger Binding="{Binding ElementName=toggleButton, Path=IsChecked}" Value="True">
-													<Setter Property="Content" Value="-" />
-												</DataTrigger>
-											</Style.Triggers>
-										</Style>
-									</ToggleButton.Style>
-								</ToggleButton>
-								<TextBlock Text="{Binding Message}" />
-							</StackPanel>
-							<TextBlock Text="{Binding StackTrace}" />
-						</StackPanel>
-						<Grid>
-							<Grid.Style>
-								<Style TargetType="Grid">
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding InnerException}" Value="{x:Null}">
-											<Setter Property="UIElement.Visibility" Value="Collapsed" />
-										</DataTrigger>
-									</Style.Triggers>
-								</Style>
-							</Grid.Style>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
-							<Border BorderBrush="Silver" BorderThickness="1" Grid.Column="1">
-								<Border.Style>
-									<Style TargetType="Border">
-										<Setter Property="Visibility" Value="Collapsed" />
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding ElementName=toggleButton, Path=IsChecked}" Value="True">
-												<Setter Property="UIElement.Visibility" Value="Visible" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</Border.Style>
-								<ContentPresenter Content="{Binding InnerException}" />
-							</Border>
-						</Grid>
-					</StackPanel>
-				</Border>
-			</DataTemplate>
-		</ResourceDictionary>
-	</Window.Resources>
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
-		<StackPanel Orientation="Vertical">
-			<TextBlock Text="很抱歉，BrowserPicker 崩溃了。" />
-			<TextBlock Text="请在 https://github.com/mortenn/BrowserPicker 提交错误报告。" />
-			<TextBlock Margin="0,4,0,0" Text="异常详情：" />
-		</StackPanel>
-		<Border Grid.Row="1" Margin="5">
-			<ContentPresenter Content="{Binding Model.Exception}" />
-		</Border>
-		<StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
-			<Button Content="复制到剪贴板" Command="{Binding CopyToClipboard}" Margin="4" Padding="10,0" />
-			<Button Content="确认" Command="{Binding Ok}" Margin="4" Padding="10,0" />
-		</StackPanel>
-	</Grid>
+<Window
+    x:Class="BrowserPicker.View.ExceptionReport"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:properties="clr-namespace:BrowserPicker.Resources"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
+    Title="{x:Static properties:i18n.BoxCrashedTitle}"
+    d:DataContext="{d:DesignInstance viewModel:ExceptionViewModel,
+                                     d:IsDesignTimeCreatable=True}"
+    SizeToContent="WidthAndHeight"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <DataTemplate DataType="{x:Type sys:Exception}">
+                <Border>
+                    <StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <ToggleButton
+                                    x:Name="toggleButton"
+                                    Width="15"
+                                    Height="15"
+                                    Margin="0,0,2,0"
+                                    Padding="2,0"
+                                    FontSize="10">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="ToggleButton">
+                                            <Setter Property="Content" Value="+" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding InnerException}" Value="{x:Null}">
+                                                    <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ElementName=toggleButton, Path=IsChecked}" Value="True">
+                                                    <Setter Property="Content" Value="-" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                </ToggleButton>
+                                <TextBlock Text="{Binding Message}" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding StackTrace}" />
+                        </StackPanel>
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding InnerException}" Value="{x:Null}">
+                                            <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Border
+                                Grid.Column="1"
+                                BorderBrush="Silver"
+                                BorderThickness="1">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=toggleButton, Path=IsChecked}" Value="True">
+                                                <Setter Property="UIElement.Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <ContentPresenter Content="{Binding InnerException}" />
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="{x:Static properties:i18n.BoxCrashedText1}" />
+            <TextBlock Text="{x:Static properties:i18n.BoxCrashedText2}" />
+            <TextBlock Margin="0,4,0,0" Text="{x:Static properties:i18n.BoxCrashedTextInfo}" />
+        </StackPanel>
+        <Border Grid.Row="1" Margin="5">
+            <ContentPresenter Content="{Binding Model.Exception}" />
+        </Border>
+        <StackPanel
+            Grid.Row="2"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button
+                Margin="4"
+                Padding="10,0"
+                Command="{Binding CopyToClipboard}"
+                Content="{x:Static properties:i18n.BoxCrashedClipboard}" />
+            <Button
+                Margin="4"
+                Padding="10,0"
+                Command="{Binding Ok}"
+                Content="{x:Static properties:i18n.BtnOk}" />
+        </StackPanel>
+    </Grid>
 </Window>

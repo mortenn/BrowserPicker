@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TopNameBrowsers" xml:space="preserve">
+    <value>Browsers</value>
+  </data>
+  <data name="WindowsTitle" xml:space="preserve">
+    <value>Browser Picker</value>
+  </data>
+  <data name="TopNameWelcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="TopNameSetting" xml:space="preserve">
+    <value>Behaviour</value>
+  </data>
+  <data name="TopNameDefaultsMatch" xml:space="preserve">
+    <value>Defaults</value>
+  </data>
+  <data name="TopNameTestDefaults" xml:space="preserve">
+    <value>Test defaults</value>
+  </data>
+  <data name="TopNameBackup" xml:space="preserve">
+    <value>Backup</value>
+  </data>
+  <data name="TopNameUrlShorteners" xml:space="preserve">
+    <value>URL shorteners</value>
+  </data>
+  <data name="NameWelcomeText1" xml:space="preserve">
+    <value>Welcome to Browser Picker, hope you enjoy my little app!</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText2" xml:space="preserve">
+    <value>I've gone ahead and opened up the settings window,</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText3" xml:space="preserve">
+    <value>so you can have a look around before you get started :)</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText4" xml:space="preserve">
+    <value>Please give it a ⭐ on github, so you will get notified when a new release is made.</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText5" xml:space="preserve">
+    <value>Should you run into any kind of trouble or get an idea,</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText6" xml:space="preserve">
+    <value>please visit</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText7" xml:space="preserve">
+    <value>github.com/mortenn/BrowserPicker</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText8" xml:space="preserve">
+    <value>and file an issue!</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText9" xml:space="preserve">
+    <value>Be seeing you!</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameWelcomeText10" xml:space="preserve">
+    <value>This message will self destruct in 10 seconds</value>
+    <comment>@MutedRule(PunctuationLead)@MutedRule(StringFormat)@MutedRule(WhiteSpaceLead)@MutedRule(WhiteSpaceTail)@MutedRule(PunctuationTail)</comment>
+  </data>
+  <data name="NameBrowsersBtnEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="NameBrowsersBtnDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="NameBrowsersBtnEdit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="NameBrowsersBtnEditTip" xml:space="preserve">
+    <value>Edit browser definition</value>
+  </data>
+  <data name="NameBrowsersBtnRemove" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="NameBrowsersBtnRemoveTip" xml:space="preserve">
+    <value>Remove browser from list</value>
+  </data>
+  <data name="NameBrowsersBtnAddBrowser" xml:space="preserve">
+    <value>Add browser</value>
+  </data>
+  <data name="NameBrowsersBtnRefreshBrowserList" xml:space="preserve">
+    <value>Refresh browser list</value>
+  </data>
+  <data name="NameSettingBoxAlwaysShow" xml:space="preserve">
+    <value>Always show browser selection window</value>
+  </data>
+  <data name="NameSettingBoxDefaultMatching" xml:space="preserve">
+    <value>When no default is configured matching the url, use:</value>
+  </data>
+  <data name="NameSettingBoxDefaultsNotRunning" xml:space="preserve">
+    <value>Use defaults even when browser is not running</value>
+  </data>
+  <data name="NameSettingBoxNoDefaultMatching" xml:space="preserve">
+    <value>Always ask when no default is matching url</value>
+  </data>
+  <data name="NameSettingBoxTransparency" xml:space="preserve">
+    <value>Turn off transparency</value>
+  </data>
+  <data name="NameSettingBtnSortManually" xml:space="preserve">
+    <value>Sort list manually</value>
+  </data>
+  <data name="NameSettingBtnSortUsage" xml:space="preserve">
+    <value>Sort list based on usage</value>
+  </data>
+  <data name="NameSettingBtnSortAlphabetically" xml:space="preserve">
+    <value>Sort list alphabetically</value>
+  </data>
+  <data name="NameSettingBoxDisallowNetworkActivity" xml:space="preserve">
+    <value>Disallow network activity</value>
+  </data>
+  <data name="NameSettingTextBoxUrlResolutionTimeout" xml:space="preserve">
+    <value>URL resolution timeout:</value>
+  </data>
+  <data name="NameSettingBtnDefaultBrowser" xml:space="preserve">
+    <value>Set default browser</value>
+  </data>
+  <data name="NameSettingBtnRegAddOpen" xml:space="preserve">
+    <value>Register the open method</value>
+  </data>
+  <data name="NameSettingBtnRegRemoveOpen" xml:space="preserve">
+    <value>Remove the open method</value>
+  </data>
+  <data name="NameDefaultsMatchTextSetDefaultBrowser" xml:space="preserve">
+    <value>Set default browser per domain</value>
+  </data>
+  <data name="NameDefaultsMatchHeaderMatch" xml:space="preserve">
+    <value>Match by</value>
+  </data>
+  <data name="NameDefaultsMatchHeaderPattern" xml:space="preserve">
+    <value>Pattern</value>
+  </data>
+  <data name="NameDefaultsMatchHeaderBrowser" xml:space="preserve">
+    <value>Browser</value>
+  </data>
+  <data name="NameTestDefaultsTextUri" xml:space="preserve">
+    <value>Url:</value>
+  </data>
+  <data name="NameTestDefaultsTextDefaultMatched" xml:space="preserve">
+    <value>Default browser matched:</value>
+  </data>
+  <data name="NameTestDefaultsTextActualChoice" xml:space="preserve">
+    <value>Actual browser choice:</value>
+  </data>
+  <data name="NameBackupText" xml:space="preserve">
+    <value>Back up or restore your BrowserPicker configuration:</value>
+  </data>
+  <data name="NameBackupBtnExport" xml:space="preserve">
+    <value>Export BrowserPicker settings</value>
+  </data>
+  <data name="NameBackupBtnImport" xml:space="preserve">
+    <value>Import BrowserPicker settings</value>
+  </data>
+  <data name="NameUrlShortenersTextTitle" xml:space="preserve">
+    <value>These domains are known URL shorteners and gets probed on launch unless disallowed by settings</value>
+  </data>
+  <data name="NameUrlShortenersHeaderDefault" xml:space="preserve">
+    <value>Default shorteners</value>
+  </data>
+  <data name="NameUrlShortenersHeaderAdditional" xml:space="preserve">
+    <value>Additional shorteners</value>
+  </data>
+  <data name="NameUrlShortenersTextDefault" xml:space="preserve">
+    <value>ℹ️ Some additional jump pages not shown above</value>
+  </data>
+  <data name="NameUrlShortenersTextTipDefault" xml:space="preserve">
+    <value>Some pages, such as outlook safelinks, have special handling where the target url is in the query string, these are not listed in this list, as they require additional information in code.</value>
+  </data>
+  <data name="BtnAdd" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="BtnRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="TopNameDone" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="TopNameExit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="BoxAddBrowserName" xml:space="preserve">
+    <value>Name: </value>
+  </data>
+  <data name="BoxAddBrowserCommand" xml:space="preserve">
+    <value>Command: </value>
+  </data>
+  <data name="BoxAddBrowserCommandArgs" xml:space="preserve">
+    <value>Command Args: </value>
+  </data>
+  <data name="BoxAddBrowserTipBrowseLocations" xml:space="preserve">
+    <value>Browse file locations</value>
+  </data>
+  <data name="BoxAddBrowserIcon" xml:space="preserve">
+    <value>Icon: </value>
+  </data>
+  <data name="BoxAddBrowserBoxExpandUrls" xml:space="preserve">
+    <value>Expand file:// urls</value>
+  </data>
+  <data name="BoxAddBrowserPrivacyArgs" xml:space="preserve">
+    <value>Privacy Args: </value>
+  </data>
+  <data name="BoxAddBrowserDisableUpdates" xml:space="preserve">
+    <value>Disable automatic updates</value>
+  </data>
+  <data name="BoxAddBrowserHotkey" xml:space="preserve">
+    <value>Hotkey: </value>
+  </data>
+  <data name="BoxAddBrowserHotkeyTip" xml:space="preserve">
+    <value>(Automatic)</value>
+  </data>
+  <data name="BtnOk" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="BtnCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="BoxOpenBrowserTipPin" xml:space="preserve">
+    <value>Pins the window, making it not close on lost focus</value>
+  </data>
+  <data name="BoxOpenBrowserTipCopyUrl" xml:space="preserve">
+    <value>Copy the URL to the clipboard</value>
+  </data>
+  <data name="BoxOpenBrowserTipEditUrl" xml:space="preserve">
+    <value>Edit the URL before opening it</value>
+  </data>
+  <data name="BoxOpenBrowserRedirectedUrl" xml:space="preserve">
+    <value>Redirected URL</value>
+  </data>
+  <data name="BoxOpenBrowserBtnConfigure" xml:space="preserve">
+    <value>Configure browser list</value>
+  </data>
+  <data name="BoxOpenBrowserBoxAlwaysAsk" xml:space="preserve">
+    <value>Always ask</value>
+  </data>
+  <data name="BoxOpenBrowserBoxRememberChoice" xml:space="preserve">
+    <value>Remember my choice for</value>
+  </data>
+  <data name="BoxCrashedTitle" xml:space="preserve">
+    <value>An unhandled exception has occurred</value>
+  </data>
+  <data name="BoxCrashedText1" xml:space="preserve">
+    <value>Unfortunately, BrowserPicker has crashed.</value>
+  </data>
+  <data name="BoxCrashedText2" xml:space="preserve">
+    <value>Please submit a bug report on https://github.com/mortenn/BrowserPicker.</value>
+  </data>
+  <data name="BoxCrashedTextInfo" xml:space="preserve">
+    <value>Exception details:</value>
+  </data>
+  <data name="BoxCrashedClipboard" xml:space="preserve">
+    <value>Copy to clipboard</value>
+  </data>
+  <data name="BoxLoadingScanningURL" xml:space="preserve">
+    <value>Scanning URL...</value>
+  </data>
+</root>

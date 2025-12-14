@@ -8,6 +8,9 @@ using System.Windows;
 using System.Windows.Threading;
 using BrowserPicker.View;
 using BrowserPicker.ViewModel;
+using System.Configuration;
+using System.Data;
+using System.Globalization;
 
 namespace BrowserPicker;
 
@@ -41,6 +44,10 @@ public partial class App
 
 	public App()
 	{
+		var culture = new CultureInfo("en-US");
+		Thread.CurrentThread.CurrentCulture = culture; 
+		//Thread.CurrentThread.CurrentUIculture = culture;
+
 		Encoding.RegisterProvider(new InvalidUTF8Patch());
 		Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 		BackgroundTasks.Add(Settings);
