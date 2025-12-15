@@ -221,12 +221,12 @@
                 <Button
                     Padding="10,0"
                     Click="Cancel_OnClick"
-                    Content="{x:Static properties:i18n.BtnCancel}" />
+                    Content="{x:Static properties:i18n.UniCancel}" />
                 <Button
                     Margin="10,0,0,0"
                     Padding="10,0"
                     Click="Ok_OnClick"
-                    Content="{x:Static properties:i18n.BtnOk}" />
+                    Content="{x:Static properties:i18n.UniOk}" />
             </StackPanel>
         </Grid>
     </Border>

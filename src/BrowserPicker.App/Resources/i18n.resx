@@ -290,10 +290,10 @@
   <data name="NameUrlShortenersTextTipDefault" xml:space="preserve">
     <value>Some pages, such as outlook safelinks, have special handling where the target url is in the query string, these are not listed in this list, as they require additional information in code.</value>
   </data>
-  <data name="BtnAdd" xml:space="preserve">
+  <data name="UniAdd" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="BtnRemove" xml:space="preserve">
+  <data name="UniRemove" xml:space="preserve">
     <value>Remove</value>
   </data>
   <data name="TopNameDone" xml:space="preserve">
@@ -332,10 +332,10 @@
   <data name="BoxAddBrowserHotkeyTip" xml:space="preserve">
     <value>(Automatic)</value>
   </data>
-  <data name="BtnOk" xml:space="preserve">
+  <data name="UniOk" xml:space="preserve">
     <value>Ok</value>
   </data>
-  <data name="BtnCancel" xml:space="preserve">
+  <data name="UniCancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
   <data name="BoxOpenBrowserTipPin" xml:space="preserve">
@@ -381,6 +381,74 @@
     <value>Edit Browser</value>
   </data>
   <data name="CsConfigConfigurationNameErorr" xml:space="preserve">
-    <value>无法获取应用程序文件名</value>
+    <value>Unable to get application filename</value>
+  </data>
+  <data name="UniError" xml:space="preserve">
+    <value>Incorrect</value>
+  </data>
+  <data name="CsConfigHyperlinkError" xml:space="preserve">
+    <value>Unable to open link</value>
+  </data>
+  <data name="UniCompleted" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="CsConfigRegistrationSuccessful" xml:space="preserve">
+    <value>Registration successful!
+1. Create a→ new desktop→ shortcut→ Enter the URL→ Right-click to→ open the method→ Select another app→ Find this program
+2. Right click any .html file→ Choose another app→ More apps→ Find this program
+3. If it is not displayed, it will take effect automatically after restarting the computer</value>
+  </data>
+  <data name="CsConfigAdminTip" xml:space="preserve">
+    <value>Permission prompt</value>
+  </data>
+  <data name="CsConfigAdminTipText" xml:space="preserve">
+    <value>Normal user permission restricted: {0}
+Please turn off the security software and try again (no admin required)</value>
+  </data>
+  <data name="CsConfigRegistrationFailed" xml:space="preserve">
+    <value>Registration failed: {0}
+Please check if the app is blocked by security software</value>
+  </data>
+  <data name="CsConfigUnregisterTip" xml:space="preserve">
+    <value>Are you sure you want to remove all open method associations?
+Once removed, it will not be possible to quickly open the webpage through this program.</value>
+  </data>
+  <data name="CsConfigUnregisterSuccessful" xml:space="preserve">
+    <value>Successfully removed all open method associations!</value>
+  </data>
+  <data name="CsConfigUnregisterFailed" xml:space="preserve">
+    <value>Remove failure:</value>
+  </data>
+  <data name="CsConfigFileTypeRegistration" xml:space="preserve">
+    <value>Extension or ProgID cannot be empty</value>
+  </data>
+  <data name="CsConfigFileTypeRegistrationSuccessful" xml:space="preserve">
+    <value>Open{0}file</value>
+  </data>
+  <data name="CsConfigDefaultProgramRegistration" xml:space="preserve">
+    <value>Web link selector</value>
+  </data>
+  <data name="CsConfigProgramRegistrationOpen" xml:space="preserve">
+    <value>Open with {0}</value>
+  </data>
+  <data name="CsConfigProgramRegistrationOpen2" xml:space="preserve">
+    <value>Open{0}link with{1}</value>
+  </data>
+  <data name="UniOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="UniRestart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="CsConfigRestartExplorerTip" xml:space="preserve">
+    <value>Do you want to restart Explorer for immediate effect?
+The desktop icon will disappear temporarily during the restart process and resume automatically after a few seconds.</value>
+    <comment>Default no restart</comment>
+  </data>
+  <data name="UniTip" xml:space="preserve">
+    <value>Prompts</value>
+  </data>
+  <data name="CsConfigRestartExplorerFailTip" xml:space="preserve">
+    <value>Failed to restart the explorer, it is recommended to restart the computer to take effect</value>
   </data>
 </root>

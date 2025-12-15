@@ -500,7 +500,7 @@
                             Grid.Column="3"
                             Padding="5,0"
                             Command="{Binding AddDefault}"
-                            Content="{x:Static properties:i18n.BtnAdd}" />
+                            Content="{x:Static properties:i18n.UniAdd}" />
                     </Grid>
                 </Grid>
             </TabItem>
@@ -652,14 +652,14 @@
                             Padding="10,0"
                             Command="{Binding AddShortener}"
                             CommandParameter="{Binding Text, ElementName=NewShortener}"
-                            Content="{x:Static properties:i18n.BtnAdd}" />
+                            Content="{x:Static properties:i18n.UniAdd}" />
                         <Button
                             Grid.Row="0"
                             Grid.Column="2"
                             Padding="10,0"
                             Command="{Binding RemoveShortener}"
                             CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}"
-                            Content="{x:Static properties:i18n.BtnRemove}" />
+                            Content="{x:Static properties:i18n.UniRemove}" />
                     </Grid>
                 </Grid>
             </TabItem>

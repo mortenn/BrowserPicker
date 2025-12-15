@@ -259,47 +259,153 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 Add 的本地化字符串。
+        ///   查找类似 Permission prompt 的本地化字符串。
         /// </summary>
-        public static string BtnAdd {
+        public static string CsConfigAdminTip {
             get {
-                return ResourceManager.GetString("BtnAdd", resourceCulture);
+                return ResourceManager.GetString("CsConfigAdminTip", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 Cancel 的本地化字符串。
+        ///   查找类似 Normal user permission restricted: {0}
+        ///Please turn off the security software and try again (no admin required) 的本地化字符串。
         /// </summary>
-        public static string BtnCancel {
+        public static string CsConfigAdminTipText {
             get {
-                return ResourceManager.GetString("BtnCancel", resourceCulture);
+                return ResourceManager.GetString("CsConfigAdminTipText", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 Ok 的本地化字符串。
-        /// </summary>
-        public static string BtnOk {
-            get {
-                return ResourceManager.GetString("BtnOk", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Remove 的本地化字符串。
-        /// </summary>
-        public static string BtnRemove {
-            get {
-                return ResourceManager.GetString("BtnRemove", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 无法获取应用程序文件名 的本地化字符串。
+        ///   查找类似 Unable to get application filename 的本地化字符串。
         /// </summary>
         public static string CsConfigConfigurationNameErorr {
             get {
                 return ResourceManager.GetString("CsConfigConfigurationNameErorr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Web link selector 的本地化字符串。
+        /// </summary>
+        public static string CsConfigDefaultProgramRegistration {
+            get {
+                return ResourceManager.GetString("CsConfigDefaultProgramRegistration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Extension or ProgID cannot be empty 的本地化字符串。
+        /// </summary>
+        public static string CsConfigFileTypeRegistration {
+            get {
+                return ResourceManager.GetString("CsConfigFileTypeRegistration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Open{0}file 的本地化字符串。
+        /// </summary>
+        public static string CsConfigFileTypeRegistrationSuccessful {
+            get {
+                return ResourceManager.GetString("CsConfigFileTypeRegistrationSuccessful", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Unable to open link 的本地化字符串。
+        /// </summary>
+        public static string CsConfigHyperlinkError {
+            get {
+                return ResourceManager.GetString("CsConfigHyperlinkError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Open with {0} 的本地化字符串。
+        /// </summary>
+        public static string CsConfigProgramRegistrationOpen {
+            get {
+                return ResourceManager.GetString("CsConfigProgramRegistrationOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Open{0}link with{1} 的本地化字符串。
+        /// </summary>
+        public static string CsConfigProgramRegistrationOpen2 {
+            get {
+                return ResourceManager.GetString("CsConfigProgramRegistrationOpen2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Registration failed: {0}
+        ///Please check if the app is blocked by security software 的本地化字符串。
+        /// </summary>
+        public static string CsConfigRegistrationFailed {
+            get {
+                return ResourceManager.GetString("CsConfigRegistrationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Registration successful!
+        ///1. Create a→ new desktop→ shortcut→ Enter the URL→ Right-click to→ open the method→ Select another app→ Find this program
+        ///2. Right click any .html file→ Choose another app→ More apps→ Find this program
+        ///3. If it is not displayed, it will take effect automatically after restarting the computer 的本地化字符串。
+        /// </summary>
+        public static string CsConfigRegistrationSuccessful {
+            get {
+                return ResourceManager.GetString("CsConfigRegistrationSuccessful", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Failed to restart the explorer, it is recommended to restart the computer to take effect 的本地化字符串。
+        /// </summary>
+        public static string CsConfigRestartExplorerFailTip {
+            get {
+                return ResourceManager.GetString("CsConfigRestartExplorerFailTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Do you want to restart Explorer for immediate effect?
+        ///The desktop icon will disappear temporarily during the restart process and resume automatically after a few seconds. 的本地化字符串。
+        /// </summary>
+        public static string CsConfigRestartExplorerTip {
+            get {
+                return ResourceManager.GetString("CsConfigRestartExplorerTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Remove failure: 的本地化字符串。
+        /// </summary>
+        public static string CsConfigUnregisterFailed {
+            get {
+                return ResourceManager.GetString("CsConfigUnregisterFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Successfully removed all open method associations! 的本地化字符串。
+        /// </summary>
+        public static string CsConfigUnregisterSuccessful {
+            get {
+                return ResourceManager.GetString("CsConfigUnregisterSuccessful", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Are you sure you want to remove all open method associations?
+        ///Once removed, it will not be possible to quickly open the webpage through this program. 的本地化字符串。
+        /// </summary>
+        public static string CsConfigUnregisterTip {
+            get {
+                return ResourceManager.GetString("CsConfigUnregisterTip", resourceCulture);
             }
         }
         
@@ -691,7 +797,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 www.github.com/mortenn/BrowserPicker 的本地化字符串。
+        ///   查找类似 https://github.com/mortenn/BrowserPicker 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText7 {
             get {
@@ -709,7 +815,7 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
-        ///   查找类似 www.github.com/XTsat/BrowserPicker_i18n 的本地化字符串。
+        ///   查找类似 https://github.com/XTsat/BrowserPicker_i18n 的本地化字符串。
         /// </summary>
         public static string NameWelcomeText9 {
             get {
@@ -795,6 +901,87 @@ namespace BrowserPicker.Resources {
         public static string TopNameWelcome {
             get {
                 return ResourceManager.GetString("TopNameWelcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Add 的本地化字符串。
+        /// </summary>
+        public static string UniAdd {
+            get {
+                return ResourceManager.GetString("UniAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cancel 的本地化字符串。
+        /// </summary>
+        public static string UniCancel {
+            get {
+                return ResourceManager.GetString("UniCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Complete 的本地化字符串。
+        /// </summary>
+        public static string UniCompleted {
+            get {
+                return ResourceManager.GetString("UniCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Incorrect 的本地化字符串。
+        /// </summary>
+        public static string UniError {
+            get {
+                return ResourceManager.GetString("UniError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Ok 的本地化字符串。
+        /// </summary>
+        public static string UniOk {
+            get {
+                return ResourceManager.GetString("UniOk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Open 的本地化字符串。
+        /// </summary>
+        public static string UniOpen {
+            get {
+                return ResourceManager.GetString("UniOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Remove 的本地化字符串。
+        /// </summary>
+        public static string UniRemove {
+            get {
+                return ResourceManager.GetString("UniRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Restart 的本地化字符串。
+        /// </summary>
+        public static string UniRestart {
+            get {
+                return ResourceManager.GetString("UniRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Prompts 的本地化字符串。
+        /// </summary>
+        public static string UniTip {
+            get {
+                return ResourceManager.GetString("UniTip", resourceCulture);
             }
         }
         

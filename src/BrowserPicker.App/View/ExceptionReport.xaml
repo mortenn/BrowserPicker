@@ -107,7 +107,7 @@
                 Margin="4"
                 Padding="10,0"
                 Command="{Binding Ok}"
-                Content="{x:Static properties:i18n.BtnOk}" />
+                Content="{x:Static properties:i18n.UniOk}" />
         </StackPanel>
     </Grid>
 </Window>

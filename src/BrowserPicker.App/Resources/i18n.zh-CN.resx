@@ -279,10 +279,10 @@
   <data name="NameUrlShortenersTextTipDefault" xml:space="preserve">
     <value>有些页面（例如 Outlook 安全链接）有特殊的处理方式，目标 URL 位于查询字符串中，这些页面未列入此列表，因为它们需要在代码中提供额外的信息。</value>
   </data>
-  <data name="BtnAdd" xml:space="preserve">
+  <data name="UniAdd" xml:space="preserve">
     <value>添加</value>
   </data>
-  <data name="BtnRemove" xml:space="preserve">
+  <data name="UniRemove" xml:space="preserve">
     <value>移除</value>
   </data>
   <data name="TopNameDone" xml:space="preserve">
@@ -321,10 +321,10 @@
   <data name="BoxAddBrowserHotkeyTip" xml:space="preserve">
     <value>(自动)</value>
   </data>
-  <data name="BtnOk" xml:space="preserve">
+  <data name="UniOk" xml:space="preserve">
     <value>确认</value>
   </data>
-  <data name="BtnCancel" xml:space="preserve">
+  <data name="UniCancel" xml:space="preserve">
     <value>取消</value>
   </data>
   <data name="BoxOpenBrowserTipPin" xml:space="preserve">
@@ -371,5 +371,72 @@
   </data>
   <data name="CsConfigConfigurationNameErorr" xml:space="preserve">
     <value>无法获取应用程序文件名</value>
+  </data>
+  <data name="UniError" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="CsConfigHyperlinkError" xml:space="preserve">
+    <value>无法打开链接</value>
+  </data>
+  <data name="UniCompleted" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="CsConfigRegistrationSuccessful" xml:space="preserve">
+    <value>注册成功！
+1. 桌面→新建→快捷方式→输入网址→右键→打开方式→选择其他应用→找到本程序
+2. 任意.html文件→右键→打开方式→选择其他应用→更多应用→找到本程序
+3. 若未显示，重启电脑后自动生效</value>
+  </data>
+  <data name="CsConfigAdminTip" xml:space="preserve">
+    <value>权限提示</value>
+  </data>
+  <data name="CsConfigAdminTipText" xml:space="preserve">
+    <value>普通用户权限受限：{0}
+请关闭安全软件后重试（无需管理员）</value>
+  </data>
+  <data name="CsConfigRegistrationFailed" xml:space="preserve">
+    <value>注册失败：{0}
+请检查应用是否被安全软件拦截</value>
+  </data>
+  <data name="CsConfigUnregisterTip" xml:space="preserve">
+    <value>确定要移除所有打开方式关联吗？
+移除后将无法通过本程序快速打开网页。</value>
+  </data>
+  <data name="CsConfigUnregisterSuccessful" xml:space="preserve">
+    <value>已成功移除所有打开方式关联！</value>
+  </data>
+  <data name="CsConfigUnregisterFailed" xml:space="preserve">
+    <value>移除失败：</value>
+  </data>
+  <data name="CsConfigFileTypeRegistration" xml:space="preserve">
+    <value>扩展名或ProgID不能为空</value>
+  </data>
+  <data name="CsConfigFileTypeRegistrationSuccessful" xml:space="preserve">
+    <value>打开{0}文件</value>
+  </data>
+  <data name="CsConfigDefaultProgramRegistration" xml:space="preserve">
+    <value>网页链接选择器</value>
+  </data>
+  <data name="CsConfigProgramRegistrationOpen" xml:space="preserve">
+    <value>用{0}打开</value>
+  </data>
+  <data name="CsConfigProgramRegistrationOpen2" xml:space="preserve">
+    <value>用{0}打开{1}链接</value>
+  </data>
+  <data name="UniOpen" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="UniRestart" xml:space="preserve">
+    <value>重启</value>
+  </data>
+  <data name="CsConfigRestartExplorerTip" xml:space="preserve">
+    <value>是否重启资源管理器以立即生效？
+重启过程中桌面图标会暂时消失，几秒后自动恢复。</value>
+  </data>
+  <data name="UniTip" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="CsConfigRestartExplorerFailTip" xml:space="preserve">
+    <value>重启资源管理器失败，建议重启电脑以生效</value>
   </data>
 </root>
