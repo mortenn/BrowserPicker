@@ -4,12 +4,71 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
 using Microsoft.Win32;
 
 namespace BrowserPicker.View;
 
 public partial class Configuration
 {
+
+	private void OnMouseEnter(object sender, MouseEventArgs e)
+	{
+		var hyperlink = sender as Hyperlink;
+		if (hyperlink != null)
+		{
+			hyperlink.TextDecorations = TextDecorations.Underline;
+		}
+	}
+
+	private void OnMouseLeave(object sender, MouseEventArgs e)
+	{
+		var hyperlink = sender as Hyperlink;
+		if (hyperlink != null)
+		{
+			hyperlink.TextDecorations = null;
+		}
+	}
+
+	private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+	{
+		try
+		{
+			string url = e.Uri.ToString();
+
+			// 相对 URL 自动补充
+			if (!e.Uri.IsAbsoluteUri)
+			{
+				if (url.StartsWith("/"))
+				{
+					url = "https://github.com" + url;
+				}
+				else
+				{
+					url = "https://" + url;
+				}
+			}
+			else if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+			{
+				url = "https://" + url;
+			}
+
+			Process.Start(new ProcessStartInfo(url)
+			{
+				UseShellExecute = true
+			});
+		}
+		catch (Exception ex)
+		{
+			string msg = BrowserPicker.Resources.i18n.CsConfigHyperlinkError;
+			string error = BrowserPicker.Resources.i18n.UniError;
+			MessageBox.Show($"{msg} '{e.Uri}': {ex.Message}", error, MessageBoxButton.OK, MessageBoxImage.Error);
+		}
+	}
+
+
+
 	// 外壳刷新API
 	[DllImport("shell32.dll", SetLastError = true)]
 	private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
@@ -20,7 +79,7 @@ public partial class Configuration
 
 	private readonly string _appPath;
 	private readonly string _appExeName;
-	private const string AppName = "BrowserPicker_zh";
+	private const string AppName = "BrowserPicker";
 	private const string ProgIdHtml = $"{AppName}.html";
 	private const string ProgIdUrl = $"{AppName}.url";
 
@@ -33,11 +92,12 @@ public partial class Configuration
 	{
 		InitializeComponent();
 		// 确保路径非空
+		string msg = BrowserPicker.Resources.i18n.CsConfigConfigurationNameErorr;
 		var entryAssembly = Assembly.GetEntryAssembly();
 		_appPath = !string.IsNullOrEmpty(Environment.ProcessPath)
 			? Environment.ProcessPath
 			: Path.Combine(AppContext.BaseDirectory, Path.GetFileName(AppName + ".exe"));
-		_appExeName = Path.GetFileName(_appPath) ?? throw new InvalidOperationException("无法获取应用程序文件名");
+		_appExeName = Path.GetFileName(_appPath) ?? throw new InvalidOperationException(msg);
 	}
 
 	// 注册按钮点击事件
@@ -46,10 +106,10 @@ public partial class Configuration
 		try
 		{
 			// 1. 优先创建ProgID（系统核心识别项）
-			CreateProgId(ProgIdHtml, "HTML文件", isUrl: false);
-			CreateProgId(ProgIdUrl, "URL链接", isUrl: true);
+			CreateProgId(ProgIdHtml, "HTML", isUrl: false);
+			CreateProgId(ProgIdUrl, "URL", isUrl: true);
 
-			// 2. 注册文件类型（仅操作CurrentUser路径）
+			// 2. 注册文件类型（仅User）
 			foreach (var ext in _fileTypes)
 			{
 				RegisterFileType(ext, ext == ".url" ? ProgIdUrl : ProgIdHtml);
@@ -74,31 +134,33 @@ public partial class Configuration
 			// 6. 无感知刷新（不重启资源管理器）
 			RefreshSystemAssociations(false);
 
-			MessageBox.Show(
-				"注册成功！\n" +
-				"1. 桌面→新建→快捷方式→输入网址→右键→打开方式→选择其他应用→找到本程序\n" +
-				"2. 任意.html文件→右键→打开方式→选择其他应用→更多应用→找到本程序\n" +
-				"3. 若未显示，重启电脑后自动生效",
-				"完成", MessageBoxButton.OK, MessageBoxImage.Information);
+
+			string msg = BrowserPicker.Resources.i18n.CsConfigRegistrationSuccessful;
+			string Completed = BrowserPicker.Resources.i18n.UniCompleted;
+
+			MessageBox.Show(msg, Completed, MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 		catch (UnauthorizedAccessException ex)
 		{
-			MessageBox.Show($"普通用户权限受限：{ex.Message}\n请关闭安全软件后重试（无需管理员）", "权限提示",
-				MessageBoxButton.OK, MessageBoxImage.Warning);
+			string msg = BrowserPicker.Resources.i18n.CsConfigAdminTipText;
+			string tip = BrowserPicker.Resources.i18n.CsConfigAdminTip;
+			MessageBox.Show($"{msg}{ex.Message}", tip, MessageBoxButton.OK, MessageBoxImage.Warning);
 		}
 		catch (Exception ex)
 		{
-			MessageBox.Show($"注册失败：{ex.Message}\n请检查应用是否被安全软件拦截", "错误",
-				MessageBoxButton.OK, MessageBoxImage.Error);
+			string msg = BrowserPicker.Resources.i18n.CsConfigRegistrationFailed;
+			string error = BrowserPicker.Resources.i18n.UniError;
+			MessageBox.Show($"{msg}{ex.Message}", error, MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 	}
 
 	// 移除按钮点击事件
 	private void UnregisterOpenWith_Click(object sender, RoutedEventArgs e)
 	{
-		var result = MessageBox.Show(
-			"确定要移除所有打开方式关联吗？\n移除后将无法通过本程序快速打开网页。",
-			"确认移除", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+		string msg = BrowserPicker.Resources.i18n.CsConfigUnregisterTip;
+		string remove = BrowserPicker.Resources.i18n.UniRemove;
+		var result = MessageBox.Show(msg, remove, MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
 		if (result != MessageBoxResult.Yes) return;
 
@@ -133,12 +195,16 @@ public partial class Configuration
 			// 6. 无感知刷新
 			RefreshSystemAssociations(false);
 
-			MessageBox.Show("已成功移除所有打开方式关联！", "完成",
-				MessageBoxButton.OK, MessageBoxImage.Information);
+
+			string msg1 = BrowserPicker.Resources.i18n.CsConfigUnregisterSuccessful;
+			string Completed = BrowserPicker.Resources.i18n.UniCompleted;
+			MessageBox.Show(msg1, Completed, MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 		catch (Exception ex)
 		{
-			MessageBox.Show($"移除失败：{ex.Message}", "错误",
+			string msg1 = BrowserPicker.Resources.i18n.CsConfigUnregisterFailed;
+			string error = BrowserPicker.Resources.i18n.UniError;
+			MessageBox.Show($"{msg1}{ex.Message}", error,
 				MessageBoxButton.OK, MessageBoxImage.Error);
 		}
 	}
@@ -146,14 +212,16 @@ public partial class Configuration
 	// 文件类型注册
 	private void RegisterFileType(string extension, string progId)
 	{
+		string msg = BrowserPicker.Resources.i18n.CsConfigFileTypeRegistration;
 		if (string.IsNullOrEmpty(extension) || string.IsNullOrEmpty(progId))
-			throw new ArgumentNullException("扩展名或ProgID不能为空");
+			throw new ArgumentNullException(msg);
 
 		// 仅操作 CurrentUser\Software\Classes\扩展名
 		using (var extKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{extension}"))
 		{
+			string msg1 = BrowserPicker.Resources.i18n.CsConfigFileTypeRegistrationSuccessful;
 			extKey.SetValue("", progId, RegistryValueKind.String);
-			extKey.SetValue("FriendlyTypeName", $"{AppName} - 打开{extension}文件", RegistryValueKind.String);
+			extKey.SetValue("FriendlyTypeName", $"{AppName} - {msg}{extension}", RegistryValueKind.String);
 
 			// OpenWithList（右键打开方式核心）
 			using (var openWithList = extKey.CreateSubKey(@"OpenWithList\" + AppName))
@@ -222,7 +290,8 @@ public partial class Configuration
 			// 功能描述
 			using (var capabilitiesKey = appKey.CreateSubKey("Capabilities"))
 			{
-				capabilitiesKey.SetValue("ApplicationDescription", $"{AppName} - 网页链接选择器", RegistryValueKind.String);
+				string msg = BrowserPicker.Resources.i18n.CsConfigDefaultProgramRegistration;
+				capabilitiesKey.SetValue("ApplicationDescription", $"{AppName} - {msg}", RegistryValueKind.String);
 				capabilitiesKey.SetValue("ApplicationName", AppName, RegistryValueKind.String);
 
 				// 文件关联
@@ -244,7 +313,8 @@ public partial class Configuration
 			// 打开命令
 			using (var shellKey = appKey.CreateSubKey(@"shell\open"))
 			{
-				shellKey.SetValue("FriendlyName", $"用 {AppName} 打开", RegistryValueKind.String);
+				string msg = BrowserPicker.Resources.i18n.CsConfigProgramRegistrationOpen;
+				shellKey.SetValue("FriendlyName", $"{msg} {AppName} ", RegistryValueKind.String);
 				shellKey.SetValue("Icon", $"\"{_appPath}\",0", RegistryValueKind.String);
 				using (var cmdKey = shellKey.CreateSubKey("command"))
 				{
@@ -264,11 +334,11 @@ public partial class Configuration
 	private void RegisterUrlProtocol(string protocol, string progId)
 	{
 		if (string.IsNullOrEmpty(protocol) || string.IsNullOrEmpty(progId))
-			throw new ArgumentNullException("协议或ProgID不能为空");
+			throw new ArgumentNullException("The protocol or ProgID cannot be empty");
 
 		using (var protoKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{protocol}"))
 		{
-			protoKey.SetValue("", $"{AppName} - {protocol}协议", RegistryValueKind.String);
+			protoKey.SetValue("", $"{AppName} - {protocol}Agreement", RegistryValueKind.String);
 			protoKey.SetValue("URL Protocol", string.Empty, RegistryValueKind.String);
 			protoKey.SetValue("EditFlags", 0x00000002, RegistryValueKind.DWord);
 			protoKey.SetValue("AlwaysShowExt", "yes", RegistryValueKind.String); // 强制显示
@@ -299,10 +369,11 @@ public partial class Configuration
 	// 直接添加右键菜单
 	private void AddProtocolContextMenu(string protocol)
 	{
+		string open = BrowserPicker.Resources.i18n.CsConfigProgramRegistrationOpen2;
 		// 直接添加协议右键菜单
 		using (var shellKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{protocol}\shell\{AppName}"))
 		{
-			shellKey.SetValue("", $"用 {AppName} 打开{protocol.ToUpper()}链接", RegistryValueKind.String);
+			shellKey.SetValue("", $"{open} {AppName} {protocol.ToUpper()}", RegistryValueKind.String);
 			shellKey.SetValue("Position", "Top", RegistryValueKind.String); // 置顶
 			shellKey.SetValue("Icon", $"\"{_appPath}\",0", RegistryValueKind.String);
 		}
@@ -317,7 +388,7 @@ public partial class Configuration
 		{
 			using (var shellKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{fileType}\shell\{AppName}_{protocol}"))
 			{
-				shellKey.SetValue("", $"用 {AppName} 打开{protocol.ToUpper()}链接", RegistryValueKind.String);
+				shellKey.SetValue("", $"{open} {AppName} {protocol.ToUpper()}", RegistryValueKind.String);
 			}
 			using (var cmdKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{fileType}\shell\{AppName}_{protocol}\command"))
 			{
@@ -350,8 +421,9 @@ public partial class Configuration
 	{
 		using (var progKey = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{progId}"))
 		{
+			string open = BrowserPicker.Resources.i18n.UniOpen;
 			progKey.SetValue("", $"{AppName} - {description}", RegistryValueKind.String);
-			progKey.SetValue("FriendlyTypeName", $"{AppName} - 打开{description}", RegistryValueKind.String);
+			progKey.SetValue("FriendlyTypeName", $"{AppName} - {open}{description}", RegistryValueKind.String);
 			if (isUrl) progKey.SetValue("URL Protocol", string.Empty, RegistryValueKind.String);
 
 			// 打开命令
@@ -488,9 +560,9 @@ public partial class Configuration
 		// 仅当用户主动选择时才重启（默认不重启）
 		if (forceRestart)
 		{
-			var confirmResult = MessageBox.Show(
-				"是否重启资源管理器以立即生效？\n重启过程中桌面图标会暂时消失，几秒后自动恢复。",
-				"确认重启", MessageBoxButton.YesNo, MessageBoxImage.Question);
+			string restart = BrowserPicker.Resources.i18n.UniRestart;
+			string msg = BrowserPicker.Resources.i18n.CsConfigRestartExplorerTip;
+			var confirmResult = MessageBox.Show(msg, restart, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
 			if (confirmResult == MessageBoxResult.Yes)
 			{
@@ -504,7 +576,9 @@ public partial class Configuration
 				}
 				catch
 				{
-					MessageBox.Show("重启资源管理器失败，建议重启电脑以生效", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+					string tip = BrowserPicker.Resources.i18n.UniTip;
+					string msg1 = BrowserPicker.Resources.i18n.CsConfigRestartExplorerFailTip;
+					MessageBox.Show(msg1, tip, MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
 			}
 		}

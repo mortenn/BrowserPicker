@@ -10,7 +10,7 @@
 
 ## 安装
 
-你可在 [GitHub](https://github.com/XTsat/BrowserPicker_zh/releases) 上获取最新版本。
+你可在 [GitHub](https://github.com/XTsat/BrowserPicker_i18n/releases) 上获取最新版本。
 
 ### 设置默认浏览器
 

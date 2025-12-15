@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using BrowserPicker.Resources;
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ using JetBrains.Annotations;
 #endif
 
 namespace BrowserPicker.ViewModel;
+
+
 
 /// <summary>
 /// Represents the view model for configuring browser behavior and default settings
