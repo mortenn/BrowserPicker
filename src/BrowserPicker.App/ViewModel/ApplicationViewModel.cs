@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using BrowserPicker.Resources;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using BrowserPicker.View;
 
 
 #if DEBUG
@@ -33,31 +34,78 @@ public sealed class ApplicationViewModel : ModelBase
 
 	private void OnChangeLanguage()
 	{
-		// 获取当前语言
 		var currentCulture = Thread.CurrentThread.CurrentUICulture;
-
-		// 定义支持的语言列表 (这里以英文和中文为例)
 		var supportedCultures = new[]
 		{
-		new CultureInfo("en"),
-		new CultureInfo("zh")
-	};
+		new CultureInfo("en-US"),
+		new CultureInfo("zh-CN")
+		};
 
-		// 循环切换到下一个语言
+		// 查找当前语言索引
 		var currentIndex = Array.IndexOf(supportedCultures,
 			supportedCultures.FirstOrDefault(c => c.Name.StartsWith(currentCulture.TwoLetterISOLanguageName)) ?? supportedCultures[0]);
+
+		// 计算下一个语言索引
 		var nextIndex = (currentIndex + 1) % supportedCultures.Length;
+		var nextCulture = supportedCultures[nextIndex];
 
-		// 更改语言
-		Thread.CurrentThread.CurrentUICulture = supportedCultures[nextIndex];
-		Thread.CurrentThread.CurrentCulture = supportedCultures[nextIndex];
+		// 保存语言设置到配置文件中
+		AppConfigHelper.WriteAppConfig("language", nextCulture.Name);
 
-		// 刷新界面
-		OnPropertyChanged(string.Empty); // 通知所有属性更改以刷新界面
+		ApplyLanguageAndRestart(nextCulture);
+	}
+
+	private void ApplyLanguageAndRestart(CultureInfo culture)
+	{
+		Thread.CurrentThread.CurrentUICulture = culture;
+		Thread.CurrentThread.CurrentCulture = culture;
+
+		RestartApplication();
+	}
+
+	private void RestartApplication()
+	{
+			var msg = BrowserPicker.Resources.i18n.CsConfigLanguageChangeRestartMessage;
+			var restart = BrowserPicker.Resources.i18n.UniRestart;
+
+			var result = MessageBox.Show(
+				msg,
+				restart,
+				MessageBoxButton.OK,
+				MessageBoxImage.Information);
+
+			Application.Current.Shutdown();
+	}
+
+	public class AppConfigHelper
+	{
+		public static string ReadAppConfig(string key)
+		{
+			try
+			{
+				System.Configuration.Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+				return config.AppSettings.Settings[key].Value;
+			}
+			catch(Exception)
+			{
+				throw;
+			}
+		}
+
+		public static void WriteAppConfig(string key, string value)
+		{
+			System.Configuration.Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+			if(config.AppSettings.Settings[key] != null)
+                config.AppSettings.Settings[key].Value = value;
+			else
+                config.AppSettings.Settings.Add(key, value);
+            config.Save(System.Configuration.ConfigurationSaveMode.Modified);
+            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+		}
 	}
 
 	private static readonly ILogger<ApplicationViewModel> Logger = App.Services.GetRequiredService<ILogger<ApplicationViewModel>>();
-	
+
 #if DEBUG
 	/// <summary>
 	/// Default constructor used for WPF designer support.
@@ -205,7 +253,7 @@ public sealed class ApplicationViewModel : ModelBase
 			.ToList();
 
 		Logger.LogAutomationMatchesFound(auto.Count);
-		
+
 		return auto.Count <= 0
 			? null
 			: auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
@@ -235,7 +283,7 @@ public sealed class ApplicationViewModel : ModelBase
 	/// Closes the URL editor, saving any changes made to the targeted URL.
 	/// </summary>
 	public ICommand EndEdit => new DelegateCommand(CloseURLEditor);
-	
+
 	/// <summary>
 	/// Gets the view model responsible for managing application configuration settings.
 	/// Provides access to user preferences and saved browser configurations.
@@ -293,7 +341,7 @@ public sealed class ApplicationViewModel : ModelBase
 		get => alt_pressed;
 		set => SetProperty(ref alt_pressed, value);
 	}
-	
+
 	/// <summary>
 	/// Pins the window, keeping it around while the user does something else.
 	/// </summary>
@@ -308,7 +356,7 @@ public sealed class ApplicationViewModel : ModelBase
 		get => pinned;
 		private set => SetProperty(ref pinned, value);
 	}
-	
+
 	/// <summary>
 	/// Event triggered to initiate application shutdown. 
 	/// It is wired to the <see cref="App.ExitApplication" /> method to terminate the application.

@@ -323,6 +323,15 @@ namespace BrowserPicker.Resources {
         }
         
         /// <summary>
+        ///   查找类似 The application needs to restart to apply the new language settings. 的本地化字符串。
+        /// </summary>
+        public static string CsConfigLanguageChangeRestartMessage {
+            get {
+                return ResourceManager.GetString("CsConfigLanguageChangeRestartMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Open with {0} 的本地化字符串。
         /// </summary>
         public static string CsConfigProgramRegistrationOpen {

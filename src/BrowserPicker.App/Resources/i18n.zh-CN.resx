@@ -442,4 +442,7 @@
   <data name="TopNameLanguage" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="CsConfigLanguageChangeRestartMessage" xml:space="preserve">
+    <value>应用程序需要重启以应用新的语言设置。</value>
+  </data>
 </root>

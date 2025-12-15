@@ -106,8 +106,8 @@ public partial class Configuration
 		try
 		{
 			// 1. 优先创建ProgID（系统核心识别项）
-			CreateProgId(ProgIdHtml, "HTML文件", isUrl: false);
-			CreateProgId(ProgIdUrl, "URL链接", isUrl: true);
+			CreateProgId(ProgIdHtml, "HTML", isUrl: false);
+			CreateProgId(ProgIdUrl, "URL", isUrl: true);
 
 			// 2. 注册文件类型（仅User）
 			foreach (var ext in _fileTypes)

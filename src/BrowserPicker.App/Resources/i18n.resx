@@ -454,4 +454,7 @@ The desktop icon will disappear temporarily during the restart process and resum
   <data name="TopNameLanguage" xml:space="preserve">
     <value>语言</value>
   </data>
+  <data name="CsConfigLanguageChangeRestartMessage" xml:space="preserve">
+    <value>The application needs to restart to apply the new language settings.</value>
+  </data>
 </root>
