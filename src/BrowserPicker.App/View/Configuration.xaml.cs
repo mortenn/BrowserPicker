@@ -79,7 +79,7 @@ public partial class Configuration
 
 	private readonly string _appPath;
 	private readonly string _appExeName;
-	private const string AppName = "BrowserPicker_zh";
+	private const string AppName = "BrowserPicker";
 	private const string ProgIdHtml = $"{AppName}.html";
 	private const string ProgIdUrl = $"{AppName}.url";
 
