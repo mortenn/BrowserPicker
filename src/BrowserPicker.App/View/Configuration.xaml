@@ -672,7 +672,7 @@
             VerticalAlignment="Bottom"
             Orientation="Horizontal">
 
-            <TextBlock Padding="4">
+            <TextBlock Padding="10">
                 <TextBlock.Style>
                     <Style>
                         <Style.Triggers>
@@ -681,13 +681,13 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </TextBlock.Style>
-                <Hyperlink Command="{Binding ParentViewModel.Configure}" Foreground="White">
-                    <TextBlock Text="{x:Static properties:i18n.TopNameDone}" />
-                </Hyperlink>
-            </TextBlock>
+                </TextBlock.Style><Hyperlink Command="{Binding ParentViewModel.Configure}" Foreground="White">
+                    <InlineUIContainer>
+                        <TextBlock Text="{x:Static properties:i18n.TopNameDone}" />
+                    </InlineUIContainer>
+                </Hyperlink></TextBlock>
 
-            <TextBlock Padding="4">
+            <TextBlock Padding="10">
                 <TextBlock.Style>
                     <Style>
                         <Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -697,9 +697,24 @@
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </TextBlock.Style>
-                <Hyperlink Command="{Binding ParentViewModel.Exit}" Foreground="White">
-                    <TextBlock Text="{x:Static properties:i18n.TopNameExit}" />
+                </TextBlock.Style><Hyperlink Command="{Binding ParentViewModel.Exit}" Foreground="White">
+                    <InlineUIContainer>
+                        <TextBlock Text="{x:Static properties:i18n.TopNameExit}" />
+                    </InlineUIContainer>
+                </Hyperlink></TextBlock>
+
+        </StackPanel>
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Orientation="Horizontal">
+
+            <TextBlock Padding="10">
+                <Hyperlink Command="{Binding ParentViewModel.ChangeLanguage}" Foreground="White">
+                    <InlineUIContainer>
+                        <TextBlock Text="{x:Static properties:i18n.TopNameLanguage}" />
+                    </InlineUIContainer>
                 </Hyperlink>
             </TextBlock>
 

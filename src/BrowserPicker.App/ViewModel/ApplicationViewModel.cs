@@ -11,6 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using BrowserPicker.Resources;
+using System.Globalization;
+using System.Text.RegularExpressions;
+
+
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -23,6 +27,35 @@ namespace BrowserPicker.ViewModel;
 /// </summary>
 public sealed class ApplicationViewModel : ModelBase
 {
+
+	private DelegateCommand? changeLanguage;
+	public ICommand ChangeLanguage => changeLanguage ??= new DelegateCommand(OnChangeLanguage);
+
+	private void OnChangeLanguage()
+	{
+		// 获取当前语言
+		var currentCulture = Thread.CurrentThread.CurrentUICulture;
+
+		// 定义支持的语言列表 (这里以英文和中文为例)
+		var supportedCultures = new[]
+		{
+		new CultureInfo("en"),
+		new CultureInfo("zh")
+	};
+
+		// 循环切换到下一个语言
+		var currentIndex = Array.IndexOf(supportedCultures,
+			supportedCultures.FirstOrDefault(c => c.Name.StartsWith(currentCulture.TwoLetterISOLanguageName)) ?? supportedCultures[0]);
+		var nextIndex = (currentIndex + 1) % supportedCultures.Length;
+
+		// 更改语言
+		Thread.CurrentThread.CurrentUICulture = supportedCultures[nextIndex];
+		Thread.CurrentThread.CurrentCulture = supportedCultures[nextIndex];
+
+		// 刷新界面
+		OnPropertyChanged(string.Empty); // 通知所有属性更改以刷新界面
+	}
+
 	private static readonly ILogger<ApplicationViewModel> Logger = App.Services.GetRequiredService<ILogger<ApplicationViewModel>>();
 	
 #if DEBUG

@@ -439,4 +439,7 @@
   <data name="CsConfigRestartExplorerFailTip" xml:space="preserve">
     <value>重启资源管理器失败，建议重启电脑以生效</value>
   </data>
+  <data name="TopNameLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
 </root>

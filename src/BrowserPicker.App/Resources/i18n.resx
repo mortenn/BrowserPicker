@@ -451,4 +451,7 @@ The desktop icon will disappear temporarily during the restart process and resum
   <data name="CsConfigRestartExplorerFailTip" xml:space="preserve">
     <value>Failed to restart the explorer, it is recommended to restart the computer to take effect</value>
   </data>
+  <data name="TopNameLanguage" xml:space="preserve">
+    <value>语言</value>
+  </data>
 </root>
