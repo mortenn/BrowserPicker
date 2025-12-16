@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using BrowserPicker.Framework;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
+using BrowserPicker;
 
 namespace BrowserPicker.Windows;
 
@@ -298,14 +299,16 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		var settings = new SerializableSettings(this);
 		try
 		{
-			await Task.CompletedTask;
+			string msg = BrowserPicker.Resources.csi18n.CsAppSettingsExport;
+            await Task.CompletedTask;
 			await using var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write);
 			await JsonSerializer.SerializeAsync(fileStream, settings, JsonOptions);
-			BackupLog += $"Exported configuration to {fileName}\n";
+			BackupLog += $"{msg} {fileName}\n";
 		}
 		catch(Exception e)
-		{
-			BackupLog += $"Unable to parse backup file: {e.Message}";
+		{	
+			string msg = BrowserPicker.Resources.csi18n.CsAppSettingsBackupError;
+            BackupLog += $"{msg} {e.Message}";
 		}
 	}
 
@@ -320,12 +323,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 		catch (Exception ex)
 		{
-			BackupLog += $"Unable to parse backup file: {ex.Message}";
+            string msg1 = BrowserPicker.Resources.csi18n.CsAppSettingsBackupError;
+            BackupLog += $"{msg1} {ex.Message}";
 			return;
 		}
 		if (settings == null)
 		{
-			BackupLog += "Unable to load backup";
+            BackupLog += BrowserPicker.Resources.csi18n.CsAppSettingsBackupLoadError;
 			return;
 		}
 
@@ -334,7 +338,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		UpdateDefaults(settings.Defaults);
 		UpdateKeybinds(settings.KeyBindings);
 
-		BackupLog += $"Imported configuration from {fileName}\n";
+		string msg = BrowserPicker.Resources.csi18n.CsAppSettingsImport;
+        BackupLog += $"{msg} {fileName}\n";
 	}
 
 	private void UpdateSettings(SerializableSettings settings)

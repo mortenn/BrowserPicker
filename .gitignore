@@ -3,3 +3,6 @@ bin
 obj
 *.user
 packages/
+/.history
+*.pubxml
+*.lnk

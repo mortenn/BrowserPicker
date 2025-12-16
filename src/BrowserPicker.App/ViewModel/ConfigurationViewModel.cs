@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using BrowserPicker.Resources;
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ using JetBrains.Annotations;
 #endif
 
 namespace BrowserPicker.ViewModel;
+
+
 
 /// <summary>
 /// Represents the view model for configuring browser behavior and default settings
@@ -500,7 +503,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "用户选择";
 		}
 	}
 
@@ -508,7 +511,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "用户选择";
 		}
 	}
 }

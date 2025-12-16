@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,6 +12,7 @@ using System.Windows;
 using System.Windows.Threading;
 using BrowserPicker.View;
 using BrowserPicker.ViewModel;
+using static BrowserPicker.ViewModel.ApplicationViewModel;
 
 namespace BrowserPicker;
 
@@ -41,6 +46,10 @@ public partial class App
 
 	public App()
 	{
+		var culture = new CultureInfo("en-US");
+		Thread.CurrentThread.CurrentCulture = culture;
+		Thread.CurrentThread.CurrentUICulture = culture;
+
 		Encoding.RegisterProvider(new InvalidUTF8Patch());
 		Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 		BackgroundTasks.Add(Settings);
@@ -67,10 +76,29 @@ public partial class App
 
 	protected override void OnStartup(StartupEventArgs e)
 	{
+		base.OnStartup(e);
+		LoadSavedLanguage();
 		var worker = StartupBackgroundTasks();
 		worker.ContinueWith(CheckBackgroundTasks);
 	}
 
+	private void LoadSavedLanguage()
+	{
+		try
+		{
+			var savedLanguage = AppConfigHelper.ReadAppConfig("language");
+			if (!string.IsNullOrEmpty(savedLanguage))
+			{
+				var culture = new CultureInfo(savedLanguage);
+				Thread.CurrentThread.CurrentUICulture = culture;
+				Thread.CurrentThread.CurrentCulture = culture;
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Failed to load saved language: {ex.Message}");
+		}
+	}
 	/// <summary>
 	/// This method should never be called, as the StartupBackgroundTasks has robust exception handling
 	/// </summary>

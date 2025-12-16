@@ -1,471 +1,724 @@
-﻿<UserControl 
-	x:Class="BrowserPicker.View.Configuration"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:converter="clr-namespace:BrowserPicker.Converter"
-	xmlns:view="clr-namespace:BrowserPicker.View"
-	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
-	xmlns:browserPicker="clr-namespace:BrowserPicker;assembly=BrowserPicker.Common"
-	xmlns:system="clr-namespace:System;assembly=mscorlib"
-	mc:Ignorable="d"
-	d:DataContext="{d:DesignInstance viewModel:ConfigurationViewModel,d:IsDesignTimeCreatable=True}"
-	Height="400" Width="600"
-	Background="#333">
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<converter:IconFileToImageConverter x:Key="IconConverter" />
+<UserControl
+    x:Class="BrowserPicker.View.Configuration"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:browserPicker="clr-namespace:BrowserPicker;assembly=BrowserPicker.Common"
+    xmlns:converter="clr-namespace:BrowserPicker.Converter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:properties="clr-namespace:BrowserPicker.Resources"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:view="clr-namespace:BrowserPicker.View"
+    xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
+    Width="600"
+    Height="400"
+    d:DataContext="{d:DesignInstance viewModel:ConfigurationViewModel,
+                                     d:IsDesignTimeCreatable=True}"
+    Background="#333"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converter:IconFileToImageConverter x:Key="IconConverter" />
 
-			<ObjectDataProvider x:Key="MatchTypes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
-				<ObjectDataProvider.MethodParameters>
-					<x:Type TypeName="browserPicker:MatchType"/>
-				</ObjectDataProvider.MethodParameters>
-			</ObjectDataProvider>
+            <ObjectDataProvider
+                x:Key="MatchTypes"
+                MethodName="GetValues"
+                ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="browserPicker:MatchType" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
 
-			<DataTemplate x:Key="BrowserIcon" DataType="{x:Type viewModel:BrowserViewModel}">
-				<Image Margin="0,0,0,0" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
-					<Image.Style>
-						<Style TargetType="{x:Type Image}">
-							<Setter Property="Source" Value="{Binding}" />
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding}" Value="{x:Null}">
-									<Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</Image.Style>
-				</Image>
-			</DataTemplate>
+            <DataTemplate x:Key="BrowserIcon" DataType="{x:Type viewModel:BrowserViewModel}">
+                <Image
+                    Margin="0,0,0,0"
+                    d:DataContext="{DynamicResource DefaultIcon}"
+                    DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="{Binding}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                    <Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+            </DataTemplate>
 
-			<DataTemplate x:Key="BrowserIconAndName" DataType="viewModel:BrowserViewModel">
-				<StackPanel Orientation="Horizontal">
-					<ContentPresenter ContentTemplate="{StaticResource BrowserIcon}" VerticalAlignment="Center" />
-					<TextBlock Padding="5,0,0,0" Text="{Binding Model.Name}" VerticalAlignment="Center" />
-				</StackPanel>
-			</DataTemplate>
-		</ResourceDictionary>
-	</UserControl.Resources>
+            <DataTemplate x:Key="BrowserIconAndName" DataType="viewModel:BrowserViewModel">
+                <StackPanel Orientation="Horizontal">
+                    <ContentPresenter VerticalAlignment="Center" ContentTemplate="{StaticResource BrowserIcon}" />
+                    <TextBlock
+                        Padding="5,0,0,0"
+                        VerticalAlignment="Center"
+                        Text="{Binding Model.Name}" />
+                </StackPanel>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-	<Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*" />
-			<RowDefinition Height="auto" />
-		</Grid.RowDefinitions>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
 
-		<TabControl Background="#77000000" BorderBrush="#77FFFFFF" VerticalAlignment="Stretch">
-			<TabControl.Style>
-				<Style TargetType="TabControl">
-					<Setter Property="SelectedIndex" Value="1" />
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding Welcome}" Value="True">
-							<Setter Property="SelectedIndex" Value="0" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</TabControl.Style>
-			
-			<TabControl.Resources>
-				<Style TargetType="{x:Type TabItem}">
-					<Setter Property="Template">
-						<Setter.Value>
-							<ControlTemplate TargetType="{x:Type TabItem}">
-								<Border Name="Border" Background="#22000000" Margin="2,0" BorderBrush="#77FFFFFF" BorderThickness="1,1,1,0" CornerRadius="10,10,0,0" TextBlock.Foreground="White" TextBlock.FontSize="12">
-									<ContentPresenter x:Name="ContentSite" ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,2" RecognizesAccessKey="True" />
-								</Border>
-								<ControlTemplate.Triggers>
-									<Trigger Property="IsSelected" Value="True">
-										<Setter Property="FontWeight" Value="Bold" />
-										<Setter TargetName="Border" Property="Background" Value="#22FFFFFF" />
-									</Trigger>
-									<Trigger Property="IsMouseOver" Value="true">
-										<Setter Property="FontWeight" Value="Bold" />
-									</Trigger>
-								</ControlTemplate.Triggers>
-							</ControlTemplate>
-						</Setter.Value>
-					</Setter>
-				</Style>
-			</TabControl.Resources>
+        <TabControl
+            VerticalAlignment="Stretch"
+            Background="#77000000"
+            BorderBrush="#77FFFFFF">
+            <TabControl.Style>
+                <Style TargetType="TabControl">
+                    <Setter Property="SelectedIndex" Value="1" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Welcome}" Value="True">
+                            <Setter Property="SelectedIndex" Value="0" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TabControl.Style>
 
-			<TabItem Header="Welcome">
-				<TabItem.Style>
-					<Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-						<Setter Property="Visibility" Value="Collapsed" />
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding Welcome}" Value="True">
-								<Setter Property="Visibility" Value="Visible" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</TabItem.Style>
-				<TextBlock Foreground="White" Margin="4" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Light">
-					Welcome to Browser Picker, hope you enjoy my little app!<LineBreak />
-					I've gone ahead and opened up the settings window,<LineBreak />
-					so you can have a look around before you get started :)
-					<LineBreak />
-					<LineBreak />
-					Please give it a ⭐ on github, so you will get notified when a new release is made.
-					<LineBreak />
-					<LineBreak />
-					Should you run into any kind of trouble or get an idea,<LineBreak />
-					please visit <Hyperlink Foreground="LightBlue">github.com/mortenn/BrowserPicker</Hyperlink> and file an issue!<LineBreak />
-					<LineBreak />
-					Be seeing you!
-					<LineBreak />
-					<LineBreak />
-					<Run FontSize="8">This message will self destruct in 10 seconds</Run>
-				</TextBlock>
-			</TabItem>
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                <Border
+                                    Name="Border"
+                                    Margin="2,0"
+                                    Background="#22000000"
+                                    BorderBrush="#77FFFFFF"
+                                    BorderThickness="1,1,1,0"
+                                    CornerRadius="10,10,0,0"
+                                    TextBlock.FontSize="12"
+                                    TextBlock.Foreground="White">
+                                    <ContentPresenter
+                                        x:Name="ContentSite"
+                                        Margin="10,2"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        ContentSource="Header"
+                                        RecognizesAccessKey="True" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                        <Setter TargetName="Border" Property="Background" Value="#22FFFFFF" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
 
-			<TabItem Header="Browsers">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
-					<ScrollViewer VerticalScrollBarVisibility="Auto">
-						<ItemsControl ItemsSource="{Binding ParentViewModel.Choices}">
-							<ItemsControl.ItemsPanel>
-								<ItemsPanelTemplate>
-									<StackPanel Orientation="Vertical" CanVerticallyScroll="True" />
-								</ItemsPanelTemplate>
-							</ItemsControl.ItemsPanel>
-							<ItemsControl.ItemTemplate>
-								<DataTemplate DataType="viewModel:BrowserViewModel">
-									<Grid>
-										<Grid.Style>
-											<Style>
-												<Setter Property="UIElement.Visibility" Value="Visible" />
-												<Style.Triggers>
-													<DataTrigger Binding="{Binding Model.Removed}" Value="True">
-														<Setter Property="UIElement.Visibility" Value="Collapsed" />
-													</DataTrigger>
-												</Style.Triggers>
-											</Style>
-										</Grid.Style>
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="Auto" />
-											<ColumnDefinition Width="*" />
-											<ColumnDefinition Width="Auto" />
-											<ColumnDefinition Width="Auto" />
-											<ColumnDefinition Width="Auto" />
-											<ColumnDefinition Width="Auto" />
-										</Grid.ColumnDefinitions>
-										<ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource BrowserIcon}" Height="40" Width="40" Margin="20,0,0,0" />
-										<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
-										<Grid Grid.Column="2" VerticalAlignment="Center">
-											<Grid.Style>
-												<Style TargetType="Grid">
-													<Style.Triggers>
-														<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
-															<Setter Property="Visibility" Value="Collapsed" />
-														</DataTrigger>
-													</Style.Triggers>
-												</Style>
-											</Grid.Style>
-											<Grid.RowDefinitions>
-												<RowDefinition Height="Auto" />
-												<RowDefinition Height="Auto" />
-											</Grid.RowDefinitions>
-											<TextBlock FontSize="10"><Hyperlink TextDecorations="None" Command="{Binding MoveUp}">🔼</Hyperlink></TextBlock>
-											<TextBlock FontSize="10" Grid.Row="1"><Hyperlink TextDecorations="None" Command="{Binding MoveDown}">🔽</Hyperlink></TextBlock>
-										</Grid>
-										<TextBlock Grid.Column="3" Margin="10" FontSize="16">
-										<Hyperlink Command="{Binding Disable}">
-											<TextBlock>
-													<TextBlock.Style>
-														<Style>
-															<Setter Property="TextBlock.Foreground" Value="Green" />
-															<Setter Property="TextBlock.Text" Value="Enabled" />
-															<Style.Triggers>
-																<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
-																	<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
-																	<Setter Property="TextBlock.Text" Value="Disabled" />
-																</DataTrigger>
-															</Style.Triggers>
-														</Style>
-													</TextBlock.Style>
-											</TextBlock>
-										</Hyperlink>
-									</TextBlock>
-										<TextBlock Grid.Column="4" Margin="10" FontSize="16">
-										<Hyperlink Command="{Binding Edit}">
-											<TextBlock Text="Edit" Foreground="CadetBlue" ToolTip="Edit browser definition" />
-										</Hyperlink>
-									</TextBlock>
-										<TextBlock Grid.Column="5" Margin="10" FontSize="16">
-										<Hyperlink Command="{Binding Remove}">
-											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
-										</Hyperlink>
-									</TextBlock>
-									</Grid>
-								</DataTemplate>
-							</ItemsControl.ItemTemplate>
-						</ItemsControl>
-					</ScrollViewer>
-					<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
-						<TextBlock>
-							<Hyperlink Command="{Binding AddBrowser}" Foreground="White">
-								<TextBlock Text="Add browser" />
-							</Hyperlink>
-						</TextBlock>
+            <TabItem Header="{x:Static properties:i18n.TopNameWelcome}">
+                <!--<TabItem.Style>-->
+                <!--<Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Welcome}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabItem.Style>-->
+                <TextBlock
+                    Width="548"
+                    Height="304"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="16"
+                    FontWeight="Light"
+                    Foreground="White"
+                    TextWrapping="Wrap">
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText1}" /><LineBreak /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText2}" /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText3}" /><LineBreak /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText4}" /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText5}" /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText6}" /><LineBreak />
+                    <Hyperlink
+                        Foreground="LightBlue"
+                        MouseEnter="OnMouseEnter"
+                        MouseLeave="OnMouseLeave"
+                        NavigateUri="{Binding Source={x:Static properties:i18n.NameWelcomeText7}}"
+                        RequestNavigate="Hyperlink_RequestNavigate"
+                        TextDecorations="None">
+                        <Run Text="{x:Static properties:i18n.NameWelcomeText7}" />
+                    </Hyperlink><LineBreak /><LineBreak />
+                    <Run Text="{x:Static properties:i18n.NameWelcomeText8}" /><LineBreak />
+                    <Hyperlink
+                        Foreground="LightBlue"
+                        MouseEnter="OnMouseEnter"
+                        MouseLeave="OnMouseLeave"
+                        NavigateUri="{Binding Source={x:Static properties:i18n.NameWelcomeText9}}"
+                        RequestNavigate="Hyperlink_RequestNavigate"
+                        TextDecorations="None">
+                        <Run Text="{x:Static properties:i18n.NameWelcomeText9}" />
+                    </Hyperlink><LineBreak /><LineBreak />
+                    <!--<Run FontSize="8" Text="&quot;" /><Run FontSize="8" Text="{x:Static properties:i18n.NameWelcomeText10}" /><Run FontSize="8" Text="&quot;" />-->
+                </TextBlock>
+            </TabItem>
 
-						<TextBlock Margin="10,0,0,0">
-							<Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
-								<TextBlock Text="Refresh browser list" />
-							</Hyperlink>
-						</TextBlock>
-					</StackPanel>
-				</Grid>
-			</TabItem>
+            <TabItem Header="{x:Static properties:i18n.TopNameBrowsers}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ParentViewModel.Choices}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel CanVerticallyScroll="True" Orientation="Vertical" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="viewModel:BrowserViewModel">
+                                    <Grid>
+                                        <Grid.Style>
+                                            <Style>
+                                                <Setter Property="UIElement.Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Model.Removed}" Value="True">
+                                                        <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ContentPresenter
+                                            Width="40"
+                                            Height="40"
+                                            Margin="20,0,0,0"
+                                            Content="{Binding}"
+                                            ContentTemplate="{StaticResource BrowserIcon}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="10"
+                                            FontSize="18"
+                                            Foreground="White"
+                                            Text="{Binding Model.Name}" />
+                                        <Grid Grid.Column="2" VerticalAlignment="Center">
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock FontSize="10"><Hyperlink Command="{Binding MoveUp}" TextDecorations="None">🔼</Hyperlink></TextBlock>
+                                            <TextBlock Grid.Row="1" FontSize="10"><Hyperlink Command="{Binding MoveDown}" TextDecorations="None">🔽</Hyperlink></TextBlock>
+                                        </Grid>
+                                        <TextBlock
+                                            Grid.Column="3"
+                                            Margin="10"
+                                            FontSize="16">
+                                            <Hyperlink Command="{Binding Disable}">
+                                                <TextBlock>
+                                                    <TextBlock.Style>
+                                                        <Style>
+                                                            <Setter Property="TextBlock.Foreground" Value="Green" />
+                                                            <Setter Property="TextBlock.Text" Value="{x:Static properties:i18n.NameBrowsersBtnEnabled}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Model.Disabled}" Value="True">
+                                                                    <Setter Property="TextBlock.Foreground" Value="OrangeRed" />
+                                                                    <Setter Property="TextBlock.Text" Value="{x:Static properties:i18n.NameBrowsersBtnDisabled}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Hyperlink>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Grid.Column="4"
+                                            Margin="10"
+                                            FontSize="16">
+                                            <Hyperlink Command="{Binding Edit}">
+                                                <TextBlock
+                                                    Foreground="CadetBlue"
+                                                    Text="{x:Static properties:i18n.NameBrowsersBtnEdit}"
+                                                    ToolTip="{x:Static properties:i18n.NameBrowsersBtnEditTip}" />
+                                            </Hyperlink>
+                                        </TextBlock>
+                                        <TextBlock
+                                            Grid.Column="5"
+                                            Margin="10"
+                                            FontSize="16">
+                                            <Hyperlink Command="{Binding Remove}">
+                                                <TextBlock
+                                                    Foreground="Red"
+                                                    Text="{x:Static properties:i18n.NameBrowsersBtnRemove}"
+                                                    ToolTip="{x:Static properties:i18n.NameBrowsersBtnRemoveTip}" />
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <StackPanel
+                        Grid.Row="1"
+                        Margin="4"
+                        Orientation="Horizontal">
+                        <TextBlock>
+                            <Hyperlink Command="{Binding AddBrowser}" Foreground="White">
+                                <TextBlock Text="{x:Static properties:i18n.NameBrowsersBtnAddBrowser}" />
+                            </Hyperlink>
+                        </TextBlock>
 
-			<TabItem Header="Behaviour">
-				<StackPanel Orientation="Vertical">
-					<StackPanel.Resources>
-						<Style TargetType="{x:Type CheckBox}">
-							<Setter Property="Margin" Value="5,0,0,5"/>
-						</Style>
-					</StackPanel.Resources>
+                        <TextBlock Margin="10,0,0,0">
+                            <Hyperlink Command="{Binding RefreshBrowsers}" Foreground="White">
+                                <TextBlock Text="{x:Static properties:i18n.NameBrowsersBtnRefreshBrowserList}" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
 
-					<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" Foreground="White" />
+            <TabItem Header="{x:Static properties:i18n.TopNameSetting}">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="Margin" Value="5,0,0,5" />
+                        </Style>
+                    </StackPanel.Resources>
 
-					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" Foreground="White" />
+                    <CheckBox
+                        Content="{x:Static properties:i18n.NameSettingBoxTransparency}"
+                        Foreground="White"
+                        IsChecked="{Binding Settings.DisableTransparency}" />
 
-					<StackPanel Orientation="Horizontal">
-						<CheckBox Content="When no default is configured matching the url, use:" IsChecked="{Binding Settings.UseFallbackDefault}" Foreground="White" />
-						<ComboBox
-							ItemsSource="{Binding ParentViewModel.Choices}"
-							ItemTemplate="{StaticResource BrowserIconAndName}"
-							IsSynchronizedWithCurrentItem="False"
-							SelectedValuePath="Model.Name"
-							SelectedValue="{Binding Settings.DefaultBrowser}"
-							Height="22" Margin="5,-4,0,0" />
-					</StackPanel>
+                    <CheckBox
+                        Content="{x:Static properties:i18n.NameSettingBoxAlwaysShow}"
+                        Foreground="White"
+                        IsChecked="{Binding Settings.AlwaysPrompt}" />
 
-					<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" Foreground="White" />
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox
+                            Content="{x:Static properties:i18n.NameSettingBoxDefaultMatching}"
+                            Foreground="White"
+                            IsChecked="{Binding Settings.UseFallbackDefault}" />
+                        <ComboBox
+                            Height="22"
+                            Margin="5,-4,0,0"
+                            IsSynchronizedWithCurrentItem="False"
+                            ItemTemplate="{StaticResource BrowserIconAndName}"
+                            ItemsSource="{Binding ParentViewModel.Choices}"
+                            SelectedValue="{Binding Settings.DefaultBrowser}"
+                            SelectedValuePath="Model.Name" />
+                    </StackPanel>
 
-					<CheckBox Content="Use defaults even when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" Foreground="White" Checked="CheckBox_Checked" />
+                    <CheckBox
+                        Content="{x:Static properties:i18n.NameSettingBoxNoDefaultMatching}"
+                        Foreground="White"
+                        IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" />
 
-					<RadioButton GroupName="OrderBy" Content="Sort list manually" IsChecked="{Binding Settings.UseManualOrdering}" Foreground="White" Margin="6,2" />
-					<RadioButton GroupName="OrderBy" Content="Sort list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Foreground="White" Margin="6,2" />
-					<RadioButton GroupName="OrderBy" Content="Sort list alphabetically" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" Foreground="White" Margin="6,2,4,6" />
+                    <CheckBox
+                        Checked="CheckBox_Checked"
+                        Content="{x:Static properties:i18n.NameSettingBoxDefaultsNotRunning}"
+                        Foreground="White"
+                        IsChecked="{Binding Settings.AlwaysUseDefaults}" />
 
-					<CheckBox Content="Disallow network activity" Foreground="White" IsChecked="{Binding Settings.DisableNetworkAccess}" ToolTip="Disabled url resolution feature" />
+                    <RadioButton
+                        Margin="6,2"
+                        Content="{x:Static properties:i18n.NameSettingBtnSortManually}"
+                        Foreground="White"
+                        GroupName="OrderBy"
+                        IsChecked="{Binding Settings.UseManualOrdering}" />
+                    <RadioButton
+                        Margin="6,2"
+                        Content="{x:Static properties:i18n.NameSettingBtnSortUsage}"
+                        Foreground="White"
+                        GroupName="OrderBy"
+                        IsChecked="{Binding Settings.UseAutomaticOrdering}" />
+                    <RadioButton
+                        Margin="6,2,4,6"
+                        Content="{x:Static properties:i18n.NameSettingBtnSortAlphabetically}"
+                        Foreground="White"
+                        GroupName="OrderBy"
+                        IsChecked="{Binding Settings.UseAlphabeticalOrdering}" />
 
-					<StackPanel Margin="25,0,0,0">
-						<StackPanel.Style>
-							<Style>
-								<Setter Property="Control.IsEnabled" Value="True" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding Settings.DisableNetworkAccess}" Value="True">
-										<Setter Property="Control.IsEnabled" Value="False" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</StackPanel.Style>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Foreground="White" Text="URL resolution timeout: " />
-							<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds, UpdateSourceTrigger=PropertyChanged}"  />
-						</StackPanel>
-					</StackPanel>
-				</StackPanel>
-			</TabItem>
+                    <CheckBox
+                        Content="{x:Static properties:i18n.NameSettingBoxDisallowNetworkActivity}"
+                        Foreground="White"
+                        IsChecked="{Binding Settings.DisableNetworkAccess}"
+                        ToolTip="Disabled url resolution feature" />
 
-			<TabItem Header="Defaults">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
-					<TextBlock Text="Set default browser per domain" Foreground="White" Margin="5" />
-					<DataGrid
-						ItemsSource="{Binding Defaults}"
-						Grid.Row="1"
-						AutoGenerateColumns="False"
-						RowHeight="32"
-						Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"
-						BorderBrush="{x:Null}"
-						CanUserDeleteRows="False"
-						CanUserAddRows="False"
-						CanUserReorderColumns="False"
-						CanUserResizeColumns="False">
-						<DataGrid.Columns>
-							<DataGridTemplateColumn Header="Match by">
-								<DataGridTemplateColumn.CellTemplate>
-									<DataTemplate DataType="browserPicker:DefaultSetting">
-										<ComboBox
-											ItemsSource="{Binding Source={StaticResource MatchTypes}}"
-											IsSynchronizedWithCurrentItem="False"
-											SelectedValue="{Binding Type}"
-											VerticalContentAlignment="Center" />
-									</DataTemplate>
-								</DataGridTemplateColumn.CellTemplate>
-							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Pattern" Binding="{Binding Pattern}" Width="*">
-								<DataGridTextColumn.ElementStyle>
-									<Style TargetType="TextBlock">
-										<Setter Property="VerticalAlignment" Value="Center" />
-										<Setter Property="Padding" Value="5,0" />
-									</Style>
-								</DataGridTextColumn.ElementStyle>
-							</DataGridTextColumn>
-							<DataGridTemplateColumn Header="Browser" Width="55" SortMemberPath="Model.Name">
-								<DataGridTemplateColumn.CellTemplate>
-									<DataTemplate DataType="browserPicker:DefaultSetting">
-										<ComboBox
-											ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
-											ItemTemplate="{StaticResource BrowserIcon}"
-											IsSynchronizedWithCurrentItem="False"
-											SelectedValue="{Binding Browser}"
-											SelectedValuePath="Model.Name"
-											VerticalContentAlignment="Center" />
-									</DataTemplate>
-								</DataGridTemplateColumn.CellTemplate>
-							</DataGridTemplateColumn>
-							<DataGridTemplateColumn>
-								<DataGridTemplateColumn.CellTemplate>
-									<DataTemplate DataType="browserPicker:DefaultSetting">
-										<Button Content="X" Command="{Binding Remove}" />
-									</DataTemplate>
-								</DataGridTemplateColumn.CellTemplate>
-							</DataGridTemplateColumn>
-						</DataGrid.Columns>
-					</DataGrid>
+                    <StackPanel Margin="25,0,0,0">
+                        <StackPanel.Style>
+                            <Style>
+                                <Setter Property="Control.IsEnabled" Value="True" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Settings.DisableNetworkAccess}" Value="True">
+                                        <Setter Property="Control.IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Foreground="White" Text="{x:Static properties:i18n.NameSettingTextBoxUrlResolutionTimeout}" />
+                            <TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="3"
+                        Margin="5"
+                        Padding="5"
+                        HorizontalAlignment="Left"
+                        Click="OpenDefaultAppsSettings_Click"
+                        Content="{x:Static properties:i18n.NameSettingBtnDefaultBrowser}" />
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="3"
+                        Margin="10,0,0,0"
+                        Padding="5"
+                        HorizontalAlignment="Left"
+                        Click="RegisterOpenWith_Click"
+                        Content="{x:Static properties:i18n.NameSettingBtnRegAddOpen}" />
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="4"
+                        Margin="10,0,0,0"
+                        Padding="5"
+                        HorizontalAlignment="Left"
+                        Click="UnregisterOpenWith_Click"
+                        Content="{x:Static properties:i18n.NameSettingBtnRegRemoveOpen}" />
+                </StackPanel>
+            </TabItem>
 
-					<Grid Grid.Row="2">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<ComboBox ItemsSource="{Binding Source={StaticResource MatchTypes}}" SelectedItem="{Binding NewDefaultMatchType}" />
-						<TextBox Text="{Binding NewDefaultPattern}" Grid.Column="1" />
-						<ComboBox
-							ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.ParentViewModel.Choices}"
-							ItemTemplate="{StaticResource BrowserIcon}"
-							IsSynchronizedWithCurrentItem="False"
-							SelectedValue="{Binding NewDefaultBrowser}"
-							SelectedValuePath="Model.Name"
-							Grid.Column="2" Height="22" />
-						<Button Content="Add" Grid.Column="3" Padding="5,0" Command="{Binding AddDefault}" />
-					</Grid>
-				</Grid>
-			</TabItem>
+            <TabItem Header="{x:Static properties:i18n.TopNameDefaultsMatch}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Margin="5"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameDefaultsMatchTextSetDefaultBrowser}" />
+                    <DataGrid
+                        Grid.Row="1"
+                        AutoGenerateColumns="False"
+                        Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"
+                        BorderBrush="{x:Null}"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeColumns="False"
+                        ItemsSource="{Binding Defaults}"
+                        RowHeight="32">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="{x:Static properties:i18n.NameDefaultsMatchHeaderMatch}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="browserPicker:DefaultSetting">
+                                        <ComboBox
+                                            VerticalContentAlignment="Center"
+                                            IsSynchronizedWithCurrentItem="False"
+                                            ItemsSource="{Binding Source={StaticResource MatchTypes}}"
+                                            SelectedValue="{Binding Type}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Pattern}"
+                                Header="{x:Static properties:i18n.NameDefaultsMatchHeaderPattern}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Padding" Value="5,0" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTemplateColumn
+                                Width="55"
+                                Header="{x:Static properties:i18n.NameDefaultsMatchHeaderBrowser}"
+                                SortMemberPath="Model.Name">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="browserPicker:DefaultSetting">
+                                        <ComboBox
+                                            VerticalContentAlignment="Center"
+                                            IsSynchronizedWithCurrentItem="False"
+                                            ItemTemplate="{StaticResource BrowserIcon}"
+                                            ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
+                                            SelectedValue="{Binding Browser}"
+                                            SelectedValuePath="Model.Name" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="browserPicker:DefaultSetting">
+                                        <Button Command="{Binding Remove}" Content="X" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
 
-			<TabItem Header="Test defaults">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition Width="*" />
-					</Grid.ColumnDefinitions>
-					<TextBlock Text="Url:" Foreground="White" />
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox ItemsSource="{Binding Source={StaticResource MatchTypes}}" SelectedItem="{Binding NewDefaultMatchType}" />
+                        <TextBox Grid.Column="1" Text="{Binding NewDefaultPattern}" />
+                        <ComboBox
+                            Grid.Column="2"
+                            Height="22"
+                            IsSynchronizedWithCurrentItem="False"
+                            ItemTemplate="{StaticResource BrowserIcon}"
+                            ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.ParentViewModel.Choices}"
+                            SelectedValue="{Binding NewDefaultBrowser}"
+                            SelectedValuePath="Model.Name" />
+                        <Button
+                            Grid.Column="3"
+                            Padding="5,0"
+                            Command="{Binding AddDefault}"
+                            Content="{x:Static properties:i18n.UniAdd}" />
+                    </Grid>
+                </Grid>
+            </TabItem>
 
-					<TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding TestDefaultsURL, UpdateSourceTrigger=PropertyChanged}" />
+            <TabItem Header="{x:Static properties:i18n.TopNameTestDefaults}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Foreground="White" Text="{x:Static properties:i18n.NameTestDefaultsTextUri}" />
 
-					<TextBlock Text="Default browser matched:" Grid.Column="0" Grid.Row="2" Foreground="White" />
-					<TextBlock Text="{Binding TestDefaultsResult}" Grid.Column="1" Grid.Row="2" Foreground="LightGreen" />
+                    <TextBox
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Text="{Binding TestDefaultsURL, UpdateSourceTrigger=PropertyChanged}" />
 
-					<TextBlock Text="Actual browser choice:" Grid.Column="0" Grid.Row="3" Foreground="White" />
-					<TextBlock Text="{Binding TestActualResult}" Grid.Column="1" Grid.Row="3" Foreground="LightGreen" />
-				</Grid>
-			</TabItem>
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameTestDefaultsTextDefaultMatched}" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Foreground="LightGreen"
+                        Text="{Binding TestDefaultsResult}" />
 
-			<TabItem Header="Backup">
-				<Grid Margin="10" VerticalAlignment="Top">
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="*" />
-					</Grid.RowDefinitions>
-					<TextBlock Text="Back up or restore your BrowserPicker configuration:" Foreground="White" Margin="5" />
-					<Button Content="Export BrowserPicker settings" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Backup}" />
-					<Button Content="Import BrowserPicker settings" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Restore}" />
-					<ScrollViewer Grid.Row="3" Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="5">
-						<TextBlock Text="{Binding Settings.BackupLog}" Foreground="White" TextWrapping="Wrap" />
-					</ScrollViewer>
-				</Grid>
-			</TabItem>
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameTestDefaultsTextActualChoice}" />
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Foreground="LightGreen"
+                        Text="{Binding TestActualResult}" />
+                </Grid>
+            </TabItem>
 
-			<TabItem Header="URL shorteners">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition />
-						<ColumnDefinition />
-					</Grid.ColumnDefinitions>
-					<TextBlock Foreground="White" Text="These domains are known URL shorteners and gets probed on launch unless disallowed by settings" Grid.ColumnSpan="2" />
-					
-					<TextBlock Foreground="White" Text="Default shorteners" Grid.Row="1" Grid.Column="0" Margin="5" />
-					<ListBox Grid.Row="2" Grid.Column="0" ItemsSource="{Binding DefaultUrlShorteners}" SelectionMode="Single" />
-					<TextBlock Grid.Row="3" Grid.Column="0" FontSize="10" Text="ℹ️ Some additional jump pages not shown above" ToolTip="Some pages, such as outlook safelinks, have special handling where the target url is in the query string, these are not listed in this list, as they require additional information in code." Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <TabItem Header="{x:Static properties:i18n.TopNameBackup}">
+                <Grid Margin="10" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Margin="5"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameBackupText}" />
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="5"
+                        Padding="5"
+                        Command="{Binding Backup}"
+                        Content="{x:Static properties:i18n.NameBackupBtnExport}" />
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="5"
+                        Padding="5"
+                        Command="{Binding Restore}"
+                        Content="{x:Static properties:i18n.NameBackupBtnImport}" />
+                    <ScrollViewer
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="5"
+                        VerticalScrollBarVisibility="Auto">
+                        <TextBlock
+                            Foreground="White"
+                            Text="{Binding Settings.BackupLog}"
+                            TextWrapping="Wrap" />
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
 
-					<TextBlock Foreground="White" Text="Additional shorteners" Grid.Row="1" Grid.Column="1" Margin="5" />
-					<ListBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AdditionalUrlShorteners}" x:Name="UrlShorteners" SelectionMode="Single" />
-					
-					<Grid Grid.Row="3" Grid.Column="1">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<TextBox Text="{Binding NewUrlShortener}" x:Name="NewShortener" />
-						<Button Grid.Column="1" Grid.Row="0" Content="Add" Padding="10,0" Command="{Binding AddShortener}" CommandParameter="{Binding Text, ElementName=NewShortener}" />
-						<Button Grid.Column="2" Grid.Row="0" Content="Remove" Padding="10,0" Command="{Binding RemoveShortener}" CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}" />
-					</Grid>
-				</Grid>
-			</TabItem>
-			
-		</TabControl>
+            <TabItem Header="{x:Static properties:i18n.TopNameUrlShorteners}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.ColumnSpan="2"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameUrlShortenersTextTitle}" />
 
-		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="5"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameUrlShortenersHeaderDefault}" />
+                    <ListBox
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        ItemsSource="{Binding DefaultUrlShorteners}"
+                        SelectionMode="Single" />
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="10"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameUrlShortenersTextDefault}"
+                        ToolTip="{x:Static properties:i18n.NameUrlShortenersTextTipDefault}" />
 
-			<TextBlock Padding="4">
-				<TextBlock.Style>
-					<Style>
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
-								<Setter Property="UIElement.Visibility" Value="Collapsed" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</TextBlock.Style>
-				<Hyperlink Command="{Binding ParentViewModel.Configure}" Foreground="White">
-					<TextBlock Text="Done" />
-				</Hyperlink>
-			</TextBlock>
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="5"
+                        Foreground="White"
+                        Text="{x:Static properties:i18n.NameUrlShortenersHeaderAdditional}" />
+                    <ListBox
+                        x:Name="UrlShorteners"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        ItemsSource="{Binding AdditionalUrlShorteners}"
+                        SelectionMode="Single" />
 
-			<TextBlock Padding="4">
-				<TextBlock.Style>
-					<Style>
-						<Setter Property="UIElement.Visibility" Value="Collapsed" />
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
-								<Setter Property="UIElement.Visibility" Value="Visible" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</TextBlock.Style>
-				<Hyperlink Command="{Binding ParentViewModel.Exit}" Foreground="White">
-					<TextBlock Text="Done" />
-				</Hyperlink>
-			</TextBlock>
+                    <Grid Grid.Row="3" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="NewShortener" Text="{Binding NewUrlShortener}" />
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Padding="10,0"
+                            Command="{Binding AddShortener}"
+                            CommandParameter="{Binding Text, ElementName=NewShortener}"
+                            Content="{x:Static properties:i18n.UniAdd}" />
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Padding="10,0"
+                            Command="{Binding RemoveShortener}"
+                            CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}"
+                            Content="{x:Static properties:i18n.UniRemove}" />
+                    </Grid>
+                </Grid>
+            </TabItem>
 
-		</StackPanel>
+        </TabControl>
 
-	</Grid>
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Orientation="Horizontal">
+
+            <TextBlock Padding="10">
+                <TextBlock.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
+                                <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style><Hyperlink Command="{Binding ParentViewModel.Configure}" Foreground="White">
+                    <InlineUIContainer>
+                        <TextBlock Text="{x:Static properties:i18n.TopNameDone}" />
+                    </InlineUIContainer>
+                </Hyperlink></TextBlock>
+
+            <TextBlock Padding="10">
+                <TextBlock.Style>
+                    <Style>
+                        <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
+                                <Setter Property="UIElement.Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style><Hyperlink Command="{Binding ParentViewModel.Exit}" Foreground="White">
+                    <InlineUIContainer>
+                        <TextBlock Text="{x:Static properties:i18n.TopNameExit}" />
+                    </InlineUIContainer>
+                </Hyperlink></TextBlock>
+
+        </StackPanel>
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Orientation="Horizontal">
+
+            <TextBlock Padding="10">
+                <Hyperlink Command="{Binding ParentViewModel.ChangeLanguage}" Foreground="White">
+                    <InlineUIContainer>
+                        <TextBlock Text="{x:Static properties:i18n.TopNameLanguage}" />
+                    </InlineUIContainer>
+                </Hyperlink>
+            </TextBlock>
+
+        </StackPanel>
+
+    </Grid>
 </UserControl>

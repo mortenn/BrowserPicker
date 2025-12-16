@@ -1,242 +1,330 @@
-﻿<UserControl
-	x:Class="BrowserPicker.View.BrowserList"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
-	xmlns:converter="clr-namespace:BrowserPicker.Converter"
-	mc:Ignorable="d"
-	d:DataContext="{d:DesignInstance viewModel:ApplicationViewModel,d:IsDesignTimeCreatable=true}">
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<converter:IconFileToImageConverter x:Key="IconConverter" />
-		</ResourceDictionary>
-	</UserControl.Resources>
-	<Grid MinWidth="350">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
-			<RowDefinition Height="Auto" />
-		</Grid.RowDefinitions>
-		<StackPanel Orientation="Vertical">
-			<StackPanel Orientation="Horizontal">
-				<Image Source="{DynamicResource DefaultIcon}" Height="16" Margin="5" />
-				<TextBlock Margin="0,5">
-					<Hyperlink TextDecorations="None" Command="{Binding PinWindow}" ToolTip="Pins the window, making it not close on lost focus">
-						<Hyperlink.Style>
-							<Style>
-								<Setter Property="Hyperlink.Foreground" Value="Silver" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding Pinned}" Value="True">
-										<Setter Property="Hyperlink.Foreground" Value="Orange" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</Hyperlink.Style>
-						📌
-					</Hyperlink>
-					<Hyperlink TextDecorations="None" Command="{Binding CopyUrl}" ToolTip="Copy the URL to the clipboard">
-						<Hyperlink.Style>
-							<Style>
-								<Setter Property="Hyperlink.Foreground" Value="Silver" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding Copied}" Value="True">
-										<Setter Property="Hyperlink.Foreground" Value="White" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</Hyperlink.Style>
-						📋
-					</Hyperlink>
-					<Hyperlink TextDecorations="None" Command="{Binding Edit}" Foreground="Silver" ToolTip="Edit the URL before opening it">
-						<Hyperlink.Style>
-							<Style>
-								<Setter Property="UIElement.Visibility" Value="Collapsed" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
-										<Setter Property="UIElement.Visibility" Value="Visible" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</Hyperlink.Style>
-						✏
-					</Hyperlink>
-				</TextBlock>
-				<TextBlock Text="Redirected URL" Foreground="Silver" Margin="5,5,0,0">
-					<TextBlock.Style>
-						<Style>
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding Url.IsShortenedURL}" Value="False">
-									<Setter Property="UIElement.Visibility" Value="Collapsed" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</TextBlock.Style>
-				</TextBlock>
-			</StackPanel>
-			<Border Background="DarkGray" CornerRadius="5" Padding="2" Margin="2">
-				<TextBlock Foreground="Black" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="380" MaxHeight="100">
-					<Image Source="{Binding Url.FavIcon}" Height="16" Width="16" Margin="0,-3" />
-					<Run Text="{Binding Url.DisplayURL, Mode=OneWay}" />
-				</TextBlock>
-			</Border>
-		</StackPanel>
-		<Grid Grid.Row="0">
-			<Grid.Style>
-				<Style TargetType="{x:Type Grid}">
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
-							<Setter Property="UIElement.Visibility" Value="Collapsed" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</Grid.Style>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<TextBox
-				Grid.Row="0" MaxWidth="500" MaxHeight="70"
-				Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}"
-				KeyUp="Editor_KeyUp"
-				HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow" />
-			<TextBlock Grid.Column="1" Margin="5,0,0,0">
-				<Hyperlink Command="{Binding EndEdit}" Foreground="White" TextDecorations="None">✔️</Hyperlink>
-			</TextBlock>
-		</Grid>
-		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding Choices}">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<StackPanel Orientation="Vertical" />
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
-				<ItemsControl.ItemTemplate>
-					<DataTemplate DataType="viewModel:BrowserViewModel">
-						<Button Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}"  Margin="2">
-							<Button.Style>
-								<Style TargetType="Button">
-									<Setter Property="Visibility" Value="Visible" />
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
-											<Setter Property="UIElement.Visibility" Value="Collapsed" />
-										</DataTrigger>
-									</Style.Triggers>
-								</Style>
-							</Button.Style>
-							<Button.Template>
-								<ControlTemplate TargetType="Button">
-									<Border Cursor="Hand" CornerRadius="5" Background="#44000000" BorderBrush="#22ffffff" BorderThickness="1">
-										<Border.Style>
-											<Style TargetType="Border">
-												<Setter Property="Opacity" Value="1" />
-												<Style.Triggers>
-													<Trigger Property="IsEnabled" Value="False">
-														<Setter Property="Opacity" Value="0.5" />
-													</Trigger>
-												</Style.Triggers>
-											</Style>
-										</Border.Style>
-										<Grid>
-											<Grid.Style>
-												<Style>
-													<Style.Triggers>
-														<Trigger Property="Grid.IsMouseOver" Value="True">
-															<Setter Property="Grid.Background" Value="#22ffffff" />
-														</Trigger>
-													</Style.Triggers>
-												</Style>
-											</Grid.Style>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="*" />
-												<ColumnDefinition Width="Auto" />
-											</Grid.ColumnDefinitions>
-											<Image Margin="20,0,0,0" Width="40" Height="40" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
-												<Image.Style>
-													<Style TargetType="{x:Type Image}">
-														<Setter Property="Source" Value="{Binding}" />
-														<Style.Triggers>
-															<DataTrigger Binding="{Binding}" Value="{x:Null}">
-																<Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
-															</DataTrigger>
-														</Style.Triggers>
-													</Style>
-												</Image.Style>
-											</Image>
-											<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="20" FontSize="18">
-												<TextBlock.Style>
-													<Style>
-														<Style.Triggers>
-															<DataTrigger Binding="{Binding IsRunning}" Value="True">
-																<Setter Property="TextBlock.FontWeight" Value="Bold" />
-															</DataTrigger>
-															<DataTrigger Binding="{Binding IsRunning}" Value="False">
-																<Setter Property="TextBlock.FontStyle" Value="Italic" />
-															</DataTrigger>
-														</Style.Triggers>
-													</Style>
-												</TextBlock.Style>
-											</TextBlock>
-											<Button Grid.Column="2" Command="{Binding SelectPrivacy}" Click="ButtonBase_OnClick" ToolTip="{Binding PrivacyTooltip}">
-												<Button.Style>
-													<Style TargetType="Button">
-														<Style.Triggers>
-															<Trigger Property="IsEnabled" Value="False">
-																<Setter Property="UIElement.Visibility" Value="Collapsed" />
-															</Trigger>
-														</Style.Triggers>
-													</Style>
-												</Button.Style>
-												<Button.Template>
-													<ControlTemplate>
-														<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40" CornerRadius="5" BorderThickness="2">
-															<Border.Style>
-																<Style TargetType="Border">
-																	<Style.Triggers>
-																		<DataTrigger Binding="{Binding AltPressed}" Value="True">
-																			<Setter Property="BorderBrush" Value="White" />
-																			<Setter Property="BorderThickness" Value="1" />
-																		</DataTrigger>
-																	</Style.Triggers>
-																</Style>
-															</Border.Style>
-															<Image Source="{DynamicResource PrivacyShield}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-														</Border>
-													</ControlTemplate>
-												</Button.Template>
-											</Button>
-										</Grid>
-									</Border>
-								</ControlTemplate>
-							</Button.Template>
-						</Button>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</ScrollViewer>
-		<Grid Grid.Row="2">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
-			<Grid.RowDefinitions>
-				<RowDefinition />
-				<RowDefinition />
-			</Grid.RowDefinitions>
-			<TextBlock>
-				<Hyperlink Command="{Binding Configure}" Foreground="White">
-					<TextBlock Text="Configure browser list" />
-				</Hyperlink>
-			</TextBlock>
-			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
-			<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsChecked="{Binding Configuration.AutoAddDefault}" Width="350">
-				<TextBlock Foreground="White" TextWrapping="Wrap" MaxHeight="50">
-					<Run Text="Remember my choice for" />
-					<Run Text="{Binding Url.HostName}" />
-				</TextBlock>
-			</CheckBox>
-		</Grid>
-	</Grid>
+<UserControl
+    x:Class="BrowserPicker.View.BrowserList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:BrowserPicker.Converter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:properties="clr-namespace:BrowserPicker.Resources"
+    xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
+    d:DataContext="{d:DesignInstance viewModel:ApplicationViewModel,
+                                     d:IsDesignTimeCreatable=true}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converter:IconFileToImageConverter x:Key="IconConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid MinWidth="350">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <Image
+                    Height="16"
+                    Margin="5"
+                    Source="{DynamicResource DefaultIcon}" />
+                <TextBlock Margin="0,5">
+                    <Hyperlink
+                        Command="{Binding PinWindow}"
+                        TextDecorations="None"
+                        ToolTip="{x:Static properties:i18n.BoxOpenBrowserTipPin}">
+                        <Hyperlink.Style>
+                            <Style>
+                                <Setter Property="Hyperlink.Foreground" Value="Silver" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Pinned}" Value="True">
+                                        <Setter Property="Hyperlink.Foreground" Value="Orange" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Hyperlink.Style>
+                        📌
+                    </Hyperlink>
+                    <Hyperlink
+                        Command="{Binding CopyUrl}"
+                        TextDecorations="None"
+                        ToolTip="{x:Static properties:i18n.BoxOpenBrowserTipCopyUrl}">
+                        <Hyperlink.Style>
+                            <Style>
+                                <Setter Property="Hyperlink.Foreground" Value="Silver" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Copied}" Value="True">
+                                        <Setter Property="Hyperlink.Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Hyperlink.Style>
+                        📋
+                    </Hyperlink>
+                    <Hyperlink
+                        Command="{Binding Edit}"
+                        Foreground="Silver"
+                        TextDecorations="None"
+                        ToolTip="{x:Static properties:i18n.BoxOpenBrowserTipEditUrl}">
+                        <Hyperlink.Style>
+                            <Style>
+                                <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
+                                        <Setter Property="UIElement.Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Hyperlink.Style>
+                        ✏
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock
+                    Margin="5,5,0,0"
+                    Foreground="Silver"
+                    Text="{x:Static properties:i18n.BoxOpenBrowserRedirectedUrl}">
+                    <TextBlock.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Url.IsShortenedURL}" Value="False">
+                                    <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+            <Border
+                Margin="2"
+                Padding="2"
+                Background="DarkGray"
+                CornerRadius="5">
+                <TextBlock
+                    MaxWidth="380"
+                    MaxHeight="100"
+                    Foreground="Black"
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="Wrap">
+                    <Image
+                        Width="16"
+                        Height="16"
+                        Margin="0,-3"
+                        Source="{Binding Url.FavIcon}" />
+                    <Run Text="{Binding Url.DisplayURL, Mode=OneWay}" />
+                </TextBlock>
+            </Border>
+        </StackPanel>
+        <Grid Grid.Row="0">
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
+                            <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox
+                Grid.Row="0"
+                MaxWidth="500"
+                MaxHeight="70"
+                HorizontalAlignment="Stretch"
+                KeyUp="Editor_KeyUp"
+                Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="WrapWithOverflow" />
+            <TextBlock Grid.Column="1" Margin="5,0,0,0">
+                <Hyperlink
+                    Command="{Binding EndEdit}"
+                    Foreground="White"
+                    TextDecorations="None">
+                    ✔️
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Choices}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="viewModel:BrowserViewModel">
+                        <Button
+                            Margin="2"
+                            Command="{Binding Select}"
+                            CommandParameter="{Binding Path=DataContext.Url.TargetURL, RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Model.Disabled}" Value="True">
+                                            <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border
+                                        Background="#44000000"
+                                        BorderBrush="#22ffffff"
+                                        BorderThickness="1"
+                                        CornerRadius="5"
+                                        Cursor="Hand">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Opacity" Value="1" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter Property="Opacity" Value="0.5" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Grid.Style>
+                                                <Style>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="Grid.IsMouseOver" Value="True">
+                                                            <Setter Property="Grid.Background" Value="#22ffffff" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Image
+                                                Width="40"
+                                                Height="40"
+                                                Margin="20,0,0,0"
+                                                d:DataContext="{DynamicResource DefaultIcon}"
+                                                DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}">
+                                                <Image.Style>
+                                                    <Style TargetType="{x:Type Image}">
+                                                        <Setter Property="Source" Value="{Binding}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                                                <Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Image.Style>
+                                            </Image>
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Margin="20"
+                                                FontSize="18"
+                                                Foreground="White"
+                                                Text="{Binding Model.Name}">
+                                                <TextBlock.Style>
+                                                    <Style>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                                <Setter Property="TextBlock.FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                                                <Setter Property="TextBlock.FontStyle" Value="Italic" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <Button
+                                                Grid.Column="2"
+                                                Click="ButtonBase_OnClick"
+                                                Command="{Binding SelectPrivacy}"
+                                                ToolTip="{Binding PrivacyTooltip}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="UIElement.Visibility" Value="Collapsed" />
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <Border
+                                                            Width="40"
+                                                            Height="40"
+                                                            Margin="10"
+                                                            Padding="10"
+                                                            Background="#22ffffff"
+                                                            BorderThickness="2"
+                                                            CornerRadius="5">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding AltPressed}" Value="True">
+                                                                            <Setter Property="BorderBrush" Value="White" />
+                                                                            <Setter Property="BorderThickness" Value="1" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <Image
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                Source="{DynamicResource PrivacyShield}" />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock>
+                <Hyperlink Command="{Binding Configure}" Foreground="White">
+                    <TextBlock Text="{x:Static properties:i18n.BoxOpenBrowserBtnConfigure}" />
+                </Hyperlink>
+            </TextBlock>
+            <CheckBox
+                Grid.Row="0"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Checked="CheckBox_Checked"
+                Content="{x:Static properties:i18n.BoxOpenBrowserBoxAlwaysAsk}"
+                Foreground="White"
+                IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" />
+            <CheckBox
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Width="350"
+                HorizontalAlignment="Left"
+                IsChecked="{Binding Configuration.AutoAddDefault}">
+                <TextBlock
+                    MaxHeight="50"
+                    Foreground="White"
+                    Text="{x:Static properties:i18n.BoxOpenBrowserBoxRememberChoice}"
+                    TextWrapping="Wrap" />
+            </CheckBox>
+        </Grid>
+    </Grid>
 </UserControl>
