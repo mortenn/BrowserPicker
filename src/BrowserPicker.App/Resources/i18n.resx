@@ -452,7 +452,7 @@ The desktop icon will disappear temporarily during the restart process and resum
     <value>Failed to restart the explorer, it is recommended to restart the computer to take effect</value>
   </data>
   <data name="TopNameLanguage" xml:space="preserve">
-    <value>语言</value>
+    <value>Language</value>
   </data>
   <data name="CsConfigLanguageChangeRestartMessage" xml:space="preserve">
     <value>The application needs to restart to apply the new language settings.</value>

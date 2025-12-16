@@ -46,9 +46,9 @@ public partial class App
 
 	public App()
 	{
-		//var culture = new CultureInfo("en-US");
-		//Thread.CurrentThread.CurrentCulture = culture; 
-		//Thread.CurrentThread.CurrentUICulture = culture;
+		var culture = new CultureInfo("en-US");
+		Thread.CurrentThread.CurrentCulture = culture;
+		Thread.CurrentThread.CurrentUICulture = culture;
 
 		Encoding.RegisterProvider(new InvalidUTF8Patch());
 		Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -81,6 +81,7 @@ public partial class App
 		var worker = StartupBackgroundTasks();
 		worker.ContinueWith(CheckBackgroundTasks);
 	}
+
 	private void LoadSavedLanguage()
 	{
 		try
