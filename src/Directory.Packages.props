@@ -7,6 +7,6 @@
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
-    <PackageVersion Include="System.Drawing.Common" Version="9.0.7" />
+    <PackageVersion Include="System.Drawing.Common" Version="10.0.3" />
   </ItemGroup>
 </Project>
