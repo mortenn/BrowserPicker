@@ -244,7 +244,7 @@
 							ItemsSource="{Binding ParentViewModel.Choices}"
 							ItemTemplate="{StaticResource BrowserIconAndName}"
 							IsSynchronizedWithCurrentItem="False"
-							SelectedValuePath="Model.Name"
+							SelectedValuePath="Model.Id"
 							SelectedValue="{Binding Settings.DefaultBrowser}"
 							Height="22" Margin="5,-4,0,0" />
 					</StackPanel>
@@ -326,7 +326,7 @@
 											ItemTemplate="{StaticResource BrowserIcon}"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedValue="{Binding Browser}"
-											SelectedValuePath="Model.Name"
+											SelectedValuePath="Model.Id"
 											VerticalContentAlignment="Center" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
@@ -355,7 +355,7 @@
 							ItemTemplate="{StaticResource BrowserIcon}"
 							IsSynchronizedWithCurrentItem="False"
 							SelectedValue="{Binding NewDefaultBrowser}"
-							SelectedValuePath="Model.Name"
+							SelectedValuePath="Model.Id"
 							Grid.Column="2" Height="22" />
 						<Button Content="Add" Grid.Column="3" Padding="5,0" Command="{Binding AddDefault}" />
 					</Grid>

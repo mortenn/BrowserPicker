@@ -344,7 +344,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				Model.Usage++;
 			}
 	
-			parent_view_model.Configuration.UrlOpened(parent_view_model.Url.HostName, Model.Name);
+			parent_view_model.Configuration.UrlOpened(parent_view_model.Url.HostName, Model.Id);
 	
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
 			var url = parent_view_model.Url.GetTargetUrl(Model.ExpandFileUrls);

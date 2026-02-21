@@ -200,8 +200,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				where key != string.Empty
 				let value = keyBind.Get<string>(null, key)
 				where value != null
-				let browser = BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value)
-				select new KeyBinding(key, browser?.Name ?? value)
+				let browser = BrowserList.FirstOrDefault(b => b.Id == key) ?? BrowserList.FirstOrDefault(b => b.Name == key)
+				select new KeyBinding(value, browser?.Id ?? key)
 			).ToList();
 		}
 	}
@@ -402,15 +402,21 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		var fallback = defaults.FirstOrDefault(d => d.Type == MatchType.Default);
 		UseFallbackDefault = fallback?.Browser != null;
-		DefaultBrowser = fallback?.Browser;
+		// Normalize to Id so UI and launch path use Id (backup may contain name)
+		var fallbackBrowserId = fallback?.Browser != null
+			? BrowserList.FirstOrDefault(b => b.Id == fallback.Browser || b.Name == fallback.Browser)?.Id ?? fallback.Browser
+			: null;
+		DefaultBrowser = fallbackBrowserId;
 
-		// Add or update defaults
+		// Add or update defaults (normalize Browser to Id when loading from backup)
 		foreach (var setting in defaults)
 		{
 			if (setting == fallback)
 			{
 				continue;
 			}
+			var browserId = string.IsNullOrEmpty(setting.Browser) ? null
+				: BrowserList.FirstOrDefault(b => b.Id == setting.Browser || b.Name == setting.Browser)?.Id ?? setting.Browser;
 			var existing = Defaults.FirstOrDefault(d => d.SettingKey == setting.SettingKey);
 			if (existing == null)
 			{
@@ -418,12 +424,12 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				newSetting.PropertyChanging += DefaultSetting_PropertyChanging;
 				newSetting.PropertyChanged += DefaultSetting_PropertyChanged;
 				Defaults.Add(newSetting);
-				newSetting.Browser = setting.Browser;
+				newSetting.Browser = browserId;
 				continue;
 			}
 			existing.Type = setting.Type;
 			existing.Pattern = setting.Pattern;
-			existing.Browser = setting.Browser;
+			existing.Browser = browserId;
 		}
 
 		// Remove defaults
@@ -438,7 +444,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		foreach (var binding in keyBindings)
 		{
-			var browser = BrowserList.FirstOrDefault(b => b.Name == binding.Browser);
+			var browser = BrowserList.FirstOrDefault(b => b.Id == binding.Browser || b.Name == binding.Browser);
 			if (browser == null)
 			{
 				continue;
@@ -546,9 +552,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			where pattern is not null
 			let value = key.GetValue(pattern) as string
 			where value is not null
-			let browser = BrowserList.FirstOrDefault(b => b.Id == value)
-			let name = browser?.Name ?? value
-			let setting = GetDefaultSetting(pattern, name)
+			let browser = BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value)
+			let browserId = browser?.Id ?? value
+			let setting = GetDefaultSetting(pattern, browserId)
 			where setting is not null
 			select setting
 		];
@@ -628,7 +634,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 			case nameof(DefaultSetting.SettingKey) when model.IsValid:
 			case nameof(DefaultSetting.SettingValue) when model.IsValid:
-				var browserForDefault = BrowserList.FirstOrDefault(b => b.Name == model.Browser);
+				var browserForDefault = BrowserList.FirstOrDefault(b => b.Id == model.Browser || b.Name == model.Browser);
 				key.SetValue(model.SettingKey, browserForDefault?.Id ?? model.Browser ?? string.Empty, RegistryValueKind.String);
 				break;
 		}

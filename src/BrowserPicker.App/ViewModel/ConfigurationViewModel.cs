@@ -1,4 +1,4 @@
-﻿using BrowserPicker.Framework;
+using BrowserPicker.Framework;
 using System.ComponentModel;
 using System.Threading;
 using System.Linq;
@@ -387,7 +387,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	/// <param name="hostName">Host name of the opened URL.</param>
 	/// <param name="browserId">The browser id of the browser that was used.</param>
-	internal void UrlOpened(string? hostName, string browser)
+	internal void UrlOpened(string? hostName, string browserId)
 	{
 		if (!AutoAddDefault || hostName == null)
 		{
@@ -396,7 +396,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 		try
 		{
-			AddNewDefault(MatchType.Hostname, hostName, browser);
+			AddNewDefault(MatchType.Hostname, hostName, browserId);
 		}
 		catch
 		{
@@ -541,7 +541,13 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url) ?? "User choice";
+			var idOrName = ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url);
+			if (idOrName == null)
+			{
+				return "User choice";
+			}
+			var choice = ParentViewModel.Choices.FirstOrDefault(c => c.Model.Id == idOrName || c.Model.Name == idOrName);
+			return choice?.Model.Name ?? idOrName;
 		}
 	}
 
