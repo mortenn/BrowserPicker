@@ -151,7 +151,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	/// <inheritdoc />
 	public void AddBrowser(BrowserModel browser)
 	{
-		var key = Reg.Open(nameof(BrowserList), browser.Name);
+		browser.Id = string.IsNullOrEmpty(browser.Id) ? browser.Name : browser.Id;
+		var key = Reg.Open(nameof(BrowserList), browser.Id);
 		key.Set(browser.Name, nameof(browser.Name));
 		key.Set(browser.Command, nameof(browser.Command));
 		key.Set(browser.Executable, nameof(browser.Executable));
@@ -163,7 +164,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		key.Set(browser.ManualOverride, nameof(browser.ManualOverride));
 		
 		var keyBind = Reg.Open(nameof(browser.CustomKeyBind));
-		keyBind.Set(browser.Name, browser.CustomKeyBind);
+		keyBind.Set(browser.Id, browser.CustomKeyBind);
 		foreach (var other in BrowserList.Where(other => other.CustomKeyBind == browser.CustomKeyBind))
 		{
 			other.CustomKeyBind = string.Empty;
@@ -190,9 +191,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			return (
 				from key in keyBind.GetValueNames()
 				where key != string.Empty
-				let browser = keyBind.Get<string>(null, key)
-				where browser != null
-				select new KeyBinding(key, browser)
+				let value = keyBind.Get<string>(null, key)
+				where value != null
+				let browser = BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value)
+				select new KeyBinding(key, browser?.Name ?? value)
 			).ToList();
 		}
 	}
@@ -363,7 +365,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		foreach (var browser in browserList)
 		{
-			var existing = BrowserList.FirstOrDefault(b => !b.Removed && b.Name == browser.Name);
+			browser.Id = string.IsNullOrEmpty(browser.Id) ? browser.Name : browser.Id;
+			var existing = BrowserList.FirstOrDefault(b => !b.Removed && (b.Id == browser.Id || b.Name == browser.Name));
 			if (existing == null || existing.Removed)
 			{
 				AddBrowser(browser);
@@ -380,7 +383,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			existing.CustomKeyBind = browser.CustomKeyBind;
 		}
 
-		foreach (var browser in BrowserList.Where(b => browserList.All(s => s.Name != b.Name)).ToArray())
+		foreach (var browser in BrowserList.Where(b => browserList.All(s => s.Id != b.Id && s.Name != b.Name)).ToArray())
 		{
 			browser.Removed = true;
 			BrowserList.Remove(browser);
@@ -504,7 +507,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private void AddOrUpdateBrowserModel(BrowserModel model)
 	{
-		var update = BrowserList.FirstOrDefault(m => m.Name.Equals(model.Name, StringComparison.CurrentCultureIgnoreCase));
+		var update = BrowserList.FirstOrDefault(m => string.Equals(m.Id, model.Name, StringComparison.CurrentCultureIgnoreCase));
 		if (update != null)
 		{
 			if (update.ManualOverride)
@@ -520,7 +523,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		AddBrowser(model);
 	}
 
-	private static List<DefaultSetting> GetDefaults()
+	private List<DefaultSetting> GetDefaults()
 	{
 		var key = Reg.Open(nameof(Defaults));
 		var values = key.GetValueNames();
@@ -534,9 +537,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			..
 			from pattern in values
 			where pattern is not null
-			let browser = key.GetValue(pattern) as string
-			where browser is not null
-			let setting = GetDefaultSetting(pattern, browser)
+			let value = key.GetValue(pattern) as string
+			where value is not null
+			let browser = BrowserList.FirstOrDefault(b => b.Id == value)
+			let name = browser?.Name ?? value
+			let setting = GetDefaultSetting(pattern, name)
 			where setting is not null
 			select setting
 		];
@@ -553,7 +558,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return key.GetValueNames();
 	}
 
-	private static DefaultSetting? GetDefaultSetting(string? key, string? value)
+	private DefaultSetting? GetDefaultSetting(string? key, string? value)
 	{
 		if (value == null)
 		{
@@ -569,7 +574,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return setting;
 	}
 
-	private static void DefaultSetting_PropertyChanging(object? sender, PropertyChangingEventArgs e)
+	private void DefaultSetting_PropertyChanging(object? sender, PropertyChangingEventArgs e)
 	{
 		if (e.PropertyName != nameof(DefaultSetting.SettingKey))
 		{
@@ -591,7 +596,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
-	private static void DefaultSetting_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	private void DefaultSetting_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is not DefaultSetting model)
 		{
@@ -616,7 +621,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 			case nameof(DefaultSetting.SettingKey) when model.IsValid:
 			case nameof(DefaultSetting.SettingValue) when model.IsValid:
-				key.SetValue(model.SettingKey, model.SettingValue ?? string.Empty, RegistryValueKind.String);
+				var browserForDefault = BrowserList.FirstOrDefault(b => b.Name == model.Browser);
+				key.SetValue(model.SettingKey, browserForDefault?.Id ?? model.Browser ?? string.Empty, RegistryValueKind.String);
 				break;
 		}
 	}
@@ -641,7 +647,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			if (edge != null)
 			{
 				browsers.Remove(edge);
-				list.DeleteSubKeyTree(edge.Name);
+				list.DeleteSubKeyTree(edge.Id);
 			}
 		}
 
@@ -649,14 +655,15 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return browsers;
 	}
 
-	private BrowserModel? GetBrowser(RegistryKey list, string name)
+	private BrowserModel? GetBrowser(RegistryKey list, string keyName)
 	{
-		var config = list.OpenSubKey(name, false);
+		var config = list.OpenSubKey(keyName, false);
 		var keyBind = Reg.Open(nameof(BrowserModel.CustomKeyBind));
 		if (config == null) return null;
 		var browser = new BrowserModel
 		{
-			Name = name,
+			Id = keyName,
+			Name = config.Get<string>(null, nameof(BrowserModel.Name)) ?? keyName,
 			Command = config.Get<string>(null, nameof(BrowserModel.Command)) ?? string.Empty,
 			Executable = config.Get<string>(null, nameof(BrowserModel.Executable)),
 			CommandArgs = config.Get<string>(null, nameof(BrowserModel.CommandArgs)),
@@ -667,7 +674,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			Disabled = config.GetBool(false, nameof(BrowserModel.Disabled)),
 			ExpandFileUrls = config.GetBool(false, nameof(BrowserModel.ExpandFileUrls)),
 			ManualOverride = config.GetBool(false, nameof(BrowserModel.ManualOverride)),
-			CustomKeyBind = keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == name) ?? string.Empty
+			CustomKeyBind = keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == keyName) ?? string.Empty
 		};
 		config.Close();
 		if (string.IsNullOrWhiteSpace(browser.Command))
@@ -683,9 +690,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		{
 			return;
 		}
-		var config = Reg.EnsureSubKey(nameof(BrowserList), model.Name);
+		var config = Reg.EnsureSubKey(nameof(BrowserList), model.Id);
 		switch (e.PropertyName)
 		{
+			case nameof(BrowserModel.Name): config.Set(model.Name, e.PropertyName); break;
 			case nameof(BrowserModel.Command): config.Set(model.Command, e.PropertyName); break;
 			case nameof(BrowserModel.Executable): config.Set(model.Executable, e.PropertyName); break;
 			case nameof(BrowserModel.CommandArgs): config.Set(model.CommandArgs, e.PropertyName); break;
@@ -700,7 +708,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				if (model.Removed)
 				{
 					model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
-					Reg.SubKey(nameof(BrowserList))?.DeleteSubKey(model.Name);
+					Reg.SubKey(nameof(BrowserList))?.DeleteSubKey(model.Id);
 					BrowserList.Remove(model);
 					logger.LogBrowserRemoved(model.Name);
 					OnPropertyChanged(nameof(BrowserList));
@@ -710,13 +718,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 				var keyBind = Reg.Open(nameof(model.CustomKeyBind));
 				var remove =
 					from binding in keyBind.GetValueNames()
-					where keyBind.Get<string>(null, binding) == model.Name
+					where keyBind.Get<string>(null, binding) == model.Id
 					select binding;
 				foreach (var binding in remove)
 				{
 					keyBind.DeleteValue(binding);
 				}
-				keyBind.Set(model.Name, model.CustomKeyBind);
+				keyBind.Set(model.Id, model.CustomKeyBind);
 				foreach (var other in BrowserList.Where(other => other != model && other.CustomKeyBind == model.CustomKeyBind))
 				{
 					other.CustomKeyBind = string.Empty;

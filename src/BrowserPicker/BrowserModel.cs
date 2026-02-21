@@ -1,4 +1,4 @@
-﻿using BrowserPicker.Framework;
+using BrowserPicker.Framework;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
@@ -17,6 +17,7 @@ public sealed class BrowserModel : ModelBase
     {
         name = string.Empty;
         command = string.Empty;
+        id = string.Empty;
     }
 
     /// <summary>
@@ -28,6 +29,7 @@ public sealed class BrowserModel : ModelBase
     public BrowserModel(IWellKnownBrowser known, string? icon, string shell)
     {
         name = known.Name;
+        id = known.Name;
         command = shell;
         PrivacyArgs = known.PrivacyArgs;
         Executable = known.RealExecutable;
@@ -43,8 +45,19 @@ public sealed class BrowserModel : ModelBase
     public BrowserModel(string name, string? icon, string shell)
     {
         this.name = name;
+        id = name;
         icon_path = icon;
         command = shell;
+    }
+
+    /// <summary>
+    /// Stable identifier used as the registry key; does not change when the user renames the browser.
+    /// </summary>
+    [JsonIgnore]
+    public string Id
+    {
+        get => id;
+        set => SetProperty(ref id, value);
     }
 
     /// <summary>
@@ -169,6 +182,7 @@ public sealed class BrowserModel : ModelBase
 
     private bool disabled;
     private bool removed;
+    private string id;
     private string name;
     private string? icon_path;
     private string command;
