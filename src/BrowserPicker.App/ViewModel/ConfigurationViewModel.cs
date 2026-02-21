@@ -92,6 +92,10 @@ public sealed class ConfigurationViewModel : ModelBase
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
 		}
 
+		public void PersistBrowser(BrowserModel browser)
+		{
+		}
+
 		public string BackupLog => "Backup log comes here\nWith multiple lines of text\nmaybe\nsometimes\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...";
 
 		public IComparer<BrowserModel>? BrowserSorter => null;

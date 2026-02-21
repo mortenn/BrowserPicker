@@ -159,17 +159,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	public void AddBrowser(BrowserModel browser)
 	{
 		browser.Id = string.IsNullOrEmpty(browser.Id) ? browser.Name : browser.Id;
-		var key = Reg.Open(nameof(BrowserList), browser.Id);
-		key.Set(browser.Name, nameof(browser.Name));
-		key.Set(browser.Command, nameof(browser.Command));
-		key.Set(browser.Executable, nameof(browser.Executable));
-		key.Set(browser.CommandArgs, nameof(browser.CommandArgs));
-		key.Set(browser.PrivacyArgs, nameof(browser.PrivacyArgs));
-		key.Set(browser.IconPath, nameof(browser.IconPath));
-		key.Set(browser.Usage, nameof(browser.Usage));
-		key.Set(browser.ExpandFileUrls, nameof(browser.ExpandFileUrls));
-		key.Set(browser.ManualOverride, nameof(browser.ManualOverride));
-		
+		WriteBrowserToRegistry(browser);
 		var keyBind = Reg.Open(nameof(browser.CustomKeyBind));
 		keyBind.Set(browser.Id, browser.CustomKeyBind);
 		foreach (var other in BrowserList.Where(other => other.CustomKeyBind == browser.CustomKeyBind))
@@ -181,6 +171,36 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		BrowserList.Add(browser);
 		logger.LogBrowserAdded(browser.Name);
 		OnPropertyChanged(nameof(BrowserList));
+	}
+
+	/// <inheritdoc />
+	public void PersistBrowser(BrowserModel browser)
+	{
+		if (string.IsNullOrEmpty(browser.Id))
+			return;
+		WriteBrowserToRegistry(browser);
+		var keyBind = Reg.Open(nameof(browser.CustomKeyBind));
+		keyBind.Set(browser.Id, browser.CustomKeyBind);
+		foreach (var other in BrowserList.Where(other => other != browser && other.CustomKeyBind == browser.CustomKeyBind))
+		{
+			other.CustomKeyBind = string.Empty;
+		}
+	}
+
+	private static void WriteBrowserToRegistry(BrowserModel browser)
+	{
+		var key = Reg.Open(nameof(BrowserList), browser.Id);
+		key.Set(browser.Name, nameof(browser.Name));
+		key.Set(browser.Command, nameof(browser.Command));
+		key.Set(browser.Executable, nameof(browser.Executable));
+		key.Set(browser.CommandArgs, nameof(browser.CommandArgs));
+		key.Set(browser.PrivacyArgs, nameof(browser.PrivacyArgs));
+		key.Set(browser.IconPath, nameof(browser.IconPath));
+		key.Set(browser.Usage, nameof(browser.Usage));
+		key.Set(browser.ExpandFileUrls, nameof(browser.ExpandFileUrls));
+		key.Set(browser.ManualOverride, nameof(browser.ManualOverride));
+		key.Set(browser.Disabled, nameof(browser.Disabled));
+		key.Set(browser.ManualOrder, nameof(browser.ManualOrder));
 	}
 
 	/// <inheritdoc />
