@@ -7,6 +7,7 @@ namespace BrowserPicker;
 /// <summary>Enables System.Text.Json to deserialize <see cref="DefaultSetting"/> via its primary constructor.</summary>
 internal sealed class DefaultSettingJsonConverter : JsonConverter<DefaultSetting>
 {
+	/// <inheritdoc />
 	public override DefaultSetting Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
 		MatchType type = default;
@@ -50,6 +51,7 @@ internal sealed class DefaultSettingJsonConverter : JsonConverter<DefaultSetting
 		return new DefaultSetting(type, pattern, browser);
 	}
 
+	/// <inheritdoc />
 	public override void Write(Utf8JsonWriter writer, DefaultSetting value, JsonSerializerOptions options)
 	{
 		writer.WriteStartObject();

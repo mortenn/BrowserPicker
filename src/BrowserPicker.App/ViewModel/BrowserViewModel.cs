@@ -259,6 +259,9 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Model.CustomKeyBind = save.CustomKeyBind;
 	}
 
+	/// <summary>
+	/// Tooltip text for the privacy-mode action (e.g. "Open incognito"), from well-known browser or default.
+	/// </summary>
 	public string PrivacyTooltip
 	{
 		get
@@ -268,6 +271,9 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 	}
 
+	/// <summary>
+	/// True when a process for this browser is running in the current session with a main window.
+	/// </summary>
 	public bool IsRunning
 	{
 		get
@@ -306,6 +312,9 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 	}
 
+	/// <summary>
+	/// True when the user is holding the Alt key (e.g. to signal privacy mode).
+	/// </summary>
 	public bool AltPressed => parent_view_model.AltPressed;
 
 	/// <summary>
@@ -335,7 +344,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				Model.Usage++;
 			}
 	
-			parent_view_model.Configuration.UrlOpened(parent_view_model.Url.HostName, Model.Name);
+			parent_view_model.Configuration.UrlOpened(parent_view_model.Url.HostName, Model.Id);
 	
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
 			var url = parent_view_model.Url.GetTargetUrl(Model.ExpandFileUrls);

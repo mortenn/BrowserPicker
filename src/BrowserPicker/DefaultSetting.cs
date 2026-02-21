@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace BrowserPicker;
 
+/// <summary>
+/// Represents a per-URL default browser rule: when a URL matches the pattern, the associated browser is preferred.
+/// </summary>
 [JsonConverter(typeof(DefaultSettingJsonConverter))]
 public sealed class DefaultSetting(MatchType initialType, string? initialPattern, string? initialBrowser) : ModelBase, INotifyPropertyChanging
 {
@@ -16,6 +19,12 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 	private string? browser = initialBrowser;
 	private bool deleted;
 
+	/// <summary>
+	/// Parses a registry or encoded rule string into a <see cref="DefaultSetting"/>.
+	/// </summary>
+	/// <param name="rule">The rule string (e.g. hostname, or "|MatchType|pattern"). Use null for a new rule with no pattern.</param>
+	/// <param name="browser">The browser id or display name to assign to the decoded rule.</param>
+	/// <returns>A new <see cref="DefaultSetting"/>, or null if the format is unsupported.</returns>
 	public static DefaultSetting? Decode(string? rule, string browser)
 	{
 		if (rule == null)
@@ -42,6 +51,9 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		};
 	}
 
+	/// <summary>
+	/// Gets or sets how the URL is matched: hostname suffix, prefix, regex, contains, or default (fallback).
+	/// </summary>
 	public MatchType Type
 	{
 		get => type;
@@ -58,12 +70,21 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		}
 	}
 
+	/// <summary>
+	/// Registry key for this rule; derived from <see cref="Type"/> and <see cref="Pattern"/>.
+	/// </summary>
 	[JsonIgnore]
 	public string? SettingKey => ToString();
 
+	/// <summary>
+	/// Registry value for this rule; the browser id or name stored for this default.
+	/// </summary>
 	[JsonIgnore]
 	public string? SettingValue => Browser;
 
+	/// <summary>
+	/// When true, this rule is marked for removal (e.g. deleted in the UI).
+	/// </summary>
 	[JsonIgnore]
 	public bool Deleted
 	{
@@ -75,6 +96,9 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		}
 	}
 
+	/// <summary>
+	/// The URL fragment or pattern to match, depending on <see cref="Type"/>. Empty for <see cref="MatchType.Default"/>.
+	/// </summary>
 	public string? Pattern
 	{
 		get => pattern;
@@ -93,6 +117,10 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		}
 	}
 
+	/// <summary>
+	/// Gets or sets the browser id (or display name for backward compatibility) for this default rule.
+	/// Used to identify which browser to launch when the URL matches.
+	/// </summary>
 	public string? Browser
 	{
 		get => browser;
@@ -105,13 +133,25 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		}
 	}
 
+	/// <summary>
+	/// True when the rule has a valid pattern, or is a default (fallback) rule with empty pattern.
+	/// </summary>
 	[JsonIgnore]
 	public bool IsValid => !string.IsNullOrWhiteSpace(pattern)
 		|| pattern == string.Empty && Type == MatchType.Default;
 
+	/// <summary>
+	/// Command that marks this rule as deleted.
+	/// </summary>
 	[JsonIgnore]
 	public DelegateCommand Remove => new(() => { Deleted = true; });
 
+	/// <summary>
+	/// Returns the length of the match when this rule is applied to the given URL; 0 if no match.
+	/// Longer matches take precedence when choosing a default browser.
+	/// </summary>
+	/// <param name="url">The URL to match.</param>
+	/// <returns>Match length, or 0 if the rule does not match.</returns>
 	public int MatchLength(Uri url)
 	{
 		if (!IsValid)
@@ -129,6 +169,7 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		};
 	}
 
+	/// <inheritdoc />
 	public override string? ToString() => Type switch
 	{
 		MatchType.Hostname => pattern,
@@ -136,6 +177,7 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		_ => $"|{Type}|{pattern}"
 	};
 
+	/// <inheritdoc />
 	public override int GetHashCode() => Type.GetHashCode() ^ id.GetHashCode();
 
 	private void OnPropertyChanging([CallerMemberName] string? propertyName = null)
@@ -143,5 +185,8 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 	}
 
+	/// <summary>
+	/// Raised before a property value changes.
+	/// </summary>
 	public event PropertyChangingEventHandler? PropertyChanging;
 }

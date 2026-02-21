@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -75,6 +75,9 @@ public sealed class ApplicationViewModel : ModelBase
 		Choices = new ObservableCollection<BrowserViewModel>(choices);
 	}
 
+	/// <summary>
+	/// Gets the URL handler for the current target URL (resolution, favicon, display).
+	/// </summary>
 	public UrlHandler Url { get; }
 
 	/// <summary>
@@ -126,8 +129,10 @@ public sealed class ApplicationViewModel : ModelBase
 			Logger.LogAutomationAlwaysPrompt();
 			return null;
 		}
-		var urlBrowser = GetBrowserToLaunchForUrl(targetUrl);
-		var browser = Choices.FirstOrDefault(c => c.Model.Name == urlBrowser);
+		var urlBrowserId = GetBrowserToLaunchForUrl(targetUrl);
+		var browser = urlBrowserId != null
+			? Choices.FirstOrDefault(c => c.Model.Id == urlBrowserId)
+			: null;
 		Logger.LogAutomationBrowserSelected(browser?.Model.Name, browser?.IsRunning);
 		if (browser != null && (Configuration.Settings.AlwaysUseDefaults || browser.IsRunning))
 		{
@@ -147,7 +152,7 @@ public sealed class ApplicationViewModel : ModelBase
 	/// Matches the given URL against configured rules to determine the preferred browser for the URL.
 	/// </summary>
 	/// <param name="targetUrl">The URL to evaluate against browser rules.</param>
-	/// <returns>The name of the preferred browser for the URL, or null if none is found.</returns>
+	/// <returns>The Id of the preferred browser for the URL, or null if none is found.</returns>
 	internal string? GetBrowserToLaunchForUrl(string? targetUrl)
 	{
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))
@@ -171,10 +176,18 @@ public sealed class ApplicationViewModel : ModelBase
 			.ToList();
 
 		Logger.LogAutomationMatchesFound(auto.Count);
-		
-		return auto.Count <= 0
-			? null
-			: auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
+
+		string? matchedKey = null;
+		if (auto.Count > 0)
+		{
+			matchedKey = auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
+		}
+		else if (Configuration.Settings.UseFallbackDefault && !string.IsNullOrWhiteSpace(Configuration.Settings.DefaultBrowser))
+		{
+			matchedKey = Configuration.Settings.DefaultBrowser;
+		}
+
+		return string.IsNullOrWhiteSpace(matchedKey) ? null : matchedKey;
 	}
 
 	/// <summary>

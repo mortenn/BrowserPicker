@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace BrowserPicker;
 
+/// <summary>
+/// Application settings for the browser picker: prompts, defaults, browser list, URL shorteners, and key bindings.
+/// </summary>
 public interface IApplicationSettings
 {
 	/// <summary>
