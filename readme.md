@@ -39,10 +39,10 @@ Please ensure BrowserPicker can be started before you do this.
 When you open a link outside a browser, one of these things will happen, in order:
 
 1. If you have previously selected `Always ask`, the browser selection window is shown.
-2. If you have set up a configuration rule matching the url being opened, the selected browser will be launched with the url.
+2. If you have set up a configuration rule matching the url being opened, the selected browser will be launched with the url (when that browser is already running, or when *Use defaults even when browser is not running* is checked in Behaviour).
 3. If you only have one browser running, the link will be opened in that browser.
-4. If you have configured a default browser, it will be asked to open the url.
-3. Otherwise, you will be presented with a simple window asking you which browser you want to use.  
+4. If you have configured a fallback default browser, it will be used to open the url (again only when running, or when the option above is checked).
+5. Otherwise, you will be presented with a simple window asking you which browser you want to use.  
 
 The url is shown at the top of the window, and if it matches a list of known url shorteners, BrowserPicker will expand this address and show you the real one after a short delay.
 If you do not want BrowserPicker to perform this operation (it will call the internet), you may disable this feature in the settings.
@@ -158,9 +158,9 @@ This option makes it so BrowserPicker will only pick matched default browsers an
 > [ ] Disable url resolution
 
 
-> [ ] Ignore defaults when browser is not running
+> [ ] Use defaults even when browser is not running
 
-When enabled, configured default browsers only apply when they are already running.
+When unchecked, the selection window is shown if your default browser is not running (so you can choose which profile or browser to start). When checked, links always open in your default or fallback browser without showing the selection window, even when no instance is running.
 
 > [ ] Update order in browser list based on usage
 
