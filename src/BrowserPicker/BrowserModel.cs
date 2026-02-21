@@ -117,7 +117,11 @@ public sealed class BrowserModel : ModelBase
     /// <summary>
     /// Gets or sets the usage count of the browser.
     /// </summary>
-    public int Usage { get; set; }
+    public int Usage
+    {
+        get => usage;
+        set => SetProperty(ref usage, value);
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the browser is disabled.
@@ -180,6 +184,7 @@ public sealed class BrowserModel : ModelBase
         set => SetProperty(ref custom_key, value);
     }
 
+    private int usage;
     private bool disabled;
     private bool removed;
     private string id;
