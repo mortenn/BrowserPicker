@@ -240,22 +240,49 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// Gets or sets the pattern (e.g. hostname or URL fragment) for the new default rule being added.
+	/// </summary>
 	public string NewDefaultPattern { get => new_fragment; set => SetProperty(ref new_fragment, value); }
 
+	/// <summary>
+	/// Gets or sets the browser id or display name for the new default rule being added.
+	/// </summary>
 	public string NewDefaultBrowser { get => new_fragment_browser; set => SetProperty(ref new_fragment_browser, value); }
 
+	/// <summary>
+	/// Command to add a new default rule using <see cref="NewDefaultMatchType"/>, <see cref="NewDefaultPattern"/>, and <see cref="NewDefaultBrowser"/>.
+	/// </summary>
 	public ICommand AddDefault => add_default ??= new DelegateCommand(AddDefaultSetting);
 
+	/// <summary>
+	/// Command to scan the system for browsers and refresh the list.
+	/// </summary>
 	public ICommand RefreshBrowsers => refresh_browsers ??= new DelegateCommand(FindBrowsers);
 
+	/// <summary>
+	/// Command to open the new-browser editor to add a browser manually.
+	/// </summary>
 	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually);
 
+	/// <summary>
+	/// Command to prompt for a file and save the current settings (backup).
+	/// </summary>
 	public ICommand Backup => backup ??= new DelegateCommand(PerformBackup);
 
+	/// <summary>
+	/// Command to prompt for a backup file and restore settings.
+	/// </summary>
 	public ICommand Restore => restore ??= new DelegateCommand(PerformRestore);
 
+	/// <summary>
+	/// Command to add a URL shortener domain; parameter is the domain string.
+	/// </summary>
 	public ICommand AddShortener => add_shortener ??= new DelegateCommand<string>(AddUrlShortener, CanAddShortener);
 
+	/// <summary>
+	/// Command to remove a URL shortener domain; parameter is the domain string.
+	/// </summary>
 	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
 
 	/// <summary>
@@ -303,6 +330,9 @@ public sealed class ConfigurationViewModel : ModelBase
 		editor.Closing += Editor_Closing;
 	}
 
+	/// <summary>
+	/// Gets or sets the URL shortener domain the user is entering to add.
+	/// </summary>
 	public string NewUrlShortener { get; set; } = string.Empty;
 
 	private bool CanAddShortener(string? domain) => !(string.IsNullOrWhiteSpace(domain) || Settings.UrlShorteners.Contains(domain));
@@ -352,6 +382,11 @@ public sealed class ConfigurationViewModel : ModelBase
 		Settings.AddBrowser(browser.Model);
 	}
 
+	/// <summary>
+	/// Called when a URL was opened with a browser; may add a hostname default if <see cref="AutoAddDefault"/> is set.
+	/// </summary>
+	/// <param name="hostName">Host name of the opened URL.</param>
+	/// <param name="browserId">The browser id of the browser that was used.</param>
 	internal void UrlOpened(string? hostName, string browser)
 	{
 		if (!AutoAddDefault || hostName == null)
@@ -485,6 +520,9 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private string? test_defaults_url;
 
+	/// <summary>
+	/// URL used to test which default rule would apply; used by the configuration UI.
+	/// </summary>
 	public string? TestDefaultsURL
 	{
 		get => test_defaults_url;
@@ -496,6 +534,9 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// The browser name that would be selected for <see cref="TestDefaultsURL"/> based on configured defaults only.
+	/// </summary>
 	public string TestDefaultsResult
 	{
 		get
@@ -504,6 +545,9 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	/// <summary>
+	/// The browser name that would actually be chosen for <see cref="TestDefaultsURL"/> (defaults plus running-browser logic).
+	/// </summary>
 	public string TestActualResult
 	{
 		get

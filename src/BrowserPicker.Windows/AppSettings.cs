@@ -13,10 +13,17 @@ using Microsoft.Win32;
 
 namespace BrowserPicker.Windows;
 
+/// <summary>
+/// Application configuration backed by the Windows registry; implements <see cref="IBrowserPickerConfiguration"/>.
+/// </summary>
 public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 {
 	private readonly ILogger<AppSettings> logger;
 
+	/// <summary>
+	/// Initializes settings from the registry and sets up browser list and defaults.
+	/// </summary>
+	/// <param name="logger">Logger for configuration operations.</param>
 	public AppSettings(ILogger<AppSettings> logger)
 	{
 		this.logger = logger;

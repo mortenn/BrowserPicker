@@ -18,10 +18,19 @@ using JetBrains.Annotations;
 
 namespace BrowserPicker;
 
+/// <summary>
+/// Handles the target URL: resolves shorteners, jump pages, and optional favicon loading.
+/// </summary>
 public sealed class UrlHandler : ModelBase, ILongRunningProcess
 {
 	private readonly ILogger logger;
-	
+
+	/// <summary>
+	/// Initializes the URL handler with the requested URL and settings.
+	/// </summary>
+	/// <param name="logger">Logger for URL resolution and favicon steps.</param>
+	/// <param name="requestedUrl">The URL passed to the application (e.g. from command line).</param>
+	/// <param name="settings">Application settings (shorteners, network access).</param>
 	public UrlHandler(ILogger<UrlHandler> logger, string? requestedUrl, IApplicationSettings settings)
 	{
 		this.logger = logger;
@@ -242,6 +251,11 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		return location?.OriginalString;
 	}
 
+	/// <summary>
+	/// Returns the URL to pass to the browser. For file URLs, may expand to a local path when <paramref name="expandFileUrls"/> is true.
+	/// </summary>
+	/// <param name="expandFileUrls">When true, file:// URLs are returned as local paths.</param>
+	/// <returns>The URL or path to open, or null if none.</returns>
 	public string? GetTargetUrl(bool expandFileUrls)
 	{
 		if (uri == null)
@@ -255,8 +269,14 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		return UnderlyingTargetURL ?? TargetURL;
 	}
 
+	/// <summary>
+	/// The URL as originally passed to the application.
+	/// </summary>
 	public string? TargetURL { get; }
 
+	/// <summary>
+	/// The resolved URL after following shorteners or jump pages; same as <see cref="TargetURL"/> if no resolution occurred.
+	/// </summary>
 	public string? UnderlyingTargetURL
 	{
 		get => underlying_target_url;
@@ -269,26 +289,41 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		}
 	}
 
+	/// <summary>
+	/// True when the URL was resolved from a known shortener.
+	/// </summary>
 	public bool IsShortenedURL
 	{
 		get => is_shortened_url;
 		set => SetProperty(ref is_shortened_url, value);
 	}
 
+	/// <summary>
+	/// Host name of the (possibly resolved) URL; null for file URLs when not UNC.
+	/// </summary>
 	public string? HostName
 	{
 		get => host_name;
 		set => SetProperty(ref host_name, value);
 	}
 
+	/// <summary>
+	/// Favicon image bytes loaded from the target page, if available.
+	/// </summary>
 	public byte[]? FavIcon
 	{
 		get => fav_icon;
 		private set => SetProperty(ref fav_icon, value);
 	}
 
+	/// <summary>
+	/// The URL to display in the UI (underlying resolved URL or original target).
+	/// </summary>
 	public string? DisplayURL => UnderlyingTargetURL ?? TargetURL;
 
+	/// <summary>
+	/// Default list of URL shortener host names used to resolve redirects.
+	/// </summary>
 	public static readonly string[] DefaultUrlShorteners =
 	[
 		"safelinks.protection.outlook.com",

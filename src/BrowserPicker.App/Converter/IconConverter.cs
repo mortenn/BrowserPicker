@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,8 +10,12 @@ using System.Windows.Media.Imaging;
 
 namespace BrowserPicker.Converter;
 
+/// <summary>
+/// Converts an icon file path or byte array to a WPF image for display (e.g. browser icons).
+/// </summary>
 public sealed class IconFileToImageConverter : IValueConverter
 {
+	/// <inheritdoc />
 	public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 	{
 		if (value is byte[])
@@ -63,6 +67,7 @@ public sealed class IconFileToImageConverter : IValueConverter
 		return GetDefaultIcon();
 	}
 
+	/// <inheritdoc />
 	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
 	{
 		return null;

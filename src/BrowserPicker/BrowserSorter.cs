@@ -1,10 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace BrowserPicker;
 
+/// <summary>
+/// Compares browsers according to the current settings: alphabetical, manual order, or by usage.
+/// </summary>
 public class BrowserSorter(IApplicationSettings configuration) : IComparer<BrowserModel>
 {
+	/// <inheritdoc />
 	public int Compare(BrowserModel? x, BrowserModel? y)
 	{
 		if (x == null || y == null)

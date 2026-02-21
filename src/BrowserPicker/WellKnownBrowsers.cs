@@ -1,12 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BrowserPicker;
 
-// Note: I am not entirely happy with the design of this part, but it was the best I can do in a jiffy
+/// <summary>
+/// Registry of well-known browsers with default names, executables, and privacy arguments.
+/// </summary>
 public static class WellKnownBrowsers
 {
+	/// <summary>
+	/// Finds a well-known browser by display name or by executable path.
+	/// </summary>
+	/// <param name="name">Browser display name to match.</param>
+	/// <param name="executable">Executable path to match (optional).</param>
+	/// <returns>Matching <see cref="IWellKnownBrowser"/>, or null.</returns>
 	public static IWellKnownBrowser? Lookup(string? name, string? executable)
 	{
 		return List.FirstOrDefault(b => b.Name == name)
@@ -15,6 +23,9 @@ public static class WellKnownBrowsers
 			);
 	}
 
+	/// <summary>
+	/// All well-known browser definitions in display order.
+	/// </summary>
 	public static readonly List<IWellKnownBrowser> List =
 	[
 		FirefoxDevEdition.Instance,
@@ -28,12 +39,20 @@ public static class WellKnownBrowsers
 	];
 }
 
+/// <summary>
+/// Defines a well-known browser: display name, executable, and privacy mode arguments.
+/// </summary>
 public interface IWellKnownBrowser
 {
+	/// <summary>Display name of the browser.</summary>
 	string Name { get; }
+	/// <summary>Primary executable or protocol (e.g. "chrome.exe", "microsoft-edge:").</summary>
 	string Executable { get; }
+	/// <summary>Actual executable path when different from <see cref="Executable"/> (e.g. for protocol handlers).</summary>
 	string? RealExecutable { get; }
+	/// <summary>Arguments to pass for private/privacy mode.</summary>
 	string? PrivacyArgs { get; }
+	/// <summary>Label for the privacy mode action (e.g. "Open incognito").</summary>
 	string PrivacyMode { get; }
 }
 

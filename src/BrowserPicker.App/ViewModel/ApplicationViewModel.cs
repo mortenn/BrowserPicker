@@ -75,6 +75,9 @@ public sealed class ApplicationViewModel : ModelBase
 		Choices = new ObservableCollection<BrowserViewModel>(choices);
 	}
 
+	/// <summary>
+	/// Gets the URL handler for the current target URL (resolution, favicon, display).
+	/// </summary>
 	public UrlHandler Url { get; }
 
 	/// <summary>
@@ -147,7 +150,7 @@ public sealed class ApplicationViewModel : ModelBase
 	/// Matches the given URL against configured rules to determine the preferred browser for the URL.
 	/// </summary>
 	/// <param name="targetUrl">The URL to evaluate against browser rules.</param>
-	/// <returns>The name of the preferred browser for the URL, or null if none is found.</returns>
+	/// <returns>The Id of the preferred browser for the URL, or null if none is found.</returns>
 	internal string? GetBrowserToLaunchForUrl(string? targetUrl)
 	{
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))

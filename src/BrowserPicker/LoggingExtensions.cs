@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Net;
 using Microsoft.Extensions.Logging;
 
 namespace BrowserPicker;
 
+/// <summary>
+/// Source-generated logging extension methods for BrowserPicker components.
+/// </summary>
 public static partial class LoggingExtensions
 {
     [LoggerMessage(EventId = 1001, Level = LogLevel.Debug, Message = "Application launched with arguments: {Args}")]
