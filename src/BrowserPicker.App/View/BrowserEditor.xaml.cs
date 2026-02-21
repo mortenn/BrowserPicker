@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -119,7 +119,6 @@ public partial class BrowserEditor
 			case Key.DeadCharProcessed:
 			case Key.ImeProcessed:
 			case Key.ImeConvert:
-			case Key.C:
 			case Key.Return:
 				return;
 		}

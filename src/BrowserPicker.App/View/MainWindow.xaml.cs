@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Windows;
 using System.Windows.Input;
@@ -25,14 +25,14 @@ public partial class MainWindow
 		ViewModel.AltPressed = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
 	}
 
-	private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
+	private void MainWindow_OnPreviewKeyUp(object sender, KeyEventArgs e)
 	{
 		try
 		{
 			ViewModel.AltPressed = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
 			if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && e.Key != Key.LeftShift && e.Key != Key.RightShift)
 			{
-				var binding = 
+				var binding =
 					(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl) ? "Ctrl+" : string.Empty)
 					+ (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) ? "Shift+" : string.Empty)
 					+ TypeDescriptor.GetConverter(typeof(Key)).ConvertToInvariantString(e.Key);
@@ -40,6 +40,7 @@ public partial class MainWindow
 				var configured = ViewModel.Choices.FirstOrDefault(vm => vm.Model.CustomKeyBind == binding);
 				if (configured != null)
 				{
+					e.Handled = true;
 					if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
 					{
 						configured.SelectPrivacy.Execute(null);
@@ -51,7 +52,11 @@ public partial class MainWindow
 			}
 
 			if (e.Key == Key.Escape)
+			{
+				e.Handled = true;
 				Close();
+				return;
+			}
 
 			if (ViewModel.Url.TargetURL == null)
 				return;
@@ -70,7 +75,10 @@ public partial class MainWindow
 				case Key.D7: n = 7; break;
 				case Key.D8: n = 8; break;
 				case Key.D9: n = 9; break;
-				case Key.C: ViewModel.CopyUrl.Execute(null); return;
+				case Key.C:
+					e.Handled = true;
+					ViewModel.CopyUrl.Execute(null);
+					return;
 				default: return;
 			}
 
@@ -79,6 +87,7 @@ public partial class MainWindow
 			if (choices.Length < n)
 				return;
 
+			e.Handled = true;
 			if (ViewModel.AltPressed)
 			{
 				choices[n - 1].SelectPrivacy.Execute(null);
