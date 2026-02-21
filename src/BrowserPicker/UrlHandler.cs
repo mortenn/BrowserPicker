@@ -1,4 +1,4 @@
-﻿using BrowserPicker.Framework;
+using BrowserPicker.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -127,6 +127,11 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		{
 			var pageUri = new Uri(underlying_target_url ?? TargetURL ?? "about:blank");
 			if (pageUri.IsFile)
+			{
+				return;
+			}
+			// Only http/https can be fetched; other schemes (e.g. ms-windows-store, mailto) are not supported by HttpClient
+			if (pageUri.Scheme != Uri.UriSchemeHttp && pageUri.Scheme != Uri.UriSchemeHttps)
 			{
 				return;
 			}
