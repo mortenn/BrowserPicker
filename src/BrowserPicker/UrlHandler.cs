@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -142,12 +143,15 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 				return;
 			}
 
-			var content = await result.Content.ReadAsStringAsync(timeout.Token);
+			// Read as bytes and decode as UTF-8 to avoid InvalidOperationException when the server
+			// sends an unsupported charset (e.g. UTF-8-SIG from Discord CDN).
+			var bytes = await result.Content.ReadAsByteArrayAsync(timeout.Token);
+			var content = Encoding.UTF8.GetString(bytes);
 			var match = Pattern.HtmlLink().Match(content);
 			if (!match.Success)
 			{
 				logger.LogDefaultFavicon();
-				await TryLoadIcon(new Uri(pageUri, "/favicon.ico").AbsoluteUri, timeout.Token);
+				await TryLoadIcon(new Uri(pageUri, "/favicon.ico"), pageUri, timeout.Token);
 				return;
 			}
 			var link = Pattern.LinkHref().Match(match.Value);
@@ -157,8 +161,15 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 				return;
 			}
 
-			logger.LogFaviconFound(link.Groups[0].Value);
-			await TryLoadIcon(link.Groups[0].Value, timeout.Token);
+			var href = link.Groups[0].Value.Trim();
+			logger.LogFaviconFound(href);
+			if (!Uri.TryCreate(pageUri, href, out var iconUri) || !IsSafeFaviconUri(iconUri, pageUri))
+			{
+				logger.LogDefaultFavicon();
+				await TryLoadIcon(new Uri(pageUri, "/favicon.ico"), pageUri, timeout.Token);
+				return;
+			}
+			await TryLoadIcon(iconUri, pageUri, timeout.Token);
 		}
 		catch (HttpRequestException)
 		{
@@ -177,13 +188,34 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		}
 	}
 
-	private async Task TryLoadIcon(string iconUrl, CancellationToken cancellationToken)
+	/// <summary>
+	/// Only allow http/https and same host as the page to prevent SSRF and protocol abuse.
+	/// Caller must pass an absolute URI (resolve relative against page first).
+	/// </summary>
+	private static bool IsSafeFaviconUri(Uri iconUri, Uri pageUri)
 	{
-		var icon = await Client.GetAsync(iconUrl, cancellationToken);
+		if (iconUri.Scheme != Uri.UriSchemeHttp && iconUri.Scheme != Uri.UriSchemeHttps)
+			return false;
+		return string.Equals(iconUri.Host, pageUri.Host, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private const int MaxFaviconBytes = 512 * 1024;
+
+	private async Task TryLoadIcon(Uri iconUri, Uri pageUri, CancellationToken cancellationToken)
+	{
+		// Resolve relative favicon URL against the page (same-origin by definition).
+		var toFetch = iconUri.IsAbsoluteUri ? iconUri : new Uri(pageUri, iconUri);
+		if (!IsSafeFaviconUri(toFetch, pageUri))
+			return;
+		var icon = await Client.GetAsync(toFetch, cancellationToken);
 		if (icon.IsSuccessStatusCode)
 		{
-			logger.LogFaviconLoaded(iconUrl);
-			FavIcon = await icon.Content.ReadAsByteArrayAsync(cancellationToken);
+			var bytes = await icon.Content.ReadAsByteArrayAsync(cancellationToken);
+			if (bytes.Length <= MaxFaviconBytes)
+			{
+				logger.LogFaviconLoaded(toFetch.AbsoluteUri);
+				FavIcon = bytes;
+			}
 			return;
 		}
 		logger.LogFaviconFailed(icon.StatusCode);
