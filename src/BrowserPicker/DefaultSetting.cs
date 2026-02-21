@@ -1,4 +1,4 @@
-﻿using BrowserPicker.Framework;
+using BrowserPicker.Framework;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace BrowserPicker;
 
+[JsonConverter(typeof(DefaultSettingJsonConverter))]
 public sealed class DefaultSetting(MatchType initialType, string? initialPattern, string? initialBrowser) : ModelBase, INotifyPropertyChanging
 {
 	private readonly Guid id = Guid.NewGuid();

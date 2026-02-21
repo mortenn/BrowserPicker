@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -320,7 +320,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 		catch (Exception ex)
 		{
-			BackupLog += $"Unable to parse backup file: {ex.Message}";
+			var detail = string.IsNullOrEmpty(ex.InnerException?.Message) ? ex.Message : $"{ex.Message} {ex.InnerException.Message}";
+			BackupLog += $"Unable to parse backup file: {detail}";
 			return;
 		}
 		if (settings == null)
