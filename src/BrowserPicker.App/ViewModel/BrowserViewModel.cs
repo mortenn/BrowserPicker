@@ -246,9 +246,9 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		{
 			return;
 		}
-	
+
 		var save = context.Model;
-	
+
 		Model.Command = save.Command;
 		Model.CommandArgs = save.CommandArgs;
 		Model.IconPath = save.IconPath;
@@ -257,6 +257,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Model.PrivacyArgs = save.PrivacyArgs;
 		Model.ExpandFileUrls = save.ExpandFileUrls;
 		Model.CustomKeyBind = save.CustomKeyBind;
+		Model.ManualOverride = save.ManualOverride;
+		Model.Disabled = save.Disabled;
+
+		parent_view_model.Configuration.Settings.PersistBrowser(Model);
 	}
 
 	/// <summary>
