@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -112,7 +112,12 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// Gets the command to open the browser editor.
 	/// </summary>
 	public DelegateCommand Edit => edit ??= new DelegateCommand(() => OpenEditor(Model));
-	
+
+	/// <summary>
+	/// Gets the command to duplicate this browser, opening the new-browser dialog with settings copied from this one.
+	/// </summary>
+	public DelegateCommand Duplicate => duplicate ??= new DelegateCommand(PerformDuplicate);
+
 	/// <summary>
 	/// Gets the command to move the browser up in the list.
 	/// </summary>
@@ -128,6 +133,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	private DelegateCommand? disable;
 	private DelegateCommand? remove;
 	private DelegateCommand? edit;
+	private DelegateCommand? duplicate;
 	private DelegateCommand? move_up;
 	private DelegateCommand? move_down;
 
@@ -158,6 +164,49 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		var next = parent_view_model.Choices[i];
 		(next.Model.ManualOrder, Model.ManualOrder) = (Model.ManualOrder, next.Model.ManualOrder);
 		parent_view_model.RefreshChoices();
+	}
+
+	/// <summary>
+	/// Duplicates this browser by opening the new-browser dialog with settings copied from the current one.
+	/// On OK, the new browser is added to the list; on Cancel, nothing is added.
+	/// </summary>
+	private void PerformDuplicate()
+	{
+		var clone = new BrowserModel
+		{
+			Name = string.Empty,
+			Command = Model.Command,
+			CommandArgs = Model.CommandArgs,
+			Executable = Model.Executable,
+			IconPath = Model.IconPath,
+			PrivacyArgs = Model.PrivacyArgs,
+			CustomKeyBind = string.Empty,
+			ManualOverride = Model.ManualOverride,
+			Disabled = false,
+			Usage = 0,
+			ExpandFileUrls = Model.ExpandFileUrls
+		};
+		var editorVm = new BrowserViewModel(clone, parent_view_model);
+		var editor = new BrowserEditor(editorVm);
+		void OnDuplicateEditorClosing(object? sender, CancelEventArgs e)
+		{
+			if (sender is Window window)
+			{
+				window.Closing -= OnDuplicateEditorClosing;
+			}
+			if (sender is not Window { DataContext: BrowserViewModel browser })
+			{
+				return;
+			}
+			if (string.IsNullOrEmpty(browser.Model.Name) || string.IsNullOrEmpty(browser.Model.Command))
+			{
+				return;
+			}
+			parent_view_model.Choices.Add(browser);
+			parent_view_model.Configuration.Settings.AddBrowser(browser.Model);
+		}
+		editor.Closing += OnDuplicateEditorClosing;
+		editor.Show();
 	}
 
 	/// <summary>

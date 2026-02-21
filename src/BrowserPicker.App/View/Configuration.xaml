@@ -151,6 +151,7 @@
 											<ColumnDefinition Width="Auto" />
 											<ColumnDefinition Width="Auto" />
 											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
 										</Grid.ColumnDefinitions>
 										<ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource BrowserIcon}" Height="40" Width="40" Margin="20,0,0,0" />
 										<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="10" FontSize="18" />
@@ -195,6 +196,11 @@
 										</Hyperlink>
 									</TextBlock>
 										<TextBlock Grid.Column="5" Margin="10" FontSize="16">
+										<Hyperlink Command="{Binding Duplicate}">
+											<TextBlock Text="+" Foreground="LightGreen" ToolTip="Duplicate browser: create a new browser using this browser as a starting point" />
+										</Hyperlink>
+									</TextBlock>
+										<TextBlock Grid.Column="6" Margin="10" FontSize="16">
 										<Hyperlink Command="{Binding Remove}">
 											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
 										</Hyperlink>
