@@ -79,4 +79,24 @@ public interface IApplicationSettings
 	/// Manual keybindings
 	/// </summary>
 	List<KeyBinding> KeyBindings { get; }
+
+	/// <summary>
+	/// Preferred main window width in pixels. Zero or negative means use default/size-to-content.
+	/// </summary>
+	double WindowWidth { get; set; }
+
+	/// <summary>
+	/// Preferred main window height in pixels. Zero or negative means use default/size-to-content.
+	/// </summary>
+	double WindowHeight { get; set; }
+
+	/// <summary>
+	/// Base font size in pixels for the picker and settings UI.
+	/// </summary>
+	double FontSize { get; set; }
+
+	/// <summary>
+	/// Theme preference: system, light, or dark.
+	/// </summary>
+	ThemeMode ThemeMode { get; set; }
 }

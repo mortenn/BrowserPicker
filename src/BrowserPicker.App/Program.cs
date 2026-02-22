@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using BrowserPicker.View;
 using BrowserPicker.Windows;
@@ -19,6 +19,15 @@ internal static class Program
 				services.AddSingleton<App>();
 				services.AddSingleton<MainWindow>();
 				services.AddSingleton<AppSettings>();
+				// Active config is always JSON-backed so all changes are persisted to the JSON file.
+				// When the JSON file does not exist, migrate from registry (read-only) then use JSON from then on.
+				services.AddSingleton<IBrowserPickerConfiguration>(sp =>
+				{
+					var logger = sp.GetRequiredService<ILogger<JsonAppSettings>>();
+					return JsonAppSettings.SettingsFileExists()
+						? new JsonAppSettings(logger)
+						: new JsonAppSettings(logger, sp.GetRequiredService<AppSettings>());
+				});
 			})
 			.ConfigureLogging(logging => logging.AddEventLog(
 				settings => settings.SourceName = "BrowserPicker"
@@ -26,7 +35,7 @@ internal static class Program
 		
 		var host = builder.Build();
 		App.Services = host.Services;
-		App.Settings = host.Services.GetRequiredService<AppSettings>();
+		App.Settings = host.Services.GetRequiredService<IBrowserPickerConfiguration>();
 		var app = host.Services.GetRequiredService<App>();
 
 		var resourceDictionary = new ResourceDictionary

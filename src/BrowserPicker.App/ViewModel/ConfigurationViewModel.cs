@@ -75,6 +75,11 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool DisableTransparency { get; set; } = true;
 		public bool DisableNetworkAccess { get; set; } = false;
 
+		public double WindowWidth { get; set; }
+		public double WindowHeight { get; set; }
+		public double FontSize { get; set; } = 14;
+		public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
+
 		public string[] UrlShorteners { get; set; } = [..UrlHandler.DefaultUrlShorteners, "example.com"];
 
 		public List<BrowserModel> BrowserList { get; init; } = [];

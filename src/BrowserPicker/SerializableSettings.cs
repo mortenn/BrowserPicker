@@ -30,6 +30,10 @@ public sealed class SerializableSettings : IApplicationSettings
 		KeyBindings = applicationSettings.KeyBindings
 			.Where(kb => applicationSettings.BrowserList.Any(b => (b.Id == kb.Browser || b.Name == kb.Browser) && !b.Removed))
 			.ToList();
+		WindowWidth = applicationSettings.WindowWidth;
+		WindowHeight = applicationSettings.WindowHeight;
+		FontSize = applicationSettings.FontSize;
+		ThemeMode = applicationSettings.ThemeMode;
 	}
 
 	/// <summary>
@@ -61,6 +65,18 @@ public sealed class SerializableSettings : IApplicationSettings
 	public List<DefaultSetting> Defaults { get; init; } = [];
 	/// <inheritdoc />
 	public List<KeyBinding> KeyBindings { get; init; } = [];
+
+	/// <inheritdoc />
+	public double WindowWidth { get; set; }
+
+	/// <inheritdoc />
+	public double WindowHeight { get; set; }
+
+	/// <inheritdoc />
+	public double FontSize { get; set; }
+
+	/// <inheritdoc />
+	public ThemeMode ThemeMode { get; set; }
 
 	/// <summary>
 	/// How to sort the browser list: automatic (by usage), manual, or alphabetical.

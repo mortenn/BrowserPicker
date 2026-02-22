@@ -15,13 +15,31 @@ namespace BrowserPicker.Windows;
 
 /// <summary>
 /// Application configuration backed by the Windows registry; implements <see cref="IBrowserPickerConfiguration"/>.
+/// Read-only: used only to migrate existing registry data to JSON; never writes to the registry.
 /// </summary>
 public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 {
 	private readonly ILogger<AppSettings> logger;
 
+	// Backing fields for read-only registry snapshot (no writes)
+	private bool first_time;
+	private bool always_prompt;
+	private bool always_use_defaults = true;
+	private bool always_ask_without_default;
+	private int url_lookup_timeout_ms = 2000;
+	private bool use_manual_ordering;
+	private bool use_automatic_ordering = true;
+	private bool use_alphabetical_ordering;
+	private bool disable_transparency;
+	private bool disable_network_access;
+	private string[] url_shorteners = [];
+	private double window_width;
+	private double window_height;
+	private double font_size = 14;
+	private ThemeMode theme_mode = ThemeMode.System;
+
 	/// <summary>
-	/// Initializes settings from the registry and sets up browser list and defaults.
+	/// Initializes settings from the registry (read-only) and sets up browser list and defaults.
 	/// </summary>
 	/// <param name="logger">Logger for configuration operations.</param>
 	public AppSettings(ILogger<AppSettings> logger)
@@ -31,86 +49,60 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		BrowserList = GetBrowsers();
 		Defaults = GetDefaults();
 		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
+
+		if (Reg != null)
+		{
+			first_time = Reg.GetBool(true);
+			always_prompt = Reg.Get<bool>();
+			always_use_defaults = Reg.Get<bool>();
+			always_ask_without_default = Reg.Get<bool>();
+			url_lookup_timeout_ms = Reg.Get(2000);
+			use_manual_ordering = Reg.Get<bool>();
+			use_automatic_ordering = Reg.GetBool(true);
+			use_alphabetical_ordering = Reg.Get<bool>();
+			disable_transparency = Reg.Get<bool>();
+			disable_network_access = Reg.Get<bool>();
+			url_shorteners = Reg.Get<string[]>() ?? [];
+			window_width = double.TryParse(Reg.GetValue("WindowWidth") as string, out var w) ? w : 0;
+			window_height = double.TryParse(Reg.GetValue("WindowHeight") as string, out var h) ? h : 0;
+			font_size = double.TryParse(Reg.GetValue("FontSize") as string, out var f) && f > 0 ? f : 14;
+			theme_mode = (ThemeMode)(Reg.GetValue("ThemeMode") is int i ? i : (int)ThemeMode.System);
+		}
 	}
 
 	/// <inheritdoc />
-	public bool FirstTime
-	{
-		get => Reg.GetBool(true);
-		set { Reg.Set(value); OnPropertyChanged(); }
-	}
+	public bool FirstTime { get => first_time; set { first_time = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
-	public bool AlwaysPrompt
-	{
-		get => Reg.Get<bool>();
-		set { Reg.Set(value); OnPropertyChanged(); }
-	}
+	public bool AlwaysPrompt { get => always_prompt; set { always_prompt = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
-	public bool AlwaysUseDefaults
-	{
-		get => Reg.Get<bool>();
-		set { Reg.Set(value); OnPropertyChanged(); }
-	}
+	public bool AlwaysUseDefaults { get => always_use_defaults; set { always_use_defaults = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
 	public bool AlwaysAskWithoutDefault
 	{
-		get => Reg.Get<bool>();
+		get => always_ask_without_default;
 		set
 		{
-			Reg.Set(value);
+			always_ask_without_default = value;
 			OnPropertyChanged();
 			if (value && use_fallback_default)
-			{
 				UseFallbackDefault = false;
-			}
 		}
 	}
 
 	/// <inheritdoc />
-	public int UrlLookupTimeoutMilliseconds
-	{
-		get => Reg.Get(2000);
-		set { Reg.Set(value); OnPropertyChanged(); }
-	}
+	public int UrlLookupTimeoutMilliseconds { get => url_lookup_timeout_ms; set { url_lookup_timeout_ms = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
-	public bool UseManualOrdering
-	{
-		get => Reg.Get<bool>();
-		set
-		{
-			Reg.Set(value);
-			UpdateOrder(value);
-			OnPropertyChanged();
-		}
-	}
+	public bool UseManualOrdering { get => use_manual_ordering; set { use_manual_ordering = value; UpdateOrder(value); OnPropertyChanged(); } }
 
 	/// <inheritdoc />
-	public bool UseAutomaticOrdering
-	{
-		get => Reg.GetBool(true);
-		set
-		{
-			Reg.Set(value);
-			UpdateOrder(value);
-			OnPropertyChanged();
-		}
-	}
+	public bool UseAutomaticOrdering { get => use_automatic_ordering; set { use_automatic_ordering = value; UpdateOrder(value); OnPropertyChanged(); } }
 
 	/// <inheritdoc />
-	public bool UseAlphabeticalOrdering
-	{
-		get => Reg.Get<bool>();
-		set
-		{
-			Reg.Set(value);
-			UpdateOrder(value);
-			OnPropertyChanged();
-		}
-	}
+	public bool UseAlphabeticalOrdering { get => use_alphabetical_ordering; set { use_alphabetical_ordering = value; UpdateOrder(value); OnPropertyChanged(); } }
 
 	private void UpdateOrder(bool value, [CallerMemberName] string? setting = null)
 	{
@@ -129,25 +121,25 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	}
 
 	/// <inheritdoc />
-	public bool DisableTransparency
-	{
-		get => Reg.Get<bool>();
-		set { Reg.Set(value); OnPropertyChanged(); }
-	}
+	public bool DisableTransparency { get => disable_transparency; set { disable_transparency = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
-	public bool DisableNetworkAccess
-	{
-		get => Reg.Get<bool>();
-		set { Reg.Set(value); OnPropertyChanged(); }
-	}
+	public bool DisableNetworkAccess { get => disable_network_access; set { disable_network_access = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
-	public string[] UrlShorteners
-	{
-		get => Reg.Get<string[]>() ?? [];
-		set { Reg.Set(value); OnPropertyChanged(); }
-	}
+	public string[] UrlShorteners { get => url_shorteners; set { url_shorteners = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
+	public double WindowWidth { get => window_width; set { window_width = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
+	public double WindowHeight { get => window_height; set { window_height = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
+	public double FontSize { get => font_size; set { font_size = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
+	public ThemeMode ThemeMode { get => theme_mode; set { theme_mode = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
 	public List<BrowserModel> BrowserList
@@ -159,15 +151,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	public void AddBrowser(BrowserModel browser)
 	{
 		browser.Id = string.IsNullOrEmpty(browser.Id) ? browser.Name : browser.Id;
-		WriteBrowserToRegistry(browser);
-		var keyBind = Reg.Open(nameof(browser.CustomKeyBind));
-		keyBind.Set(browser.Id, browser.CustomKeyBind);
 		foreach (var other in BrowserList.Where(other => other.CustomKeyBind == browser.CustomKeyBind))
-		{
 			other.CustomKeyBind = string.Empty;
-		}
 		browser.PropertyChanged += BrowserConfiguration_PropertyChanged;
-
 		BrowserList.Add(browser);
 		logger.LogBrowserAdded(browser.Name);
 		OnPropertyChanged(nameof(BrowserList));
@@ -176,31 +162,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	/// <inheritdoc />
 	public void PersistBrowser(BrowserModel browser)
 	{
-		if (string.IsNullOrEmpty(browser.Id))
-			return;
-		WriteBrowserToRegistry(browser);
-		var keyBind = Reg.Open(nameof(browser.CustomKeyBind));
-		keyBind.Set(browser.Id, browser.CustomKeyBind);
-		foreach (var other in BrowserList.Where(other => other != browser && other.CustomKeyBind == browser.CustomKeyBind))
-		{
-			other.CustomKeyBind = string.Empty;
-		}
-	}
-
-	private static void WriteBrowserToRegistry(BrowserModel browser)
-	{
-		var key = Reg.Open(nameof(BrowserList), browser.Id);
-		key.Set(browser.Name, nameof(browser.Name));
-		key.Set(browser.Command, nameof(browser.Command));
-		key.Set(browser.Executable, nameof(browser.Executable));
-		key.Set(browser.CommandArgs, nameof(browser.CommandArgs));
-		key.Set(browser.PrivacyArgs, nameof(browser.PrivacyArgs));
-		key.Set(browser.IconPath, nameof(browser.IconPath));
-		key.Set(browser.Usage, nameof(browser.Usage));
-		key.Set(browser.ExpandFileUrls, nameof(browser.ExpandFileUrls));
-		key.Set(browser.ManualOverride, nameof(browser.ManualOverride));
-		key.Set(browser.Disabled, nameof(browser.Disabled));
-		key.Set(browser.ManualOrder, nameof(browser.ManualOrder));
+		// Read-only: no registry write.
 	}
 
 	/// <inheritdoc />
@@ -210,21 +172,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	}
 
 	/// <inheritdoc />
-	public List<KeyBinding> KeyBindings
-	{
-		get
-		{
-			var keyBind = Reg.Open(nameof(BrowserModel.CustomKeyBind));
-			return (
-				from key in keyBind.GetValueNames()
-				where key != string.Empty
-				let value = keyBind.Get<string>(null, key)
-				where value != null
-				let browser = BrowserList.FirstOrDefault(b => b.Id == key) ?? BrowserList.FirstOrDefault(b => b.Name == key)
-				select new KeyBinding(value, browser?.Id ?? key)
-			).ToList();
-		}
-	}
+	public List<KeyBinding> KeyBindings =>
+		BrowserList
+			.Where(b => !string.IsNullOrEmpty(b.CustomKeyBind))
+			.Select(b => new KeyBinding(b.CustomKeyBind, b.Id))
+			.ToList();
 
 	private bool use_fallback_default;
 	private string backup_log = string.Empty;
@@ -298,15 +250,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	/// <inheritdoc />
 	public void FindBrowsers()
 	{
-		// Prefer 64 bit browsers to 32 bit ones, machine wide installations to user specific ones.
-		EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\Clients\StartMenuInternet");
-		EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\Clients\StartMenuInternet");
-		EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
-		EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet");
-
-		if (!BrowserList.Any(browser => browser.Name.Contains("Edge")))
+		foreach (var model in BrowserDiscovery.FindBrowsers())
 		{
-			FindLegacyEdge();
+			AddOrUpdateBrowserModel(model);
 		}
 	}
 
@@ -376,6 +322,10 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		UseAutomaticOrdering = settings.UseAutomaticOrdering;
 		DisableTransparency = settings.DisableTransparency;
 		DisableNetworkAccess = settings.DisableNetworkAccess;
+		WindowWidth = settings.WindowWidth;
+		WindowHeight = settings.WindowHeight;
+		FontSize = settings.FontSize;
+		ThemeMode = settings.ThemeMode;
 	}
 
 	/// <inheritdoc />
@@ -473,71 +423,6 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
-	/// <summary>
-	/// This is used to detect the old Edge browser.
-	/// If the computer has the new Microsoft Edge browser installed, this should never be called.
-	/// </summary>
-	private void FindLegacyEdge()
-	{
-		var systemApps = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SystemApps");
-		if (!Directory.Exists(systemApps))
-			return;
-
-		var targets = Directory.GetDirectories(systemApps, "*MicrosoftEdge_*");
-		if (targets.Length <= 0)
-		{
-			return;
-		}
-		var known = WellKnownBrowsers.Lookup("Edge", null);
-		if (known == null)
-		{
-			return;
-		}
-		var appId = Path.GetFileName(targets[0]);
-		var icon = Path.Combine(targets[0], "Assets", "MicrosoftEdgeSquare44x44.targetsize-32_altform-unplated.png");
-		var shell = $"shell:AppsFolder\\{appId}!MicrosoftEdge";
-		var model = new BrowserModel(known, icon, shell);
-		AddOrUpdateBrowserModel(model);
-	}
-
-	private void EnumerateBrowsers(RegistryKey hive, string subKey)
-	{
-		var root = hive.OpenSubKey(subKey, false);
-		if (root == null)
-		{
-			return;
-		}
-		foreach (var browser in root.GetSubKeyNames().Where(n => n != "BrowserPicker"))
-		{
-			var browserModel = GetBrowserDetails(root, browser);
-			if (browserModel != null)
-			{
-				AddOrUpdateBrowserModel(browserModel);
-			}
-		}
-	}
-
-	private static BrowserModel? GetBrowserDetails(RegistryKey root, string browser)
-	{
-		var reg = root.OpenSubKey(browser, false);
-		if (reg == null)
-		{
-			return null;
-		}
-
-		var (name, icon, shell) = reg.GetBrowser();
-
-		if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(shell))
-		{
-			return null;
-		}
-
-		var known = WellKnownBrowsers.Lookup(name, shell);
-		return known != null
-			? new BrowserModel(known, icon, shell)
-			: new BrowserModel(name, icon, shell);
-	}
-
 	private void AddOrUpdateBrowserModel(BrowserModel model)
 	{
 		var update = BrowserList.FirstOrDefault(m => string.Equals(m.Id, model.Name, StringComparison.CurrentCultureIgnoreCase));
@@ -558,37 +443,28 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private List<DefaultSetting> GetDefaults()
 	{
-		var key = Reg.Open(nameof(Defaults));
-		var values = key.GetValueNames();
-		if (values.Contains("|Default|"))
+		if (Reg == null) return [];
+		using var key = Reg.OpenSubKey(nameof(Defaults), false);
+		if (key == null) return [];
+		var valueNames = key.GetValueNames();
+		var list = new List<DefaultSetting>();
+		// Read-only: treat legacy |Default| as default (empty pattern); do not mutate registry.
+		if (valueNames.Contains("|Default|") && key.GetValue("|Default|") is string legacyDefault)
 		{
-			values = ConvertLegacyDefault(key);
+			var browserId = BrowserList.FirstOrDefault(b => b.Id == legacyDefault || b.Name == legacyDefault)?.Id ?? legacyDefault;
+			var setting = GetDefaultSetting(string.Empty, browserId);
+			if (setting != null) list.Add(setting);
 		}
-
-		return
-		[
-			..
-			from pattern in values
-			where pattern is not null
-			let value = key.GetValue(pattern) as string
-			where value is not null
-			let browser = BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value)
-			let browserId = browser?.Id ?? value
-			let setting = GetDefaultSetting(pattern, browserId)
-			where setting is not null
-			select setting
-		];
-	}
-
-	private static string[] ConvertLegacyDefault(RegistryKey key)
-	{
-		var defaultBrowser = key.GetValue("|Default|");
-		key.DeleteValue("|Default|");
-		if (defaultBrowser != null)
+		foreach (var pattern in valueNames.Where(p => p != "|Default|" && p != null))
 		{
-			key.SetValue(string.Empty, defaultBrowser);
+			var value = key.GetValue(pattern) as string;
+			if (value == null) continue;
+			var browser = BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value);
+			var browserId = browser?.Id ?? value;
+			var setting = GetDefaultSetting(pattern, browserId);
+			if (setting != null) list.Add(setting);
 		}
-		return key.GetValueNames();
+		return list;
 	}
 
 	private DefaultSetting? GetDefaultSetting(string? key, string? value)
@@ -609,64 +485,25 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private void DefaultSetting_PropertyChanging(object? sender, PropertyChangingEventArgs e)
 	{
-		if (e.PropertyName != nameof(DefaultSetting.SettingKey))
-		{
-			return;
-		}
-		if (sender is not DefaultSetting model)
-		{
-			return;
-		}
-		if (model.Pattern == null)
-		{
-			return;
-		}
-		var key = Reg.Open(nameof(Defaults));
-		var settingKey = model.SettingKey;
-		if (model.IsValid && key.GetValue(settingKey) != null)
-		{
-			key.DeleteValue(settingKey ?? string.Empty);
-		}
+		// Read-only: no registry writes.
 	}
 
 	private void DefaultSetting_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (sender is not DefaultSetting model)
+		if (sender is not DefaultSetting model) return;
+		// Read-only: only unsubscribe when deleted; no registry writes.
+		if (e.PropertyName == nameof(DefaultSetting.Deleted) && model.Deleted)
 		{
-			return;
-		}
-		var key = Reg.Open(nameof(Defaults));
-		if (model.SettingKey == null)
-		{
-			return;
-		}
-		switch (e.PropertyName)
-		{
-			case nameof(DefaultSetting.Deleted) when model.Deleted:
-				var settingKey = model.SettingKey;
-				if (model.IsValid && key.GetValue(settingKey) != null)
-				{
-					key.DeleteValue(settingKey ?? string.Empty);
-				}
-				model.PropertyChanging -= DefaultSetting_PropertyChanging;
-				model.PropertyChanged -= DefaultSetting_PropertyChanged;
-				break;
-
-			case nameof(DefaultSetting.SettingKey) when model.IsValid:
-			case nameof(DefaultSetting.SettingValue) when model.IsValid:
-				var browserForDefault = BrowserList.FirstOrDefault(b => b.Id == model.Browser || b.Name == model.Browser);
-				key.SetValue(model.SettingKey, browserForDefault?.Id ?? model.Browser ?? string.Empty, RegistryValueKind.String);
-				break;
+			model.PropertyChanging -= DefaultSetting_PropertyChanging;
+			model.PropertyChanged -= DefaultSetting_PropertyChanged;
 		}
 	}
 
 	private List<BrowserModel> GetBrowsers()
 	{
-		var list = Reg.SubKey(nameof(BrowserList));
-		if (list == null)
-		{
-			return [];
-		}
+		if (Reg == null) return [];
+		using var list = Reg.OpenSubKey(nameof(BrowserList), false);
+		if (list == null) return [];
 
 		var browsers = list.GetSubKeyNames()
 			.Select(browser => GetBrowser(list, browser))
@@ -674,25 +511,21 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			.OrderBy(v => v, sorter)
 			.ToList();
 
-		if (browsers.Any(browser => browser.Name.Equals("Microsoft Edge")))
+		// Read-only: remove legacy Edge from list only; do not delete from registry.
+		if (browsers.Any(b => b.Name.Equals("Microsoft Edge", StringComparison.Ordinal)))
 		{
-			var edge = browsers.FirstOrDefault(browser => browser.Name.Equals("Edge"));
+			var edge = browsers.FirstOrDefault(b => b.Name.Equals("Edge", StringComparison.Ordinal));
 			if (edge != null)
-			{
 				browsers.Remove(edge);
-				list.DeleteSubKeyTree(edge.Id);
-			}
 		}
-
-		list.Close();
 		return browsers;
 	}
 
 	private BrowserModel? GetBrowser(RegistryKey list, string keyName)
 	{
-		var config = list.OpenSubKey(keyName, false);
-		var keyBind = Reg.Open(nameof(BrowserModel.CustomKeyBind));
+		using var config = list.OpenSubKey(keyName, false);
 		if (config == null) return null;
+		using var keyBind = Reg?.OpenSubKey(nameof(BrowserModel.CustomKeyBind), false);
 		var browser = new BrowserModel
 		{
 			Id = keyName,
@@ -707,9 +540,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			Disabled = config.GetBool(false, nameof(BrowserModel.Disabled)),
 			ExpandFileUrls = config.GetBool(false, nameof(BrowserModel.ExpandFileUrls)),
 			ManualOverride = config.GetBool(false, nameof(BrowserModel.ManualOverride)),
-			CustomKeyBind = keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == keyName) ?? string.Empty
+			CustomKeyBind = keyBind != null ? keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == keyName) ?? string.Empty : string.Empty
 		};
-		config.Close();
 		if (string.IsNullOrWhiteSpace(browser.Command))
 			return null;
 
@@ -719,53 +551,22 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private void BrowserConfiguration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (sender is not BrowserModel model)
+		if (sender is not BrowserModel model) return;
+		// Read-only: only handle Removed (update in-memory list); no registry writes.
+		if (e.PropertyName == nameof(BrowserModel.Removed) && model.Removed)
 		{
-			return;
+			model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
+			BrowserList.Remove(model);
+			logger.LogBrowserRemoved(model.Name);
+			OnPropertyChanged(nameof(BrowserList));
 		}
-		var config = Reg.EnsureSubKey(nameof(BrowserList), model.Id);
-		switch (e.PropertyName)
+		else if (e.PropertyName == nameof(BrowserModel.CustomKeyBind))
 		{
-			case nameof(BrowserModel.Name): config.Set(model.Name, e.PropertyName); break;
-			case nameof(BrowserModel.Command): config.Set(model.Command, e.PropertyName); break;
-			case nameof(BrowserModel.Executable): config.Set(model.Executable, e.PropertyName); break;
-			case nameof(BrowserModel.CommandArgs): config.Set(model.CommandArgs, e.PropertyName); break;
-			case nameof(BrowserModel.PrivacyArgs): config.Set(model.PrivacyArgs, e.PropertyName); break;
-			case nameof(BrowserModel.IconPath): config.Set(model.IconPath, e.PropertyName); break;
-			case nameof(BrowserModel.Usage): config.Set(model.Usage, e.PropertyName); break;
-			case nameof(BrowserModel.Disabled): config.Set(model.Disabled, e.PropertyName); break;
-			case nameof(BrowserModel.ManualOrder): config.Set(model.ManualOrder, e.PropertyName); break;
-			case nameof(BrowserModel.ExpandFileUrls): config.Set(model.ExpandFileUrls, e.PropertyName); break;
-			case nameof(BrowserModel.ManualOverride): config.Set(model.ManualOverride, e.PropertyName); break;
-			case nameof(BrowserModel.Removed):
-				if (model.Removed)
-				{
-					model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
-					Reg.SubKey(nameof(BrowserList))?.DeleteSubKey(model.Id);
-					BrowserList.Remove(model);
-					logger.LogBrowserRemoved(model.Name);
-					OnPropertyChanged(nameof(BrowserList));
-				}
-				break;
-			case nameof(BrowserModel.CustomKeyBind):
-				var keyBind = Reg.Open(nameof(model.CustomKeyBind));
-				var remove =
-					from binding in keyBind.GetValueNames()
-					where keyBind.Get<string>(null, binding) == model.Id
-					select binding;
-				foreach (var binding in remove)
-				{
-					keyBind.DeleteValue(binding);
-				}
-				keyBind.Set(model.Id, model.CustomKeyBind);
-				foreach (var other in BrowserList.Where(other => other != model && other.CustomKeyBind == model.CustomKeyBind))
-				{
-					other.CustomKeyBind = string.Empty;
-				}
-				break;
-			default: return;
+			foreach (var other in BrowserList.Where(other => other != model && other.CustomKeyBind == model.CustomKeyBind))
+				other.CustomKeyBind = string.Empty;
 		}
 	}
 
-	private static readonly RegistryKey Reg = Registry.CurrentUser.Open("Software", nameof(BrowserPicker));
+	/// <summary>Read-only registry key for migration; never written to.</summary>
+	private static readonly RegistryKey? Reg = Registry.CurrentUser.OpenSubKey(@"Software\BrowserPicker", false);
 }
