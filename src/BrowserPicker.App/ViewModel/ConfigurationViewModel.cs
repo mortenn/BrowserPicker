@@ -1,4 +1,4 @@
-using BrowserPicker.Framework;
+﻿using BrowserPicker.Framework;
 using System.ComponentModel;
 using System.Threading;
 using System.Linq;
@@ -78,6 +78,8 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool AutoSizeWindow { get; set; } = true;
 		public double WindowWidth { get; set; }
 		public double WindowHeight { get; set; }
+		public double ConfigWindowWidth { get; set; }
+		public double ConfigWindowHeight { get; set; }
 		public double FontSize { get; set; } = 14;
 		public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
 
