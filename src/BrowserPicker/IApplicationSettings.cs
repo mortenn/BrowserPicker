@@ -81,14 +81,29 @@ public interface IApplicationSettings
 	List<KeyBinding> KeyBindings { get; }
 
 	/// <summary>
-	/// Preferred main window width in pixels. Zero or negative means use default/size-to-content.
+	/// When true, the main window sizes to content. When false, <see cref="WindowWidth"/> and <see cref="WindowHeight"/> are used.
+	/// </summary>
+	bool AutoSizeWindow { get; set; }
+
+	/// <summary>
+	/// Preferred main window width in pixels. Used when <see cref="AutoSizeWindow"/> is false.
 	/// </summary>
 	double WindowWidth { get; set; }
 
 	/// <summary>
-	/// Preferred main window height in pixels. Zero or negative means use default/size-to-content.
+	/// Preferred main window height in pixels. Used when <see cref="AutoSizeWindow"/> is false.
 	/// </summary>
 	double WindowHeight { get; set; }
+
+	/// <summary>
+	/// Configuration window width in pixels. Persisted separately from main window; config mode never uses auto size.
+	/// </summary>
+	double ConfigWindowWidth { get; set; }
+
+	/// <summary>
+	/// Configuration window height in pixels. Persisted separately from main window; config mode never uses auto size.
+	/// </summary>
+	double ConfigWindowHeight { get; set; }
 
 	/// <summary>
 	/// Base font size in pixels for the picker and settings UI.

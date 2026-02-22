@@ -30,8 +30,11 @@ public sealed class SerializableSettings : IApplicationSettings
 		KeyBindings = applicationSettings.KeyBindings
 			.Where(kb => applicationSettings.BrowserList.Any(b => (b.Id == kb.Browser || b.Name == kb.Browser) && !b.Removed))
 			.ToList();
+		AutoSizeWindow = applicationSettings.AutoSizeWindow;
 		WindowWidth = applicationSettings.WindowWidth;
 		WindowHeight = applicationSettings.WindowHeight;
+		ConfigWindowWidth = applicationSettings.ConfigWindowWidth;
+		ConfigWindowHeight = applicationSettings.ConfigWindowHeight;
 		FontSize = applicationSettings.FontSize;
 		ThemeMode = applicationSettings.ThemeMode;
 	}
@@ -67,10 +70,19 @@ public sealed class SerializableSettings : IApplicationSettings
 	public List<KeyBinding> KeyBindings { get; init; } = [];
 
 	/// <inheritdoc />
+	public bool AutoSizeWindow { get; set; } = true;
+
+	/// <inheritdoc />
 	public double WindowWidth { get; set; }
 
 	/// <inheritdoc />
 	public double WindowHeight { get; set; }
+
+	/// <inheritdoc />
+	public double ConfigWindowWidth { get; set; } = 600;
+
+	/// <inheritdoc />
+	public double ConfigWindowHeight { get; set; } = 450;
 
 	/// <inheritdoc />
 	public double FontSize { get; set; }
