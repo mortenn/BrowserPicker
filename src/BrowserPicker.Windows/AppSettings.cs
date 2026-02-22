@@ -31,6 +31,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool use_automatic_ordering = true;
 	private bool use_alphabetical_ordering;
 	private bool disable_transparency;
+	private double window_opacity = 0.92;
 	private bool disable_network_access;
 	private string[] url_shorteners = [];
 	private bool auto_size_window = true;
@@ -53,25 +54,27 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		Defaults = GetDefaults();
 		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
 
-		if (Reg != null)
+		if (Reg == null)
 		{
-			first_time = Reg.GetBool(true);
-			always_prompt = Reg.Get<bool>();
-			always_use_defaults = Reg.Get<bool>();
-			always_ask_without_default = Reg.Get<bool>();
-			url_lookup_timeout_ms = Reg.Get(2000);
-			use_manual_ordering = Reg.Get<bool>();
-			use_automatic_ordering = Reg.GetBool(true);
-			use_alphabetical_ordering = Reg.Get<bool>();
-			disable_transparency = Reg.Get<bool>();
-			disable_network_access = Reg.Get<bool>();
-			url_shorteners = Reg.Get<string[]>() ?? [];
-			window_width = double.TryParse(Reg.GetValue("WindowWidth") as string, out var w) ? w : 0;
-			window_height = double.TryParse(Reg.GetValue("WindowHeight") as string, out var h) ? h : 0;
-			auto_size_window = window_width <= 0 && window_height <= 0;
-			font_size = double.TryParse(Reg.GetValue("FontSize") as string, out var f) && f > 0 ? f : 14;
-			theme_mode = (ThemeMode)(Reg.GetValue("ThemeMode") is int i ? i : (int)ThemeMode.System);
+			return;
 		}
+
+		first_time = Reg.GetBool(true);
+		always_prompt = Reg.Get<bool>();
+		always_use_defaults = Reg.Get<bool>();
+		always_ask_without_default = Reg.Get<bool>();
+		url_lookup_timeout_ms = Reg.Get(2000);
+		use_manual_ordering = Reg.Get<bool>();
+		use_automatic_ordering = Reg.GetBool(true);
+		use_alphabetical_ordering = Reg.Get<bool>();
+		disable_transparency = Reg.Get<bool>();
+		disable_network_access = Reg.Get<bool>();
+		url_shorteners = Reg.Get<string[]>() ?? [];
+		window_width = double.TryParse(Reg.GetValue("WindowWidth") as string, out var w) ? w : 0;
+		window_height = double.TryParse(Reg.GetValue("WindowHeight") as string, out var h) ? h : 0;
+		auto_size_window = window_width <= 0 && window_height <= 0;
+		font_size = double.TryParse(Reg.GetValue("FontSize") as string, out var f) && f > 0 ? f : 14;
+		theme_mode = (ThemeMode)(Reg.GetValue("ThemeMode") is int i ? i : (int)ThemeMode.System);
 	}
 
 	/// <inheritdoc />
@@ -126,6 +129,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 
 	/// <inheritdoc />
 	public bool DisableTransparency { get => disable_transparency; set { disable_transparency = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
+	public double WindowOpacity { get => window_opacity; set { window_opacity = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
 	public bool DisableNetworkAccess { get => disable_network_access; set { disable_network_access = value; OnPropertyChanged(); } }
@@ -321,7 +327,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		UpdateSettings(settings);
 		UpdateBrowsers(settings.BrowserList);
 		UpdateDefaults(settings.Defaults);
-		UpdateKeybinds(settings.KeyBindings);
+		UpdateKeybindings(settings.KeyBindings);
 
 		BackupLog += $"Imported configuration from {fileName}\n";
 	}
@@ -334,6 +340,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		UrlLookupTimeoutMilliseconds = settings.UrlLookupTimeoutMilliseconds;
 		UseAutomaticOrdering = settings.UseAutomaticOrdering;
 		DisableTransparency = settings.DisableTransparency;
+		WindowOpacity = settings.WindowOpacity;
 		DisableNetworkAccess = settings.DisableNetworkAccess;
 		WindowWidth = settings.WindowWidth;
 		WindowHeight = settings.WindowHeight;
@@ -387,13 +394,13 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		var fallback = defaults.FirstOrDefault(d => d.Type == MatchType.Default);
 		UseFallbackDefault = fallback?.Browser != null;
-		// Normalize to Id so UI and launch path use Id (backup may contain name)
+		// Normalize to id so UI and launch path use id (backup may contain name)
 		var fallbackBrowserId = fallback?.Browser != null
 			? BrowserList.FirstOrDefault(b => b.Id == fallback.Browser || b.Name == fallback.Browser)?.Id ?? fallback.Browser
 			: null;
 		DefaultBrowser = fallbackBrowserId;
 
-		// Add or update defaults (normalize Browser to Id when loading from backup)
+		// Add or update defaults (normalize Browser to id when loading from backup)
 		foreach (var setting in defaults)
 		{
 			if (setting == fallback)
@@ -406,8 +413,6 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			if (existing == null)
 			{
 				var newSetting = new DefaultSetting(setting.Type, setting.Pattern, null);
-				newSetting.PropertyChanging += DefaultSetting_PropertyChanging;
-				newSetting.PropertyChanged += DefaultSetting_PropertyChanged;
 				Defaults.Add(newSetting);
 				newSetting.Browser = browserId;
 				continue;
@@ -425,7 +430,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(Defaults));
 	}
 
-	private void UpdateKeybinds(List<KeyBinding> keyBindings)
+	private void UpdateKeybindings(List<KeyBinding> keyBindings)
 	{
 		foreach (var binding in keyBindings)
 		{
@@ -470,10 +475,9 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			var setting = GetDefaultSetting(string.Empty, browserId);
 			if (setting != null) list.Add(setting);
 		}
-		foreach (var pattern in valueNames.Where(p => p != "|Default|" && p != null))
+		foreach (var pattern in valueNames.Where(p => p != "|Default|"))
 		{
-			var value = key.GetValue(pattern) as string;
-			if (value == null) continue;
+			if (key.GetValue(pattern) is not string value) continue;
 			var browser = BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value);
 			var browserId = browser?.Id ?? value;
 			var setting = GetDefaultSetting(pattern, browserId);
@@ -482,36 +486,14 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		return list;
 	}
 
-	private DefaultSetting? GetDefaultSetting(string? key, string? value)
+	private static DefaultSetting? GetDefaultSetting(string? key, string? value)
 	{
 		if (value == null)
 		{
 			return null;
 		}
 		var setting = DefaultSetting.Decode(key, value);
-		if (setting == null)
-		{
-			return null;
-		}
-		setting.PropertyChanging += DefaultSetting_PropertyChanging;
-		setting.PropertyChanged += DefaultSetting_PropertyChanged;
-		return setting;
-	}
-
-	private void DefaultSetting_PropertyChanging(object? sender, PropertyChangingEventArgs e)
-	{
-		// Read-only: no registry writes.
-	}
-
-	private void DefaultSetting_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		if (sender is not DefaultSetting model) return;
-		// Read-only: only unsubscribe when deleted; no registry writes.
-		if (e.PropertyName == nameof(DefaultSetting.Deleted) && model.Deleted)
-		{
-			model.PropertyChanging -= DefaultSetting_PropertyChanging;
-			model.PropertyChanged -= DefaultSetting_PropertyChanged;
-		}
+		return setting ?? null;
 	}
 
 	private List<BrowserModel> GetBrowsers()
@@ -527,12 +509,14 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			.ToList();
 
 		// Read-only: remove legacy Edge from list only; do not delete from registry.
-		if (browsers.Any(b => b.Name.Equals("Microsoft Edge", StringComparison.Ordinal)))
+		if (!browsers.Any(b => b.Name.Equals("Microsoft Edge", StringComparison.Ordinal)))
 		{
-			var edge = browsers.FirstOrDefault(b => b.Name.Equals("Edge", StringComparison.Ordinal));
-			if (edge != null)
-				browsers.Remove(edge);
+			return browsers;
 		}
+
+		var edge = browsers.FirstOrDefault(b => b.Name.Equals("Edge", StringComparison.Ordinal));
+		if (edge != null)
+			browsers.Remove(edge);
 		return browsers;
 	}
 
@@ -567,18 +551,21 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	private void BrowserConfiguration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is not BrowserModel model) return;
-		// Read-only: only handle Removed (update in-memory list); no registry writes.
-		if (e.PropertyName == nameof(BrowserModel.Removed) && model.Removed)
+		switch (e.PropertyName)
 		{
-			model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
-			BrowserList.Remove(model);
-			logger.LogBrowserRemoved(model.Name);
-			OnPropertyChanged(nameof(BrowserList));
-		}
-		else if (e.PropertyName == nameof(BrowserModel.CustomKeyBind))
-		{
-			foreach (var other in BrowserList.Where(other => other != model && other.CustomKeyBind == model.CustomKeyBind))
-				other.CustomKeyBind = string.Empty;
+			// Read-only: only handle Removed (update in-memory list); no registry writes.
+			case nameof(BrowserModel.Removed) when model.Removed:
+				model.PropertyChanged -= BrowserConfiguration_PropertyChanged;
+				BrowserList.Remove(model);
+				logger.LogBrowserRemoved(model.Name);
+				OnPropertyChanged(nameof(BrowserList));
+				break;
+			case nameof(BrowserModel.CustomKeyBind):
+			{
+				foreach (var other in BrowserList.Where(other => other != model && other.CustomKeyBind == model.CustomKeyBind))
+					other.CustomKeyBind = string.Empty;
+				break;
+			}
 		}
 	}
 

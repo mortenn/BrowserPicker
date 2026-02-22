@@ -34,7 +34,9 @@ internal sealed class DefaultSettingJsonConverter : JsonConverter<DefaultSetting
 			switch (name)
 			{
 				case "Type":
-					type = JsonSerializer.Deserialize<MatchType>(ref reader, options);
+					var typeStr = reader.GetString();
+					if (!string.IsNullOrEmpty(typeStr) && Enum.TryParse<MatchType>(typeStr, true, out var parsedType))
+						type = parsedType;
 					break;
 				case "Pattern":
 					pattern = reader.GetString();

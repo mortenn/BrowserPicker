@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -188,6 +188,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		};
 		var editorVm = new BrowserViewModel(clone, parent_view_model);
 		var editor = new BrowserEditor(editorVm);
+		editor.Closing += OnDuplicateEditorClosing;
+		editor.Show();
+		return;
+
 		void OnDuplicateEditorClosing(object? sender, CancelEventArgs e)
 		{
 			if (sender is Window window)
@@ -205,8 +209,6 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			parent_view_model.Choices.Add(browser);
 			parent_view_model.Configuration.Settings.AddBrowser(browser.Model);
 		}
-		editor.Closing += OnDuplicateEditorClosing;
-		editor.Show();
 	}
 
 	/// <summary>

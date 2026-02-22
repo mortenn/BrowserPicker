@@ -220,11 +220,13 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		if (icon.IsSuccessStatusCode)
 		{
 			var bytes = await icon.Content.ReadAsByteArrayAsync(cancellationToken);
-			if (bytes.Length <= MaxFaviconBytes)
+			if (bytes.Length > MaxFaviconBytes)
 			{
-				logger.LogFaviconLoaded(toFetch.AbsoluteUri);
-				FavIcon = bytes;
+				return;
 			}
+
+			logger.LogFaviconLoaded(toFetch.AbsoluteUri);
+			FavIcon = bytes;
 			return;
 		}
 		logger.LogFaviconFailed(icon.StatusCode);

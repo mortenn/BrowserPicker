@@ -1,10 +1,7 @@
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.Dynamic;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
 using JetBrains.Annotations;
 using BrowserPicker.ViewModel;
 using System.Linq;
@@ -18,10 +15,12 @@ namespace BrowserPicker.View;
 public partial class MainWindow
 {
 	/// <summary>Ignore the next N SizeChanged events (programmatic or content-driven resize); only save when the user drags to resize.</summary>
-	private int _suppressSizeChangeSaveCount;
-	private bool _contentRenderedHandled;
+	private int suppress_size_change_save_count;
+	private bool content_rendered_handled;
 	/// <summary>True only after the user started a resize via the grip; ensures we only turn off AutoSizeWindow on actual user resize.</summary>
-	private bool _userInitiatedResize;
+	private bool user_initiated_resize;
+	/// <summary>True while the user is dragging the resize grip; we update Width/Height from mouse position.</summary>
+	private bool resizing_via_grip;
 
 	public MainWindow()
 	{
@@ -33,19 +32,21 @@ public partial class MainWindow
 			vmInpc.PropertyChanged += ViewModel_PropertyChanged;
 		// Apply saved size before window is shown so it isn't overridden by initial layout.
 		var settings = App.Settings;
-		if (!settings.AutoSizeWindow && settings.WindowWidth >= MinWidth && settings.WindowHeight >= MinHeight)
+		if (settings.AutoSizeWindow || !(settings.WindowWidth >= MinWidth) || !(settings.WindowHeight >= MinHeight))
 		{
-			SizeToContent = SizeToContent.Manual;
-			Width = settings.WindowWidth;
-			Height = settings.WindowHeight;
+			return;
 		}
+
+		SizeToContent = SizeToContent.Manual;
+		Width = settings.WindowWidth;
+		Height = settings.WindowHeight;
 	}
 
 	private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (e.PropertyName != nameof(ApplicationViewModel.ConfigurationMode))
 			return;
-		_suppressSizeChangeSaveCount = 2;
+		suppress_size_change_save_count = 2;
 		// Config mode always uses fixed size (never auto); picker mode uses AutoSizeWindow + saved main size.
 		if (ViewModel.ConfigurationMode)
 		{
@@ -58,28 +59,38 @@ public partial class MainWindow
 			UpdateLayout();
 		}
 		else
+		{
+			// Persist config size when leaving config so next time we enter we restore it.
+			if (ActualWidth > 0 && ActualHeight > 0)
+			{
+				var settings = App.Settings;
+				settings.ConfigWindowWidth = Math.Max(MinWidth, ActualWidth);
+				settings.ConfigWindowHeight = Math.Max(MinHeight, ActualHeight);
+			}
 			ApplyWindowSizeMode();
+		}
 	}
 
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(IApplicationSettings.AutoSizeWindow))
+		if (e.PropertyName == nameof(IApplicationSettings.AutoSizeWindow) && !ViewModel.ConfigurationMode)
 			ApplyWindowSizeMode();
 	}
 
 	private void MainWindow_Loaded(object sender, RoutedEventArgs e)
 	{
-		ApplyWindowSizeMode();
+		if (!ViewModel.ConfigurationMode)
+			ApplyWindowSizeMode();
 	}
 
 	private void MainWindow_ContentRendered(object sender, EventArgs e)
 	{
-		if (_contentRenderedHandled)
+		if (content_rendered_handled)
 			return;
-		_contentRenderedHandled = true;
+		content_rendered_handled = true;
 		// Re-apply saved size so it sticks after first layout; then center. In config mode we use config size (already set when entering config).
 		var settings = App.Settings;
-		if (!ViewModel.ConfigurationMode && !settings.AutoSizeWindow && settings.WindowWidth > 0 && settings.WindowHeight > 0)
+		if (!ViewModel.ConfigurationMode && settings is { AutoSizeWindow: false, WindowWidth: > 0, WindowHeight: > 0 })
 		{
 			Width = Math.Max(MinWidth, settings.WindowWidth);
 			Height = Math.Max(MinHeight, settings.WindowHeight);
@@ -87,18 +98,21 @@ public partial class MainWindow
 		CenterWindow(new Size(ActualWidth, ActualHeight));
 	}
 
-	private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+	private void MainWindow_Closing(object? sender, CancelEventArgs e)
 	{
 		var settings = App.Settings;
 		if (ViewModel.ConfigurationMode)
 		{
-			if (ActualWidth > 0 && ActualHeight > 0)
+			if (!(ActualWidth > 0) || !(ActualHeight > 0))
 			{
-				settings.ConfigWindowWidth = Math.Max(MinWidth, ActualWidth);
-				settings.ConfigWindowHeight = Math.Max(MinHeight, ActualHeight);
+				return;
 			}
+
+			settings.ConfigWindowWidth = Math.Max(MinWidth, ActualWidth);
+			settings.ConfigWindowHeight = Math.Max(MinHeight, ActualHeight);
+			return;
 		}
-		else if (!settings.AutoSizeWindow && ActualWidth > 0 && ActualHeight > 0)
+		if (!settings.AutoSizeWindow && ActualWidth > 0 && ActualHeight > 0)
 		{
 			settings.WindowWidth = Math.Max(MinWidth, ActualWidth);
 			settings.WindowHeight = Math.Max(MinHeight, ActualHeight);
@@ -107,7 +121,9 @@ public partial class MainWindow
 
 	private void ApplyWindowSizeMode()
 	{
-		_suppressSizeChangeSaveCount = 2;
+		if (ViewModel.ConfigurationMode)
+			return;
+		suppress_size_change_save_count = 2;
 		var settings = App.Settings;
 		if (settings.AutoSizeWindow)
 		{
@@ -229,30 +245,31 @@ public partial class MainWindow
 			return;
 
 		// Ignore size changes caused by ApplyWindowSizeMode or content change (e.g. switching to config); only save on user resize.
-		if (_suppressSizeChangeSaveCount > 0)
+		if (suppress_size_change_save_count > 0)
 		{
-			_suppressSizeChangeSaveCount--;
+			suppress_size_change_save_count--;
 			CenterWindow(e.NewSize);
 			return;
 		}
 
-		// In config mode: persist config size only (never touch AutoSizeWindow). In picker mode: only on user grip resize, turn off auto and save main size.
-		if (!_userInitiatedResize || !IsVisible || e.NewSize.Width <= 0 || e.NewSize.Height <= 0)
+		if (!IsVisible || e.NewSize.Width <= 0 || e.NewSize.Height <= 0)
 			return;
-		_userInitiatedResize = false;
 		var settings = App.Settings;
 		if (ViewModel.ConfigurationMode)
 		{
+			// In config mode: persist config size on any resize (grip or window border).
 			settings.ConfigWindowWidth = Math.Max(MinWidth, e.NewSize.Width);
 			settings.ConfigWindowHeight = Math.Max(MinHeight, e.NewSize.Height);
+			return;
 		}
-		else
-		{
-			if (settings.AutoSizeWindow)
-				settings.AutoSizeWindow = false;
-			settings.WindowWidth = Math.Max(MinWidth, e.NewSize.Width);
-			settings.WindowHeight = Math.Max(MinHeight, e.NewSize.Height);
-		}
+		// In picker mode: only save main size when user resized via the grip (don't turn off auto on layout/startup).
+		if (!user_initiated_resize)
+			return;
+		user_initiated_resize = false;
+		if (settings.AutoSizeWindow)
+			settings.AutoSizeWindow = false;
+		settings.WindowWidth = Math.Max(MinWidth, e.NewSize.Width);
+		settings.WindowHeight = Math.Max(MinHeight, e.NewSize.Height);
 		// Don't re-center on user resize or the window jumps while dragging the grip.
 	}
 
@@ -266,27 +283,49 @@ public partial class MainWindow
 
 	private void DragWindow(object sender, MouseButtonEventArgs args)
 	{
-		if (args.ChangedButton == MouseButton.Left && args.ButtonState == MouseButtonState.Pressed)
+		if (args is { ChangedButton: MouseButton.Left, ButtonState: MouseButtonState.Pressed })
 			DragMove();
 	}
 
 	private void ResizeGrip_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 	{
-		_userInitiatedResize = true;
-		// Stop size-to-content so the window doesn't snap back during drag; then start native resize.
+		e.Handled = true;
+		user_initiated_resize = true;
 		SizeToContent = SizeToContent.Manual;
-		var hwnd = new WindowInteropHelper(this).Handle;
-		if (hwnd != IntPtr.Zero)
-			_ = NativeMethods.SendMessage(hwnd, NativeMethods.WM_SYSCOMMAND, NativeMethods.SC_SIZE_HTBOTTOMRIGHT, IntPtr.Zero);
+		resizing_via_grip = true;
+		Mouse.Capture(this, CaptureMode.SubTree);
+		MouseMove += Window_ResizeGripMouseMove;
+		MouseLeftButtonUp += Window_ResizeGripMouseUp;
+		LostMouseCapture += Window_ResizeGripLostCapture;
 	}
 
-	private static class NativeMethods
+	private void Window_ResizeGripMouseMove(object sender, MouseEventArgs e)
 	{
-		internal const int WM_SYSCOMMAND = 0x0112;
-		// SC_SIZE (0xF000) + hit-test for bottom-right grip; triggers standard OS resize drag.
-		internal static readonly IntPtr SC_SIZE_HTBOTTOMRIGHT = (IntPtr)0xF008;
+		if (!resizing_via_grip)
+			return;
+		var pt = PointToScreen(Mouse.GetPosition(this));
+		Width = Math.Max(MinWidth, pt.X - Left);
+		Height = Math.Max(MinHeight, pt.Y - Top);
+	}
 
-		[DllImport("user32.dll")]
-		internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+	private void Window_ResizeGripMouseUp(object sender, MouseButtonEventArgs e)
+	{
+		EndResizeGripDrag();
+	}
+
+	private void Window_ResizeGripLostCapture(object sender, MouseEventArgs e)
+	{
+		EndResizeGripDrag();
+	}
+
+	private void EndResizeGripDrag()
+	{
+		if (!resizing_via_grip)
+			return;
+		resizing_via_grip = false;
+		MouseMove -= Window_ResizeGripMouseMove;
+		MouseLeftButtonUp -= Window_ResizeGripMouseUp;
+		LostMouseCapture -= Window_ResizeGripLostCapture;
+		ReleaseMouseCapture();
 	}
 }

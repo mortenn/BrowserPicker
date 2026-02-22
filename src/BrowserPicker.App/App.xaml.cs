@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +26,8 @@ public partial class App
 
 	/// <summary>Content area brushes updated when ThemeMode changes so inherited text/background are readable (avoids white-on-white).</summary>
 	public static readonly string ContentBackgroundBrushKey = "ContentBackgroundBrush";
+	/// <summary>Semi-transparent content background used when transparency is enabled (DisableTransparency = false).</summary>
+	public static readonly string ContentBackgroundSemiTransparentBrushKey = "ContentBackgroundSemiTransparentBrush";
 	public static readonly string ContentForegroundBrushKey = "ContentForegroundBrush";
 
 	private class InvalidUTF8Patch : EncodingProvider
@@ -72,7 +74,7 @@ public partial class App
 	}
 
 	/// <summary>Add content theme brushes to app resources. Call from Program before Run() so they exist when windows load.</summary>
-	internal void AddContentThemeDictionary(BrowserPicker.ThemeMode mode)
+	internal void AddContentThemeDictionary(ThemeMode mode)
 	{
 		var useLight = mode switch
 		{
@@ -101,7 +103,7 @@ public partial class App
 	}
 
 	/// <summary>Apply user's theme choice. Fluent theme is designed to follow ThemeMode — no custom brush overrides.</summary>
-	private void ApplyThemeMode(BrowserPicker.ThemeMode mode)
+	private static void ApplyThemeMode(ThemeMode mode)
 	{
 		var wpfMode = mode switch
 		{
@@ -110,7 +112,7 @@ public partial class App
 			_ => System.Windows.ThemeMode.System
 		};
 #pragma warning disable WPF0001
-		var app = (Application)Application.Current;
+		var app = Current;
 		app.ThemeMode = wpfMode;
 		if (app.MainWindow != null)
 			app.MainWindow.ThemeMode = wpfMode;
@@ -122,7 +124,7 @@ public partial class App
 			BrowserPicker.ThemeMode.Dark => false,
 			_ => IsSystemUsingLightTheme()
 		};
-		SwapContentThemeDictionary(Application.Current.Resources, useLight);
+		SwapContentThemeDictionary(Current.Resources, useLight);
 		// Force visual refresh so updated theme brushes are applied.
 		InvalidateContentTheme();
 	}
@@ -146,7 +148,7 @@ public partial class App
 		// Content brushes live only in our theme dict (not in ResourceDictionary.xaml, which keeps only images).
 		// Remove previous theme dict if present (last merged), then add current theme.
 		var merged = appResources.MergedDictionaries;
-		if (merged.Count > 0 && merged[merged.Count - 1].Contains(ContentBackgroundBrushKey))
+		if (merged.Count > 0 && merged[^1].Contains(ContentBackgroundSemiTransparentBrushKey))
 			merged.RemoveAt(merged.Count - 1);
 		merged.Add(CreateContentThemeDictionary(light));
 	}
@@ -154,15 +156,18 @@ public partial class App
 	private static ResourceDictionary CreateContentThemeDictionary(bool light)
 	{
 		var d = new ResourceDictionary();
+		const byte semiTransparentAlpha = 0xE6; // ~90% opaque for slight see-through
 		if (light)
 		{
 			// Slightly off-white so it's not stark; still clearly light.
 			d[ContentBackgroundBrushKey] = new SolidColorBrush(Color.FromRgb(0xEB, 0xEB, 0xEB));
+			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(Color.FromArgb(semiTransparentAlpha, 0xEB, 0xEB, 0xEB));
 			d[ContentForegroundBrushKey] = new SolidColorBrush(Colors.Black);
 		}
 		else
 		{
 			d[ContentBackgroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
+			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(Color.FromArgb(semiTransparentAlpha, 0x2D, 0x2D, 0x2D));
 			d[ContentForegroundBrushKey] = new SolidColorBrush(Colors.White);
 		}
 		return d;
@@ -171,13 +176,6 @@ public partial class App
 	/// <summary>Returns current content theme brushes (for code-behind so Configuration always gets correct colors at runtime).</summary>
 	internal static void GetContentThemeBrushes(out SolidColorBrush background, out SolidColorBrush foreground)
 	{
-		if (Settings == null)
-		{
-			// Designer: App.Settings not set (Program.Main not run); use dark default to match ResourceDictionary.xaml.
-			background = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
-			foreground = new SolidColorBrush(Colors.White);
-			return;
-		}
 		var useLight = Settings.ThemeMode switch
 		{
 			BrowserPicker.ThemeMode.Light => true,
@@ -199,13 +197,19 @@ public partial class App
 	/// <summary>Invalidate visual tree so DynamicResource re-resolves for content theme brushes.</summary>
 	private static void InvalidateContentTheme()
 	{
-		var main = Application.Current.MainWindow;
+		var main = Current.MainWindow;
 		if (main == null) return;
 		main.InvalidateVisual();
 		main.UpdateLayout();
-		foreach (Window w in Application.Current.Windows)
+		foreach (Window w in Current.Windows)
 		{
-			if (w != main) { w.InvalidateVisual(); w.UpdateLayout(); }
+			if (w == main)
+			{
+				continue;
+			}
+
+			w.InvalidateVisual();
+			w.UpdateLayout();
 		}
 	}
 

@@ -19,6 +19,22 @@ public static class BrowserDiscovery
 		var list = new List<BrowserModel>();
 		var byId = new Dictionary<string, BrowserModel>(StringComparer.OrdinalIgnoreCase);
 
+		EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\Clients\StartMenuInternet", AddOrUpdate);
+		EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\Clients\StartMenuInternet", AddOrUpdate);
+		EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet", AddOrUpdate);
+		EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet", AddOrUpdate);
+
+		if (list.Any(b => b.Name.Contains("Edge", StringComparison.OrdinalIgnoreCase)))
+		{
+			return list;
+		}
+
+		var legacy = FindLegacyEdge();
+		if (legacy != null)
+			AddOrUpdate(legacy);
+
+		return list;
+
 		void AddOrUpdate(BrowserModel model)
 		{
 			var id = string.IsNullOrEmpty(model.Id) ? model.Name : model.Id;
@@ -37,20 +53,6 @@ public static class BrowserDiscovery
 				list.Add(model);
 			}
 		}
-
-		EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\Clients\StartMenuInternet", AddOrUpdate);
-		EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\Clients\StartMenuInternet", AddOrUpdate);
-		EnumerateBrowsers(Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet", AddOrUpdate);
-		EnumerateBrowsers(Registry.CurrentUser, @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet", AddOrUpdate);
-
-		if (!list.Any(b => b.Name.Contains("Edge", StringComparison.OrdinalIgnoreCase)))
-		{
-			var legacy = FindLegacyEdge();
-			if (legacy != null)
-				AddOrUpdate(legacy);
-		}
-
-		return list;
 	}
 
 	private static void EnumerateBrowsers(RegistryKey hive, string subKey, Action<BrowserModel> addOrUpdate)

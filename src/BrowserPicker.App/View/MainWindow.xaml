@@ -29,13 +29,23 @@
 				<Setter Property="Background" Value="Transparent" />
 				<Style.Triggers>
 					<DataTrigger Binding="{Binding Configuration.Settings.DisableTransparency}" Value="True">
-						<Setter Property="Border.Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+						<Setter Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" />
 					</DataTrigger>
 				</Style.Triggers>
 			</Style>
 		</Border.Style>
 		<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" MouseLeftButtonDown="DragWindow"
 			Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
+			<Border.Style>
+				<Style TargetType="{x:Type Border}">
+					<Setter Property="Opacity" Value="1" />
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Configuration.Settings.DisableTransparency}" Value="False">
+							<Setter Property="Opacity" Value="{Binding Configuration.Settings.WindowOpacity}" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Border.Style>
 			<Grid Margin="10" x:Name="RootContent" TextElement.FontSize="{Binding Configuration.Settings.FontSize, FallbackValue=14}"
 				TextElement.Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
 				<Grid.ColumnDefinitions>

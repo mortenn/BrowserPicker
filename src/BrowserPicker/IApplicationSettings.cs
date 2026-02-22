@@ -56,6 +56,11 @@ public interface IApplicationSettings
 	bool DisableTransparency { get; set; }
 
 	/// <summary>
+	/// Window opacity when transparency is enabled (0.0 = fully transparent, 1.0 = fully opaque). Clamped to 0.5–1.0.
+	/// </summary>
+	double WindowOpacity { get; set; }
+
+	/// <summary>
 	/// Disables all features that call out to the network
 	/// </summary>
 	bool DisableNetworkAccess { get; set; }

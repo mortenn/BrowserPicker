@@ -1,31 +1,31 @@
 ﻿<Project Sdk="WixToolset.Sdk/6.0.0">
-	<PropertyGroup>
-		<OutputName>BrowserPicker-Portable</OutputName>
-		<ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
-		<InstallerPlatform>x64</InstallerPlatform>
-		<DefineConstants>ProductVersion=$(Version)</DefineConstants>
-	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="WixToolset.NetFx.wixext" Version="6.0.0" />
-		<PackageReference Include="WixToolset.Util.wixext" Version="6.0.0" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\src\BrowserPicker.App\BrowserPicker.App.csproj">
-			<Name>BrowserPicker.App</Name>
-			<Project>{b875ae86-5212-4f7f-bb1c-2baa1fc110bc}</Project>
-			<Private>True</Private>
-			<DoNotHarvest>True</DoNotHarvest>
-			<RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-			<RefTargetDir>INSTALLFOLDER</RefTargetDir>
-		</ProjectReference>
-	</ItemGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-		<DefineConstants>Debug</DefineConstants>
-		<OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-		<OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
-		<IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-	</PropertyGroup>
+  <PropertyGroup>
+    <OutputName>BrowserPicker-Portable</OutputName>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <DefineConstants>ProductVersion=$(Version)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="6.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BrowserPicker.App\BrowserPicker.App.csproj">
+      <Name>BrowserPicker.App</Name>
+      <Project>{b875ae86-5212-4f7f-bb1c-2baa1fc110bc}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DefineConstants>Debug</DefineConstants>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
 </Project>

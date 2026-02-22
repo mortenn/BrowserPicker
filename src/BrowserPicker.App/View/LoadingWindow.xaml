@@ -12,7 +12,18 @@
 	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
 	AllowsTransparency="True" WindowStyle="None"
 	ShowInTaskbar="False" SizeChanged="Window_SizeChanged">
-	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
+	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2"
+		Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
+		<Border.Style>
+			<Style TargetType="{x:Type Border}">
+				<Setter Property="Opacity" Value="1" />
+				<Style.Triggers>
+					<DataTrigger Binding="{Binding DisableTransparency, Source={x:Static app:App.Settings}}" Value="False">
+						<Setter Property="Opacity" Value="{Binding WindowOpacity, Source={x:Static app:App.Settings}}" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+		</Border.Style>
 		<Grid Margin="10" TextElement.Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />

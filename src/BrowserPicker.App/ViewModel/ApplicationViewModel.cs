@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -153,7 +153,7 @@ public sealed class ApplicationViewModel : ModelBase
 	/// Matches the given URL against configured rules to determine the preferred browser for the URL.
 	/// </summary>
 	/// <param name="targetUrl">The URL to evaluate against browser rules.</param>
-	/// <returns>The Id of the preferred browser for the URL, or null if none is found.</returns>
+	/// <returns>The id of the preferred browser for the URL, or null if none is found.</returns>
 	internal string? GetBrowserToLaunchForUrl(string? targetUrl)
 	{
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))

@@ -1,6 +1,5 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Media;
 
 namespace BrowserPicker.View;
 
@@ -13,8 +12,8 @@ public partial class Configuration
 	{
 		InitializeComponent();
 		Loaded += Configuration_Loaded;
-		if (App.Settings != null && App.Settings is INotifyPropertyChanged inpc)
-			inpc.PropertyChanged += Settings_PropertyChanged;
+		if (App.Settings is INotifyPropertyChanged setting)
+			setting.PropertyChanged += Settings_PropertyChanged;
 	}
 
 	private void Configuration_Loaded(object sender, RoutedEventArgs e)
@@ -24,7 +23,7 @@ public partial class Configuration
 
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName != nameof(BrowserPicker.IApplicationSettings.ThemeMode))
+		if (e.PropertyName != nameof(IApplicationSettings.ThemeMode))
 			return;
 		ApplyContentTheme();
 	}
@@ -34,10 +33,5 @@ public partial class Configuration
 		App.GetContentThemeBrushes(out var background, out var foreground);
 		Background = background;
 		Foreground = foreground;
-	}
-
-	private void CheckBox_Checked(object sender, System.Windows.RoutedEventArgs e)
-	{
-
 	}
 }

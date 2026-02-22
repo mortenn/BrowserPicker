@@ -1,4 +1,4 @@
-﻿using BrowserPicker.Framework;
+using BrowserPicker.Framework;
 using System.ComponentModel;
 using System.Threading;
 using System.Linq;
@@ -73,6 +73,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool UseManualOrdering { get; set; } = false;
 		public bool UseAlphabeticalOrdering { get; set; } = true;
 		public bool DisableTransparency { get; set; } = true;
+		public double WindowOpacity { get; set; } = 0.92;
 		public bool DisableNetworkAccess { get; set; } = false;
 
 		public bool AutoSizeWindow { get; set; } = true;
@@ -229,6 +230,11 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// Gets the collection of default settings used by the browser picker.
 	/// </summary>
 	public ObservableCollection<DefaultSetting> Defaults { get; } = [];
+
+	/// <summary>
+	/// Match types available for per-URL rules. Excludes <see cref="MatchType.Default"/>, which is the special fallback and not a rule type.
+	/// </summary>
+	public IEnumerable<MatchType> MatchTypesForRules => Enum.GetValues<MatchType>().Where(t => t != MatchType.Default);
 
 	/// <summary>
 	/// Gets or sets the match type for defining a new default setting.

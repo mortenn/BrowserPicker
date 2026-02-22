@@ -16,9 +16,41 @@
 	d:Height="400" d:Width="600">
 	<UserControl.Resources>
 		<ResourceDictionary>
-			<!-- Force tabs and checkboxes to use content theme foreground (fixes dark mode: black on dark grey). -->
+			<!-- Tabs: visible header with border/background, compact, selected tab joins content area. -->
 			<Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+				<Setter Property="Padding" Value="8,4" />
+				<Setter Property="Margin" Value="0,0,1,0" />
+				<Setter Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" />
+				<Setter Property="BorderBrush" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+				<Setter Property="BorderThickness" Value="1,1,1,0" />
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="TabItem">
+							<Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+								BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}"
+								Margin="{TemplateBinding Margin}" CornerRadius="3,3,0,0">
+								<ContentPresenter ContentSource="Header" HorizontalAlignment="Center" VerticalAlignment="Center" />
+							</Border>
+							<ControlTemplate.Triggers>
+								<Trigger Property="IsSelected" Value="True">
+									<Setter TargetName="Border" Property="Panel.ZIndex" Value="1" />
+									<Setter TargetName="Border" Property="Margin" Value="0,0,1,-1" />
+									<Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0" />
+								</Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+				<Style.Triggers>
+					<Trigger Property="IsSelected" Value="True">
+						<Setter Property="Panel.ZIndex" Value="1" />
+						<Setter Property="Margin" Value="0,0,1,-1" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+			<Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+				<Setter Property="Padding" Value="4,0,4,4" />
 			</Style>
 			<Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
@@ -28,12 +60,6 @@
 			</Style>
 
 			<converter:IconFileToImageConverter x:Key="IconConverter" />
-
-			<ObjectDataProvider x:Key="MatchTypes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
-				<ObjectDataProvider.MethodParameters>
-					<x:Type TypeName="browserPicker:MatchType"/>
-				</ObjectDataProvider.MethodParameters>
-			</ObjectDataProvider>
 
 			<ObjectDataProvider x:Key="ThemeModes" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
 				<ObjectDataProvider.MethodParameters>
@@ -60,6 +86,13 @@
 				<StackPanel Orientation="Horizontal">
 					<ContentPresenter ContentTemplate="{StaticResource BrowserIcon}" VerticalAlignment="Center" />
 					<TextBlock Padding="5,0,0,0" Text="{Binding Model.Name}" VerticalAlignment="Center" />
+				</StackPanel>
+			</DataTemplate>
+			<!-- Icon + name for use in compact dropdowns (add-default row, etc.) with a visible icon size -->
+			<DataTemplate x:Key="BrowserIconAndNameCombo" DataType="viewModel:BrowserViewModel">
+				<StackPanel Orientation="Horizontal">
+					<ContentPresenter ContentTemplate="{StaticResource BrowserIcon}" VerticalAlignment="Center" Width="20" Height="20" />
+					<TextBlock Padding="6,0,0,0" Text="{Binding Model.Name}" VerticalAlignment="Center" />
 				</StackPanel>
 			</DataTemplate>
 		</ResourceDictionary>
@@ -97,13 +130,14 @@
 						</Style.Triggers>
 					</Style>
 				</TabItem.Style>
-				<TextBlock  Margin="4" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Light">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="4">
+				<TextBlock Margin="4" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="Light">
 					Welcome to Browser Picker, hope you enjoy my little app!<LineBreak />
 					I've gone ahead and opened up the settings window,<LineBreak />
 					so you can have a look around before you get started :)
 					<LineBreak />
 					<LineBreak />
-					Please give it a ⭐ on github, so you will get notified when a new release is made.
+					Please give it a ⭐ on GitHub, so you will get notified when a new release is made.
 					<LineBreak />
 					<LineBreak />
 					Should you run into any kind of trouble or get an idea,<LineBreak />
@@ -112,11 +146,13 @@
 					Be seeing you!
 					<LineBreak />
 					<LineBreak />
-					<Run FontSize="8">This message will self destruct in 10 seconds</Run>
+					<Run FontSize="8">This message will self-destruct in 10 seconds</Run>
 				</TextBlock>
+				</ScrollViewer>
 			</TabItem>
 
 			<TabItem Header="Browsers">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition />
@@ -222,76 +258,120 @@
 						</TextBlock>
 					</StackPanel>
 				</Grid>
+				</ScrollViewer>
 			</TabItem>
 
 			<TabItem Header="Behaviour">
-				<StackPanel Orientation="Vertical">
-					<StackPanel.Resources>
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="4">
+				<Grid>
+					<Grid.Resources>
 						<Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
 							<Setter Property="Margin" Value="5,0,0,5"/>
 						</Style>
-					</StackPanel.Resources>
+					</Grid.Resources>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" MinWidth="260" />
+						<ColumnDefinition Width="*" MinWidth="260" />
+					</Grid.ColumnDefinitions>
 
-					<TextBlock Text="Appearance"  FontWeight="Bold" Margin="0,4,0,4" />
-					<StackPanel Orientation="Horizontal" Margin="5,0,0,8">
-						<TextBlock Text="Theme: "  VerticalAlignment="Center" />
-						<ComboBox ItemsSource="{Binding Source={StaticResource ThemeModes}}"
-							SelectedItem="{Binding Settings.ThemeMode}"
-							Width="120" VerticalAlignment="Center" />
+					<!-- Left: Appearance & list order -->
+					<StackPanel Grid.Column="0" Margin="0,0,16,0">
+						<TextBlock Text="Appearance" FontWeight="Bold" Margin="0,4,0,6" />
+						<StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+							<TextBlock Text="Theme: " VerticalAlignment="Center" />
+							<ComboBox ItemsSource="{Binding Source={StaticResource ThemeModes}}"
+								SelectedItem="{Binding Settings.ThemeMode}"
+								Width="120" VerticalAlignment="Center" />
+						</StackPanel>
+						<StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+							<TextBlock Text="Font size: " VerticalAlignment="Center" />
+							<TextBox Text="{Binding Settings.FontSize, UpdateSourceTrigger=PropertyChanged}" MinWidth="50" MinHeight="28" Padding="6,4" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+							<TextBlock Text=" px" VerticalAlignment="Center" Margin="2,0,0,0" />
+						</StackPanel>
+						<CheckBox Content="Auto size window" IsChecked="{Binding Settings.AutoSizeWindow}" ToolTip="When checked, the window fits its content. When unchecked, the window uses the last size you set by resizing. Resize the window to fix a size; that turns this off and saves the size." />
+						<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" />
+						<StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+							<StackPanel.Style>
+								<Style>
+									<Setter Property="UIElement.IsEnabled" Value="True" />
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Settings.DisableTransparency}" Value="True">
+											<Setter Property="UIElement.IsEnabled" Value="False" />
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</StackPanel.Style>
+							<TextBlock Text="Window opacity: " VerticalAlignment="Center" />
+							<Slider Minimum="0.5" Maximum="1" Value="{Binding Settings.WindowOpacity, UpdateSourceTrigger=Default}" Width="120" VerticalAlignment="Center" Margin="4,0" />
+							<TextBlock Text="{Binding Settings.WindowOpacity, StringFormat=P0}" VerticalAlignment="Center" MinWidth="32" />
+						</StackPanel>
+
+						<TextBlock Text="List order" FontWeight="Bold" Margin="0,16,0,6" />
+						<RadioButton GroupName="OrderBy" Content="Sort list manually" IsChecked="{Binding Settings.UseManualOrdering}" Margin="0,2" />
+						<RadioButton GroupName="OrderBy" Content="Sort list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Margin="0,2" />
+						<RadioButton GroupName="OrderBy" Content="Sort list alphabetically" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" Margin="0,2,0,6" />
 					</StackPanel>
-					<StackPanel Orientation="Horizontal" Margin="5,0,0,8">
-						<TextBlock Text="Font size: "  VerticalAlignment="Center" />
-						<TextBox Text="{Binding Settings.FontSize, UpdateSourceTrigger=PropertyChanged}" Width="50" VerticalAlignment="Center" />
-						<TextBlock Text=" px"  VerticalAlignment="Center" Margin="2,0,0,0" />
-					</StackPanel>
-					<CheckBox Content="Auto size window" IsChecked="{Binding Settings.AutoSizeWindow}" ToolTip="When checked, the window fits its content. When unchecked, the window uses the last size you set by resizing. Resize the window to fix a size; that turns this off and saves the size." />
 
-					<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}"  />
+					<!-- Right: Selection & defaults -->
+					<StackPanel Grid.Column="1">
+						<TextBlock Text="When to show the picker" FontWeight="Bold" Margin="0,4,0,6" />
+						<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" />
+						<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" />
+						<CheckBox Content="Use defaults even when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}"
+							ToolTip="When unchecked, the selection window appears if your default browser is not running. Check this to always open links in your default (or fallback) browser without showing the selection window." />
 
-					<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}"  />
+						<TextBlock Text="When no URL rule matches" FontWeight="Bold" Margin="0,16,0,6" />
+						<CheckBox Content="Use a fallback default browser" IsChecked="{Binding Settings.UseFallbackDefault}"
+							ToolTip="When checked, links that match no rule open in the browser you select below. When unchecked, the picker is shown (or you are asked) depending on other settings." />
+						<StackPanel Margin="20,4,0,0">
+							<StackPanel.Style>
+								<Style>
+									<Setter Property="UIElement.IsEnabled" Value="True" />
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Settings.UseFallbackDefault}" Value="False">
+											<Setter Property="UIElement.IsEnabled" Value="False" />
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</StackPanel.Style>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="Fallback browser: " VerticalAlignment="Center" />
+								<ComboBox
+									ItemsSource="{Binding ParentViewModel.Choices}"
+									ItemTemplate="{StaticResource BrowserIconAndName}"
+									IsSynchronizedWithCurrentItem="False"
+									SelectedValuePath="Model.Id"
+									SelectedValue="{Binding Settings.DefaultBrowser}"
+									MinWidth="180" MinHeight="28" VerticalAlignment="Center" />
+							</StackPanel>
+						</StackPanel>
 
-					<StackPanel Orientation="Horizontal">
-						<CheckBox Content="When no default is configured matching the url, use:" IsChecked="{Binding Settings.UseFallbackDefault}"  />
-						<ComboBox
-							ItemsSource="{Binding ParentViewModel.Choices}"
-							ItemTemplate="{StaticResource BrowserIconAndName}"
-							IsSynchronizedWithCurrentItem="False"
-							SelectedValuePath="Model.Id"
-							SelectedValue="{Binding Settings.DefaultBrowser}"
-							Height="22" Margin="5,-4,0,0" />
-					</StackPanel>
-
-					<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}"  />
-
-					<CheckBox Content="Use defaults even when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}"  Checked="CheckBox_Checked"
-						ToolTip="When unchecked, the selection window appears if your default browser is not running. Check this to always open links in your default (or fallback) browser without showing the selection window." />
-
-					<RadioButton GroupName="OrderBy" Content="Sort list manually" IsChecked="{Binding Settings.UseManualOrdering}"  Margin="6,2" />
-					<RadioButton GroupName="OrderBy" Content="Sort list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}"  Margin="6,2" />
-					<RadioButton GroupName="OrderBy" Content="Sort list alphabetically" IsChecked="{Binding Settings.UseAlphabeticalOrdering}"  Margin="6,2,4,6" />
-
-					<CheckBox Content="Disallow network activity"  IsChecked="{Binding Settings.DisableNetworkAccess}" ToolTip="Disabled url resolution feature" />
-
-					<StackPanel Margin="25,0,0,0">
-						<StackPanel.Style>
-							<Style>
-								<Setter Property="Control.IsEnabled" Value="True" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding Settings.DisableNetworkAccess}" Value="True">
-										<Setter Property="Control.IsEnabled" Value="False" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</StackPanel.Style>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock  Text="URL resolution timeout: " />
-							<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds, UpdateSourceTrigger=PropertyChanged}"  />
+						<TextBlock Text="Network" FontWeight="Bold" Margin="0,16,0,6" />
+						<CheckBox Content="Disallow network activity" IsChecked="{Binding Settings.DisableNetworkAccess}" ToolTip="Disables URL resolution feature" />
+						<StackPanel Margin="20,4,0,0">
+							<StackPanel.Style>
+								<Style>
+									<Setter Property="UIElement.IsEnabled" Value="True" />
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Settings.DisableNetworkAccess}" Value="True">
+											<Setter Property="UIElement.IsEnabled" Value="False" />
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</StackPanel.Style>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="URL resolution timeout: " VerticalAlignment="Center" />
+								<TextBox Text="{Binding Settings.UrlLookupTimeoutMilliseconds, UpdateSourceTrigger=PropertyChanged}" MinWidth="70" MinHeight="28" Padding="6,4" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="4,0,0,0" />
+								<TextBlock Text=" ms" VerticalAlignment="Center" Margin="2,0,0,0" />
+							</StackPanel>
 						</StackPanel>
 					</StackPanel>
-				</StackPanel>
+				</Grid>
+				</ScrollViewer>
 			</TabItem>
 
 			<TabItem Header="Defaults">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="4">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -315,9 +395,9 @@
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
-											ItemsSource="{Binding Source={StaticResource MatchTypes}}"
+											ItemsSource="{Binding DataContext.MatchTypesForRules, RelativeSource={RelativeSource AncestorType=view:Configuration}}"
 											IsSynchronizedWithCurrentItem="False"
-											SelectedValue="{Binding Type}"
+											SelectedItem="{Binding Type}"
 											VerticalContentAlignment="Center" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
@@ -330,12 +410,12 @@
 									</Style>
 								</DataGridTextColumn.ElementStyle>
 							</DataGridTextColumn>
-							<DataGridTemplateColumn Header="Browser" Width="55" SortMemberPath="Model.Name">
+							<DataGridTemplateColumn Header="Browser" Width="*" MinWidth="140" SortMemberPath="Model.Name">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
 											ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
-											ItemTemplate="{StaticResource BrowserIcon}"
+											ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedValue="{Binding Browser}"
 											SelectedValuePath="Model.Id"
@@ -353,28 +433,31 @@
 						</DataGrid.Columns>
 					</DataGrid>
 
-					<Grid Grid.Row="2">
+					<Grid Grid.Row="2" Margin="0,8,0,0">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="*" />
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
-						<ComboBox ItemsSource="{Binding Source={StaticResource MatchTypes}}" SelectedItem="{Binding NewDefaultMatchType}" />
-						<TextBox Text="{Binding NewDefaultPattern}" Grid.Column="1" />
+						<ComboBox ItemsSource="{Binding MatchTypesForRules}" SelectedItem="{Binding NewDefaultMatchType}"
+							MinHeight="28" MinWidth="100" VerticalContentAlignment="Center" />
+						<TextBox Text="{Binding NewDefaultPattern}" Grid.Column="1" MinHeight="28" Padding="6,4" VerticalContentAlignment="Center" Margin="4,0,0,0" />
 						<ComboBox
 							ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.ParentViewModel.Choices}"
-							ItemTemplate="{StaticResource BrowserIcon}"
+							ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 							IsSynchronizedWithCurrentItem="False"
 							SelectedValue="{Binding NewDefaultBrowser}"
 							SelectedValuePath="Model.Id"
-							Grid.Column="2" Height="22" />
-						<Button Content="Add" Grid.Column="3" Padding="5,0" Command="{Binding AddDefault}" />
+							Grid.Column="2" MinHeight="28" MinWidth="160" VerticalContentAlignment="Center" Margin="4,0,0,0" />
+						<Button Content="Add" Grid.Column="3" Padding="12,0" MinHeight="28" VerticalAlignment="Stretch" Margin="4,0,0,0" Command="{Binding AddDefault}" />
 					</Grid>
 				</Grid>
+				</ScrollViewer>
 			</TabItem>
 
 			<TabItem Header="Test defaults">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="4">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -396,9 +479,11 @@
 					<TextBlock Text="Actual browser choice:" Grid.Column="0" Grid.Row="3"  />
 					<TextBlock Text="{Binding TestActualResult}" Grid.Column="1" Grid.Row="3" Foreground="LightGreen" />
 				</Grid>
+				</ScrollViewer>
 			</TabItem>
 
 			<TabItem Header="Backup">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="4">
 				<Grid Margin="10" VerticalAlignment="Top">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -413,38 +498,48 @@
 						<TextBlock Text="{Binding Settings.BackupLog}"  TextWrapping="Wrap" />
 					</ScrollViewer>
 				</Grid>
+				</ScrollViewer>
 			</TabItem>
 
 			<TabItem Header="URL shorteners">
-				<Grid>
+				<Grid Margin="4">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
-						<RowDefinition />
+						<RowDefinition Height="*" />
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition />
-						<ColumnDefinition />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
-					<TextBlock  Text="These domains are known URL shorteners and gets probed on launch unless disallowed by settings" Grid.ColumnSpan="2" />
-					
-					<TextBlock  Text="Default shorteners" Grid.Row="1" Grid.Column="0" Margin="5" />
-					<ListBox Grid.Row="2" Grid.Column="0" ItemsSource="{Binding DefaultUrlShorteners}" SelectionMode="Single" />
-					<TextBlock Grid.Row="3" Grid.Column="0" FontSize="10" Text="ℹ️ Some additional jump pages not shown above" ToolTip="Some pages, such as outlook safelinks, have special handling where the target url is in the query string, these are not listed in this list, as they require additional information in code."  VerticalAlignment="Center" HorizontalAlignment="Center" />
-
-					<TextBlock  Text="Additional shorteners" Grid.Row="1" Grid.Column="1" Margin="5" />
-					<ListBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AdditionalUrlShorteners}" x:Name="UrlShorteners" SelectionMode="Single" />
-					
+					<TextBlock Text="These domains are known URL shorteners and get probed on launch unless disallowed by settings." Grid.ColumnSpan="2" Margin="0,0,0,8" TextWrapping="Wrap" />
+					<TextBlock Text="Default shorteners" Grid.Row="1" Grid.Column="0" Margin="0,0,0,4" />
+					<TextBlock Text="Additional shorteners" Grid.Row="1" Grid.Column="1" Margin="0,0,0,4" />
+					<Grid Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="0,0,0,8">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" MinWidth="120" />
+							<ColumnDefinition Width="8" />
+							<ColumnDefinition Width="*" MinWidth="120" />
+						</Grid.ColumnDefinitions>
+						<ListBox Grid.Column="0" ItemsSource="{Binding DefaultUrlShorteners}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+						<ListBox Grid.Column="2" ItemsSource="{Binding AdditionalUrlShorteners}" x:Name="UrlShorteners" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+					</Grid>
+					<TextBlock Grid.Row="3" Grid.Column="0" FontSize="10" VerticalAlignment="Center" Margin="0,0,8,0">
+						<TextBlock.Text>ℹ️ Some additional jump pages not shown above</TextBlock.Text>
+						<TextBlock.ToolTip>
+							<ToolTip>Some pages, such as outlook safelinks, have special handling where the target url is in the query string; these are not listed here as they require additional information in code.</ToolTip>
+						</TextBlock.ToolTip>
+					</TextBlock>
 					<Grid Grid.Row="3" Grid.Column="1">
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition />
+							<ColumnDefinition Width="*" />
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="Auto" />
 						</Grid.ColumnDefinitions>
-						<TextBox Text="{Binding NewUrlShortener}" x:Name="NewShortener" />
-						<Button Grid.Column="1" Grid.Row="0" Content="Add" Padding="10,0" Command="{Binding AddShortener}" CommandParameter="{Binding Text, ElementName=NewShortener}" />
-						<Button Grid.Column="2" Grid.Row="0" Content="Remove" Padding="10,0" Command="{Binding RemoveShortener}" CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}" />
+						<TextBox Text="{Binding NewUrlShortener}" x:Name="NewShortener" Margin="0,0,4,0" />
+						<Button Grid.Column="1" Content="Add" Padding="10,0" Command="{Binding AddShortener}" CommandParameter="{Binding Text, ElementName=NewShortener}" />
+						<Button Grid.Column="2" Content="Remove" Padding="10,0" Command="{Binding RemoveShortener}" CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}" />
 					</Grid>
 				</Grid>
 			</TabItem>
