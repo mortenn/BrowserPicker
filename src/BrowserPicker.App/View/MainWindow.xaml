@@ -22,7 +22,7 @@
 				<Setter Property="Background" Value="Transparent" />
 				<Style.Triggers>
 					<DataTrigger Binding="{Binding Configuration.Settings.DisableTransparency}" Value="True">
-						<Setter Property="Border.Background" Value="Black" />
+						<Setter Property="Border.Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
 					</DataTrigger>
 				</Style.Triggers>
 			</Style>

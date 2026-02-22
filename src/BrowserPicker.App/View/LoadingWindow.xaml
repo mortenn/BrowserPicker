@@ -1,30 +1,25 @@
-﻿<Window
+<Window
 	x:Class="BrowserPicker.View.LoadingWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
+	xmlns:app="clr-namespace:BrowserPicker"
 	Background="Transparent"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:ApplicationViewModel,d:IsDesignTimeCreatable=true}"
 	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
 	AllowsTransparency="True" WindowStyle="None"
 	ShowInTaskbar="False" SizeChanged="Window_SizeChanged">
-	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2">
-		<Border.Background>
-			<LinearGradientBrush EndPoint="0,1">
-				<GradientStop Offset="0" Color="#cc272727" />
-				<GradientStop Offset="1" Color="#cc000000" />
-			</LinearGradientBrush>
-		</Border.Background>
-		<Grid Margin="10">
+	<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
+		<Grid Margin="10" TextElement.Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<TextBlock Foreground="White" Margin="20" FontSize="18">Scanning URL...</TextBlock>
-			<TextBlock Grid.Row="1" Text="{Binding Url.UnderlyingTargetURL}" Foreground="White" Margin="5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" MaxWidth="380" />
+			<TextBlock Margin="20" FontSize="18">Scanning URL...</TextBlock>
+			<TextBlock Grid.Row="1" Text="{Binding Url.UnderlyingTargetURL}" Margin="5" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" MaxWidth="380" />
 		</Grid>
 	</Border>
 </Window>

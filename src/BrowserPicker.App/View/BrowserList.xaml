@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
 	x:Class="BrowserPicker.View.BrowserList"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,6 +6,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
 	xmlns:converter="clr-namespace:BrowserPicker.Converter"
+	xmlns:app="clr-namespace:BrowserPicker"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:ApplicationViewModel,d:IsDesignTimeCreatable=true}">
 	<UserControl.Resources>
@@ -49,7 +50,7 @@
 						</Hyperlink.Style>
 						📋
 					</Hyperlink>
-					<Hyperlink TextDecorations="None" Command="{Binding Edit}" Foreground="Silver" ToolTip="Edit the URL before opening it">
+					<Hyperlink TextDecorations="None" Command="{Binding Edit}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" ToolTip="Edit the URL before opening it">
 						<Hyperlink.Style>
 							<Style>
 								<Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -63,7 +64,7 @@
 						✏
 					</Hyperlink>
 				</TextBlock>
-				<TextBlock Text="Redirected URL" Foreground="Silver" Margin="5,5,0,0">
+				<TextBlock Text="Redirected URL" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Margin="5,5,0,0">
 					<TextBlock.Style>
 						<Style>
 							<Style.Triggers>
@@ -75,8 +76,8 @@
 					</TextBlock.Style>
 				</TextBlock>
 			</StackPanel>
-			<Border Background="DarkGray" CornerRadius="5" Padding="2" Margin="2">
-				<TextBlock Foreground="Black" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="380" MaxHeight="100">
+			<Border Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" CornerRadius="5" Padding="2" Margin="2">
+				<TextBlock Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxWidth="380" MaxHeight="100">
 					<Image Source="{Binding Url.FavIcon}" Height="16" Width="16" Margin="0,-3" />
 					<Run Text="{Binding Url.DisplayURL, Mode=OneWay}" />
 				</TextBlock>
@@ -100,12 +101,15 @@
 				Grid.Row="0" MaxWidth="500" MaxHeight="70"
 				Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}"
 				KeyUp="Editor_KeyUp"
-				HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow" />
+				HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow"
+				Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}"
+				Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}"
+				BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
 			<TextBlock Grid.Column="1" Margin="5,0,0,0">
-				<Hyperlink Command="{Binding EndEdit}" Foreground="White" TextDecorations="None">✔️</Hyperlink>
+				<Hyperlink Command="{Binding EndEdit}" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" TextDecorations="None">✔️</Hyperlink>
 			</TextBlock>
 		</Grid>
-		<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+		<ScrollViewer x:Name="BrowserListScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" SizeChanged="BrowserListScroll_SizeChanged">
 			<ItemsControl ItemsSource="{Binding Choices}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
@@ -127,7 +131,7 @@
 							</Button.Style>
 							<Button.Template>
 								<ControlTemplate TargetType="Button">
-									<Border Cursor="Hand" CornerRadius="5" Background="#44000000" BorderBrush="#22ffffff" BorderThickness="1">
+									<Border Cursor="Hand" CornerRadius="5" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" BorderThickness="1">
 										<Border.Style>
 											<Style TargetType="Border">
 												<Setter Property="Opacity" Value="1" />
@@ -165,7 +169,7 @@
 													</Style>
 												</Image.Style>
 											</Image>
-											<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="White" Margin="20" FontSize="18">
+											<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" Margin="20" FontSize="18">
 												<TextBlock.Style>
 													<Style>
 														<Style.Triggers>
@@ -191,7 +195,7 @@
 												</Button.Style>
 												<Button.Template>
 													<ControlTemplate>
-														<Border Margin="10" Padding="10" Background="#22ffffff" Width="40" Height="40" CornerRadius="5" BorderThickness="2">
+														<Border Margin="10" Padding="10" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" Width="40" Height="40" CornerRadius="5" BorderThickness="2" BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
 															<Border.Style>
 																<Style TargetType="Border">
 																	<Style.Triggers>
@@ -226,13 +230,13 @@
 				<RowDefinition />
 			</Grid.RowDefinitions>
 			<TextBlock>
-				<Hyperlink Command="{Binding Configure}" Foreground="White">
+				<Hyperlink Command="{Binding Configure}" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
 					<TextBlock Text="Configure browser list" />
 				</Hyperlink>
 			</TextBlock>
-			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="White" />
+			<CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" Content="Always ask" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
 			<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" IsChecked="{Binding Configuration.AutoAddDefault}" Width="350">
-				<TextBlock Foreground="White" TextWrapping="Wrap" MaxHeight="50">
+				<TextBlock Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" TextWrapping="Wrap" MaxHeight="50">
 					<Run Text="Remember my choice for" />
 					<Run Text="{Binding Url.HostName}" />
 				</TextBlock>
