@@ -71,7 +71,8 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			ParentViewModel = this
 		};
-		var choices = settings.BrowserList.Select(m => new BrowserViewModel(m, this)).ToList();
+		var sorter = settings.BrowserSorter ?? new BrowserSorter(settings);
+		var choices = settings.BrowserList.OrderBy(m => m, sorter).Select(m => new BrowserViewModel(m, this)).ToList();
 		Choices = new ObservableCollection<BrowserViewModel>(choices);
 	}
 
