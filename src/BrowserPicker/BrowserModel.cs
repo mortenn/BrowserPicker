@@ -52,8 +52,8 @@ public sealed class BrowserModel : ModelBase
 
     /// <summary>
     /// Stable identifier used as the registry key; does not change when the user renames the browser.
+    /// Persisted in JSON so defaults and key bindings survive renames and restart.
     /// </summary>
-    [JsonIgnore]
     public string Id
     {
         get => id;
