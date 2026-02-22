@@ -6,13 +6,20 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
 	xmlns:view="clr-namespace:BrowserPicker.View"
+	xmlns:app="clr-namespace:BrowserPicker"
 	Background="Transparent"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:ApplicationViewModel,d:IsDesignTimeCreatable=true}"
-	Title="Browser Picker" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight" ResizeMode="NoResize" 
+	Title="Browser Picker" WindowStartupLocation="CenterScreen"
+	SizeToContent="WidthAndHeight" ResizeMode="CanResize"
+	MinWidth="320" MinHeight="200"
 	AllowsTransparency="True" WindowStyle="None"
 	WindowState="Normal" Topmost="True" KeyDown="MainWindow_OnKeyDown"
-	PreviewKeyUp="MainWindow_OnPreviewKeyUp" ShowInTaskbar="False" SizeChanged="Window_SizeChanged">
+	PreviewKeyUp="MainWindow_OnPreviewKeyUp" ShowInTaskbar="False"
+	SizeChanged="Window_SizeChanged"
+	Loaded="MainWindow_Loaded"
+	ContentRendered="MainWindow_ContentRendered"
+	Closing="MainWindow_Closing">
 	<Window.InputBindings>
 		<KeyBinding Command="{Binding CopyUrl}" Gesture="Ctrl+C" />
 	</Window.InputBindings>
@@ -27,15 +34,19 @@
 				</Style.Triggers>
 			</Style>
 		</Border.Style>
-		<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" MouseLeftButtonDown="DragWindow">
-			<Border.Background>
-				<LinearGradientBrush EndPoint="0,1">
-					<GradientStop Offset="0" Color="#cc272727" />
-					<GradientStop Offset="1" Color="#cc000000" />
-				</LinearGradientBrush>
-			</Border.Background>
-			<Grid Margin="10">
-				<Border>
+		<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" MouseLeftButtonDown="DragWindow"
+			Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
+			<Grid Margin="10" x:Name="RootContent" TextElement.FontSize="{Binding Configuration.Settings.FontSize, FallbackValue=14}"
+				TextElement.Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
 					<Border.Style>
 						<Style>
 							<Setter Property="UIElement.Visibility" Value="Visible" />
@@ -48,7 +59,7 @@
 					</Border.Style>
 					<view:BrowserList />
 				</Border>
-				<Border>
+				<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
 					<Border.Style>
 						<Style>
 							<Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -61,6 +72,13 @@
 					</Border.Style>
 					<view:Configuration DataContext="{Binding Configuration}" />
 				</Border>
+				<Canvas x:Name="ResizeGrip" Grid.Row="1" Grid.Column="1" Width="14" Height="14" Cursor="SizeNWSE"
+					Background="Transparent"
+					PreviewMouseLeftButtonDown="ResizeGrip_PreviewMouseLeftButtonDown">
+					<!-- Two diagonal lines for grip (⌟), theme-aware -->
+					<Line X1="4" Y1="14" X2="14" Y2="4" Stroke="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" StrokeThickness="1.5" Opacity="0.6" />
+					<Line X1="9" Y1="14" X2="14" Y2="9" Stroke="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" StrokeThickness="1.5" Opacity="0.6" />
+				</Canvas>
 			</Grid>
 		</Border>
 	</Border>

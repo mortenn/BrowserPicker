@@ -35,8 +35,11 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private string[] _urlShorteners = [];
 	private bool _useFallbackDefault;
 	private string _backupLog = string.Empty;
+	private bool _autoSizeWindow = true;
 	private double _windowWidth;
 	private double _windowHeight;
+	private double _configWindowWidth = 600;
+	private double _configWindowHeight = 450;
 	private double _fontSize = 14;
 	private ThemeMode _themeMode = ThemeMode.System;
 
@@ -127,8 +130,11 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public bool DisableTransparency { get => _disableTransparency; set { if (SetProperty(ref _disableTransparency, value)) SaveToFile(); } }
 	public bool DisableNetworkAccess { get => _disableNetworkAccess; set { if (SetProperty(ref _disableNetworkAccess, value)) SaveToFile(); } }
 	public string[] UrlShorteners { get => _urlShorteners; set { if (SetProperty(ref _urlShorteners, value)) SaveToFile(); } }
+	public bool AutoSizeWindow { get => _autoSizeWindow; set { if (SetProperty(ref _autoSizeWindow, value)) SaveToFile(); } }
 	public double WindowWidth { get => _windowWidth; set { if (SetProperty(ref _windowWidth, value)) SaveToFile(); } }
 	public double WindowHeight { get => _windowHeight; set { if (SetProperty(ref _windowHeight, value)) SaveToFile(); } }
+	public double ConfigWindowWidth { get => _configWindowWidth; set { if (SetProperty(ref _configWindowWidth, value)) SaveToFile(); } }
+	public double ConfigWindowHeight { get => _configWindowHeight; set { if (SetProperty(ref _configWindowHeight, value)) SaveToFile(); } }
 	public double FontSize { get => _fontSize; set { if (SetProperty(ref _fontSize, value)) SaveToFile(); } }
 	public ThemeMode ThemeMode { get => _themeMode; set { if (SetProperty(ref _themeMode, value)) SaveToFile(); } }
 
@@ -285,11 +291,15 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		_urlShorteners = s.UrlShorteners ?? [];
 		_windowWidth = s.WindowWidth;
 		_windowHeight = s.WindowHeight;
+		_configWindowWidth = s.ConfigWindowWidth > 0 ? s.ConfigWindowWidth : 600;
+		_configWindowHeight = s.ConfigWindowHeight > 0 ? s.ConfigWindowHeight : 450;
 		_fontSize = s.FontSize > 0 ? s.FontSize : 14;
 		_themeMode = s.ThemeMode;
 		OnPropertyChanged(nameof(AlwaysPrompt));
 		OnPropertyChanged(nameof(WindowWidth));
 		OnPropertyChanged(nameof(WindowHeight));
+		OnPropertyChanged(nameof(ConfigWindowWidth));
+		OnPropertyChanged(nameof(ConfigWindowHeight));
 		OnPropertyChanged(nameof(FontSize));
 		OnPropertyChanged(nameof(ThemeMode));
 	}
@@ -386,8 +396,11 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		_disableTransparency = settings.DisableTransparency;
 		_disableNetworkAccess = settings.DisableNetworkAccess;
 		_urlShorteners = settings.UrlShorteners ?? [];
+		_autoSizeWindow = settings.WindowWidth <= 0 && settings.WindowHeight <= 0 ? true : settings.AutoSizeWindow;
 		_windowWidth = settings.WindowWidth;
 		_windowHeight = settings.WindowHeight;
+		_configWindowWidth = settings.ConfigWindowWidth > 0 ? settings.ConfigWindowWidth : 600;
+		_configWindowHeight = settings.ConfigWindowHeight > 0 ? settings.ConfigWindowHeight : 450;
 		_fontSize = settings.FontSize > 0 ? settings.FontSize : 14;
 		_themeMode = settings.ThemeMode;
 		_browserList.Clear();

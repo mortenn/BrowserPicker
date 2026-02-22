@@ -33,8 +33,11 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool disable_transparency;
 	private bool disable_network_access;
 	private string[] url_shorteners = [];
+	private bool auto_size_window = true;
 	private double window_width;
 	private double window_height;
+	private double config_window_width = 600;
+	private double config_window_height = 450;
 	private double font_size = 14;
 	private ThemeMode theme_mode = ThemeMode.System;
 
@@ -65,6 +68,7 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 			url_shorteners = Reg.Get<string[]>() ?? [];
 			window_width = double.TryParse(Reg.GetValue("WindowWidth") as string, out var w) ? w : 0;
 			window_height = double.TryParse(Reg.GetValue("WindowHeight") as string, out var h) ? h : 0;
+			auto_size_window = window_width <= 0 && window_height <= 0;
 			font_size = double.TryParse(Reg.GetValue("FontSize") as string, out var f) && f > 0 ? f : 14;
 			theme_mode = (ThemeMode)(Reg.GetValue("ThemeMode") is int i ? i : (int)ThemeMode.System);
 		}
@@ -130,10 +134,19 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 	public string[] UrlShorteners { get => url_shorteners; set { url_shorteners = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
+	public bool AutoSizeWindow { get => auto_size_window; set { auto_size_window = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
 	public double WindowWidth { get => window_width; set { window_width = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
 	public double WindowHeight { get => window_height; set { window_height = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
+	public double ConfigWindowWidth { get => config_window_width; set { config_window_width = value; OnPropertyChanged(); } }
+
+	/// <inheritdoc />
+	public double ConfigWindowHeight { get => config_window_height; set { config_window_height = value; OnPropertyChanged(); } }
 
 	/// <inheritdoc />
 	public double FontSize { get => font_size; set { font_size = value; OnPropertyChanged(); } }
@@ -324,6 +337,8 @@ public sealed class AppSettings : ModelBase, IBrowserPickerConfiguration
 		DisableNetworkAccess = settings.DisableNetworkAccess;
 		WindowWidth = settings.WindowWidth;
 		WindowHeight = settings.WindowHeight;
+		ConfigWindowWidth = settings.ConfigWindowWidth;
+		ConfigWindowHeight = settings.ConfigWindowHeight;
 		FontSize = settings.FontSize;
 		ThemeMode = settings.ThemeMode;
 	}

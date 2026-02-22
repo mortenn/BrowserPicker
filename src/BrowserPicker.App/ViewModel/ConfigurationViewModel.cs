@@ -75,6 +75,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool DisableTransparency { get; set; } = true;
 		public bool DisableNetworkAccess { get; set; } = false;
 
+		public bool AutoSizeWindow { get; set; } = true;
 		public double WindowWidth { get; set; }
 		public double WindowHeight { get; set; }
 		public double FontSize { get; set; } = 14;
