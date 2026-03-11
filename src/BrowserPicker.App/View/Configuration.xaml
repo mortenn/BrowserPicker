@@ -155,10 +155,6 @@
 			<TabItem Header="Browsers">
 				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
 				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
 					<ScrollViewer VerticalScrollBarVisibility="Auto">
 						<ItemsControl ItemsSource="{Binding ParentViewModel.Choices}">
 							<ItemsControl.ItemsPanel>
@@ -245,19 +241,6 @@
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>
 					</ScrollViewer>
-					<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
-						<TextBlock>
-							<Hyperlink Command="{Binding AddBrowser}" >
-								<TextBlock Text="Add browser" />
-							</Hyperlink>
-						</TextBlock>
-
-						<TextBlock Margin="10,0,0,0">
-							<Hyperlink Command="{Binding RefreshBrowsers}" >
-								<TextBlock Text="Refresh browser list" />
-							</Hyperlink>
-						</TextBlock>
-					</StackPanel>
 				</Grid>
 				</ScrollViewer>
 			</TabItem>
@@ -813,40 +796,68 @@
 			
 		</TabControl>
 
-		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+		<Grid Grid.Row="1" Margin="18,0,18,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
 
-			<TextBlock Padding="4">
-				<TextBlock.Style>
-					<Style>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+				<StackPanel.Style>
+					<Style TargetType="StackPanel">
+						<Setter Property="Visibility" Value="Collapsed" />
 						<Style.Triggers>
-							<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
-								<Setter Property="UIElement.Visibility" Value="Collapsed" />
+							<DataTrigger Binding="{Binding SelectedTabIndex}" Value="1">
+								<Setter Property="Visibility" Value="Visible" />
 							</DataTrigger>
 						</Style.Triggers>
 					</Style>
-				</TextBlock.Style>
-				<Hyperlink Command="{Binding ParentViewModel.Configure}" >
-					<TextBlock Text="Done" />
-				</Hyperlink>
-			</TextBlock>
+				</StackPanel.Style>
+				<TextBlock Padding="4">
+					<Hyperlink Command="{Binding AddBrowser}">
+						<TextBlock Text="Add browser" />
+					</Hyperlink>
+				</TextBlock>
+				<TextBlock Padding="4" Margin="10,0,0,0">
+					<Hyperlink Command="{Binding RefreshBrowsers}">
+						<TextBlock Text="Refresh browser list" />
+					</Hyperlink>
+				</TextBlock>
+			</StackPanel>
 
-			<TextBlock Padding="4">
-				<TextBlock.Style>
-					<Style>
-						<Setter Property="UIElement.Visibility" Value="Collapsed" />
-						<Style.Triggers>
-							<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
-								<Setter Property="UIElement.Visibility" Value="Visible" />
-							</DataTrigger>
-						</Style.Triggers>
-					</Style>
-				</TextBlock.Style>
-				<Hyperlink Command="{Binding ParentViewModel.Exit}" >
-					<TextBlock Text="Done" />
-				</Hyperlink>
-			</TextBlock>
+			<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+				<TextBlock Padding="4">
+					<TextBlock.Style>
+						<Style>
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
+									<Setter Property="UIElement.Visibility" Value="Collapsed" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</TextBlock.Style>
+					<Hyperlink Command="{Binding ParentViewModel.Configure}" >
+						<TextBlock Text="Done" />
+					</Hyperlink>
+				</TextBlock>
 
-		</StackPanel>
+				<TextBlock Padding="4">
+					<TextBlock.Style>
+						<Style>
+							<Setter Property="UIElement.Visibility" Value="Collapsed" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding ParentViewModel.Url.TargetURL}" Value="{x:Null}">
+									<Setter Property="UIElement.Visibility" Value="Visible" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</TextBlock.Style>
+					<Hyperlink Command="{Binding ParentViewModel.Exit}" >
+						<TextBlock Text="Done" />
+					</Hyperlink>
+				</TextBlock>
+			</StackPanel>
+		</Grid>
 
 	</Grid>
 </UserControl>
