@@ -200,6 +200,11 @@ public sealed class ApplicationViewModel : ModelBase
 	public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
 
 	/// <summary>
+	/// Opens configuration mode directly on the feedback tab.
+	/// </summary>
+	public ICommand Feedback => new DelegateCommand(OpenFeedback);
+
+	/// <summary>
 	/// Closes the application by triggering the shutdown event.
 	/// </summary>
 	public ICommand Exit => new DelegateCommand(() => OnShutdown?.Invoke(this, EventArgs.Empty));
@@ -313,6 +318,12 @@ public sealed class ApplicationViewModel : ModelBase
 	internal void ApplyAutoCloseOnFocusLostSetting()
 	{
 		OnPropertyChanged(nameof(Pinned));
+	}
+
+	private void OpenFeedback()
+	{
+		Configuration.ShowFeedbackTab();
+		ConfigurationMode = true;
 	}
 
 	/// <summary>
