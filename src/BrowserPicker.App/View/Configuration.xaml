@@ -10,6 +10,7 @@
 	xmlns:browserPicker="clr-namespace:BrowserPicker;assembly=BrowserPicker.Common"
 	xmlns:system="clr-namespace:System;assembly=mscorlib"
 	xmlns:app="clr-namespace:BrowserPicker"
+	xmlns:logging="clr-namespace:Microsoft.Extensions.Logging;assembly=Microsoft.Extensions.Logging.Abstractions"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:ConfigurationViewModel,d:IsDesignTimeCreatable=True}"
 	HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -106,7 +107,8 @@
 			<RowDefinition Height="auto" />
 		</Grid.RowDefinitions>
 
-		<TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+		<TabControl x:Name="Tabs" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			SelectionChanged="TabControl_SelectionChanged"
 			Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
 			<TabControl.Style>
 				<Style TargetType="TabControl">
@@ -501,6 +503,247 @@
 					</ScrollViewer>
 				</Grid>
 				</ScrollViewer>
+			</TabItem>
+
+			<TabItem x:Name="FeedbackTab" Header="Feedback">
+				<Grid x:Name="FeedbackContentRoot"
+					d:DataContext="{d:DesignInstance viewModel:FeedbackViewModel, d:IsDesignTimeCreatable=False}">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<Border Padding="12"
+						Background="{DynamicResource {x:Static app:App.ContentBackgroundSemiTransparentBrushKey}}">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<StackPanel>
+								<TextBlock FontSize="18" FontWeight="SemiBold" Text="Feedback and diagnostics" />
+								<TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+									When something feels off, copy a ready-made report for GitHub or open a new issue with the important context already filled in.
+								</TextBlock>
+							</StackPanel>
+							<WrapPanel Grid.Row="1" Margin="0,12,0,0">
+								<Button Content="Copy feedback report as Markdown" Padding="12,4" Margin="0,0,8,8" Command="{Binding CopyFeedbackMarkdown}" />
+								<Button Content="Report bug on GitHub" Padding="12,4" Margin="0,0,8,8" Command="{Binding ReportBug}" />
+								<Button Content="Copy raw application log" Padding="12,4" Margin="0,0,0,8" Command="{Binding CopyApplicationLog}" />
+							</WrapPanel>
+						</Grid>
+					</Border>
+					<Border Grid.Row="1"
+						Background="#111827"
+						SnapsToDevicePixels="True">
+						<Grid Margin="0">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="*" />
+							</Grid.RowDefinitions>
+							<Grid Background="#1F2937">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
+								<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,10">
+									<TextBlock Text="Application log" FontWeight="SemiBold" Foreground="#F9FAFB" />
+									<TextBlock Text="  " />
+									<TextBlock Text="{Binding ApplicationLogStatus}" Foreground="#9CA3AF" FontSize="11" />
+								</StackPanel>
+								<Border Grid.Column="1" Background="#374151" CornerRadius="999" Padding="8,2" Margin="8,10,12,10" VerticalAlignment="Center">
+									<TextBlock Text="{Binding ApplicationLogEntryCount, StringFormat={}{0} lines}" Foreground="#FDE68A" FontSize="11" />
+								</Border>
+							</Grid>
+							<Grid Grid.Row="1" Background="#162132">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<TextBlock Text="Filter"
+									Margin="12,10,8,10"
+									VerticalAlignment="Center"
+									Foreground="#94A3B8"
+									FontSize="11" />
+								<Grid Grid.Column="1" Margin="0,8,12,8">
+									<TextBox Text="{Binding ApplicationLogFilter, UpdateSourceTrigger=PropertyChanged}"
+										Background="#0F172A"
+										Foreground="#E5E7EB"
+										BorderBrush="#334155"
+										CaretBrush="#F59E0B"
+										Padding="8,4,26,4"
+										ToolTip="Filter on timestamp, level, context, event, and message." />
+									<TextBlock Text="Filter timestamp, level, context, event, or message"
+										Margin="10,0,28,0"
+										Foreground="#64748B"
+										IsHitTestVisible="False"
+										VerticalAlignment="Center">
+										<TextBlock.Style>
+											<Style TargetType="TextBlock">
+												<Setter Property="Visibility" Value="Collapsed" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding HasApplicationLogFilter}" Value="False">
+														<Setter Property="Visibility" Value="Visible" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</TextBlock.Style>
+									</TextBlock>
+									<Button Content="×"
+										Command="{Binding ClearApplicationLogFilter}"
+										Width="18"
+										Height="18"
+										Padding="0"
+										Margin="0,0,6,0"
+										HorizontalAlignment="Right"
+										VerticalAlignment="Center"
+										Background="#334155"
+										Foreground="#E5E7EB"
+										BorderBrush="#475569">
+										<Button.Style>
+											<Style TargetType="Button">
+												<Setter Property="Visibility" Value="Collapsed" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding HasApplicationLogFilter}" Value="True">
+														<Setter Property="Visibility" Value="Visible" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Button.Style>
+									</Button>
+								</Grid>
+							</Grid>
+							<Grid Grid.Row="2" Grid.IsSharedSizeScope="True">
+								<ListBox ItemsSource="{Binding FilteredApplicationLogEntries}"
+									Background="#111827"
+									BorderThickness="0"
+									Foreground="#E5E7EB"
+									ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+									ScrollViewer.VerticalScrollBarVisibility="Auto"
+									ScrollViewer.CanContentScroll="True"
+									VirtualizingPanel.IsVirtualizing="True"
+									VirtualizingPanel.VirtualizationMode="Recycling"
+									app:AutoTailListBoxBehavior.IsEnabled="True">
+									<ListBox.ItemContainerStyle>
+										<Style TargetType="ListBoxItem">
+											<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+											<Setter Property="Padding" Value="0" />
+											<Setter Property="Margin" Value="0" />
+											<Setter Property="BorderThickness" Value="0" />
+											<Setter Property="Background" Value="Transparent" />
+											<Setter Property="Focusable" Value="False" />
+										</Style>
+									</ListBox.ItemContainerStyle>
+									<ListBox.ItemTemplate>
+										<DataTemplate DataType="{x:Type browserPicker:InMemoryLogEntry}">
+											<Border BorderBrush="#1F2937" BorderThickness="0,0,0,1" Padding="12,8">
+												<Grid>
+													<Grid.ColumnDefinitions>
+														<ColumnDefinition Width="Auto" MinWidth="240" MaxWidth="360" SharedSizeGroup="LogMetadataColumn" />
+														<ColumnDefinition Width="*" />
+													</Grid.ColumnDefinitions>
+													<StackPanel Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Top">
+														<StackPanel Orientation="Horizontal">
+															<TextBlock Text="{Binding TimestampDisplay}"
+																Foreground="#94A3B8"
+																FontFamily="Cascadia Mono,Consolas"
+																FontSize="12"
+																Margin="0,0,10,0"
+																VerticalAlignment="Center" />
+															<Border CornerRadius="999" Padding="8,2" Margin="0,0,10,0" VerticalAlignment="Center">
+																<Border.Style>
+																	<Style TargetType="Border">
+																		<Setter Property="Background" Value="#334155" />
+																		<Style.Triggers>
+																			<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Trace}">
+																				<Setter Property="Background" Value="#4B5563" />
+																			</DataTrigger>
+																			<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Debug}">
+																				<Setter Property="Background" Value="#1D4ED8" />
+																			</DataTrigger>
+																			<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Information}">
+																				<Setter Property="Background" Value="#047857" />
+																			</DataTrigger>
+																			<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Warning}">
+																				<Setter Property="Background" Value="#B45309" />
+																			</DataTrigger>
+																			<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Error}">
+																				<Setter Property="Background" Value="#B91C1C" />
+																			</DataTrigger>
+																			<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Critical}">
+																				<Setter Property="Background" Value="#7C3AED" />
+																			</DataTrigger>
+																		</Style.Triggers>
+																	</Style>
+																</Border.Style>
+																<TextBlock Text="{Binding LevelDisplay}"
+																	Foreground="White"
+																	FontWeight="SemiBold"
+																	FontFamily="Cascadia Mono,Consolas"
+																	FontSize="11" />
+															</Border>
+															<TextBlock Text="{Binding CategoryDisplay}"
+																Foreground="#60A5FA"
+																FontSize="12"
+																VerticalAlignment="Center"
+																TextTrimming="CharacterEllipsis" />
+														</StackPanel>
+														<TextBlock Text="{Binding EventDisplay}"
+															Foreground="#94A3B8"
+															FontFamily="Cascadia Mono,Consolas"
+															FontSize="11"
+															Margin="0,4,0,0"
+															TextTrimming="CharacterEllipsis" />
+													</StackPanel>
+													<TextBlock Grid.Column="1"
+														app:TextBlockInlineSegments.Segments="{Binding Segments}"
+														TextWrapping="Wrap"
+														VerticalAlignment="Top"
+														Margin="0,1,0,0"
+														FontFamily="Cascadia Mono,Consolas"
+														FontSize="12">
+														<TextBlock.Style>
+															<Style TargetType="TextBlock">
+																<Setter Property="Foreground" Value="#E5E7EB" />
+																<Style.Triggers>
+																	<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Warning}">
+																		<Setter Property="Foreground" Value="#FDE68A" />
+																	</DataTrigger>
+																	<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Error}">
+																		<Setter Property="Foreground" Value="#FCA5A5" />
+																	</DataTrigger>
+																	<DataTrigger Binding="{Binding Level}" Value="{x:Static logging:LogLevel.Critical}">
+																		<Setter Property="Foreground" Value="#DDD6FE" />
+																	</DataTrigger>
+																</Style.Triggers>
+															</Style>
+														</TextBlock.Style>
+													</TextBlock>
+												</Grid>
+											</Border>
+										</DataTemplate>
+									</ListBox.ItemTemplate>
+								</ListBox>
+								<TextBlock Text="Logs will appear here as BrowserPicker runs."
+									Foreground="#94A3B8"
+									FontStyle="Italic"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center">
+									<TextBlock.Style>
+										<Style TargetType="TextBlock">
+											<Setter Property="Visibility" Value="Collapsed" />
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding VisibleApplicationLogEntryCount}" Value="0">
+													<Setter Property="Visibility" Value="Visible" />
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</TextBlock.Style>
+								</TextBlock>
+							</Grid>
+						</Grid>
+					</Border>
+				</Grid>
 			</TabItem>
 
 			<TabItem Header="URL shorteners">
