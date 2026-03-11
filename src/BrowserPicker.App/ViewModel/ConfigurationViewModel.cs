@@ -315,6 +315,16 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ICommand Restore => restore ??= new DelegateCommand(PerformRestore);
 
 	/// <summary>
+	/// Command to copy the current settings JSON to the clipboard.
+	/// </summary>
+	public ICommand CopySettings => copy_settings ??= new DelegateCommand(CopySettingsToClipboard);
+
+	/// <summary>
+	/// Command to import settings JSON from the clipboard.
+	/// </summary>
+	public ICommand PasteSettings => paste_settings ??= new DelegateCommand(PasteSettingsFromClipboard);
+
+	/// <summary>
 	/// Command to add a URL shortener domain; parameter is the domain string.
 	/// </summary>
 	public ICommand AddShortener => add_shortener ??= new DelegateCommand<string>(AddUrlShortener, CanAddShortener);
@@ -360,6 +370,38 @@ public sealed class ConfigurationViewModel : ModelBase
 		if (result != true)
 			return;
 		Settings.LoadAsync(browser.FileName);
+	}
+
+	private void CopySettingsToClipboard()
+	{
+		if (Settings is not JsonAppSettings jsonSettings)
+		{
+			return;
+		}
+
+		if (TrySetClipboardText(jsonSettings.ExportSettingsJson(), out var error))
+		{
+			jsonSettings.AppendBackupLog("Copied configuration JSON to the clipboard.");
+			return;
+		}
+
+		jsonSettings.AppendBackupLog($"Unable to copy configuration JSON to the clipboard: {error}");
+	}
+
+	private void PasteSettingsFromClipboard()
+	{
+		if (Settings is not JsonAppSettings jsonSettings)
+		{
+			return;
+		}
+
+		if (!TryGetClipboardText(out var text, out var error))
+		{
+			jsonSettings.AppendBackupLog($"Unable to paste configuration from the clipboard: {error}");
+			return;
+		}
+
+		jsonSettings.TryImportSettingsJson(text!, "the clipboard");
 	}
 
 	private void AddBrowserManually()
@@ -488,6 +530,91 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	private static bool TrySetClipboardText(string text, out string? error)
+	{
+		error = null;
+		try
+		{
+			Exception? clipboardException = null;
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					Clipboard.SetText(text);
+				}
+				catch (Exception ex)
+				{
+					clipboardException = ex;
+				}
+			});
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.Start();
+			thread.Join();
+			if (clipboardException == null)
+			{
+				return true;
+			}
+
+			error = clipboardException.Message;
+			return false;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private static bool TryGetClipboardText(out string? text, out string? error)
+	{
+		text = null;
+		error = null;
+		try
+		{
+			Exception? clipboardException = null;
+			string? clipboardText = null;
+			string? clipboardError = null;
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					if (!Clipboard.ContainsText(TextDataFormat.UnicodeText))
+					{
+						clipboardError = "clipboard does not contain text";
+						return;
+					}
+
+					clipboardText = Clipboard.GetText(TextDataFormat.UnicodeText);
+					if (string.IsNullOrWhiteSpace(clipboardText))
+					{
+						clipboardError = "clipboard text is empty";
+					}
+				}
+				catch (Exception ex)
+				{
+					clipboardException = ex;
+				}
+			});
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.Start();
+			thread.Join();
+			text = clipboardText;
+			error = clipboardError;
+			if (clipboardException == null)
+			{
+				return error == null;
+			}
+
+			error = clipboardException.Message;
+			return false;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
 	private void CaptureBrowserOrder()
 	{
 		var browsers = Settings.BrowserList.Where(b => !b.Removed).ToArray();
@@ -559,6 +686,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? add_browser;
 	private DelegateCommand? backup;
 	private DelegateCommand? restore;
+	private DelegateCommand? copy_settings;
+	private DelegateCommand? paste_settings;
 	private DelegateCommand<string>? add_shortener;
 	private DelegateCommand<string>? remove_shortener;
 

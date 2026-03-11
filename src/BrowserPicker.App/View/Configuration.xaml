@@ -492,13 +492,36 @@
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
 					<TextBlock Text="Back up or restore your BrowserPicker configuration:"  Margin="5" />
-					<Button Content="Export BrowserPicker settings" Grid.Row="1" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Backup}" />
-					<Button Content="Import BrowserPicker settings" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5" Command="{Binding Restore}" />
-					<ScrollViewer Grid.Row="3" Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="5">
+					<WrapPanel Grid.Row="1" Margin="5,5,5,0">
+						<Button Margin="0,0,8,8" Padding="10,6" Command="{Binding Backup}">
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="&#xE105;" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Margin="0,0,8,0" VerticalAlignment="Center" />
+								<TextBlock Text="Export BrowserPicker settings" VerticalAlignment="Center" />
+							</StackPanel>
+						</Button>
+						<Button Margin="0,0,8,8" Padding="10,6" Command="{Binding Restore}">
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="&#xE8E5;" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Margin="0,0,8,0" VerticalAlignment="Center" />
+								<TextBlock Text="Import BrowserPicker settings" VerticalAlignment="Center" />
+							</StackPanel>
+						</Button>
+						<Button Margin="0,0,8,8" Padding="10,6" Command="{Binding CopySettings}">
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Margin="0,0,8,0" VerticalAlignment="Center" />
+								<TextBlock Text="Copy settings" VerticalAlignment="Center" />
+							</StackPanel>
+						</Button>
+						<Button Margin="0,0,0,8" Padding="10,6" Command="{Binding PasteSettings}">
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="&#xE77F;" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Margin="0,0,8,0" VerticalAlignment="Center" />
+								<TextBlock Text="Paste settings" VerticalAlignment="Center" />
+							</StackPanel>
+						</Button>
+					</WrapPanel>
+					<ScrollViewer Grid.Row="2" Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="5">
 						<TextBlock Text="{Binding Settings.BackupLog}"  TextWrapping="Wrap" />
 					</ScrollViewer>
 				</Grid>
