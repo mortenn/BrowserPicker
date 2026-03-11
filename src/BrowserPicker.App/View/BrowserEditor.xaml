@@ -6,6 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:viewModel="clr-namespace:BrowserPicker.ViewModel"
 	xmlns:converter="clr-namespace:BrowserPicker.Converter"
+	xmlns:app="clr-namespace:BrowserPicker"
 	Background="Transparent"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance viewModel:BrowserViewModel,d:IsDesignTimeCreatable=true}"
@@ -16,10 +17,24 @@
 	<Window.Resources>
 		<ResourceDictionary>
 			<converter:IconFileToImageConverter x:Key="IconConverter" />
+			<Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+			</Style>
+			<Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+			</Style>
+			<Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+				<Setter Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" />
+				<Setter Property="BorderBrush" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+				<Setter Property="VerticalContentAlignment" Value="Center" />
+				<Setter Property="MinHeight" Value="28" />
+				<Setter Property="Padding" Value="6,4" />
+			</Style>
 		</ResourceDictionary>
 	</Window.Resources>
-	<Border CornerRadius="5" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" BorderThickness="2" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Padding="10" MinWidth="400" MouseLeftButtonDown="DragWindow">
-		<Grid>
+	<Border CornerRadius="5" BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" BorderThickness="2" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" Padding="10" MinWidth="400" MouseLeftButtonDown="DragWindow">
+		<Grid TextElement.Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="10" />
 				<ColumnDefinition Width="Auto" />
