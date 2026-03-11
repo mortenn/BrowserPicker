@@ -63,8 +63,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	/// copies configuration from the registry (or other source) into JSON and uses it as the source of truth.
 	/// </summary>
 	/// <param name="logger">Logger for configuration operations.</param>
-	/// <param name="migrateFrom">When the JSON file does not exist, copy all settings from this configuration and save to JSON.</param>
-	public JsonAppSettings(ILogger<JsonAppSettings> logger, IBrowserPickerConfiguration? migrateFrom = null)
+	/// <param name="migrateFrom">When the JSON file does not exist, copy all settings from this source and save to JSON.</param>
+	public JsonAppSettings(ILogger<JsonAppSettings> logger, IApplicationSettings? migrateFrom = null)
 	{
 		this.logger = logger;
 		settings_path = GetSettingsFilePath();
@@ -108,7 +108,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	/// <summary>
 	/// Copies configuration from an existing source (e.g. registry) and saves to the JSON file.
 	/// </summary>
-	private void MigrateFrom(IBrowserPickerConfiguration source)
+	private void MigrateFrom(IApplicationSettings source)
 	{
 		var snapshot = new SerializableSettings(source);
 		UpdateSettings(snapshot);
