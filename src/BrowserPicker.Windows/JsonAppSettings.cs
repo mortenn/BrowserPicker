@@ -18,6 +18,11 @@ namespace BrowserPicker.Windows;
 /// </summary>
 public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 {
+	private const double MinWindowWidth = 320;
+	private const double MinWindowHeight = 200;
+	private const double DefaultConfigWindowWidth = 600;
+	private const double DefaultConfigWindowHeight = 450;
+
 	private readonly ILogger<JsonAppSettings> logger;
 	private readonly string settings_path;
 	private readonly BrowserSorter sorter;
@@ -140,10 +145,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public bool AutoCloseOnFocusLost { get => auto_close_on_focus_lost; set { if (SetProperty(ref auto_close_on_focus_lost, value)) SaveToFile(); } }
 	public string[] UrlShorteners { get => url_shorteners; set { if (SetProperty(ref url_shorteners, value)) SaveToFile(); } }
 	public bool AutoSizeWindow { get => auto_size_window; set { if (SetProperty(ref auto_size_window, value)) SaveToFile(); } }
-	public double WindowWidth { get => window_width; set { if (SetProperty(ref window_width, value)) SaveToFile(); } }
-	public double WindowHeight { get => window_height; set { if (SetProperty(ref window_height, value)) SaveToFile(); } }
-	public double ConfigWindowWidth { get => config_window_width; set { if (SetProperty(ref config_window_width, value)) SaveToFile(); } }
-	public double ConfigWindowHeight { get => config_window_height; set { if (SetProperty(ref config_window_height, value)) SaveToFile(); } }
+	public double WindowWidth { get => window_width; set { var normalized = NormalizeMainWindowDimension(value, MinWindowWidth); if (SetProperty(ref window_width, normalized)) SaveToFile(); } }
+	public double WindowHeight { get => window_height; set { var normalized = NormalizeMainWindowDimension(value, MinWindowHeight); if (SetProperty(ref window_height, normalized)) SaveToFile(); } }
+	public double ConfigWindowWidth { get => config_window_width; set { var normalized = NormalizeConfigWindowDimension(value, MinWindowWidth, DefaultConfigWindowWidth); if (SetProperty(ref config_window_width, normalized)) SaveToFile(); } }
+	public double ConfigWindowHeight { get => config_window_height; set { var normalized = NormalizeConfigWindowDimension(value, MinWindowHeight, DefaultConfigWindowHeight); if (SetProperty(ref config_window_height, normalized)) SaveToFile(); } }
 	public double FontSize { get => font_size; set { if (SetProperty(ref font_size, value)) SaveToFile(); } }
 	public ThemeMode ThemeMode { get => theme_mode; set { if (SetProperty(ref theme_mode, value)) SaveToFile(); } }
 
@@ -309,10 +314,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		disable_network_access = s.DisableNetworkAccess;
 		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
 		url_shorteners = s.UrlShorteners;
-		window_width = s.WindowWidth;
-		window_height = s.WindowHeight;
-		config_window_width = s.ConfigWindowWidth > 0 ? s.ConfigWindowWidth : 600;
-		config_window_height = s.ConfigWindowHeight > 0 ? s.ConfigWindowHeight : 450;
+		window_width = NormalizeMainWindowDimension(s.WindowWidth, MinWindowWidth);
+		window_height = NormalizeMainWindowDimension(s.WindowHeight, MinWindowHeight);
+		config_window_width = NormalizeConfigWindowDimension(s.ConfigWindowWidth, MinWindowWidth, DefaultConfigWindowWidth);
+		config_window_height = NormalizeConfigWindowDimension(s.ConfigWindowHeight, MinWindowHeight, DefaultConfigWindowHeight);
 		font_size = s.FontSize > 0 ? s.FontSize : 14;
 		theme_mode = s.ThemeMode;
 		EnsureSingleOrdering();
@@ -528,5 +533,25 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 
 		return trimmed[(firstLineBreak + 1)..lastFence].Trim();
+	}
+
+	private static double NormalizeMainWindowDimension(double value, double minimum)
+	{
+		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0)
+		{
+			return 0;
+		}
+
+		return Math.Max(minimum, Math.Round(value));
+	}
+
+	private static double NormalizeConfigWindowDimension(double value, double minimum, double fallback)
+	{
+		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0)
+		{
+			return fallback;
+		}
+
+		return Math.Max(minimum, Math.Round(value));
 	}
 }
