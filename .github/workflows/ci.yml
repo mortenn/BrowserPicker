@@ -26,6 +26,28 @@ jobs:
       version_suffix: "beta${{ steps.version.outputs.increment }}"
       package_version: "${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}.${{ steps.version.outputs.patch }}.${{ steps.version.outputs.increment }}"
 
+  schema:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate settings schema
+      run: dotnet run --project tools/BrowserPicker.SchemaGen/BrowserPicker.SchemaGen.csproj -- schemas/browserpicker-settings.schema.json
+
+    - name: Verify generated schema is committed
+      run: git diff --exit-code -- schemas/browserpicker-settings.schema.json
+
+    - name: Upload schema artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: BrowserPicker-settings-schema
+        path: schemas/browserpicker-settings.schema.json
+
   dependent:
 
     strategy:

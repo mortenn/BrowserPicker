@@ -9,6 +9,8 @@ namespace BrowserPicker;
 /// </summary>
 public sealed class SerializableSettings : IApplicationSettings
 {
+	public const string JsonSchemaUrl = "https://cdn.jsdelivr.net/gh/mortenn/BrowserPicker@main/schemas/browserpicker-settings.schema.json";
+
 	/// <summary>
 	/// Initializes a new instance by copying from an existing <see cref="IApplicationSettings"/> instance.
 	/// Excludes removed browsers, deleted defaults, and key bindings for removed browsers.
@@ -46,6 +48,12 @@ public sealed class SerializableSettings : IApplicationSettings
 	public SerializableSettings()
 	{
 	}
+
+	/// <summary>
+	/// URL of the JSON schema describing this document.
+	/// </summary>
+	[JsonPropertyName("$schema")]
+	public string Schema { get; set; } = JsonSchemaUrl;
 
 	/// <inheritdoc />
 	public bool FirstTime { get; set; }
