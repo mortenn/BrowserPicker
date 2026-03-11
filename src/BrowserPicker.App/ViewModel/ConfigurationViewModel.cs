@@ -7,6 +7,7 @@ using System.Windows.Input;
 using BrowserPicker.View;
 using System.Windows;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
@@ -157,7 +158,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	/// <param name="sender">The collection that triggered the event.</param>
 	/// <param name="e">The event data related to the collection changes.</param>
-	private void Defaults_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+	private void Defaults_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		if (e.NewItems?.Count > 0)
 		{
@@ -215,7 +216,46 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Gets or sets a value indicating whether the welcome message should be displayed to the user.
 	/// </summary>
-	public bool Welcome { get; internal set; }
+	public bool Welcome
+	{
+		get => welcome;
+		internal set
+		{
+			if (!SetProperty(ref welcome, value))
+			{
+				return;
+			}
+
+			if (value)
+			{
+				SelectedTabIndex = WelcomeTabIndex;
+			}
+			else if (selected_tab_index == WelcomeTabIndex)
+			{
+				SelectedTabIndex = BrowsersTabIndex;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the currently selected settings tab.
+	/// </summary>
+	public int SelectedTabIndex
+	{
+		get => selected_tab_index;
+		set
+		{
+			if (!SetProperty(ref selected_tab_index, value))
+			{
+				return;
+			}
+
+			if (value == TestDefaultsTabIndex)
+			{
+				PrefillTestDefaultsUrl();
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets a value indicating whether defaults should be automatically added
@@ -402,6 +442,12 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 
 		jsonSettings.TryImportSettingsJson(text!, "the clipboard");
+	}
+
+	internal void ShowFeedbackTab()
+	{
+		Welcome = false;
+		SelectedTabIndex = FeedbackTabIndex;
 	}
 
 	private void AddBrowserManually()
@@ -678,9 +724,15 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 
 	private MatchType new_match_type = MatchType.Hostname;
+	private const int WelcomeTabIndex = 0;
+	private const int BrowsersTabIndex = 1;
+	private const int TestDefaultsTabIndex = 4;
+	private const int FeedbackTabIndex = 6;
 	private string new_fragment = string.Empty;
 	private string new_fragment_browser = string.Empty;
 	private bool auto_add_default;
+	private bool welcome;
+	private int selected_tab_index = BrowsersTabIndex;
 	private DelegateCommand? add_default;
 	private DelegateCommand? refresh_browsers;
 	private DelegateCommand? add_browser;
@@ -733,5 +785,15 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
 		}
+	}
+
+	private void PrefillTestDefaultsUrl()
+	{
+		if (!string.IsNullOrWhiteSpace(test_defaults_url))
+		{
+			return;
+		}
+
+		TestDefaultsURL = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
 	}
 }

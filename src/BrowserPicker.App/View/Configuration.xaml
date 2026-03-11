@@ -108,18 +108,9 @@
 		</Grid.RowDefinitions>
 
 		<TabControl x:Name="Tabs" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-			SelectionChanged="TabControl_SelectionChanged"
-			Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
-			<TabControl.Style>
-				<Style TargetType="TabControl">
-					<Setter Property="SelectedIndex" Value="1" />
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding Welcome}" Value="True">
-							<Setter Property="SelectedIndex" Value="0" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</TabControl.Style>
+			Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}"
+			SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+			SelectionChanged="TabControl_SelectionChanged">
 
 			<TabItem Header="Welcome">
 				<TabItem.Style>
