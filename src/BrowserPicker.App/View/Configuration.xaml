@@ -25,6 +25,8 @@
 				<Setter Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" />
 				<Setter Property="BorderBrush" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
 				<Setter Property="BorderThickness" Value="1,1,1,0" />
+				<Setter Property="Opacity" Value="0.72" />
+				<Setter Property="FontWeight" Value="Normal" />
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="TabItem">
@@ -38,6 +40,7 @@
 									<Setter TargetName="Border" Property="Panel.ZIndex" Value="1" />
 									<Setter TargetName="Border" Property="Margin" Value="0,0,1,-1" />
 									<Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0" />
+									<Setter TargetName="Border" Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundSemiTransparentBrushKey}}" />
 								</Trigger>
 							</ControlTemplate.Triggers>
 						</ControlTemplate>
@@ -47,6 +50,8 @@
 					<Trigger Property="IsSelected" Value="True">
 						<Setter Property="Panel.ZIndex" Value="1" />
 						<Setter Property="Margin" Value="0,0,1,-1" />
+						<Setter Property="Opacity" Value="1" />
+						<Setter Property="FontWeight" Value="SemiBold" />
 					</Trigger>
 				</Style.Triggers>
 			</Style>
@@ -57,6 +62,9 @@
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
 			</Style>
 			<Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+			</Style>
+			<Style TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
 			</Style>
 
@@ -134,7 +142,7 @@
 					<LineBreak />
 					<LineBreak />
 					Should you run into any kind of trouble or get an idea,<LineBreak />
-					please visit <Hyperlink Foreground="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}">github.com/mortenn/BrowserPicker</Hyperlink> and file an issue!<LineBreak />
+					please visit <Hyperlink>github.com/mortenn/BrowserPicker</Hyperlink> and file an issue!<LineBreak />
 					<LineBreak />
 					Be seeing you!
 					<LineBreak />
