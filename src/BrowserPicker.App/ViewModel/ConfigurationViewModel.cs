@@ -273,7 +273,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	public bool AutoCloseOnFocusLost
 	{
-		get => Settings is JsonAppSettings json ? json.AutoCloseOnFocusLost : true;
+		get => Settings is not JsonAppSettings json || json.AutoCloseOnFocusLost;
 		set
 		{
 			if (Settings is not JsonAppSettings json || json.AutoCloseOnFocusLost == value)
