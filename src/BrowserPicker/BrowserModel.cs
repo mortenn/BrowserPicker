@@ -141,7 +141,12 @@ public sealed class BrowserModel : ModelBase
         set
         {
             removed = value;
-            Disabled = value;
+            // Removing a browser should always disable it, but loading or undoing a non-removed
+            // state must not implicitly re-enable a browser that the user disabled separately.
+            if (value)
+            {
+                Disabled = true;
+            }
             OnPropertyChanged();
         }
     }

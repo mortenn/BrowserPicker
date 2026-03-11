@@ -203,7 +203,13 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private void AddOrUpdateBrowserModel(BrowserModel model)
 	{
-		var update = BrowserList.FirstOrDefault(m => string.Equals(m.Id, model.Name, StringComparison.OrdinalIgnoreCase));
+		// Match both stable ids and display names so startup discovery merges with migrated
+		// registry-backed entries whose ids may be legacy values like "ChromeHTML".
+		var update = BrowserList.FirstOrDefault(m =>
+			string.Equals(m.Id, model.Id, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(m.Id, model.Name, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(m.Name, model.Id, StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(m.Name, model.Name, StringComparison.OrdinalIgnoreCase));
 		if (update != null)
 		{
 			if (update.ManualOverride) return;
