@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -38,6 +38,7 @@ public sealed class ApplicationViewModel : ModelBase
 		Choices = new ObservableCollection<BrowserViewModel>(
 			WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this))
 		);
+		ApplyAutoCloseOnFocusLostSetting();
 	}
 
 	/// <summary>
@@ -51,6 +52,7 @@ public sealed class ApplicationViewModel : ModelBase
 		force_choice = true;
 		Configuration = config;
 		Choices = [];
+		ApplyAutoCloseOnFocusLostSetting();
 	}
 #endif
 
@@ -74,6 +76,7 @@ public sealed class ApplicationViewModel : ModelBase
 		var sorter = settings.BrowserSorter ?? new BrowserSorter(settings);
 		var choices = settings.BrowserList.OrderBy(m => m, sorter).Select(m => new BrowserViewModel(m, this)).ToList();
 		Choices = new ObservableCollection<BrowserViewModel>(choices);
+		ApplyAutoCloseOnFocusLostSetting();
 	}
 
 	/// <summary>
@@ -275,9 +278,9 @@ public sealed class ApplicationViewModel : ModelBase
 	}
 	
 	/// <summary>
-	/// Pins the window, keeping it around while the user does something else.
+	/// Toggles whether this picker window stays open when it loses focus.
 	/// </summary>
-	public DelegateCommand PinWindow => new(() => Pinned = true);
+	public DelegateCommand PinWindow => new(() => Pinned = !Pinned);
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the main application window is pinned.
@@ -301,10 +304,15 @@ public sealed class ApplicationViewModel : ModelBase
 	/// </summary>
 	public void OnDeactivated()
 	{
-		if (!ConfigurationMode && !Debugger.IsAttached && !Pinned)
+		if (!ConfigurationMode && !Debugger.IsAttached && Configuration.AutoCloseOnFocusLost && !Pinned)
 		{
 			OnShutdown?.Invoke(this, EventArgs.Empty);
 		}
+	}
+
+	internal void ApplyAutoCloseOnFocusLostSetting()
+	{
+		OnPropertyChanged(nameof(Pinned));
 	}
 
 	/// <summary>

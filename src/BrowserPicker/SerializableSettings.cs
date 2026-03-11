@@ -63,6 +63,10 @@ public sealed class SerializableSettings : IApplicationSettings
 	public double WindowOpacity { get; set; } = 0.92;
 	/// <inheritdoc />
 	public bool DisableNetworkAccess { get; set; }
+	/// <summary>
+	/// When true, the picker closes itself when it loses focus. Defaults to enabled.
+	/// </summary>
+	public bool AutoCloseOnFocusLost { get; set; } = true;
 	/// <inheritdoc />
 	public string[] UrlShorteners { get; set; } = [];
 	/// <inheritdoc />

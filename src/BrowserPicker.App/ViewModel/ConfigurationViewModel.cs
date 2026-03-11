@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using BrowserPicker.Windows;
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -224,6 +225,26 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get => auto_add_default;
 		set => SetProperty(ref auto_add_default, value);
+	}
+
+	/// <summary>
+	/// Gets or sets whether the picker should close automatically when it loses focus.
+	/// JSON-backed settings persist this; legacy registry-backed migration defaults to enabled.
+	/// </summary>
+	public bool AutoCloseOnFocusLost
+	{
+		get => Settings is JsonAppSettings json ? json.AutoCloseOnFocusLost : true;
+		set
+		{
+			if (Settings is not JsonAppSettings json || json.AutoCloseOnFocusLost == value)
+			{
+				return;
+			}
+
+			json.AutoCloseOnFocusLost = value;
+			OnPropertyChanged();
+			ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
+		}
 	}
 
 	/// <summary>
@@ -454,6 +475,11 @@ public sealed class ConfigurationViewModel : ModelBase
 
 			case nameof(Settings.BrowserList):
 				UpdateSettings();
+				break;
+
+			case nameof(JsonAppSettings.AutoCloseOnFocusLost):
+				OnPropertyChanged(nameof(AutoCloseOnFocusLost));
+				ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
 				break;
 
 			case nameof(Settings.UseAutomaticOrdering) when Settings.UseAutomaticOrdering:
