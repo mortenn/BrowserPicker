@@ -31,6 +31,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool disable_transparency;
 	private double window_opacity = 0.92;
 	private bool disable_network_access;
+	private bool auto_close_on_focus_lost = true;
 	private string[] url_shorteners = [];
 	private bool use_fallback_default;
 	private string backup_log = string.Empty;
@@ -63,8 +64,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	/// copies configuration from the registry (or other source) into JSON and uses it as the source of truth.
 	/// </summary>
 	/// <param name="logger">Logger for configuration operations.</param>
-	/// <param name="migrateFrom">When the JSON file does not exist, copy all settings from this configuration and save to JSON.</param>
-	public JsonAppSettings(ILogger<JsonAppSettings> logger, IBrowserPickerConfiguration? migrateFrom = null)
+	/// <param name="migrateFrom">When the JSON file does not exist, copy all settings from this source and save to JSON.</param>
+	public JsonAppSettings(ILogger<JsonAppSettings> logger, IApplicationSettings? migrateFrom = null)
 	{
 		this.logger = logger;
 		settings_path = GetSettingsFilePath();
@@ -108,7 +109,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	/// <summary>
 	/// Copies configuration from an existing source (e.g. registry) and saves to the JSON file.
 	/// </summary>
-	private void MigrateFrom(IBrowserPickerConfiguration source)
+	private void MigrateFrom(IApplicationSettings source)
 	{
 		var snapshot = new SerializableSettings(source);
 		UpdateSettings(snapshot);
@@ -130,6 +131,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public bool DisableTransparency { get => disable_transparency; set { if (SetProperty(ref disable_transparency, value)) SaveToFile(); } }
 	public double WindowOpacity { get => window_opacity; set { var rounded = Math.Round(Math.Clamp(value, 0.5, 1.0), 2); if (SetProperty(ref window_opacity, rounded)) SaveToFile(); } }
 	public bool DisableNetworkAccess { get => disable_network_access; set { if (SetProperty(ref disable_network_access, value)) SaveToFile(); } }
+	public bool AutoCloseOnFocusLost { get => auto_close_on_focus_lost; set { if (SetProperty(ref auto_close_on_focus_lost, value)) SaveToFile(); } }
 	public string[] UrlShorteners { get => url_shorteners; set { if (SetProperty(ref url_shorteners, value)) SaveToFile(); } }
 	public bool AutoSizeWindow { get => auto_size_window; set { if (SetProperty(ref auto_size_window, value)) SaveToFile(); } }
 	public double WindowWidth { get => window_width; set { if (SetProperty(ref window_width, value)) SaveToFile(); } }
@@ -244,6 +246,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public async Task SaveAsync(string fileName)
 	{
 		var settings = new SerializableSettings(this);
+		settings.AutoCloseOnFocusLost = auto_close_on_focus_lost;
 		try
 		{
 			await using var fs = File.Open(fileName, FileMode.Create, FileAccess.Write);
@@ -300,6 +303,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		disable_transparency = s.DisableTransparency;
 		window_opacity = Math.Round(Math.Clamp(s.WindowOpacity, 0.5, 1.0), 2);
 		disable_network_access = s.DisableNetworkAccess;
+		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
 		url_shorteners = s.UrlShorteners;
 		window_width = s.WindowWidth;
 		window_height = s.WindowHeight;
@@ -309,6 +313,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		theme_mode = s.ThemeMode;
 		EnsureSingleOrdering();
 		OnPropertyChanged(nameof(AlwaysPrompt));
+		OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 		OnPropertyChanged(nameof(WindowWidth));
 		OnPropertyChanged(nameof(WindowHeight));
 		OnPropertyChanged(nameof(ConfigWindowWidth));
@@ -407,6 +412,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		disable_transparency = settings.DisableTransparency;
 		window_opacity = Math.Round(Math.Clamp(settings.WindowOpacity, 0.5, 1.0), 2);
 		disable_network_access = settings.DisableNetworkAccess;
+		auto_close_on_focus_lost = settings.AutoCloseOnFocusLost;
 		url_shorteners = settings.UrlShorteners;
 		auto_size_window = settings is { WindowWidth: <= 0, WindowHeight: <= 0 } || settings.AutoSizeWindow;
 		window_width = settings.WindowWidth;
@@ -440,6 +446,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			var dir = Path.GetDirectoryName(settings_path);
 			if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
 			var settings = new SerializableSettings(this);
+			settings.AutoCloseOnFocusLost = auto_close_on_focus_lost;
 			using var stream = File.Create(settings_path);
 			JsonSerializer.Serialize(stream, settings, JsonOptions);
 		}

@@ -316,6 +316,8 @@
 					<StackPanel Grid.Column="1">
 						<TextBlock Text="When to show the picker" FontWeight="Bold" Margin="0,4,0,6" />
 						<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" />
+						<CheckBox Content="Auto close on focus lost" IsChecked="{Binding AutoCloseOnFocusLost}"
+							ToolTip="When checked, the picker closes itself if you switch to another window. Turn this off to keep picker windows pinned until you close or use them." />
 						<CheckBox Content="Always ask when no default is matching url" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" />
 						<CheckBox Content="Use defaults even when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}"
 							ToolTip="When unchecked, the selection window appears if your default browser is not running. Check this to always open links in your default (or fallback) browser without showing the selection window." />
