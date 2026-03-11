@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
@@ -30,8 +30,18 @@ public partial class MainWindow
 			inpc.PropertyChanged += Settings_PropertyChanged;
 		if (ViewModel is INotifyPropertyChanged vmInpc)
 			vmInpc.PropertyChanged += ViewModel_PropertyChanged;
-		// Apply saved size before window is shown so it isn't overridden by initial layout.
 		var settings = App.Settings;
+		// When starting directly in config mode, use the saved config size immediately instead of
+		// sizing to content, otherwise wide tabs like Defaults can blow out the window width.
+		if (ViewModel.ConfigurationMode)
+		{
+			SizeToContent = SizeToContent.Manual;
+			Width = Math.Max(MinWidth, settings.ConfigWindowWidth > 0 ? settings.ConfigWindowWidth : 600);
+			Height = Math.Max(MinHeight, settings.ConfigWindowHeight > 0 ? settings.ConfigWindowHeight : 450);
+			return;
+		}
+
+		// Apply saved picker size before window is shown so it isn't overridden by initial layout.
 		if (settings.AutoSizeWindow || !(settings.WindowWidth >= MinWidth) || !(settings.WindowHeight >= MinHeight))
 		{
 			return;
