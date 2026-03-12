@@ -51,7 +51,9 @@ public partial class Configuration
 
 	private void EnsureFeedbackViewModelLoaded()
 	{
-		if (!FeedbackTab.IsSelected || FeedbackContentRoot.DataContext != null || DataContext is not ConfigurationViewModel viewModel)
+		var hasLocalFeedbackDataContext =
+			FeedbackContentRoot.ReadLocalValue(DataContextProperty) != DependencyProperty.UnsetValue;
+		if (!FeedbackTab.IsSelected || hasLocalFeedbackDataContext || DataContext is not ConfigurationViewModel viewModel)
 		{
 			return;
 		}

@@ -22,7 +22,10 @@ namespace BrowserPicker.ViewModel;
 /// </summary>
 public sealed class ApplicationViewModel : ModelBase
 {
-	private static readonly ILogger<ApplicationViewModel> Logger = App.Services.GetRequiredService<ILogger<ApplicationViewModel>>();
+	private static ILogger<ApplicationViewModel> Logger =>
+		ReferenceEquals(App.Services, null)
+			? NullLogger<ApplicationViewModel>.Instance
+			: App.Services.GetService<ILogger<ApplicationViewModel>>() ?? NullLogger<ApplicationViewModel>.Instance;
 	
 #if DEBUG
 	/// <summary>

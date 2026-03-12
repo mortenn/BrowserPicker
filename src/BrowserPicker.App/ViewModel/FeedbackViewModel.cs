@@ -9,11 +9,17 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using BrowserPicker.Framework;
 using BrowserPicker.Windows;
+using Microsoft.Extensions.Logging;
+
+#if DEBUG
+using JetBrains.Annotations;
+#endif
 
 namespace BrowserPicker.ViewModel;
 
@@ -27,15 +33,26 @@ public sealed class FeedbackViewModel : ModelBase
 	private readonly ObservableCollection<InMemoryLogEntry> application_log_entries = [];
 	private readonly ICollectionView filtered_application_log_entries;
 	private string application_log_filter = string.Empty;
+	private ApplicationLogLevelOption selected_application_log_level_option;
 	private DelegateCommand? copy_feedback_markdown;
 	private DelegateCommand? report_bug;
 	private DelegateCommand? copy_application_log;
 	private DelegateCommand? clear_application_log_filter;
 
+#if DEBUG
+	[UsedImplicitly]
+	public FeedbackViewModel()
+		: this(new DesignTimeSettings(), CreateDesignTimeLogBuffer())
+	{
+	}
+#endif
+
 	public FeedbackViewModel(IBrowserPickerConfiguration settings, InMemoryLogBuffer? runtimeLogBuffer = null)
 	{
 		this.settings = settings;
 		runtime_log_buffer = runtimeLogBuffer;
+		selected_application_log_level_option = global::BrowserPicker.ViewModel.ApplicationLogLevelOptions.All.First(option =>
+			option.MinimumLevel == LogLevel.Information);
 		filtered_application_log_entries = CollectionViewSource.GetDefaultView(application_log_entries);
 		filtered_application_log_entries.Filter = FilterApplicationLogEntry;
 		if (runtime_log_buffer != null)
@@ -55,6 +72,24 @@ public sealed class FeedbackViewModel : ModelBase
 	public ICommand ClearApplicationLogFilter => clear_application_log_filter ??= new DelegateCommand(() => ApplicationLogFilter = string.Empty);
 
 	public ICollectionView FilteredApplicationLogEntries => filtered_application_log_entries;
+
+	public IReadOnlyList<ApplicationLogLevelOption> ApplicationLogLevelOptions => global::BrowserPicker.ViewModel.ApplicationLogLevelOptions.All;
+
+	public ApplicationLogLevelOption SelectedApplicationLogLevelOption
+	{
+		get => selected_application_log_level_option;
+		set
+		{
+			if (!SetProperty(ref selected_application_log_level_option, value))
+			{
+				return;
+			}
+
+			filtered_application_log_entries.Refresh();
+			OnPropertyChanged(nameof(VisibleApplicationLogEntryCount));
+			OnPropertyChanged(nameof(ApplicationLogStatus));
+		}
+	}
 
 	public string ApplicationLogFilter
 	{
@@ -82,8 +117,9 @@ public sealed class FeedbackViewModel : ModelBase
 	public string ApplicationLogStatus => runtime_log_buffer == null
 		? "Runtime logging is unavailable."
 		: string.IsNullOrWhiteSpace(ApplicationLogFilter)
+			&& VisibleApplicationLogEntryCount == ApplicationLogEntryCount
 			? $"Live capture · {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} retained · capacity {runtime_log_buffer.Capacity}"
-			: $"Live capture · showing {VisibleApplicationLogEntryCount} of {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} · capacity {runtime_log_buffer.Capacity}";
+			: $"Live capture · showing {VisibleApplicationLogEntryCount} of {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} · {SelectedApplicationLogLevelOption.Label} · capacity {runtime_log_buffer.Capacity}";
 
 	private void CopyFeedbackMarkdownToClipboard()
 	{
@@ -124,6 +160,11 @@ public sealed class FeedbackViewModel : ModelBase
 	private bool FilterApplicationLogEntry(object? item)
 	{
 		if (item is not InMemoryLogEntry entry)
+		{
+			return false;
+		}
+
+		if (entry.Level < SelectedApplicationLogLevelOption.MinimumLevel)
 		{
 			return false;
 		}
@@ -485,4 +526,101 @@ public sealed class FeedbackViewModel : ModelBase
 			// ignored
 		}
 	}
+
+#if DEBUG
+	private static InMemoryLogBuffer CreateDesignTimeLogBuffer()
+	{
+		var buffer = new InMemoryLogBuffer(200);
+		var now = DateTimeOffset.Now;
+		buffer.Append(now.AddSeconds(-24), "BrowserPicker.App", LogLevel.Debug, new EventId(1001, "LogApplicationLaunched"),
+			"Application launched with arguments: https://github.com/mortenn/BrowserPicker",
+			[
+				new InMemoryLogSegment("Application launched with arguments: ", false),
+				new InMemoryLogSegment("https://github.com/mortenn/BrowserPicker", true)
+			], null);
+		buffer.Append(now.AddSeconds(-19), "BrowserPicker.UrlHandler", LogLevel.Information, new EventId(1012, "LogFaviconLoaded"),
+			"Favicon successfully loaded from URL: https://github.com/favicon.ico",
+			[
+				new InMemoryLogSegment("Favicon successfully loaded from URL: ", false),
+				new InMemoryLogSegment("https://github.com/favicon.ico", true)
+			], null);
+		buffer.Append(now.AddSeconds(-11), "BrowserPicker.ViewModel.ApplicationViewModel", LogLevel.Information, new EventId(1020, "LogAutomationMatchesFound"),
+			"2 configured defaults match the url",
+			[
+				new InMemoryLogSegment("", false),
+				new InMemoryLogSegment("2", true),
+				new InMemoryLogSegment(" configured defaults match the url", false)
+			], null);
+		buffer.Append(now.AddSeconds(-6), "BrowserPicker.ViewModel.ApplicationViewModel", LogLevel.Warning, new EventId(1104, "LogAutomationFallback"),
+			"No running browser matched; falling back to user choice",
+			[new InMemoryLogSegment("No running browser matched; falling back to user choice", false)], null);
+		buffer.Append(now.AddSeconds(-2), "BrowserPicker.Windows.JsonAppSettings", LogLevel.Error, new EventId(1203, "LogImportFailed"),
+			"Unable to import configuration from the clipboard: expected a JSON object.",
+			[new InMemoryLogSegment("Unable to import configuration from the clipboard: expected a JSON object.", false)], null);
+		return buffer;
+	}
+
+	private sealed class DesignTimeSettings : IBrowserPickerConfiguration
+	{
+		public bool FirstTime { get; set; }
+		public bool AlwaysPrompt { get; set; } = true;
+		public bool AlwaysUseDefaults { get; set; } = true;
+		public bool AlwaysAskWithoutDefault { get; set; }
+		public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
+		public bool UseManualOrdering { get; set; }
+		public bool UseAutomaticOrdering { get; set; } = true;
+		public bool UseAlphabeticalOrdering { get; set; }
+		public bool DisableTransparency { get; set; } = true;
+		public double WindowOpacity { get; set; } = 0.92;
+		public bool DisableNetworkAccess { get; set; }
+		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
+		public List<BrowserModel> BrowserList { get; } =
+		[
+			new BrowserModel(Firefox.Instance, null, string.Empty) { Usage = 8 },
+			new BrowserModel(Edge.Instance, null, string.Empty) { Usage = 3, Disabled = true },
+			new BrowserModel(Chrome.Instance, null, string.Empty) { Usage = 5 }
+		];
+		public List<DefaultSetting> Defaults { get; } =
+		[
+			new DefaultSetting(MatchType.Hostname, "github.com", Firefox.Instance.Name),
+			new DefaultSetting(MatchType.Default, string.Empty, Firefox.Instance.Name)
+		];
+		public List<KeyBinding> KeyBindings { get; } = [];
+		public bool AutoSizeWindow { get; set; } = true;
+		public double WindowWidth { get; set; }
+		public double WindowHeight { get; set; }
+		public double ConfigWindowWidth { get; set; } = 900;
+		public double ConfigWindowHeight { get; set; } = 640;
+		public double FontSize { get; set; } = 14;
+		public ThemeMode ThemeMode { get; set; } = ThemeMode.Dark;
+		public bool UseFallbackDefault { get; set; } = true;
+		public string? DefaultBrowser { get; set; } = Firefox.Instance.Name;
+		public string BackupLog => "Copied configuration JSON to the clipboard.";
+		public IComparer<BrowserModel>? BrowserSorter => null;
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		public void AddBrowser(BrowserModel browser)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
+		}
+
+		public void PersistBrowser(BrowserModel browser)
+		{
+		}
+
+		public void FindBrowsers()
+		{
+		}
+
+		public void AddDefault(MatchType matchType, string pattern, string browser)
+		{
+		}
+
+		public Task SaveAsync(string fileName) => Task.CompletedTask;
+
+		public Task LoadAsync(string fileName) => Task.CompletedTask;
+
+		public Task Start(CancellationToken cancellationToken) => Task.CompletedTask;
+	}
+#endif
 }
