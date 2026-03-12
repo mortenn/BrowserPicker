@@ -67,6 +67,11 @@
 			<Style TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
 			</Style>
+			<Style x:Key="BrowserComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+				<Setter Property="MinHeight" Value="32" />
+				<Setter Property="VerticalContentAlignment" Value="Center" />
+				<Setter Property="Padding" Value="2" />
+			</Style>
 
 			<converter:IconFileToImageConverter x:Key="IconConverter" />
 
@@ -99,10 +104,27 @@
 			</DataTemplate>
 			<!-- Icon + name for use in compact dropdowns (add-default row, etc.) with a visible icon size -->
 			<DataTemplate x:Key="BrowserIconAndNameCombo" DataType="viewModel:BrowserViewModel">
-				<StackPanel Orientation="Horizontal">
-					<ContentPresenter ContentTemplate="{StaticResource BrowserIcon}" VerticalAlignment="Center" Width="20" Height="20" />
-					<TextBlock Padding="6,0,0,0" Text="{Binding Model.Name}" VerticalAlignment="Center" />
-				</StackPanel>
+				<Grid UseLayoutRounding="True" SnapsToDevicePixels="True">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="20" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Image Grid.Column="0" Width="16" Height="16" Stretch="Uniform"
+						VerticalAlignment="Center" HorizontalAlignment="Center"
+						DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
+						<Image.Style>
+							<Style TargetType="{x:Type Image}">
+								<Setter Property="Source" Value="{Binding}" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding}" Value="{x:Null}">
+										<Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Image.Style>
+					</Image>
+					<TextBlock Grid.Column="1" Margin="6,0,0,0" Text="{Binding Model.Name}" VerticalAlignment="Center" />
+				</Grid>
 			</DataTemplate>
 		</ResourceDictionary>
 	</UserControl.Resources>
@@ -326,11 +348,12 @@
 								<ComboBox
 									ItemsSource="{Binding ParentViewModel.Choices}"
 									d:ItemsSource="{Binding ParentViewModel.Choices}"
+									Style="{StaticResource BrowserComboBoxStyle}"
 									ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 									IsSynchronizedWithCurrentItem="False"
 									SelectedValuePath="Model.Id"
 									SelectedValue="{Binding Settings.DefaultBrowser}"
-									MinWidth="180" Height="28" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+									MinWidth="180" VerticalAlignment="Center" />
 							</StackPanel>
 						</StackPanel>
 
@@ -404,11 +427,11 @@
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
 											ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
+											Style="{StaticResource BrowserComboBoxStyle}"
 											ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedValue="{Binding Browser}"
-											SelectedValuePath="Model.Id"
-											VerticalContentAlignment="Center" />
+											SelectedValuePath="Model.Id" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
@@ -434,11 +457,12 @@
 						<TextBox Text="{Binding NewDefaultPattern}" Grid.Column="1" MinHeight="28" Padding="6,4" VerticalContentAlignment="Center" Margin="4,0,0,0" />
 						<ComboBox
 							ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.ParentViewModel.Choices}"
+							Style="{StaticResource BrowserComboBoxStyle}"
 							ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 							IsSynchronizedWithCurrentItem="False"
 							SelectedValue="{Binding NewDefaultBrowser}"
 							SelectedValuePath="Model.Id"
-							Grid.Column="2" MinHeight="28" MinWidth="160" VerticalContentAlignment="Center" Margin="4,0,0,0" />
+							Grid.Column="2" MinWidth="160" Margin="4,0,0,0" />
 						<Button Content="Add" Grid.Column="3" Padding="12,0" MinHeight="28" VerticalAlignment="Stretch" Margin="4,0,0,0" Command="{Binding AddDefault}" />
 					</Grid>
 				</Grid>
