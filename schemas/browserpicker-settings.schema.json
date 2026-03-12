@@ -1,0 +1,253 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://cdn.jsdelivr.net/gh/mortenn/BrowserPicker@main/schemas/browserpicker-settings.schema.json",
+  "title": "BrowserPicker settings",
+  "type": "object",
+  "description": "Settings document used by BrowserPicker for backups, clipboard import/export, and persisted JSON settings.",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "FirstTime": {
+      "type": "boolean"
+    },
+    "AlwaysPrompt": {
+      "type": "boolean"
+    },
+    "AlwaysUseDefaults": {
+      "type": "boolean"
+    },
+    "AlwaysAskWithoutDefault": {
+      "type": "boolean"
+    },
+    "UrlLookupTimeoutMilliseconds": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "DisableTransparency": {
+      "type": "boolean"
+    },
+    "WindowOpacity": {
+      "type": "number",
+      "format": "double"
+    },
+    "DisableNetworkAccess": {
+      "type": "boolean"
+    },
+    "AutoCloseOnFocusLost": {
+      "type": "boolean"
+    },
+    "UrlShorteners": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "BrowserList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/BrowserModel"
+      }
+    },
+    "Defaults": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/DefaultSetting"
+      }
+    },
+    "KeyBindings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/KeyBinding"
+      }
+    },
+    "AutoSizeWindow": {
+      "type": "boolean"
+    },
+    "WindowWidth": {
+      "type": "number",
+      "format": "double"
+    },
+    "WindowHeight": {
+      "type": "number",
+      "format": "double"
+    },
+    "ConfigWindowWidth": {
+      "type": "number",
+      "format": "double"
+    },
+    "ConfigWindowHeight": {
+      "type": "number",
+      "format": "double"
+    },
+    "FontSize": {
+      "type": "number",
+      "format": "double"
+    },
+    "ThemeMode": {
+      "$ref": "#/definitions/ThemeMode"
+    },
+    "SortBy": {
+      "$ref": "#/definitions/SortOrder"
+    }
+  },
+  "definitions": {
+    "BrowserModel": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ModelBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "Id": {
+              "type": "string"
+            },
+            "Name": {
+              "type": "string"
+            },
+            "IconPath": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "Command": {
+              "type": "string"
+            },
+            "Executable": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "CommandArgs": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "PrivacyArgs": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "Usage": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "Disabled": {
+              "type": "boolean"
+            },
+            "Removed": {
+              "type": "boolean"
+            },
+            "ManualOrder": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "ExpandFileUrls": {
+              "type": "boolean"
+            },
+            "ManualOverride": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "ModelBase": {
+      "type": "object",
+      "x-abstract": true,
+      "additionalProperties": false
+    },
+    "DefaultSetting": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ModelBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "Type": {
+              "$ref": "#/definitions/MatchType"
+            },
+            "Pattern": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "Browser": {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "MatchType": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Hostname",
+        "Prefix",
+        "Regex",
+        "Default",
+        "Contains"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "KeyBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "Browser": {
+          "type": "string"
+        }
+      }
+    },
+    "ThemeMode": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "System",
+        "Light",
+        "Dark"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "SortOrder": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Automatic",
+        "Manual",
+        "Alphabetical"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    }
+  }
+}

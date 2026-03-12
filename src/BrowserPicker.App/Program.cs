@@ -13,9 +13,12 @@ internal static class Program
 	[STAThread]
 	private static void Main(string[] args)
 	{
+		var runtimeLogBuffer = new InMemoryLogBuffer();
+
 		var builder = Host.CreateDefaultBuilder()
 			.ConfigureServices(services =>
 			{
+				services.AddSingleton(runtimeLogBuffer);
 				services.AddSingleton<App>();
 				services.AddSingleton<MainWindow>();
 				services.AddSingleton<AppSettings>();
@@ -29,9 +32,11 @@ internal static class Program
 						: new JsonAppSettings(logger, sp.GetRequiredService<AppSettings>());
 				});
 			})
-			.ConfigureLogging(logging => logging.AddEventLog(
-				settings => settings.SourceName = "BrowserPicker"
-			));
+			.ConfigureLogging(logging =>
+			{
+				logging.AddProvider(new InMemoryLoggerProvider(runtimeLogBuffer));
+				logging.AddEventLog(settings => settings.SourceName = "BrowserPicker");
+			});
 		
 		var host = builder.Build();
 		App.Services = host.Services;
@@ -53,7 +58,7 @@ internal static class Program
 		// Content theme brushes before Run() so DynamicResource resolves when windows load.
 		app.AddContentThemeDictionary(App.Settings.ThemeMode);
 		var logger = host.Services.GetRequiredService<ILogger<App>>();
-		logger.LogApplicationLaunched(args);
+		logger.LogApplicationLaunched(args.Length == 0 ? "(none)" : string.Join(" ", args));
 
 		app.Run();
 	}

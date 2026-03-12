@@ -22,7 +22,10 @@ namespace BrowserPicker.ViewModel;
 /// </summary>
 public sealed class ApplicationViewModel : ModelBase
 {
-	private static readonly ILogger<ApplicationViewModel> Logger = App.Services.GetRequiredService<ILogger<ApplicationViewModel>>();
+	private static ILogger<ApplicationViewModel> Logger =>
+		ReferenceEquals(App.Services, null)
+			? NullLogger<ApplicationViewModel>.Instance
+			: App.Services.GetService<ILogger<ApplicationViewModel>>() ?? NullLogger<ApplicationViewModel>.Instance;
 	
 #if DEBUG
 	/// <summary>
@@ -200,6 +203,11 @@ public sealed class ApplicationViewModel : ModelBase
 	public ICommand Configure => new DelegateCommand(() => ConfigurationMode = !ConfigurationMode);
 
 	/// <summary>
+	/// Opens configuration mode directly on the feedback tab.
+	/// </summary>
+	public ICommand Feedback => new DelegateCommand(OpenFeedback);
+
+	/// <summary>
 	/// Closes the application by triggering the shutdown event.
 	/// </summary>
 	public ICommand Exit => new DelegateCommand(() => OnShutdown?.Invoke(this, EventArgs.Empty));
@@ -313,6 +321,12 @@ public sealed class ApplicationViewModel : ModelBase
 	internal void ApplyAutoCloseOnFocusLostSetting()
 	{
 		OnPropertyChanged(nameof(Pinned));
+	}
+
+	private void OpenFeedback()
+	{
+		Configuration.ShowFeedbackTab();
+		ConfigurationMode = true;
 	}
 
 	/// <summary>

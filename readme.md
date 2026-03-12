@@ -209,11 +209,49 @@ just paste that url into the big white text box and get instant feedback on the 
 ### Logging
 BrowserPicker uses ILogger with EventLog support.
 
-To get detailed logs, please either change appsettings.json or set the environment variable `Logging__EventLog__LogLevel__BrowserPicker` to either `Information` or `Debug`
-By default, only warnings or higher level events get logged.
+### Adjusting log levels
+BrowserPicker uses the standard .NET logging configuration from `appsettings.json`.
+
+The most useful settings are:
+
+- `Logging:LogLevel:Default` controls the general runtime log level used by the app, including what ends up in the in-app feedback log.
+- `Logging:EventLog:LogLevel:BrowserPicker` controls what is written to the Windows Event Log for the `BrowserPicker` source.
+
+The shipped defaults are:
+
+- `Logging:LogLevel:Default = Information`
+- `Logging:EventLog:LogLevel:BrowserPicker = Warning`
+
+If you want more detailed logs while troubleshooting, you can raise one or both of those levels in `appsettings.json`, for example:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information"
+    },
+    "EventLog": {
+      "LogLevel": {
+        "Default": "Warning",
+        "BrowserPicker": "Information"
+      }
+    }
+  }
+}
+```
+
+You can also override those values using standard .NET configuration environment variables such as:
+
+- `Logging__LogLevel__Default=Debug`
+- `Logging__EventLog__LogLevel__BrowserPicker=Information`
+
+The Feedback tab also has a log level dropdown, but that only filters what is shown in the viewer. It does not change what the application captures at startup.
 
 If you are using the archived version rather than the installer package,
 you will need to run this powershell command before logs will appear:
 
-```New-EventLog -LogName Application -Source BrowserPicker```
-` 
+```powershell
+New-EventLog -LogName Application -Source BrowserPicker
+```

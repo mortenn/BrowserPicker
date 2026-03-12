@@ -1,5 +1,8 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using BrowserPicker.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BrowserPicker.View;
 
@@ -19,6 +22,7 @@ public partial class Configuration
 	private void Configuration_Loaded(object sender, RoutedEventArgs e)
 	{
 		ApplyContentTheme();
+		EnsureFeedbackViewModelLoaded();
 	}
 
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -33,5 +37,27 @@ public partial class Configuration
 		App.GetContentThemeBrushes(out var background, out var foreground);
 		Background = background;
 		Foreground = foreground;
+	}
+
+	private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+	{
+		if (!ReferenceEquals(e.OriginalSource, Tabs))
+		{
+			return;
+		}
+
+		EnsureFeedbackViewModelLoaded();
+	}
+
+	private void EnsureFeedbackViewModelLoaded()
+	{
+		var hasLocalFeedbackDataContext =
+			FeedbackContentRoot.ReadLocalValue(DataContextProperty) != DependencyProperty.UnsetValue;
+		if (!FeedbackTab.IsSelected || hasLocalFeedbackDataContext || DataContext is not ConfigurationViewModel viewModel)
+		{
+			return;
+		}
+
+		FeedbackContentRoot.DataContext = new FeedbackViewModel(viewModel.Settings, App.Services.GetService<InMemoryLogBuffer>());
 	}
 }

@@ -108,5 +108,6 @@ jobs:
         files: |
           DependentSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker.msi
           PortableSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker-Portable.msi
+          schemas/browserpicker-settings.schema.json
           Dependent.zip
           Portable.zip  

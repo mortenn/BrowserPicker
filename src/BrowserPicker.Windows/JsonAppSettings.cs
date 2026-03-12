@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using BrowserPicker.Framework;
@@ -17,6 +18,11 @@ namespace BrowserPicker.Windows;
 /// </summary>
 public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 {
+	private const double MinWindowWidth = 320;
+	private const double MinWindowHeight = 200;
+	private const double DefaultConfigWindowWidth = 600;
+	private const double DefaultConfigWindowHeight = 450;
+
 	private readonly ILogger<JsonAppSettings> logger;
 	private readonly string settings_path;
 	private readonly BrowserSorter sorter;
@@ -43,7 +49,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private double font_size = 14;
 	private ThemeMode theme_mode = ThemeMode.System;
 
-	private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+	private static readonly JsonSerializerOptions JsonOptions = new()
+	{
+		WriteIndented = true,
+		AllowTrailingCommas = true,
+		ReadCommentHandling = JsonCommentHandling.Skip
+	};
 
 	/// <summary>
 	/// Full path to the JSON settings file (%LocalAppData%\BrowserPicker\settings.json).
@@ -134,10 +145,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public bool AutoCloseOnFocusLost { get => auto_close_on_focus_lost; set { if (SetProperty(ref auto_close_on_focus_lost, value)) SaveToFile(); } }
 	public string[] UrlShorteners { get => url_shorteners; set { if (SetProperty(ref url_shorteners, value)) SaveToFile(); } }
 	public bool AutoSizeWindow { get => auto_size_window; set { if (SetProperty(ref auto_size_window, value)) SaveToFile(); } }
-	public double WindowWidth { get => window_width; set { if (SetProperty(ref window_width, value)) SaveToFile(); } }
-	public double WindowHeight { get => window_height; set { if (SetProperty(ref window_height, value)) SaveToFile(); } }
-	public double ConfigWindowWidth { get => config_window_width; set { if (SetProperty(ref config_window_width, value)) SaveToFile(); } }
-	public double ConfigWindowHeight { get => config_window_height; set { if (SetProperty(ref config_window_height, value)) SaveToFile(); } }
+	public double WindowWidth { get => window_width; set { var normalized = NormalizeMainWindowDimension(value, MinWindowWidth); if (SetProperty(ref window_width, normalized)) SaveToFile(); } }
+	public double WindowHeight { get => window_height; set { var normalized = NormalizeMainWindowDimension(value, MinWindowHeight); if (SetProperty(ref window_height, normalized)) SaveToFile(); } }
+	public double ConfigWindowWidth { get => config_window_width; set { var normalized = NormalizeConfigWindowDimension(value, MinWindowWidth, DefaultConfigWindowWidth); if (SetProperty(ref config_window_width, normalized)) SaveToFile(); } }
+	public double ConfigWindowHeight { get => config_window_height; set { var normalized = NormalizeConfigWindowDimension(value, MinWindowHeight, DefaultConfigWindowHeight); if (SetProperty(ref config_window_height, normalized)) SaveToFile(); } }
 	public double FontSize { get => font_size; set { if (SetProperty(ref font_size, value)) SaveToFile(); } }
 	public ThemeMode ThemeMode { get => theme_mode; set { if (SetProperty(ref theme_mode, value)) SaveToFile(); } }
 
@@ -242,33 +253,31 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public string BackupLog { get => backup_log; private set => SetProperty(ref backup_log, value); }
 	public IComparer<BrowserModel> BrowserSorter => sorter;
+	public string ExportSettingsJson() => JsonSerializer.Serialize(CreateSerializableSettings(), JsonOptions);
+
+	public void AppendBackupLog(string message)
+	{
+		BackupLog += $"{message}{Environment.NewLine}";
+	}
 
 	public async Task SaveAsync(string fileName)
 	{
-		var settings = new SerializableSettings(this);
-		settings.AutoCloseOnFocusLost = auto_close_on_focus_lost;
 		try
 		{
-			await using var fs = File.Open(fileName, FileMode.Create, FileAccess.Write);
-			await JsonSerializer.SerializeAsync(fs, settings, JsonOptions);
-			BackupLog += $"Exported configuration to {fileName}\n";
+			await File.WriteAllTextAsync(fileName, ExportSettingsJson());
+			AppendBackupLog($"Exported configuration to {fileName}");
 		}
-		catch (Exception e) { BackupLog += $"Unable to parse backup file: {e.Message}"; }
+		catch (Exception e) { AppendBackupLog($"Unable to export configuration to {fileName}: {e.Message}"); }
 	}
 
 	public async Task LoadAsync(string fileName)
 	{
-		await using var file = File.OpenRead(fileName);
-		SerializableSettings? settings;
-		try { settings = await JsonSerializer.DeserializeAsync<SerializableSettings>(file, JsonOptions); }
-		catch (Exception ex) { BackupLog += $"Unable to parse backup file: {ex.InnerException?.Message ?? ex.Message}"; return; }
-		if (settings == null) { BackupLog += "Unable to load backup"; return; }
-		UpdateSettings(settings);
-		UpdateBrowsers(settings.BrowserList);
-		UpdateDefaults(settings.Defaults);
-		UpdateKeybindings(settings.KeyBindings);
-		BackupLog += $"Imported configuration from {fileName}\n";
-		SaveToFile();
+		try
+		{
+			var text = await File.ReadAllTextAsync(fileName);
+			TryImportSettingsJson(text, fileName);
+		}
+		catch (Exception ex) { AppendBackupLog($"Unable to read configuration from {fileName}: {ex.Message}"); }
 	}
 
 	/// <summary>Ensure exactly one of the three ordering options is true (after load from file).</summary>
@@ -305,10 +314,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		disable_network_access = s.DisableNetworkAccess;
 		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
 		url_shorteners = s.UrlShorteners;
-		window_width = s.WindowWidth;
-		window_height = s.WindowHeight;
-		config_window_width = s.ConfigWindowWidth > 0 ? s.ConfigWindowWidth : 600;
-		config_window_height = s.ConfigWindowHeight > 0 ? s.ConfigWindowHeight : 450;
+		window_width = NormalizeMainWindowDimension(s.WindowWidth, MinWindowWidth);
+		window_height = NormalizeMainWindowDimension(s.WindowHeight, MinWindowHeight);
+		config_window_width = NormalizeConfigWindowDimension(s.ConfigWindowWidth, MinWindowWidth, DefaultConfigWindowWidth);
+		config_window_height = NormalizeConfigWindowDimension(s.ConfigWindowHeight, MinWindowHeight, DefaultConfigWindowHeight);
 		font_size = s.FontSize > 0 ? s.FontSize : 14;
 		theme_mode = s.ThemeMode;
 		EnsureSingleOrdering();
@@ -329,6 +338,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			browser.Id = string.IsNullOrEmpty(browser.Id) ? browser.Name : browser.Id;
 			var existing = BrowserList.FirstOrDefault(b => !b.Removed && (b.Id == browser.Id || b.Name == browser.Name));
 			if (existing == null || existing.Removed) { AddBrowser(browser); continue; }
+			existing.Name = browser.Name;
 			existing.Disabled = browser.Disabled;
 			existing.Executable = browser.Executable;
 			existing.PrivacyArgs = browser.PrivacyArgs;
@@ -336,6 +346,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			existing.Command = browser.Command;
 			existing.CommandArgs = browser.CommandArgs;
 			existing.IconPath = browser.IconPath;
+			existing.ManualOrder = browser.ManualOrder;
+			existing.ExpandFileUrls = browser.ExpandFileUrls;
 			existing.ManualOverride = browser.ManualOverride;
 			existing.CustomKeyBind = browser.CustomKeyBind;
 		}
@@ -398,45 +410,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private void LoadFromFile()
 	{
-		using var stream = File.OpenRead(settings_path);
-		var settings = JsonSerializer.Deserialize<SerializableSettings>(stream, JsonOptions);
-		if (settings == null) return;
-		first_time = settings.FirstTime;
-		always_prompt = settings.AlwaysPrompt;
-		always_use_defaults = settings.AlwaysUseDefaults;
-		always_ask_without_default = settings.AlwaysAskWithoutDefault;
-		url_lookup_timeout_milliseconds = settings.UrlLookupTimeoutMilliseconds;
-		use_manual_ordering = settings.UseManualOrdering;
-		use_automatic_ordering = settings.UseAutomaticOrdering;
-		use_alphabetical_ordering = settings.UseAlphabeticalOrdering;
-		disable_transparency = settings.DisableTransparency;
-		window_opacity = Math.Round(Math.Clamp(settings.WindowOpacity, 0.5, 1.0), 2);
-		disable_network_access = settings.DisableNetworkAccess;
-		auto_close_on_focus_lost = settings.AutoCloseOnFocusLost;
-		url_shorteners = settings.UrlShorteners;
-		auto_size_window = settings is { WindowWidth: <= 0, WindowHeight: <= 0 } || settings.AutoSizeWindow;
-		window_width = settings.WindowWidth;
-		window_height = settings.WindowHeight;
-		config_window_width = settings.ConfigWindowWidth > 0 ? settings.ConfigWindowWidth : 600;
-		config_window_height = settings.ConfigWindowHeight > 0 ? settings.ConfigWindowHeight : 450;
-		font_size = settings.FontSize > 0 ? settings.FontSize : 14;
-		theme_mode = settings.ThemeMode;
-		EnsureSingleOrdering();
-		BrowserList.Clear();
-		foreach (var b in settings.BrowserList)
+		var text = File.ReadAllText(settings_path);
+		var settings = DeserializeSettings(text, settings_path);
+		if (settings != null)
 		{
-			b.Id = string.IsNullOrEmpty(b.Id) ? b.Name : b.Id;
-			b.PropertyChanged += Browser_PropertyChanged;
-			BrowserList.Add(b);
+			ApplyImportedSettings(settings);
 		}
-		Defaults.Clear();
-		foreach (var setting in from d in settings.Defaults
-		         select new DefaultSetting(d.Type, d.Pattern ?? string.Empty, d.Browser))
-		{
-			setting.PropertyChanged += DefaultSetting_PropertyChanged;
-			Defaults.Add(setting);
-		}
-		UpdateKeybindings(settings.KeyBindings);
 	}
 
 	private void SaveToFile()
@@ -445,11 +424,134 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		{
 			var dir = Path.GetDirectoryName(settings_path);
 			if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-			var settings = new SerializableSettings(this);
-			settings.AutoCloseOnFocusLost = auto_close_on_focus_lost;
-			using var stream = File.Create(settings_path);
-			JsonSerializer.Serialize(stream, settings, JsonOptions);
+			File.WriteAllText(settings_path, ExportSettingsJson());
 		}
 		catch (Exception ex) { logger.LogWarning(ex, "Failed to save settings to {Path}", settings_path); }
+	}
+
+	public bool TryImportSettingsJson(string json, string sourceDescription)
+	{
+		var settings = DeserializeSettings(json, sourceDescription);
+		if (settings == null)
+		{
+			return false;
+		}
+
+		ApplyImportedSettings(settings);
+		AppendBackupLog($"Imported configuration from {sourceDescription}");
+		SaveToFile();
+		return true;
+	}
+
+	private SerializableSettings CreateSerializableSettings()
+	{
+		return new SerializableSettings(this)
+		{
+			AutoCloseOnFocusLost = auto_close_on_focus_lost,
+			Schema = SerializableSettings.JsonSchemaUrl
+		};
+	}
+
+	private SerializableSettings? DeserializeSettings(string json, string sourceDescription)
+	{
+		try
+		{
+			var root = JsonNode.Parse(UnwrapJsonDocument(json)) as JsonObject;
+			if (root == null)
+			{
+				AppendBackupLog($"Unable to import configuration from {sourceDescription}: expected a JSON object.");
+				return null;
+			}
+
+			if (!LooksLikeSettingsDocument(root))
+			{
+				AppendBackupLog($"Unable to import configuration from {sourceDescription}: contents are not BrowserPicker settings JSON.");
+				return null;
+			}
+
+			var settings = root.Deserialize<SerializableSettings>(JsonOptions);
+			if (settings == null)
+			{
+				AppendBackupLog($"Unable to import configuration from {sourceDescription}: document could not be deserialized.");
+				return null;
+			}
+
+			return settings;
+		}
+		catch (JsonException ex)
+		{
+			AppendBackupLog($"Unable to import configuration from {sourceDescription}: {ex.Message}");
+			return null;
+		}
+	}
+
+	private void ApplyImportedSettings(SerializableSettings settings)
+	{
+		first_time = settings.FirstTime;
+		UpdateSettings(settings);
+		UpdateBrowsers(settings.BrowserList);
+		UpdateDefaults(settings.Defaults);
+		UpdateKeybindings(settings.KeyBindings);
+	}
+
+	private static bool LooksLikeSettingsDocument(JsonObject root)
+	{
+		if (root.TryGetPropertyValue("$schema", out var schemaNode)
+			&& schemaNode is JsonValue schemaValue
+			&& schemaValue.TryGetValue<string>(out var schema)
+			&& string.Equals(schema, SerializableSettings.JsonSchemaUrl, StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+
+		string[] knownProperties =
+		[
+			nameof(SerializableSettings.BrowserList),
+			nameof(SerializableSettings.Defaults),
+			nameof(SerializableSettings.UrlShorteners),
+			nameof(SerializableSettings.SortBy),
+			nameof(SerializableSettings.AutoSizeWindow),
+			nameof(SerializableSettings.AlwaysPrompt)
+		];
+
+		return knownProperties.Count(root.ContainsKey) >= 2;
+	}
+
+	private static string UnwrapJsonDocument(string text)
+	{
+		var trimmed = text.Trim();
+		if (!trimmed.StartsWith("```", StringComparison.Ordinal))
+		{
+			return trimmed;
+		}
+
+		var firstLineBreak = trimmed.IndexOf('\n');
+		var lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
+		if (firstLineBreak < 0 || lastFence <= firstLineBreak)
+		{
+			return trimmed;
+		}
+
+		return trimmed[(firstLineBreak + 1)..lastFence].Trim();
+	}
+
+	private static double NormalizeMainWindowDimension(double value, double minimum)
+	{
+		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0)
+		{
+			return 0;
+		}
+
+		return Math.Max(minimum, Math.Round(value));
+	}
+
+	private static double NormalizeConfigWindowDimension(double value, double minimum, double fallback)
+	{
+		if (double.IsNaN(value) || double.IsInfinity(value) || value <= 0)
+		{
+			return fallback;
+		}
+
+		return Math.Max(minimum, Math.Round(value));
 	}
 }

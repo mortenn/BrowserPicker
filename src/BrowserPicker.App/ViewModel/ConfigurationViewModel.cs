@@ -7,6 +7,7 @@ using System.Windows.Input;
 using BrowserPicker.View;
 using System.Windows;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
@@ -157,7 +158,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	/// <param name="sender">The collection that triggered the event.</param>
 	/// <param name="e">The event data related to the collection changes.</param>
-	private void Defaults_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+	private void Defaults_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		if (e.NewItems?.Count > 0)
 		{
@@ -215,7 +216,46 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Gets or sets a value indicating whether the welcome message should be displayed to the user.
 	/// </summary>
-	public bool Welcome { get; internal set; }
+	public bool Welcome
+	{
+		get => welcome;
+		internal set
+		{
+			if (!SetProperty(ref welcome, value))
+			{
+				return;
+			}
+
+			if (value)
+			{
+				SelectedTabIndex = WelcomeTabIndex;
+			}
+			else if (selected_tab_index == WelcomeTabIndex)
+			{
+				SelectedTabIndex = BrowsersTabIndex;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the currently selected settings tab.
+	/// </summary>
+	public int SelectedTabIndex
+	{
+		get => selected_tab_index;
+		set
+		{
+			if (!SetProperty(ref selected_tab_index, value))
+			{
+				return;
+			}
+
+			if (value == TestDefaultsTabIndex)
+			{
+				PrefillTestDefaultsUrl();
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets a value indicating whether defaults should be automatically added
@@ -233,7 +273,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	public bool AutoCloseOnFocusLost
 	{
-		get => Settings is JsonAppSettings json ? json.AutoCloseOnFocusLost : true;
+		get => Settings is not JsonAppSettings json || json.AutoCloseOnFocusLost;
 		set
 		{
 			if (Settings is not JsonAppSettings json || json.AutoCloseOnFocusLost == value)
@@ -315,6 +355,16 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ICommand Restore => restore ??= new DelegateCommand(PerformRestore);
 
 	/// <summary>
+	/// Command to copy the current settings JSON to the clipboard.
+	/// </summary>
+	public ICommand CopySettings => copy_settings ??= new DelegateCommand(CopySettingsToClipboard);
+
+	/// <summary>
+	/// Command to import settings JSON from the clipboard.
+	/// </summary>
+	public ICommand PasteSettings => paste_settings ??= new DelegateCommand(PasteSettingsFromClipboard);
+
+	/// <summary>
 	/// Command to add a URL shortener domain; parameter is the domain string.
 	/// </summary>
 	public ICommand AddShortener => add_shortener ??= new DelegateCommand<string>(AddUrlShortener, CanAddShortener);
@@ -360,6 +410,44 @@ public sealed class ConfigurationViewModel : ModelBase
 		if (result != true)
 			return;
 		Settings.LoadAsync(browser.FileName);
+	}
+
+	private void CopySettingsToClipboard()
+	{
+		if (Settings is not JsonAppSettings jsonSettings)
+		{
+			return;
+		}
+
+		if (TrySetClipboardText(jsonSettings.ExportSettingsJson(), out var error))
+		{
+			jsonSettings.AppendBackupLog("Copied configuration JSON to the clipboard.");
+			return;
+		}
+
+		jsonSettings.AppendBackupLog($"Unable to copy configuration JSON to the clipboard: {error}");
+	}
+
+	private void PasteSettingsFromClipboard()
+	{
+		if (Settings is not JsonAppSettings jsonSettings)
+		{
+			return;
+		}
+
+		if (!TryGetClipboardText(out var text, out var error))
+		{
+			jsonSettings.AppendBackupLog($"Unable to paste configuration from the clipboard: {error}");
+			return;
+		}
+
+		jsonSettings.TryImportSettingsJson(text!, "the clipboard");
+	}
+
+	internal void ShowFeedbackTab()
+	{
+		Welcome = false;
+		SelectedTabIndex = FeedbackTabIndex;
 	}
 
 	private void AddBrowserManually()
@@ -488,6 +576,91 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	private static bool TrySetClipboardText(string text, out string? error)
+	{
+		error = null;
+		try
+		{
+			Exception? clipboardException = null;
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					Clipboard.SetText(text);
+				}
+				catch (Exception ex)
+				{
+					clipboardException = ex;
+				}
+			});
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.Start();
+			thread.Join();
+			if (clipboardException == null)
+			{
+				return true;
+			}
+
+			error = clipboardException.Message;
+			return false;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private static bool TryGetClipboardText(out string? text, out string? error)
+	{
+		text = null;
+		error = null;
+		try
+		{
+			Exception? clipboardException = null;
+			string? clipboardText = null;
+			string? clipboardError = null;
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					if (!Clipboard.ContainsText(TextDataFormat.UnicodeText))
+					{
+						clipboardError = "clipboard does not contain text";
+						return;
+					}
+
+					clipboardText = Clipboard.GetText(TextDataFormat.UnicodeText);
+					if (string.IsNullOrWhiteSpace(clipboardText))
+					{
+						clipboardError = "clipboard text is empty";
+					}
+				}
+				catch (Exception ex)
+				{
+					clipboardException = ex;
+				}
+			});
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.Start();
+			thread.Join();
+			text = clipboardText;
+			error = clipboardError;
+			if (clipboardException == null)
+			{
+				return error == null;
+			}
+
+			error = clipboardException.Message;
+			return false;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
 	private void CaptureBrowserOrder()
 	{
 		var browsers = Settings.BrowserList.Where(b => !b.Removed).ToArray();
@@ -551,14 +724,22 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 
 	private MatchType new_match_type = MatchType.Hostname;
+	private const int WelcomeTabIndex = 0;
+	private const int BrowsersTabIndex = 1;
+	private const int TestDefaultsTabIndex = 4;
+	private const int FeedbackTabIndex = 6;
 	private string new_fragment = string.Empty;
 	private string new_fragment_browser = string.Empty;
 	private bool auto_add_default;
+	private bool welcome;
+	private int selected_tab_index = BrowsersTabIndex;
 	private DelegateCommand? add_default;
 	private DelegateCommand? refresh_browsers;
 	private DelegateCommand? add_browser;
 	private DelegateCommand? backup;
 	private DelegateCommand? restore;
+	private DelegateCommand? copy_settings;
+	private DelegateCommand? paste_settings;
 	private DelegateCommand<string>? add_shortener;
 	private DelegateCommand<string>? remove_shortener;
 
@@ -604,5 +785,15 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
 		}
+	}
+
+	private void PrefillTestDefaultsUrl()
+	{
+		if (!string.IsNullOrWhiteSpace(test_defaults_url))
+		{
+			return;
+		}
+
+		TestDefaultsURL = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
 	}
 }

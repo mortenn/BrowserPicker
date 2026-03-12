@@ -10,7 +10,7 @@ namespace BrowserPicker;
 public static partial class LoggingExtensions
 {
     [LoggerMessage(EventId = 1001, Level = LogLevel.Debug, Message = "Application launched with arguments: {Args}")]
-    public static partial void LogApplicationLaunched(this ILogger logger, string[] args);
+    public static partial void LogApplicationLaunched(this ILogger logger, string args);
 
     [LoggerMessage(EventId = 1002, Level = LogLevel.Debug, Message = "Requested URL: {URL}")]
     public static partial void LogRequestedUrl(this ILogger logger, string? url);
