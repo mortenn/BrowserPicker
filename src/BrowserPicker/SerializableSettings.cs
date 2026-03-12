@@ -23,7 +23,7 @@ public sealed class SerializableSettings : IApplicationSettings
 		AlwaysUseDefaults = applicationSettings.AlwaysUseDefaults;
 		AlwaysAskWithoutDefault = applicationSettings.AlwaysAskWithoutDefault;
 		UrlLookupTimeoutMilliseconds = applicationSettings.UrlLookupTimeoutMilliseconds;
-		UseAutomaticOrdering = applicationSettings.UseAutomaticOrdering;
+		SortBy = applicationSettings.SortBy;
 		DisableTransparency = applicationSettings.DisableTransparency;
 		WindowOpacity = applicationSettings.WindowOpacity;
 		DisableNetworkAccess = applicationSettings.DisableNetworkAccess;

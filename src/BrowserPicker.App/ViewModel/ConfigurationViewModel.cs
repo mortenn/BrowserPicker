@@ -71,9 +71,10 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool AlwaysUseDefaults { get; set; } = true;
 		public bool AlwaysAskWithoutDefault { get; set; }
 		public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
-		public bool UseAutomaticOrdering { get; set; } = false;
-		public bool UseManualOrdering { get; set; } = false;
-		public bool UseAlphabeticalOrdering { get; set; } = true;
+		public SerializableSettings.SortOrder SortBy { get; set; } = SerializableSettings.SortOrder.Alphabetical;
+		public bool UseAutomaticOrdering { get => SortBy == SerializableSettings.SortOrder.Automatic; set { if (value) SortBy = SerializableSettings.SortOrder.Automatic; } }
+		public bool UseManualOrdering { get => SortBy == SerializableSettings.SortOrder.Manual; set { if (value) SortBy = SerializableSettings.SortOrder.Manual; } }
+		public bool UseAlphabeticalOrdering { get => SortBy == SerializableSettings.SortOrder.Alphabetical; set { if (value) SortBy = SerializableSettings.SortOrder.Alphabetical; } }
 		public bool DisableTransparency { get; set; } = true;
 		public double WindowOpacity { get; set; } = 0.92;
 		public bool DisableNetworkAccess { get; set; } = false;
@@ -570,8 +571,13 @@ public sealed class ConfigurationViewModel : ModelBase
 				ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
 				break;
 
-			case nameof(Settings.UseAutomaticOrdering) when Settings.UseAutomaticOrdering:
-				CaptureBrowserOrder();
+			case nameof(IApplicationSettings.SortBy):
+				if (Settings.SortBy == SerializableSettings.SortOrder.Automatic)
+				{
+					CaptureBrowserOrder();
+				}
+
+				ParentViewModel.RefreshChoices();
 				break;
 		}
 	}
@@ -663,10 +669,10 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void CaptureBrowserOrder()
 	{
-		var browsers = Settings.BrowserList.Where(b => !b.Removed).ToArray();
-		foreach (var browser in browsers)
+		var choices = ParentViewModel.Choices.Where(choice => !choice.Model.Removed).ToArray();
+		for (var i = 0; i < choices.Length; i++)
 		{
-			browser.ManualOrder = Settings.BrowserList.IndexOf(browser);
+			choices[i].Model.ManualOrder = i;
 		}
 	}
 

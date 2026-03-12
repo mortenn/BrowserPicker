@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -48,7 +48,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// </summary>
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(IApplicationSettings.UseAutomaticOrdering))
+		if (e.PropertyName == nameof(IApplicationSettings.SortBy))
 		{
 			OnPropertyChanged(nameof(IsManuallyOrdered));
 		}
@@ -86,7 +86,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// <summary>
 	/// Gets a value indicating whether the browser list is ordered manually.
 	/// </summary>
-	public bool IsManuallyOrdered => !parent_view_model.Configuration.Settings.UseAutomaticOrdering;
+	public bool IsManuallyOrdered => parent_view_model.Configuration.Settings.SortBy == SerializableSettings.SortOrder.Manual;
 
 	/// <summary>
 	/// Gets the command to select the browser.
@@ -345,7 +345,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 		try
 		{
-			if (App.Settings.UseAutomaticOrdering)
+			if (App.Settings.SortBy == SerializableSettings.SortOrder.Automatic)
 			{
 				Model.Usage++;
 			}

@@ -23,9 +23,11 @@ public sealed class AppSettings : IApplicationSettings
 			AlwaysUseDefaults = Reg.Get<bool>();
 			AlwaysAskWithoutDefault = Reg.Get<bool>();
 			UrlLookupTimeoutMilliseconds = Reg.Get(2000);
-			UseManualOrdering = Reg.Get<bool>();
-			UseAutomaticOrdering = Reg.GetBool(true);
-			UseAlphabeticalOrdering = Reg.Get<bool>();
+			SortBy = Reg.Get<bool>(name: nameof(UseManualOrdering))
+				? SerializableSettings.SortOrder.Manual
+				: Reg.Get<bool>(name: nameof(UseAlphabeticalOrdering))
+					? SerializableSettings.SortOrder.Alphabetical
+					: SerializableSettings.SortOrder.Automatic;
 			DisableTransparency = Reg.Get<bool>();
 			DisableNetworkAccess = Reg.Get<bool>();
 			UrlShorteners = Reg.Get<string[]>() ?? [];
@@ -57,13 +59,46 @@ public sealed class AppSettings : IApplicationSettings
 	public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
 
 	/// <inheritdoc />
-	public bool UseManualOrdering { get; set; }
+	public SerializableSettings.SortOrder SortBy { get; set; } = SerializableSettings.SortOrder.Automatic;
 
 	/// <inheritdoc />
-	public bool UseAutomaticOrdering { get; set; } = true;
+	public bool UseManualOrdering
+	{
+		get => SortBy == SerializableSettings.SortOrder.Manual;
+		set
+		{
+			if (value)
+			{
+				SortBy = SerializableSettings.SortOrder.Manual;
+			}
+		}
+	}
 
 	/// <inheritdoc />
-	public bool UseAlphabeticalOrdering { get; set; }
+	public bool UseAutomaticOrdering
+	{
+		get => SortBy == SerializableSettings.SortOrder.Automatic;
+		set
+		{
+			if (value)
+			{
+				SortBy = SerializableSettings.SortOrder.Automatic;
+			}
+		}
+	}
+
+	/// <inheritdoc />
+	public bool UseAlphabeticalOrdering
+	{
+		get => SortBy == SerializableSettings.SortOrder.Alphabetical;
+		set
+		{
+			if (value)
+			{
+				SortBy = SerializableSettings.SortOrder.Alphabetical;
+			}
+		}
+	}
 
 	/// <inheritdoc />
 	public bool DisableTransparency { get; set; }
