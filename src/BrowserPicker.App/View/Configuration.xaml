@@ -233,6 +233,7 @@
 														<Style>
 															<Setter Property="TextBlock.Foreground" Value="Green" />
 															<Setter Property="TextBlock.Text" Value="Enabled" />
+															<Setter Property="FrameworkElement.ToolTip" Value="Toggle whether this browser appears in the picker" />
 															<Style.Triggers>
 																<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
 																	<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
@@ -255,8 +256,17 @@
 										</Hyperlink>
 									</TextBlock>
 										<TextBlock Grid.Column="6" Margin="10" FontSize="16">
+											<TextBlock.Style>
+												<Style TargetType="TextBlock">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding CanRemove}" Value="False">
+															<Setter Property="Visibility" Value="Hidden" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</TextBlock.Style>
 										<Hyperlink Command="{Binding Remove}">
-											<TextBlock Text="X" Foreground="Red" ToolTip="Remove browser from list" />
+											<TextBlock Text="X" Foreground="Red" ToolTip="Remove custom browser from list" />
 										</Hyperlink>
 									</TextBlock>
 									</Grid>

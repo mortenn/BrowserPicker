@@ -72,6 +72,13 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	{
 		switch (e.PropertyName)
 		{
+			case nameof(BrowserModel.Id):
+			case nameof(BrowserModel.Name):
+				OnPropertyChanged(nameof(IsWellKnown));
+				OnPropertyChanged(nameof(CanRemove));
+				Remove.RaiseCanExecuteChanged();
+				break;
+
 			case nameof(BrowserModel.PrivacyArgs):
 				SelectPrivacy.RaiseCanExecuteChanged();
 				break;
@@ -87,6 +94,16 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// Gets a value indicating whether the browser list is ordered manually.
 	/// </summary>
 	public bool IsManuallyOrdered => parent_view_model.Configuration.Settings.SortBy == SerializableSettings.SortOrder.Manual;
+
+	/// <summary>
+	/// Gets a value indicating whether this browser came from the built-in well-known browser list.
+	/// </summary>
+	public bool IsWellKnown => WellKnownBrowsers.Lookup(string.IsNullOrWhiteSpace(Model.Id) ? Model.Name : Model.Id, null) != null;
+
+	/// <summary>
+	/// Gets a value indicating whether this browser can be permanently removed from the configuration.
+	/// </summary>
+	public bool CanRemove => !IsWellKnown;
 
 	/// <summary>
 	/// Gets the command to select the browser.
@@ -106,7 +123,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// <summary>
 	/// Gets the command to remove the browser from the list.
 	/// </summary>
-	public DelegateCommand Remove => remove ??= new DelegateCommand(() => Model.Removed = true);
+	public DelegateCommand Remove => remove ??= new DelegateCommand(() => Model.Removed = true, () => CanRemove);
 	
 	/// <summary>
 	/// Gets the command to open the browser editor.
@@ -219,6 +236,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	{
 		var temp = new BrowserModel
 		{
+			Id = model.Id,
 			Command = Model.Command,
 			CommandArgs = model.CommandArgs,
 			Executable = model.Executable,
