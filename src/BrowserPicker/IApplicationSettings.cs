@@ -33,21 +33,26 @@ public interface IApplicationSettings
 	int UrlLookupTimeoutMilliseconds { get; set; }
 
 	/// <summary>
-	/// When set to true, lets user reorder the list of browsers manually
+	/// How the browser list is ordered in the picker UI.
 	/// </summary>
-	/// <remarks>Mutually exclusive with <see cref="UseAutomaticOrdering"/> and <see cref="UseAlphabeticalOrdering"/></remarks>
+	SerializableSettings.SortOrder SortBy { get; set; }
+
+	/// <summary>
+	/// When set to true, lets user reorder the list of browsers manually.
+	/// Convenience wrapper around <see cref="SortBy"/> for UI bindings.
+	/// </summary>
 	bool UseManualOrdering { get; set; }
 
 	/// <summary>
-	/// When set to false, stops reordering the list of browsers based on popularity
+	/// When set to true, orders the list of browsers based on popularity.
+	/// Convenience wrapper around <see cref="SortBy"/> for UI bindings.
 	/// </summary>
-	/// <remarks>Mutually exclusive with <see cref="UseManualOrdering"/> and <see cref="UseAlphabeticalOrdering"/></remarks>
 	bool UseAutomaticOrdering { get; set; }
 
 	/// <summary>
-	/// When set to false, orders the list of browsers based on alphabetical order
+	/// When set to true, orders the list of browsers alphabetically.
+	/// Convenience wrapper around <see cref="SortBy"/> for UI bindings.
 	/// </summary>
-	/// <remarks>Mutually exclusive with <see cref="UseAutomaticOrdering"/> and <see cref="UseManualOrdering"/></remarks>
 	bool UseAlphabeticalOrdering { get; set; }
 
 	/// <summary>

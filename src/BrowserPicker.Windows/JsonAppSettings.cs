@@ -31,9 +31,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool always_use_defaults = true;
 	private bool always_ask_without_default;
 	private int url_lookup_timeout_milliseconds = 2000;
-	private bool use_manual_ordering;
-	private bool use_automatic_ordering = true;
-	private bool use_alphabetical_ordering;
+	private SerializableSettings.SortOrder sort_by = SerializableSettings.SortOrder.Automatic;
 	private bool disable_transparency;
 	private double window_opacity = 0.92;
 	private bool disable_network_access;
@@ -136,9 +134,59 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public bool AlwaysUseDefaults { get => always_use_defaults; set { if (SetProperty(ref always_use_defaults, value)) SaveToFile(); } }
 	public bool AlwaysAskWithoutDefault { get => always_ask_without_default; set { if (SetProperty(ref always_ask_without_default, value)) SaveToFile(); if (value && use_fallback_default) UseFallbackDefault = false; } }
 	public int UrlLookupTimeoutMilliseconds { get => url_lookup_timeout_milliseconds; set { if (SetProperty(ref url_lookup_timeout_milliseconds, value)) SaveToFile(); } }
-	public bool UseManualOrdering { get => use_manual_ordering; set { if (!SetProperty(ref use_manual_ordering, value)) return; if (value) { use_automatic_ordering = false; use_alphabetical_ordering = false; OnPropertyChanged(nameof(UseAutomaticOrdering)); OnPropertyChanged(nameof(UseAlphabeticalOrdering)); } SaveToFile(); } }
-	public bool UseAutomaticOrdering { get => use_automatic_ordering; set { if (!SetProperty(ref use_automatic_ordering, value)) return; if (value) { use_manual_ordering = false; use_alphabetical_ordering = false; OnPropertyChanged(nameof(UseManualOrdering)); OnPropertyChanged(nameof(UseAlphabeticalOrdering)); } SaveToFile(); } }
-	public bool UseAlphabeticalOrdering { get => use_alphabetical_ordering; set { if (!SetProperty(ref use_alphabetical_ordering, value)) return; if (value) { use_manual_ordering = false; use_automatic_ordering = false; OnPropertyChanged(nameof(UseManualOrdering)); OnPropertyChanged(nameof(UseAutomaticOrdering)); } SaveToFile(); } }
+	public SerializableSettings.SortOrder SortBy
+	{
+		get => sort_by;
+		set
+		{
+			var normalized = NormalizeSortOrder(value);
+			if (!SetProperty(ref sort_by, normalized))
+			{
+				return;
+			}
+
+			OnPropertyChanged(nameof(UseManualOrdering));
+			OnPropertyChanged(nameof(UseAutomaticOrdering));
+			OnPropertyChanged(nameof(UseAlphabeticalOrdering));
+			SaveToFile();
+		}
+	}
+
+	public bool UseManualOrdering
+	{
+		get => SortBy == SerializableSettings.SortOrder.Manual;
+		set
+		{
+			if (value)
+			{
+				SortBy = SerializableSettings.SortOrder.Manual;
+			}
+		}
+	}
+
+	public bool UseAutomaticOrdering
+	{
+		get => SortBy == SerializableSettings.SortOrder.Automatic;
+		set
+		{
+			if (value)
+			{
+				SortBy = SerializableSettings.SortOrder.Automatic;
+			}
+		}
+	}
+
+	public bool UseAlphabeticalOrdering
+	{
+		get => SortBy == SerializableSettings.SortOrder.Alphabetical;
+		set
+		{
+			if (value)
+			{
+				SortBy = SerializableSettings.SortOrder.Alphabetical;
+			}
+		}
+	}
 	public bool DisableTransparency { get => disable_transparency; set { if (SetProperty(ref disable_transparency, value)) SaveToFile(); } }
 	public double WindowOpacity { get => window_opacity; set { var rounded = Math.Round(Math.Clamp(value, 0.5, 1.0), 2); if (SetProperty(ref window_opacity, rounded)) SaveToFile(); } }
 	public bool DisableNetworkAccess { get => disable_network_access; set { if (SetProperty(ref disable_network_access, value)) SaveToFile(); } }
@@ -280,19 +328,6 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		catch (Exception ex) { AppendBackupLog($"Unable to read configuration from {fileName}: {ex.Message}"); }
 	}
 
-	/// <summary>Ensure exactly one of the three ordering options is true (after load from file).</summary>
-	private void EnsureSingleOrdering()
-	{
-		var count = (use_automatic_ordering ? 1 : 0) + (use_manual_ordering ? 1 : 0) + (use_alphabetical_ordering ? 1 : 0);
-		if (count == 1) return;
-		use_automatic_ordering = true;
-		use_manual_ordering = false;
-		use_alphabetical_ordering = false;
-		OnPropertyChanged(nameof(UseAutomaticOrdering));
-		OnPropertyChanged(nameof(UseManualOrdering));
-		OnPropertyChanged(nameof(UseAlphabeticalOrdering));
-	}
-
 	private static DefaultSetting? GetDefaultSetting(string? key, string? value)
 	{
 		if (value == null) return null;
@@ -306,9 +341,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		always_use_defaults = s.AlwaysUseDefaults;
 		always_ask_without_default = s.AlwaysAskWithoutDefault;
 		url_lookup_timeout_milliseconds = s.UrlLookupTimeoutMilliseconds;
-		use_automatic_ordering = s.UseAutomaticOrdering;
-		use_manual_ordering = s.UseManualOrdering;
-		use_alphabetical_ordering = s.UseAlphabeticalOrdering;
+		sort_by = NormalizeSortOrder(s.SortBy);
 		disable_transparency = s.DisableTransparency;
 		window_opacity = Math.Round(Math.Clamp(s.WindowOpacity, 0.5, 1.0), 2);
 		disable_network_access = s.DisableNetworkAccess;
@@ -320,7 +353,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		config_window_height = NormalizeConfigWindowDimension(s.ConfigWindowHeight, MinWindowHeight, DefaultConfigWindowHeight);
 		font_size = s.FontSize > 0 ? s.FontSize : 14;
 		theme_mode = s.ThemeMode;
-		EnsureSingleOrdering();
+		OnPropertyChanged(nameof(SortBy));
+		OnPropertyChanged(nameof(UseAutomaticOrdering));
+		OnPropertyChanged(nameof(UseManualOrdering));
+		OnPropertyChanged(nameof(UseAlphabeticalOrdering));
 		OnPropertyChanged(nameof(AlwaysPrompt));
 		OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 		OnPropertyChanged(nameof(WindowWidth));
@@ -553,5 +589,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 
 		return Math.Max(minimum, Math.Round(value));
+	}
+
+	private static SerializableSettings.SortOrder NormalizeSortOrder(SerializableSettings.SortOrder value)
+	{
+		return Enum.IsDefined(typeof(SerializableSettings.SortOrder), value)
+			? value
+			: SerializableSettings.SortOrder.Automatic;
 	}
 }
