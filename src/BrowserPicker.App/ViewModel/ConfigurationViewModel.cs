@@ -571,8 +571,13 @@ public sealed class ConfigurationViewModel : ModelBase
 				ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
 				break;
 
-			case nameof(IApplicationSettings.SortBy) when Settings.SortBy == SerializableSettings.SortOrder.Automatic:
-				CaptureBrowserOrder();
+			case nameof(IApplicationSettings.SortBy):
+				if (Settings.SortBy == SerializableSettings.SortOrder.Automatic)
+				{
+					CaptureBrowserOrder();
+				}
+
+				ParentViewModel.RefreshChoices();
 				break;
 		}
 	}
@@ -664,10 +669,10 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void CaptureBrowserOrder()
 	{
-		var browsers = Settings.BrowserList.Where(b => !b.Removed).ToArray();
-		foreach (var browser in browsers)
+		var choices = ParentViewModel.Choices.Where(choice => !choice.Model.Removed).ToArray();
+		for (var i = 0; i < choices.Length; i++)
 		{
-			browser.ManualOrder = Settings.BrowserList.IndexOf(browser);
+			choices[i].Model.ManualOrder = i;
 		}
 	}
 
