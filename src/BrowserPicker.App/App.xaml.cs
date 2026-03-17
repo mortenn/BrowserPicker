@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -313,7 +313,10 @@ public partial class App
 	/// </summary>
 	private void ShowMainWindow()
 	{
-		ViewModel?.Initialize();
+		if (ViewModel?.Initialize() == false)
+		{
+			return;
+		}
 		MainWindow = new MainWindow
 		{
 			DataContext = ViewModel

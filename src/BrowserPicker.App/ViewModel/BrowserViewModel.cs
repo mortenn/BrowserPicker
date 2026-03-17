@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -380,7 +381,14 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		{
 			// ignored
 		}
-		Application.Current?.Shutdown();
+		if (parent_view_model.OnShutdown != null)
+		{
+			parent_view_model.OnShutdown(this, EventArgs.Empty);
+		}
+		else
+		{
+			Application.Current?.Shutdown();
+		}
 		return;
 		
 		string CombineArgs(string? args1, string args2)
