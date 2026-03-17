@@ -88,17 +88,18 @@ public sealed class ApplicationViewModel : ModelBase
 	public UrlHandler Url { get; }
 
 	/// <summary>
-	/// Initializes the application state. Handles first-time setup, configuration mode, 
+	/// Initializes the application state. Handles first-time setup, configuration mode,
 	/// and optional automatic browser launch based on URL and settings.
 	/// </summary>
-	public void Initialize()
+	/// <returns><see langword="true"/> when the main window should be shown; otherwise <see langword="false"/>.</returns>
+	public bool Initialize()
 	{
 		if (Configuration.Settings.FirstTime)
 		{
 			Configuration.Welcome = true;
 			ConfigurationMode = true;
 			Configuration.Settings.FirstTime = false;
-			return;
+			return true;
 		}
 
 		if (
@@ -108,7 +109,7 @@ public sealed class ApplicationViewModel : ModelBase
 			|| ConfigurationMode
 			|| force_choice)
 		{
-			return;
+			return true;
 		}
 
 		BrowserViewModel? start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
@@ -118,10 +119,16 @@ public sealed class ApplicationViewModel : ModelBase
 		if (Debugger.IsAttached && start != null)
 		{
 			Debug.WriteLine($"Skipping launch of browser {start.Model.Name} due to debugger being attached");
-			return;
+			return true;
 		}
 #endif
-		start?.Select.Execute(null);
+		if (start == null)
+		{
+			return true;
+		}
+
+		start.Select.Execute(null);
+		return false;
 	}
 
 	/// <summary>
