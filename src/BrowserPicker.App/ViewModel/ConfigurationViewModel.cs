@@ -147,6 +147,11 @@ public sealed class ConfigurationViewModel : ModelBase
 		ParentViewModel = parentViewModel;
 		Defaults.CollectionChanged += Defaults_CollectionChanged;
 		Settings = settings;
+		ParentViewModel.Choices.CollectionChanged += Choices_CollectionChanged;
+		foreach (var choice in ParentViewModel.Choices)
+		{
+			choice.Model.PropertyChanged += ChoiceModel_PropertyChanged;
+		}
 		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
 		{
 			Defaults.Add(setting);
@@ -699,6 +704,41 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
+	private void Choices_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		if (e.NewItems?.Count > 0)
+		{
+			foreach (var item in e.NewItems.OfType<BrowserViewModel>())
+			{
+				item.Model.PropertyChanged += ChoiceModel_PropertyChanged;
+			}
+		}
+
+		if (e.OldItems?.Count > 0)
+		{
+			foreach (var item in e.OldItems.OfType<BrowserViewModel>())
+			{
+				item.Model.PropertyChanged -= ChoiceModel_PropertyChanged;
+			}
+		}
+
+		OnTestDefaultsStateChanged();
+	}
+
+	private void ChoiceModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(BrowserModel.Disabled) or nameof(BrowserModel.Removed) or nameof(BrowserModel.Name))
+		{
+			OnTestDefaultsStateChanged();
+		}
+	}
+
+	private void OnTestDefaultsStateChanged()
+	{
+		OnPropertyChanged(nameof(TestDefaultsResult));
+		OnPropertyChanged(nameof(TestActualResult));
+	}
+
 	private void UpdateDefaults()
 	{
 		DefaultSetting[] added = [..
@@ -772,7 +812,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			var idOrName = ParentViewModel.GetBrowserToLaunchForUrl(test_defaults_url);
+			var idOrName = ParentViewModel.GetMatchedBrowserKeyForUrl(test_defaults_url);
 			if (idOrName == null)
 			{
 				return "User choice";

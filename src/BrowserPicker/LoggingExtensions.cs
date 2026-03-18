@@ -70,4 +70,41 @@ public static partial class LoggingExtensions
 
     [LoggerMessage(EventId = 1020, Level = LogLevel.Information, Message = "{Count} configured defaults match the url")]
     public static partial void LogAutomationMatchesFound(this ILogger logger, int count);
+
+    [LoggerMessage(EventId = 1021, Level = LogLevel.Debug,
+        Message = "Automation inputs: Url={Url}, AlwaysPrompt={AlwaysPrompt}, AlwaysUseDefaults={AlwaysUseDefaults}, AlwaysAskWithoutDefault={AlwaysAskWithoutDefault}, UseFallbackDefault={UseFallbackDefault}, FallbackBrowser={FallbackBrowser}")]
+    public static partial void LogAutomationInputs(this ILogger logger, string? url, bool alwaysPrompt,
+        bool alwaysUseDefaults, bool alwaysAskWithoutDefault, bool useFallbackDefault, string? fallbackBrowser);
+
+    [LoggerMessage(EventId = 1022, Level = LogLevel.Debug,
+        Message = "Default candidate: Type={MatchType}, Pattern={Pattern}, Browser={Browser}, MatchLength={MatchLength}")]
+    public static partial void LogAutomationMatchCandidate(this ILogger logger, string matchType, string? pattern,
+        string? browser, int matchLength);
+
+    [LoggerMessage(EventId = 1023, Level = LogLevel.Debug, Message = "Chosen default browser key: {MatchedKey} ({Source})")]
+    public static partial void LogAutomationMatchedKey(this ILogger logger, string? matchedKey, string source);
+
+    [LoggerMessage(EventId = 1024, Level = LogLevel.Debug,
+        Message = "Resolved browser key {MatchedKey} to browser Id={BrowserId}, Name={BrowserName}, Disabled={Disabled}, Removed={Removed}")]
+    public static partial void LogAutomationResolvedBrowser(this ILogger logger, string? matchedKey, string? browserId,
+        string? browserName, bool? disabled, bool? removed);
+
+    [LoggerMessage(EventId = 1025, Level = LogLevel.Debug,
+        Message = "Configured browser {BrowserName} will be used. AlwaysUseDefaults={AlwaysUseDefaults}, IsRunning={IsRunning}")]
+    public static partial void LogAutomationUsingConfiguredBrowser(this ILogger logger, string? browserName,
+        bool alwaysUseDefaults, bool? isRunning);
+
+    [LoggerMessage(EventId = 1026, Level = LogLevel.Debug,
+        Message = "Configured browser {BrowserName} will not be used. AlwaysUseDefaults={AlwaysUseDefaults}, IsRunning={IsRunning}")]
+    public static partial void LogAutomationSkippingConfiguredBrowser(this ILogger logger, string? browserName,
+        bool alwaysUseDefaults, bool? isRunning);
+
+    [LoggerMessage(EventId = 1027, Level = LogLevel.Debug, Message = "Running browsers considered for fallback: {Browsers}")]
+    public static partial void LogAutomationRunningBrowsers(this ILogger logger, string browsers);
+
+    [LoggerMessage(EventId = 1028, Level = LogLevel.Debug, Message = "Returning single running browser fallback: {BrowserName}")]
+    public static partial void LogAutomationSingleRunningBrowser(this ILogger logger, string? browserName);
+
+    [LoggerMessage(EventId = 1029, Level = LogLevel.Debug, Message = "Target URL is not a valid absolute Uri: {Url}")]
+    public static partial void LogAutomationInvalidUrl(this ILogger logger, string? url);
 }
