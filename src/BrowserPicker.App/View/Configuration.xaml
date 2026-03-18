@@ -72,6 +72,33 @@
 				<Setter Property="VerticalContentAlignment" Value="Center" />
 				<Setter Property="Padding" Value="2" />
 			</Style>
+			<Style x:Key="DefaultsGridComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource BrowserComboBoxStyle}">
+				<Setter Property="MinHeight" Value="28" />
+				<Setter Property="Padding" Value="5,0,28,0" />
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+				<Setter Property="Background" Value="Transparent" />
+				<Setter Property="BorderBrush" Value="Transparent" />
+				<Setter Property="BorderThickness" Value="0" />
+			</Style>
+			<Style x:Key="DefaultsGridEditorTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+				<Setter Property="Padding" Value="5,0" />
+				<Setter Property="VerticalContentAlignment" Value="Center" />
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+				<Setter Property="Background" Value="Transparent" />
+				<Setter Property="BorderBrush" Value="Transparent" />
+				<Setter Property="BorderThickness" Value="0" />
+				<Setter Property="CaretBrush" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+			</Style>
+			<Style x:Key="VisibleBrowserComboItemStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+				<Style.Triggers>
+					<DataTrigger Binding="{Binding Content.Model.Disabled, RelativeSource={RelativeSource Self}}" Value="True">
+						<Setter Property="Visibility" Value="Collapsed" />
+					</DataTrigger>
+					<DataTrigger Binding="{Binding Content.Model.Removed, RelativeSource={RelativeSource Self}}" Value="True">
+						<Setter Property="Visibility" Value="Collapsed" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
 
 			<converter:IconFileToImageConverter x:Key="IconConverter" />
 
@@ -123,7 +150,22 @@
 							</Style>
 						</Image.Style>
 					</Image>
-					<TextBlock Grid.Column="1" Margin="6,0,0,0" Text="{Binding Model.Name}" VerticalAlignment="Center" />
+					<TextBlock Grid.Column="1" Margin="6,0,0,0" Text="{Binding Model.Name}" VerticalAlignment="Center">
+						<TextBlock.Style>
+							<Style TargetType="TextBlock">
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
+										<Setter Property="Opacity" Value="0.7" />
+										<Setter Property="TextDecorations" Value="Strikethrough" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding Model.Removed}" Value="True">
+										<Setter Property="Opacity" Value="0.7" />
+										<Setter Property="TextDecorations" Value="Strikethrough" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</TextBlock.Style>
+					</TextBlock>
 				</Grid>
 			</DataTemplate>
 		</ResourceDictionary>
@@ -359,6 +401,7 @@
 									ItemsSource="{Binding ParentViewModel.Choices}"
 									d:ItemsSource="{Binding ParentViewModel.Choices}"
 									Style="{StaticResource BrowserComboBoxStyle}"
+									ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
 									ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 									IsSynchronizedWithCurrentItem="False"
 									SelectedValuePath="Model.Id"
@@ -405,21 +448,49 @@
 						ItemsSource="{Binding Defaults}"
 						Grid.Row="1"
 						AutoGenerateColumns="False"
-						RowHeight="32"
+						RowHeight="36"
 						Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}"
 						BorderBrush="{x:Null}"
 						CanUserDeleteRows="False"
 						CanUserAddRows="False"
 						CanUserReorderColumns="False"
 						CanUserResizeColumns="False">
+						<DataGrid.RowStyle>
+							<Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+								<Setter Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" />
+								<Style.Triggers>
+									<Trigger Property="IsSelected" Value="True">
+										<Setter Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundSemiTransparentBrushKey}}" />
+										<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+									</Trigger>
+								</Style.Triggers>
+							</Style>
+						</DataGrid.RowStyle>
+						<DataGrid.CellStyle>
+							<Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="BorderBrush" Value="Transparent" />
+								<Style.Triggers>
+									<Trigger Property="IsSelected" Value="True">
+										<Setter Property="Background" Value="{DynamicResource {x:Static app:App.ContentBackgroundSemiTransparentBrushKey}}" />
+										<Setter Property="Foreground" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+										<Setter Property="BorderBrush" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
+									</Trigger>
+								</Style.Triggers>
+							</Style>
+						</DataGrid.CellStyle>
 						<DataGrid.Columns>
-							<DataGridTemplateColumn Header="Match by">
+							<DataGridTemplateColumn Header="Match by" Width="150">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
 											ItemsSource="{Binding DataContext.MatchTypesForRules, RelativeSource={RelativeSource AncestorType=view:Configuration}}"
+											Style="{StaticResource DefaultsGridComboBoxStyle}"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedItem="{Binding Type}"
+											MinWidth="130"
 											VerticalContentAlignment="Center" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
@@ -431,13 +502,17 @@
 										<Setter Property="Padding" Value="5,0" />
 									</Style>
 								</DataGridTextColumn.ElementStyle>
+								<DataGridTextColumn.EditingElementStyle>
+									<Style TargetType="TextBox" BasedOn="{StaticResource DefaultsGridEditorTextBoxStyle}" />
+								</DataGridTextColumn.EditingElementStyle>
 							</DataGridTextColumn>
 							<DataGridTemplateColumn Header="Browser" Width="*" MinWidth="140" SortMemberPath="Model.Name">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
 											ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
-											Style="{StaticResource BrowserComboBoxStyle}"
+											Style="{StaticResource DefaultsGridComboBoxStyle}"
+											ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
 											ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedValue="{Binding Browser}"
@@ -468,6 +543,7 @@
 						<ComboBox
 							ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.ParentViewModel.Choices}"
 							Style="{StaticResource BrowserComboBoxStyle}"
+							ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
 							ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 							IsSynchronizedWithCurrentItem="False"
 							SelectedValue="{Binding NewDefaultBrowser}"
