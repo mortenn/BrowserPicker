@@ -20,7 +20,7 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<StackPanel Orientation="Vertical">
+		<StackPanel Orientation="Vertical" Margin="0,0,50,0">
 			<StackPanel Orientation="Horizontal">
 				<Image Source="{DynamicResource DefaultIcon}" Height="16" Margin="5" />
 				<TextBlock Margin="0,5">
@@ -95,7 +95,7 @@
 				</TextBlock>
 			</Border>
 		</StackPanel>
-		<Grid Grid.Row="0">
+		<Grid Grid.Row="0" Margin="0,0,50,0">
 			<Grid.Style>
 				<Style TargetType="{x:Type Grid}">
 					<Style.Triggers>
