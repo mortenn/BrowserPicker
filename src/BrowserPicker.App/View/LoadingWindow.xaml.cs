@@ -1,4 +1,5 @@
-﻿using System.Windows;
+using System.Windows;
+using System.ComponentModel;
 
 namespace BrowserPicker.View;
 
@@ -10,6 +11,8 @@ public partial class LoadingWindow
 	public LoadingWindow()
 	{
 		InitializeComponent();
+		if (DesignerProperties.GetIsInDesignMode(this) || Application.Current is not App { ViewModel: not null })
+			return;
 		DataContext = ((App)Application.Current).ViewModel;
 	}
 

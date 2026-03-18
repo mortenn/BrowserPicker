@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Framework;
+using BrowserPicker.View;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -35,6 +36,23 @@ public sealed class ApplicationViewModel : ModelBase
 	[UsedImplicitly]
 	public ApplicationViewModel()
 	{
+		if (ReferenceEquals(App.Settings, null))
+		{
+			var designSettings = ConfigurationViewModel.CreateDesignTimeSettings();
+			Url = new UrlHandler(NullLogger<UrlHandler>.Instance, "https://github.com/mortenn/BrowserPicker", designSettings);
+			force_choice = true;
+			Choices = [];
+			Configuration = new ConfigurationViewModel(designSettings, this);
+			foreach (var choice in designSettings.BrowserList
+				         .OrderBy(b => b, new BrowserSorter(designSettings))
+				         .Select(b => new BrowserViewModel(b, this)))
+			{
+				Choices.Add(choice);
+			}
+			ApplyAutoCloseOnFocusLostSetting();
+			return;
+		}
+
 		Url = new UrlHandler();
 		force_choice = true;
 		Choices = [];
@@ -310,11 +328,6 @@ public sealed class ApplicationViewModel : ModelBase
 	/// Opens the URL editor, allowing the user to modify the currently targeted URL.
 	/// </summary>
 	public ICommand Edit => new DelegateCommand(OpenURLEditor);
-
-	/// <summary>
-	/// Closes the URL editor, saving any changes made to the targeted URL.
-	/// </summary>
-	public ICommand EndEdit => new DelegateCommand(CloseURLEditor);
 	
 	/// <summary>
 	/// Gets the view model responsible for managing application configuration settings.
@@ -338,20 +351,6 @@ public sealed class ApplicationViewModel : ModelBase
 		set
 		{
 			SetProperty(ref configuration_mode, value);
-		}
-	}
-
-	/// <summary>
-	/// Gets or sets the URL being edited by the user, backing the URL editor functionality.
-	/// Changes take effect in the underlying URL handler.
-	/// </summary>
-	public string? EditURL
-	{
-		get => edit_url;
-		set
-		{
-			SetProperty(ref edit_url, value);
-			Url.UnderlyingTargetURL = value!;
 		}
 	}
 
@@ -446,21 +445,14 @@ public sealed class ApplicationViewModel : ModelBase
 	/// </summary>
 	private void OpenURLEditor()
 	{
-		EditURL = Url.UnderlyingTargetURL;
-		OnPropertyChanged(nameof(EditURL));
-	}
-
-	/// <summary>
-	/// Closes the URL editor and clears the edit state.
-	/// </summary>
-	private void CloseURLEditor()
-	{
-		if (edit_url == null)
+		var editor = new UrlEditor(Url.UnderlyingTargetURL)
 		{
-			return;
+			Owner = Application.Current?.MainWindow
+		};
+		if (editor.ShowDialog() == true)
+		{
+			Url.UnderlyingTargetURL = editor.EditedUrl;
 		}
-		edit_url = null;
-		OnPropertyChanged(nameof(EditURL));
 	}
 
 	/// <summary>
@@ -477,7 +469,6 @@ public sealed class ApplicationViewModel : ModelBase
 	}
 
 	private bool configuration_mode;
-	private string? edit_url;
 	private bool alt_pressed;
 	private readonly bool force_choice;
 	private bool pinned;
