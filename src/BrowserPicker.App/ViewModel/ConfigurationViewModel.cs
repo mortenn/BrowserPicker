@@ -33,19 +33,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	[UsedImplicitly]
 	public ConfigurationViewModel()
 	{
-		Settings = new DesignTimeSettings
-		{
-			Defaults = [
-				new DefaultSetting(MatchType.Hostname, "github.com", Firefox.Instance.Name),
-				new DefaultSetting(MatchType.Prefix, "https://gitlab.com", Edge.Instance.Name),
-				new DefaultSetting(MatchType.Regex, @"runsafe\.no\/[0-9a-f]+$", InternetExplorer.Instance.Name),
-				new DefaultSetting(MatchType.Hostname, "gitlab.com", OperaStable.Instance.Name),
-				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name),
-				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
-			],
-			BrowserList = [.. WellKnownBrowsers.List.Select(b => new BrowserModel(b, null, string.Empty))],
-			DefaultBrowser = Firefox.Instance.Name
-		};
+		Settings = CreateDesignTimeSettings();
 		Welcome = true;
 		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
 		{
@@ -62,6 +50,23 @@ public sealed class ConfigurationViewModel : ModelBase
 			ParentViewModel.Choices.Add(choice);
 		}
 		test_defaults_url = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
+	}
+
+	internal static IBrowserPickerConfiguration CreateDesignTimeSettings()
+	{
+		return new DesignTimeSettings
+		{
+			Defaults = [
+				new DefaultSetting(MatchType.Hostname, "github.com", Firefox.Instance.Name),
+				new DefaultSetting(MatchType.Prefix, "https://gitlab.com", Edge.Instance.Name),
+				new DefaultSetting(MatchType.Regex, @"runsafe\.no\/[0-9a-f]+$", InternetExplorer.Instance.Name),
+				new DefaultSetting(MatchType.Hostname, "gitlab.com", OperaStable.Instance.Name),
+				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name),
+				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
+			],
+			BrowserList = [.. WellKnownBrowsers.List.Select(b => new BrowserModel(b, null, string.Empty))],
+			DefaultBrowser = Firefox.Instance.Name
+		};
 	}
 
 	private sealed class DesignTimeSettings : IBrowserPickerConfiguration

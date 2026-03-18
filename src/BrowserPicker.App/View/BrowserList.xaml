@@ -63,16 +63,6 @@
 						📋
 					</Hyperlink>
 					<Hyperlink TextDecorations="None" Command="{Binding Edit}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" ToolTip="Edit the URL before opening it">
-						<Hyperlink.Style>
-							<Style>
-								<Setter Property="UIElement.Visibility" Value="Collapsed" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
-										<Setter Property="UIElement.Visibility" Value="Visible" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</Hyperlink.Style>
 						✏
 					</Hyperlink>
 				</TextBlock>
@@ -95,32 +85,6 @@
 				</TextBlock>
 			</Border>
 		</StackPanel>
-		<Grid Grid.Row="0" Margin="0,0,50,0">
-			<Grid.Style>
-				<Style TargetType="{x:Type Grid}">
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding EditURL}" Value="{x:Null}">
-							<Setter Property="UIElement.Visibility" Value="Collapsed" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</Grid.Style>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<TextBox
-				Grid.Row="0" MaxWidth="500" MaxHeight="70"
-				Text="{Binding EditURL, UpdateSourceTrigger=PropertyChanged}"
-				KeyUp="Editor_KeyUp"
-				HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow"
-				Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}"
-				Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}"
-				BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
-			<TextBlock Grid.Column="1" Margin="5,0,0,0">
-				<Hyperlink Command="{Binding EndEdit}" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" TextDecorations="None">✔️</Hyperlink>
-			</TextBlock>
-		</Grid>
 		<ScrollViewer x:Name="BrowserListScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" SizeChanged="BrowserListScroll_SizeChanged">
 			<ItemsControl ItemsSource="{Binding Choices}">
 				<ItemsControl.ItemsPanel>

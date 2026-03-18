@@ -176,7 +176,8 @@ public partial class App
 	/// <summary>Returns current content theme brushes (for code-behind so Configuration always gets correct colors at runtime).</summary>
 	internal static void GetContentThemeBrushes(out SolidColorBrush background, out SolidColorBrush foreground)
 	{
-		var useLight = Settings.ThemeMode switch
+		var mode = ReferenceEquals(Settings, null) ? BrowserPicker.ThemeMode.System : Settings.ThemeMode;
+		var useLight = mode switch
 		{
 			BrowserPicker.ThemeMode.Light => true,
 			BrowserPicker.ThemeMode.Dark => false,

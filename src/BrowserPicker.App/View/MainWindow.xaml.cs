@@ -25,6 +25,8 @@ public partial class MainWindow
 	public MainWindow()
 	{
 		InitializeComponent();
+		if (DesignerProperties.GetIsInDesignMode(this) || Application.Current is not App { ViewModel: not null })
+			return;
 		DataContext = ((App)Application.Current).ViewModel;
 		if (App.Settings is INotifyPropertyChanged inpc)
 			inpc.PropertyChanged += Settings_PropertyChanged;
