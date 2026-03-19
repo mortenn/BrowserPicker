@@ -146,6 +146,9 @@ public sealed class AppSettings : IApplicationSettings
 	/// <inheritdoc />
 	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
 
+	/// <inheritdoc />
+	public ProfileDisplayMode ProfileDisplayMode { get; set; }
+
 	private List<DefaultSetting> GetDefaults()
 	{
 		if (Reg == null) return [];

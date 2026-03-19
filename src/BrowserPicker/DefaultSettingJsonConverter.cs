@@ -13,6 +13,7 @@ internal sealed class DefaultSettingJsonConverter : JsonConverter<DefaultSetting
 		MatchType type = default;
 		string? pattern = null;
 		string? browser = null;
+		string? profile = null;
 
 		if (reader.TokenType != JsonTokenType.StartObject)
 		{
@@ -44,13 +45,16 @@ internal sealed class DefaultSettingJsonConverter : JsonConverter<DefaultSetting
 				case "Browser":
 					browser = reader.GetString();
 					break;
+				case "Profile":
+					profile = reader.GetString();
+					break;
 				default:
 					reader.Skip();
 					break;
 			}
 		}
 
-		return new DefaultSetting(type, pattern, browser);
+		return new DefaultSetting(type, pattern, browser, profile);
 	}
 
 	/// <inheritdoc />
@@ -60,6 +64,10 @@ internal sealed class DefaultSettingJsonConverter : JsonConverter<DefaultSetting
 		writer.WriteString("Type", value.Type.ToString());
 		writer.WriteString("Pattern", value.Pattern);
 		writer.WriteString("Browser", value.Browser);
+		if (value.Profile != null)
+		{
+			writer.WriteString("Profile", value.Profile);
+		}
 		writer.WriteEndObject();
 	}
 }

@@ -124,4 +124,10 @@ public interface IApplicationSettings
 	/// Theme preference: system, light, or dark.
 	/// </summary>
 	ThemeMode ThemeMode { get; set; }
+
+	/// <summary>
+	/// How browser profiles are displayed in the picker UI: grouped under their browser or as flat top-level entries.
+	/// </summary>
+	ProfileDisplayMode ProfileDisplayMode { get; set; }
+
 }

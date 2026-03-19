@@ -577,9 +577,27 @@ public sealed class FeedbackViewModel : ModelBase
 		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
 		public List<BrowserModel> BrowserList { get; } =
 		[
-			new BrowserModel(Firefox.Instance, null, string.Empty) { Usage = 8 },
+			new BrowserModel(Firefox.Instance, null, string.Empty)
+			{
+				Usage = 8,
+				Profiles =
+				{
+					new BrowserProfile("container:Work", "Work", null, "ext+container:name=Work&url={url}")
+						{ IconColor = "orange", ContainerIcon = "briefcase" },
+					new BrowserProfile("container:Personal", "Personal", null, "ext+container:name=Personal&url={url}")
+						{ IconColor = "blue", ContainerIcon = "fingerprint" },
+				}
+			},
 			new BrowserModel(Edge.Instance, null, string.Empty) { Usage = 3, Disabled = true },
-			new BrowserModel(Chrome.Instance, null, string.Empty) { Usage = 5 }
+			new BrowserModel(Chrome.Instance, null, string.Empty)
+			{
+				Usage = 5,
+				Profiles =
+				{
+					new BrowserProfile("Default", "Personal", @"--profile-directory=""Default"""),
+					new BrowserProfile("Profile 1", "Work", @"--profile-directory=""Profile 1"""),
+				}
+			}
 		];
 		public List<DefaultSetting> Defaults { get; } =
 		[
@@ -594,6 +612,7 @@ public sealed class FeedbackViewModel : ModelBase
 		public double ConfigWindowHeight { get; set; } = 640;
 		public double FontSize { get; set; } = 14;
 		public ThemeMode ThemeMode { get; set; } = ThemeMode.Dark;
+		public ProfileDisplayMode ProfileDisplayMode { get; set; }
 		public bool UseFallbackDefault { get; set; } = true;
 		public string? DefaultBrowser { get; set; } = Firefox.Instance.Name;
 		public string BackupLog => "Copied configuration JSON to the clipboard.";
@@ -613,7 +632,7 @@ public sealed class FeedbackViewModel : ModelBase
 		{
 		}
 
-		public void AddDefault(MatchType matchType, string pattern, string browser)
+		public void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null)
 		{
 		}
 

@@ -54,6 +54,13 @@ public interface IWellKnownBrowser
 	string? PrivacyArgs { get; }
 	/// <summary>Label for the privacy mode action (e.g. "Open incognito").</summary>
 	string PrivacyMode { get; }
+	/// <summary>Type of profile discovery supported by this browser.</summary>
+	ProfileType ProfileType { get; }
+	/// <summary>
+	/// Path to the user data / profile root directory, relative to <c>%LocalAppData%</c> (Chromium)
+	/// or <c>%AppData%</c> (Firefox). Null when profiles are not supported.
+	/// </summary>
+	string? UserDataPath { get; }
 }
 
 public sealed class Firefox : IWellKnownBrowser
@@ -69,6 +76,10 @@ public sealed class Firefox : IWellKnownBrowser
 	public string PrivacyArgs => "-private-window ";
 
 	public string PrivacyMode => "Open with private browsing";
+
+	public ProfileType ProfileType => ProfileType.Firefox;
+
+	public string? UserDataPath => @"Mozilla\Firefox";
 }
 
 public sealed class FirefoxDevEdition : IWellKnownBrowser
@@ -84,6 +95,10 @@ public sealed class FirefoxDevEdition : IWellKnownBrowser
 	public string PrivacyArgs => "-private-window ";
 
 	public string PrivacyMode => "Open with private browsing";
+
+	public ProfileType ProfileType => ProfileType.Firefox;
+
+	public string? UserDataPath => @"Mozilla\Firefox";
 }
 
 public sealed class Chrome : IWellKnownBrowser
@@ -99,6 +114,10 @@ public sealed class Chrome : IWellKnownBrowser
 	public string PrivacyArgs => "--incognito ";
 
 	public string PrivacyMode => "Open incognito";
+
+	public ProfileType ProfileType => ProfileType.Chromium;
+
+	public string? UserDataPath => @"Google\Chrome\User Data";
 }
 
 public sealed class ChromeDevEdition : IWellKnownBrowser
@@ -114,6 +133,10 @@ public sealed class ChromeDevEdition : IWellKnownBrowser
 	public string PrivacyArgs => "--incognito ";
 
 	public string PrivacyMode => "Open incognito";
+
+	public ProfileType ProfileType => ProfileType.Chromium;
+
+	public string? UserDataPath => @"Google\Chrome Dev\User Data";
 }
 
 public sealed class MicrosoftEdge : IWellKnownBrowser
@@ -129,6 +152,10 @@ public sealed class MicrosoftEdge : IWellKnownBrowser
 	public string PrivacyArgs => "-inprivate ";
 
 	public string PrivacyMode => "Open in private mode";
+
+	public ProfileType ProfileType => ProfileType.Chromium;
+
+	public string? UserDataPath => @"Microsoft\Edge\User Data";
 }
 
 public sealed class Edge : IWellKnownBrowser
@@ -144,6 +171,10 @@ public sealed class Edge : IWellKnownBrowser
 	public string PrivacyArgs => "-private ";
 
 	public string PrivacyMode => "Open in private mode";
+
+	public ProfileType ProfileType => ProfileType.None;
+
+	public string? UserDataPath => null;
 }
 
 public sealed class InternetExplorer : IWellKnownBrowser
@@ -159,6 +190,10 @@ public sealed class InternetExplorer : IWellKnownBrowser
 	public string PrivacyArgs => "-private ";
 
 	public string PrivacyMode => "Open in private mode";
+
+	public ProfileType ProfileType => ProfileType.None;
+
+	public string? UserDataPath => null;
 }
 
 public sealed class OperaStable : IWellKnownBrowser
@@ -174,4 +209,8 @@ public sealed class OperaStable : IWellKnownBrowser
 	public string PrivacyArgs => "--private ";
 
 	public string PrivacyMode => "Open in private mode";
+
+	public ProfileType ProfileType => ProfileType.None;
+
+	public string? UserDataPath => null;
 }

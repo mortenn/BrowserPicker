@@ -46,6 +46,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private double config_window_height = 450;
 	private double font_size = 14;
 	private ThemeMode theme_mode = ThemeMode.System;
+	private ProfileDisplayMode profile_display_mode;
 
 	private static readonly JsonSerializerOptions JsonOptions = new()
 	{
@@ -112,7 +113,11 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			d.PropertyChanged += DefaultSetting_PropertyChanged;
 		}
 		foreach (var b in BrowserList)
+		{
 			b.PropertyChanged += Browser_PropertyChanged;
+			foreach (var profile in b.Profiles)
+				profile.PropertyChanged += Profile_PropertyChanged;
+		}
 	}
 
 	/// <summary>
@@ -199,6 +204,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public double ConfigWindowHeight { get => config_window_height; set { var normalized = NormalizeConfigWindowDimension(value, MinWindowHeight, DefaultConfigWindowHeight); if (SetProperty(ref config_window_height, normalized)) SaveToFile(); } }
 	public double FontSize { get => font_size; set { if (SetProperty(ref font_size, value)) SaveToFile(); } }
 	public ThemeMode ThemeMode { get => theme_mode; set { if (SetProperty(ref theme_mode, value)) SaveToFile(); } }
+	public ProfileDisplayMode ProfileDisplayMode { get => profile_display_mode; set { if (SetProperty(ref profile_display_mode, value)) SaveToFile(); } }
 
 	public List<BrowserModel> BrowserList { get; }
 
@@ -248,6 +254,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		foreach (var other in BrowserList.Where(other => other.CustomKeyBind == browser.CustomKeyBind))
 			other.CustomKeyBind = string.Empty;
 		browser.PropertyChanged += Browser_PropertyChanged;
+		foreach (var profile in browser.Profiles)
+			profile.PropertyChanged += Profile_PropertyChanged;
 		BrowserList.Add(browser);
 		logger.LogBrowserAdded(browser.Name);
 		OnPropertyChanged(nameof(BrowserList));
@@ -260,12 +268,87 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		foreach (var model in BrowserDiscovery.FindBrowsers())
 			AddOrUpdateBrowserModel(model);
+		DiscoverProfiles();
+	}
+
+	private void DiscoverProfiles()
+	{
+		var changed = false;
+		foreach (var browser in BrowserList)
+		{
+			var discovered = BrowserDiscovery.FindProfiles(browser, logger);
+			if (discovered == null)
+				continue;
+
+			// When containers are disabled for this browser, filter them out so stale-removal clears them
+			if (!browser.ContainersEnabled && discovered.Any(p => p.UrlTemplate != null))
+				discovered = discovered.Where(p => p.UrlTemplate == null).ToList();
+
+			if (MergeProfiles(browser, discovered))
+				changed = true;
+		}
+
+		if (changed)
+		{
+			SaveToFile();
+		}
+	}
+
+	private bool MergeProfiles(BrowserModel browser, List<BrowserProfile> discovered)
+	{
+		var changed = false;
+
+		foreach (var profile in discovered)
+		{
+			var existing = browser.Profiles.FirstOrDefault(p =>
+				string.Equals(p.Id, profile.Id, StringComparison.OrdinalIgnoreCase));
+
+			if (existing != null)
+			{
+				if (existing.Name != profile.Name) { existing.Name = profile.Name; changed = true; }
+				if (existing.CommandArgs != profile.CommandArgs) { existing.CommandArgs = profile.CommandArgs; changed = true; }
+				if (existing.UrlTemplate != profile.UrlTemplate) { existing.UrlTemplate = profile.UrlTemplate; changed = true; }
+				if (existing.IconColor != profile.IconColor) { existing.IconColor = profile.IconColor; changed = true; }
+				if (existing.ContainerIcon != profile.ContainerIcon) { existing.ContainerIcon = profile.ContainerIcon; changed = true; }
+				continue;
+			}
+
+			profile.PropertyChanged += Profile_PropertyChanged;
+			browser.Profiles.Add(profile);
+			changed = true;
+		}
+
+		var stale = browser.Profiles
+			.Where(p => discovered.All(d => !string.Equals(d.Id, p.Id, StringComparison.OrdinalIgnoreCase)))
+			.ToArray();
+
+		foreach (var profile in stale)
+		{
+			profile.PropertyChanged -= Profile_PropertyChanged;
+			browser.Profiles.Remove(profile);
+			changed = true;
+		}
+
+		// Reorder to match discovery order
+		for (var i = 0; i < discovered.Count && i < browser.Profiles.Count; i++)
+		{
+			var expectedId = discovered[i].Id;
+			var currentIdx = browser.Profiles.FindIndex(i, p =>
+				string.Equals(p.Id, expectedId, StringComparison.OrdinalIgnoreCase));
+			if (currentIdx > i)
+			{
+				var item = browser.Profiles[currentIdx];
+				browser.Profiles.RemoveAt(currentIdx);
+				browser.Profiles.Insert(i, item);
+				changed = true;
+			}
+		}
+
+		return changed;
 	}
 
 	private void AddOrUpdateBrowserModel(BrowserModel model)
 	{
-		// Match both stable ids and display names so startup discovery merges with migrated
-		// registry-backed entries whose ids may be legacy values like "ChromeHTML".
 		var update = BrowserList.FirstOrDefault(m =>
 			string.Equals(m.Id, model.Id, StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(m.Id, model.Name, StringComparison.OrdinalIgnoreCase)
@@ -284,12 +367,13 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		AddBrowser(model);
 	}
 
-	public void AddDefault(MatchType matchType, string pattern, string? browser)
+	public void AddDefault(MatchType matchType, string pattern, string? browser, string? profile = null)
 	{
 		var setting = GetDefaultSetting(null, browser);
 		if (setting == null) return;
 		setting.Type = matchType;
 		setting.Pattern = pattern;
+		setting.Profile = profile;
 		setting.PropertyChanged += DefaultSetting_PropertyChanged;
 		Defaults.Add(setting);
 		logger.LogDefaultSettingAdded(matchType.ToString(), pattern, browser);
@@ -353,6 +437,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		config_window_height = NormalizeConfigWindowDimension(s.ConfigWindowHeight, MinWindowHeight, DefaultConfigWindowHeight);
 		font_size = s.FontSize > 0 ? s.FontSize : 14;
 		theme_mode = s.ThemeMode;
+		profile_display_mode = s.ProfileDisplayMode;
 		OnPropertyChanged(nameof(SortBy));
 		OnPropertyChanged(nameof(UseAutomaticOrdering));
 		OnPropertyChanged(nameof(UseManualOrdering));
@@ -386,6 +471,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			existing.ExpandFileUrls = browser.ExpandFileUrls;
 			existing.ManualOverride = browser.ManualOverride;
 			existing.CustomKeyBind = browser.CustomKeyBind;
+			existing.ContainersEnabled = browser.ContainersEnabled;
+			MergeProfiles(existing, browser.Profiles);
 		}
 		foreach (var b in BrowserList.Where(b => browserList.All(s => s.Id != b.Id && s.Name != b.Name)).ToArray())
 		{
@@ -407,7 +494,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		foreach (var setting in defaults.Where(s => s != fallback))
 		{
 			var browserId = string.IsNullOrEmpty(setting.Browser) ? null : BrowserList.FirstOrDefault(b => b.Id == setting.Browser || b.Name == setting.Browser)?.Id ?? setting.Browser;
-			var newSetting = new DefaultSetting(setting.Type, setting.Pattern, null);
+			var newSetting = new DefaultSetting(setting.Type, setting.Pattern, null, setting.Profile);
 			newSetting.PropertyChanged += DefaultSetting_PropertyChanged;
 			Defaults.Add(newSetting);
 			newSetting.Browser = browserId;
@@ -436,12 +523,23 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		if (sender is BrowserModel model && e.PropertyName == nameof(BrowserModel.Removed) && model.Removed)
 		{
 			model.PropertyChanged -= Browser_PropertyChanged;
+			foreach (var profile in model.Profiles)
+				profile.PropertyChanged -= Profile_PropertyChanged;
 			BrowserList.Remove(model);
 			logger.LogBrowserRemoved(model.Name);
 			OnPropertyChanged(nameof(BrowserList));
 		}
 		else if (sender != null)
+		{
 			SaveToFile();
+			if (e.PropertyName == nameof(BrowserModel.ContainersEnabled))
+				DiscoverProfiles();
+		}
+	}
+
+	private void Profile_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		SaveToFile();
 	}
 
 	private void LoadFromFile()

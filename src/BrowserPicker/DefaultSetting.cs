@@ -11,12 +11,13 @@ namespace BrowserPicker;
 /// Represents a per-URL default browser rule: when a URL matches the pattern, the associated browser is preferred.
 /// </summary>
 [JsonConverter(typeof(DefaultSettingJsonConverter))]
-public sealed class DefaultSetting(MatchType initialType, string? initialPattern, string? initialBrowser) : ModelBase, INotifyPropertyChanging
+public sealed class DefaultSetting(MatchType initialType, string? initialPattern, string? initialBrowser, string? initialProfile = null) : ModelBase, INotifyPropertyChanging
 {
 	private readonly Guid id = Guid.NewGuid();
 	private MatchType type = initialType;
 	private string? pattern = initialPattern;
 	private string? browser = initialBrowser;
+	private string? profile = initialProfile;
 	private bool deleted;
 
 	/// <summary>
@@ -131,6 +132,16 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 				OnPropertyChanged(nameof(SettingValue));
 			}
 		}
+	}
+
+	/// <summary>
+	/// Optional profile id to use when launching the browser for this rule.
+	/// Null means use the browser's default/preferred profile.
+	/// </summary>
+	public string? Profile
+	{
+		get => profile;
+		set => SetProperty(ref profile, value);
 	}
 
 	/// <summary>

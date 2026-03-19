@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -25,7 +26,15 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// Initializes the ViewModel with default values.
 	/// </summary>
 	[UsedImplicitly]
-	public BrowserViewModel() : base(new BrowserModel())
+	public BrowserViewModel() : base(new BrowserModel
+	{
+		Name = "Google Chrome",
+		Profiles =
+		{
+			new BrowserProfile("Default", "Personal", @"--profile-directory=""Default"""),
+			new BrowserProfile("Profile 1", "Work", @"--profile-directory=""Profile 1"""),
+		}
+	})
 	{
 		parent_view_model = new ApplicationViewModel();
 	}
@@ -88,7 +97,19 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				SelectPrivacy.RaiseCanExecuteChanged();
 				Select.RaiseCanExecuteChanged();
 				break;
+
+			case nameof(BrowserModel.ContainersEnabled):
+				RefreshProfiles();
+				break;
 		}
+	}
+
+	private void RefreshProfiles()
+	{
+		profile_view_models = null;
+		IsExpanded = false;
+		OnPropertyChanged(nameof(ProfileViewModels));
+		OnPropertyChanged(nameof(HasProfiles));
 	}
 
 	/// <summary>
@@ -202,7 +223,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			ManualOverride = Model.ManualOverride,
 			Disabled = false,
 			Usage = 0,
-			ExpandFileUrls = Model.ExpandFileUrls
+			ExpandFileUrls = Model.ExpandFileUrls,
+			ContainersEnabled = Model.ContainersEnabled
 		};
 		var editorVm = new BrowserViewModel(clone, parent_view_model);
 		var editor = new BrowserEditor(editorVm);
@@ -249,7 +271,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			Disabled = model.Disabled,
 			ManualOrder = model.ManualOrder,
 			Usage = model.Usage,
-			ExpandFileUrls = model.ExpandFileUrls
+			ExpandFileUrls = model.ExpandFileUrls,
+			ContainersEnabled = model.ContainersEnabled
 		};
 		var editor = new BrowserEditor(new BrowserViewModel(temp, parent_view_model));
 		editor.Show();
@@ -280,6 +303,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Model.CustomKeyBind = save.CustomKeyBind;
 		Model.ManualOverride = save.ManualOverride;
 		Model.Disabled = save.Disabled;
+		Model.ContainersEnabled = save.ContainersEnabled;
 
 		parent_view_model.Configuration.Settings.PersistBrowser(Model);
 	}
@@ -343,6 +367,81 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	public bool AltPressed => parent_view_model.AltPressed;
 
 	/// <summary>
+	/// Whether this browser has any non-disabled profiles.
+	/// </summary>
+	public bool HasProfiles => Model.Profiles.Any(p => !p.Disabled);
+
+	/// <summary>
+	/// Whether this browser supports Firefox-style containers (based on well-known browser type).
+	/// </summary>
+	public bool SupportsContainers
+	{
+		get
+		{
+			var known = WellKnownBrowsers.Lookup(
+				string.IsNullOrWhiteSpace(Model.Id) ? Model.Name : Model.Id,
+				Model.Executable ?? Model.Command);
+			return known?.ProfileType == ProfileType.Firefox;
+		}
+	}
+
+	/// <summary>
+	/// Opens the extension install page using this browser.
+	/// </summary>
+	public DelegateCommand OpenExtensionLink => open_extension_link ??= new DelegateCommand(LaunchExtensionPage);
+
+	private void LaunchExtensionPage()
+	{
+		const string url = "https://addons.mozilla.org/en-US/firefox/addon/open-url-in-container/";
+		try
+		{
+			var args = $"\"{url}\"";
+			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
+			Process.Start(process);
+		}
+		catch
+		{
+			// ignored
+		}
+	}
+
+	/// <summary>
+	/// Whether the profile sub-list is expanded in the picker UI (grouped mode).
+	/// </summary>
+	public bool IsExpanded
+	{
+		get => is_expanded;
+		set => SetProperty(ref is_expanded, value);
+	}
+
+	/// <summary>
+	/// Toggle expand/collapse of the profile sub-list.
+	/// </summary>
+	public DelegateCommand ExpandToggle => expand_toggle ??= new DelegateCommand(() => IsExpanded = !IsExpanded);
+
+	/// <summary>
+	/// Observable collection of profile view models for the picker UI.
+	/// Lazily populated on first access.
+	/// </summary>
+	public ObservableCollection<BrowserProfileViewModel> ProfileViewModels
+	{
+		get
+		{
+			if (profile_view_models == null)
+			{
+				profile_view_models = new ObservableCollection<BrowserProfileViewModel>(
+					Model.Profiles.Where(p => !p.Disabled).Select(p => new BrowserProfileViewModel(p, this)));
+			}
+			return profile_view_models;
+		}
+	}
+
+	private bool is_expanded;
+	private DelegateCommand? expand_toggle;
+	private DelegateCommand? open_extension_link;
+	private ObservableCollection<BrowserProfileViewModel>? profile_view_models;
+
+	/// <summary>
 	/// Determines if the browser can be launched with the specified privacy setting.
 	/// </summary>
 	/// <param name="privacy">Whether the browser should be launched in privacy mode.</param>
@@ -353,10 +452,15 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	}
 
 	/// <summary>
-	/// Launches the browser with the specified privacy mode setting by executing the associated command.
+	/// Launches the browser with the specified profile and privacy mode.
+	/// Called by <see cref="BrowserProfileViewModel"/> and auto-selection.
 	/// </summary>
-	/// <param name="privacy">Whether the browser should be launched in privacy mode.</param>
-	private void Launch(bool privacy)
+	internal void LaunchWithProfile(bool privacy, BrowserProfile? profile)
+	{
+		Launch(privacy, profile);
+	}
+
+	private void Launch(bool privacy, BrowserProfile? profile = null)
 	{
 		if (parent_view_model.Url.TargetURL == null)
 		{
@@ -367,13 +471,19 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			if (App.Settings.SortBy == SerializableSettings.SortOrder.Automatic)
 			{
 				Model.Usage++;
+				if (profile != null)
+				{
+					profile.Usage++;
+				}
 			}
 	
 			parent_view_model.Configuration.UrlOpened(parent_view_model.Url.HostName, Model.Id);
-	
+
+			var profileArgs = profile?.CommandArgs ?? string.Empty;
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
-			var url = parent_view_model.Url.GetTargetUrl(Model.ExpandFileUrls);
-			var args = CombineArgs(Model.CommandArgs, $"{newArgs}\"{url}\"");
+			var rawUrl = parent_view_model.Url.GetTargetUrl(Model.ExpandFileUrls) ?? parent_view_model.Url.TargetURL!;
+			var url = profile != null ? profile.TransformUrl(rawUrl) : rawUrl;
+			var args = CombineArgs(Model.CommandArgs, CombineArgs(profileArgs, $"{newArgs}\"{url}\""));
 			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
 			_ = Process.Start(process);
 		}
@@ -391,7 +501,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 		return;
 		
-		string CombineArgs(string? args1, string args2)
+		static string CombineArgs(string? args1, string args2)
 		{
 			if (string.IsNullOrEmpty(args1))
 			{

@@ -39,7 +39,8 @@ public interface IBrowserPickerConfiguration : IApplicationSettings, INotifyProp
 	/// <param name="matchType">Type of match.</param>
 	/// <param name="pattern">The url fragment to match.</param>
 	/// <param name="browser">The browser id or display name to use for this rule.</param>
-	void AddDefault(MatchType matchType, string pattern, string browser);
+	/// <param name="profile">Optional profile id to target within the browser.</param>
+	void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null);
 
 	/// <summary>
 	/// Exports all the configuration to a json file

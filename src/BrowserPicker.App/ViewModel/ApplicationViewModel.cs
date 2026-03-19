@@ -57,7 +57,9 @@ public sealed class ApplicationViewModel : ModelBase
 		force_choice = true;
 		Choices = [];
 		Configuration = new ConfigurationViewModel(App.Settings, this);
-		foreach (var choice in WellKnownBrowsers.List.Select(b => new BrowserViewModel(new BrowserModel(b, null, string.Empty), this)))
+		foreach (var choice in App.Settings.BrowserList
+			         .OrderBy(b => b, new BrowserSorter(App.Settings))
+			         .Select(b => new BrowserViewModel(b, this)))
 		{
 			Choices.Add(choice);
 		}
@@ -136,7 +138,7 @@ public sealed class ApplicationViewModel : ModelBase
 			return true;
 		}
 
-		BrowserViewModel? start = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
+		var (start, profile) = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
 		Logger.LogAutomationChoice(start?.Model.Name);
 
 #if DEBUG
@@ -151,16 +153,16 @@ public sealed class ApplicationViewModel : ModelBase
 			return true;
 		}
 
-		start.Select.Execute(null);
+		start.LaunchWithProfile(false, profile);
 		return false;
 	}
 
 	/// <summary>
-	/// Determines and retrieves the appropriate browser to launch based on the provided URL.
+	/// Determines and retrieves the appropriate browser (and optional profile) to launch based on the provided URL.
 	/// </summary>
 	/// <param name="targetUrl">The URL to match against browser rules and settings.</param>
-	/// <returns>The browser view model to launch, or null if none is chosen.</returns>
-	internal BrowserViewModel? GetBrowserToLaunch(string? targetUrl)
+	/// <returns>A tuple of the browser view model and optional profile to launch, or (null, null) if none is chosen.</returns>
+	internal (BrowserViewModel? Browser, BrowserProfile? Profile) GetBrowserToLaunch(string? targetUrl)
 	{
 		Logger.LogAutomationInputs(
 			targetUrl,
@@ -172,10 +174,11 @@ public sealed class ApplicationViewModel : ModelBase
 		if (Configuration.Settings.AlwaysPrompt)
 		{
 			Logger.LogAutomationAlwaysPrompt();
-			return null;
+			return (null, null);
 		}
-		var urlBrowserId = GetBrowserToLaunchForUrl(targetUrl);
+		var (urlBrowserId, profileId) = GetBrowserToLaunchForUrl(targetUrl);
 		var browser = ResolveBrowser(urlBrowserId, includeDisabled: false);
+		var profile = ResolveProfile(browser, profileId);
 		Logger.LogAutomationBrowserSelected(browser?.Model.Name, browser?.IsRunning);
 		if (browser != null && (Configuration.Settings.AlwaysUseDefaults || browser.IsRunning))
 		{
@@ -183,7 +186,7 @@ public sealed class ApplicationViewModel : ModelBase
 				browser.Model.Name,
 				Configuration.Settings.AlwaysUseDefaults,
 				browser.IsRunning);
-			return browser;
+			return (browser, profile);
 		}
 		if (browser != null)
 		{
@@ -195,7 +198,7 @@ public sealed class ApplicationViewModel : ModelBase
 		if (browser == null && Configuration.Settings.AlwaysAskWithoutDefault)
 		{
 			Logger.LogAutomationAlwaysPromptWithoutDefaults();
-			return null;
+			return (null, null);
 		}
 		var active = Choices.Where(b => b is { IsRunning: true, Model.Disabled: false }).ToList();
 		Logger.LogAutomationRunningCount(active.Count);
@@ -203,22 +206,22 @@ public sealed class ApplicationViewModel : ModelBase
 		if (active.Count == 1)
 		{
 			Logger.LogAutomationSingleRunningBrowser(active[0].Model.Name);
-			return active[0];
+			return (active[0], null);
 		}
-		return null;
+		return (null, null);
 	}
 
 	/// <summary>
-	/// Matches the given URL against configured rules to determine the preferred browser for the URL.
+	/// Matches the given URL against configured rules to determine the preferred browser and profile for the URL.
 	/// </summary>
 	/// <param name="targetUrl">The URL to evaluate against browser rules.</param>
-	/// <returns>The id of the preferred enabled browser for the URL, or null if none is found.</returns>
-	internal string? GetBrowserToLaunchForUrl(string? targetUrl)
+	/// <returns>A tuple of the browser id and optional profile id, or (null, null) if none is found.</returns>
+	internal (string? BrowserId, string? ProfileId) GetBrowserToLaunchForUrl(string? targetUrl)
 	{
-		var matchedKey = GetMatchedBrowserKeyForUrl(targetUrl);
+		var (matchedKey, profileId) = GetMatchedBrowserKeyForUrl(targetUrl);
 		if (string.IsNullOrWhiteSpace(matchedKey))
 		{
-			return null;
+			return (null, null);
 		}
 
 		var resolved = ResolveBrowser(matchedKey, includeDisabled: true);
@@ -231,22 +234,22 @@ public sealed class ApplicationViewModel : ModelBase
 
 		if (resolved is not { Model.Disabled: false, Model.Removed: false })
 		{
-			return null;
+			return (null, null);
 		}
 
-		return resolved.Model.Id;
+		return (resolved.Model.Id, profileId);
 	}
 
 	/// <summary>
-	/// Matches the given URL against configured rules and returns the configured browser key,
+	/// Matches the given URL against configured rules and returns the configured browser key and optional profile,
 	/// even when that browser is currently disabled.
 	/// </summary>
-	internal string? GetMatchedBrowserKeyForUrl(string? targetUrl)
+	internal (string? BrowserKey, string? ProfileId) GetMatchedBrowserKeyForUrl(string? targetUrl)
 	{
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))
 		{
 			Logger.LogAutomationNoDefaultsConfigured();
-			return null;
+			return (null, null);
 		}
 
 		Uri url;
@@ -257,7 +260,7 @@ public sealed class ApplicationViewModel : ModelBase
 		catch (UriFormatException)
 		{
 			Logger.LogAutomationInvalidUrl(targetUrl);
-			return null;
+			return (null, null);
 		}
 		var auto = Configuration.Settings.Defaults
 			.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
@@ -275,10 +278,13 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		string? matchedKey = null;
+		string? matchedProfile = null;
 		string? matchedSource = null;
 		if (auto.Count > 0)
 		{
-			matchedKey = auto.OrderByDescending(o => o.matchLength).First().rule.Browser;
+			var best = auto.OrderByDescending(o => o.matchLength).First().rule;
+			matchedKey = best.Browser;
+			matchedProfile = best.Profile;
 			matchedSource = "rule";
 		}
 		else if (Configuration.Settings.UseFallbackDefault && !string.IsNullOrWhiteSpace(Configuration.Settings.DefaultBrowser))
@@ -288,7 +294,7 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		Logger.LogAutomationMatchedKey(matchedKey, matchedSource ?? "none");
-		return matchedKey;
+		return (matchedKey, matchedProfile);
 	}
 
 	private BrowserViewModel? ResolveBrowser(string? browserKey, bool includeDisabled)
@@ -302,6 +308,18 @@ public sealed class ApplicationViewModel : ModelBase
 			(includeDisabled || !c.Model.Disabled)
 			&& !c.Model.Removed
 			&& (c.Model.Id == browserKey || c.Model.Name == browserKey));
+	}
+
+	private static BrowserProfile? ResolveProfile(BrowserViewModel? browser, string? profileId)
+	{
+		if (browser == null || string.IsNullOrWhiteSpace(profileId))
+		{
+			return null;
+		}
+
+		return browser.Model.Profiles.FirstOrDefault(p =>
+			!p.Disabled
+			&& string.Equals(p.Id, profileId, StringComparison.OrdinalIgnoreCase));
 	}
 
 	/// <summary>

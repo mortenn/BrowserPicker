@@ -368,8 +368,12 @@
 						<TextBlock Text="List order" FontWeight="Bold" Margin="0,16,0,6" />
 						<RadioButton GroupName="OrderBy" Content="Sort list manually" IsChecked="{Binding Settings.UseManualOrdering}" Margin="0,2" />
 						<RadioButton GroupName="OrderBy" Content="Sort list based on usage" IsChecked="{Binding Settings.UseAutomaticOrdering}" Margin="0,2" />
-						<RadioButton GroupName="OrderBy" Content="Sort list alphabetically" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" Margin="0,2,0,6" />
-					</StackPanel>
+					<RadioButton GroupName="OrderBy" Content="Sort list alphabetically" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" Margin="0,2,0,6" />
+
+					<TextBlock Text="Profile display" FontWeight="Bold" Margin="0,16,0,6" />
+					<RadioButton GroupName="ProfileDisplay" Content="Group profiles under browser" IsChecked="{Binding UseGroupedProfiles}" Margin="0,2" />
+					<RadioButton GroupName="ProfileDisplay" Content="Show profiles as separate entries" IsChecked="{Binding UseFlatProfiles}" Margin="0,2,0,6" />
+				</StackPanel>
 
 					<!-- Right: Selection & defaults -->
 					<StackPanel Grid.Column="1">
@@ -530,27 +534,46 @@
 						</DataGrid.Columns>
 					</DataGrid>
 
-					<Grid Grid.Row="2" Margin="0,8,0,0">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<ComboBox ItemsSource="{Binding MatchTypesForRules}" SelectedItem="{Binding NewDefaultMatchType}"
-							MinHeight="28" MinWidth="100" VerticalContentAlignment="Center" />
-						<TextBox Text="{Binding NewDefaultPattern}" Grid.Column="1" MinHeight="28" Padding="6,4" VerticalContentAlignment="Center" Margin="4,0,0,0" />
-						<ComboBox
-							ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.ParentViewModel.Choices}"
-							Style="{StaticResource BrowserComboBoxStyle}"
-							ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
-							ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
-							IsSynchronizedWithCurrentItem="False"
-							SelectedValue="{Binding NewDefaultBrowser}"
-							SelectedValuePath="Model.Id"
-							Grid.Column="2" MinWidth="160" Margin="4,0,0,0" />
-						<Button Content="Add" Grid.Column="3" Padding="12,0" MinHeight="28" VerticalAlignment="Stretch" Margin="4,0,0,0" Command="{Binding AddDefault}" />
-					</Grid>
+				<Grid Grid.Row="2" Margin="0,8,0,0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<ComboBox ItemsSource="{Binding MatchTypesForRules}" SelectedItem="{Binding NewDefaultMatchType}"
+						MinHeight="28" MinWidth="100" VerticalContentAlignment="Center" />
+					<TextBox Text="{Binding NewDefaultPattern}" Grid.Column="1" MinHeight="28" Padding="6,4" VerticalContentAlignment="Center" Margin="4,0,0,0" />
+					<ComboBox
+						ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=view:Configuration}, Path=DataContext.ParentViewModel.Choices}"
+						Style="{StaticResource BrowserComboBoxStyle}"
+						ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
+						ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
+						IsSynchronizedWithCurrentItem="False"
+						SelectedValue="{Binding NewDefaultBrowser}"
+						SelectedValuePath="Model.Id"
+						Grid.Column="2" MinWidth="160" Margin="4,0,0,0" />
+					<ComboBox
+						ItemsSource="{Binding NewDefaultProfileChoices}"
+						SelectedValue="{Binding NewDefaultProfile}"
+						SelectedValuePath="Id"
+						DisplayMemberPath="Name"
+						Grid.Column="3" MinWidth="80" Margin="4,0,0,0"
+						VerticalContentAlignment="Center" MinHeight="28">
+						<ComboBox.Style>
+							<Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+								<Setter Property="Visibility" Value="Collapsed" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding HasNewDefaultProfileChoices}" Value="True">
+										<Setter Property="Visibility" Value="Visible" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</ComboBox.Style>
+					</ComboBox>
+					<Button Content="Add" Grid.Column="4" Padding="12,0" MinHeight="28" VerticalAlignment="Stretch" Margin="4,0,0,0" Command="{Binding AddDefault}" />
+				</Grid>
 				</Grid>
 				</ScrollViewer>
 			</TabItem>

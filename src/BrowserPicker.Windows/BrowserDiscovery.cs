@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BrowserPicker.Windows.ProfileDiscovery;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 namespace BrowserPicker.Windows;
@@ -82,6 +84,35 @@ public static class BrowserDiscovery
 		return known != null
 			? new BrowserModel(known, icon, shell)
 			: new BrowserModel(name, icon, shell);
+	}
+
+	/// <summary>
+	/// Discovers profiles for a browser using the appropriate strategy for its well-known browser type.
+	/// </summary>
+	/// <param name="browser">The browser model to discover profiles for.</param>
+	/// <param name="logger">Optional logger for diagnostic output.</param>
+	/// <returns>List of discovered profiles; empty if the browser type does not support profile discovery.</returns>
+	/// <returns>
+	/// List of discovered profiles, empty if none found, or <c>null</c> if the browser
+	/// does not support profile discovery (callers should not remove existing profiles).
+	/// </returns>
+	public static List<BrowserProfile>? FindProfiles(BrowserModel browser, ILogger? logger = null)
+	{
+		var known = WellKnownBrowsers.Lookup(
+			string.IsNullOrWhiteSpace(browser.Id) ? browser.Name : browser.Id,
+			browser.Executable ?? browser.Command);
+
+		if (known?.UserDataPath == null)
+		{
+			return null;
+		}
+
+		return known.ProfileType switch
+		{
+			ProfileType.Chromium => ChromiumProfileDiscovery.Discover(known.UserDataPath, logger),
+			ProfileType.Firefox => FirefoxProfileDiscovery.Discover(known.UserDataPath, browser.Command, logger),
+			_ => null
+		};
 	}
 
 	private static BrowserModel? FindLegacyEdge()

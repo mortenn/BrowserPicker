@@ -61,12 +61,35 @@ public sealed class ConfigurationViewModel : ModelBase
 				new DefaultSetting(MatchType.Prefix, "https://gitlab.com", Edge.Instance.Name),
 				new DefaultSetting(MatchType.Regex, @"runsafe\.no\/[0-9a-f]+$", InternetExplorer.Instance.Name),
 				new DefaultSetting(MatchType.Hostname, "gitlab.com", OperaStable.Instance.Name),
-				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name),
+				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name, "Profile 1"),
 				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
 			],
-			BrowserList = [.. WellKnownBrowsers.List.Select(b => new BrowserModel(b, null, string.Empty))],
+			BrowserList = [.. WellKnownBrowsers.List.Select(b => CreateDesignTimeBrowser(b))],
 			DefaultBrowser = Firefox.Instance.Name
 		};
+	}
+
+	private static BrowserModel CreateDesignTimeBrowser(IWellKnownBrowser known)
+	{
+		var model = new BrowserModel(known, null, string.Empty);
+		switch (known.ProfileType)
+		{
+			case ProfileType.Chromium:
+				model.Profiles.AddRange([
+					new BrowserProfile("Default", "Personal", @"--profile-directory=""Default"""),
+					new BrowserProfile("Profile 1", "Work", @"--profile-directory=""Profile 1"""),
+				]);
+				break;
+			case ProfileType.Firefox:
+				model.Profiles.AddRange([
+					new BrowserProfile("container:Work", "Work", null, "ext+container:name=Work&url={url}")
+						{ IconColor = "orange", ContainerIcon = "briefcase" },
+					new BrowserProfile("container:Personal", "Personal", null, "ext+container:name=Personal&url={url}")
+						{ IconColor = "blue", ContainerIcon = "fingerprint" },
+				]);
+				break;
+		}
+		return model;
 	}
 
 	private sealed class DesignTimeSettings : IBrowserPickerConfiguration
@@ -91,6 +114,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public double ConfigWindowHeight { get; set; }
 		public double FontSize { get; set; } = 14;
 		public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
+		public ProfileDisplayMode ProfileDisplayMode { get; set; }
 
 		public string[] UrlShorteners { get; set; } = [..UrlHandler.DefaultUrlShorteners, "example.com"];
 
@@ -117,7 +141,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 		public IComparer<BrowserModel>? BrowserSorter => null;
 
-		public void AddDefault(MatchType matchType, string pattern, string browser)
+		public void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null)
 		{
 		}
 
@@ -304,6 +328,24 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ObservableCollection<DefaultSetting> Defaults { get; } = [];
 
 	/// <summary>
+	/// True when profile display mode is Grouped (profiles shown as expandable sub-entries).
+	/// </summary>
+	public bool UseGroupedProfiles
+	{
+		get => Settings.ProfileDisplayMode == ProfileDisplayMode.Grouped;
+		set { if (value) Settings.ProfileDisplayMode = ProfileDisplayMode.Grouped; OnPropertyChanged(); OnPropertyChanged(nameof(UseFlatProfiles)); }
+	}
+
+	/// <summary>
+	/// True when profile display mode is Flat (each profile as a separate top-level entry).
+	/// </summary>
+	public bool UseFlatProfiles
+	{
+		get => Settings.ProfileDisplayMode == ProfileDisplayMode.Flat;
+		set { if (value) Settings.ProfileDisplayMode = ProfileDisplayMode.Flat; OnPropertyChanged(); OnPropertyChanged(nameof(UseGroupedProfiles)); }
+	}
+
+	/// <summary>
 	/// Match types available for per-URL rules. Excludes <see cref="MatchType.Default"/>, which is the special fallback and not a rule type.
 	/// </summary>
 	public IEnumerable<MatchType> MatchTypesForRules => Enum.GetValues<MatchType>().Where(t => t != MatchType.Default);
@@ -338,7 +380,40 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Gets or sets the browser id or display name for the new default rule being added.
 	/// </summary>
-	public string NewDefaultBrowser { get => new_fragment_browser; set => SetProperty(ref new_fragment_browser, value); }
+	public string NewDefaultBrowser
+	{
+		get => new_fragment_browser;
+		set
+		{
+			if (SetProperty(ref new_fragment_browser, value))
+			{
+				OnPropertyChanged(nameof(NewDefaultProfileChoices));
+				OnPropertyChanged(nameof(HasNewDefaultProfileChoices));
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the profile id for the new default rule being added. Null means no specific profile.
+	/// </summary>
+	public string? NewDefaultProfile { get => new_fragment_profile; set => SetProperty(ref new_fragment_profile, value); }
+
+	/// <summary>
+	/// Available profile choices for the currently selected <see cref="NewDefaultBrowser"/>.
+	/// </summary>
+	public IEnumerable<BrowserProfile> NewDefaultProfileChoices
+	{
+		get
+		{
+			var browser = ParentViewModel.Choices.FirstOrDefault(c => c.Model.Id == new_fragment_browser);
+			return browser?.Model.Profiles.Where(p => !p.Disabled) ?? [];
+		}
+	}
+
+	/// <summary>
+	/// True when the selected browser for the new default rule has profiles to choose from.
+	/// </summary>
+	public bool HasNewDefaultProfileChoices => NewDefaultProfileChoices.Any();
 
 	/// <summary>
 	/// Command to add a new default rule using <see cref="NewDefaultMatchType"/>, <see cref="NewDefaultPattern"/>, and <see cref="NewDefaultBrowser"/>.
@@ -542,13 +617,13 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 	}
 
-	private bool AddNewDefault(MatchType matchType, string pattern, string browser)
+	private bool AddNewDefault(MatchType matchType, string pattern, string browser, string? profile = null)
 	{
 		if (string.IsNullOrWhiteSpace(pattern) || string.IsNullOrWhiteSpace(browser))
 		{
 			return false;
 		}
-		Settings.AddDefault(matchType, pattern, browser);
+		Settings.AddDefault(matchType, pattern, browser, profile);
 		OnPropertyChanged(nameof(TestDefaultsResult));
 		return true;
 	}
@@ -558,9 +633,10 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	private void AddDefaultSetting()
 	{
-		if (AddNewDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser))
+		if (AddNewDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser, NewDefaultProfile))
 		{
 			NewDefaultPattern = string.Empty;
+			NewDefaultProfile = null;
 		}
 	}
 
@@ -781,6 +857,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	private const int FeedbackTabIndex = 6;
 	private string new_fragment = string.Empty;
 	private string new_fragment_browser = string.Empty;
+	private string? new_fragment_profile;
 	private bool auto_add_default;
 	private bool welcome;
 	private int selected_tab_index = BrowsersTabIndex;
@@ -817,7 +894,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			var idOrName = ParentViewModel.GetMatchedBrowserKeyForUrl(test_defaults_url);
+			var (idOrName, _) = ParentViewModel.GetMatchedBrowserKeyForUrl(test_defaults_url);
 			if (idOrName == null)
 			{
 				return "User choice";
@@ -834,7 +911,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		get
 		{
-			return ParentViewModel.GetBrowserToLaunch(test_defaults_url)?.Model.Name ?? "User choice";
+			return ParentViewModel.GetBrowserToLaunch(test_defaults_url).Browser?.Model.Name ?? "User choice";
 		}
 	}
 

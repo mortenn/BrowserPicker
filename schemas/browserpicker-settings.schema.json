@@ -87,6 +87,9 @@
     "ThemeMode": {
       "$ref": "#/definitions/ThemeMode"
     },
+    "ProfileDisplayMode": {
+      "$ref": "#/definitions/ProfileDisplayMode"
+    },
     "SortBy": {
       "$ref": "#/definitions/SortOrder"
     }
@@ -153,6 +156,65 @@
             },
             "ManualOverride": {
               "type": "boolean"
+            },
+            "ContainersEnabled": {
+              "type": "boolean"
+            },
+            "Profiles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/BrowserProfile"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "BrowserProfile": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ModelBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "Id": {
+              "type": "string"
+            },
+            "Name": {
+              "type": "string"
+            },
+            "CommandArgs": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "UrlTemplate": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "Usage": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "Disabled": {
+              "type": "boolean"
+            },
+            "IconColor": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "ContainerIcon": {
+              "type": [
+                "null",
+                "string"
+              ]
             }
           }
         }
@@ -182,6 +244,12 @@
               ]
             },
             "Browser": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "Profile": {
               "type": [
                 "null",
                 "string"
@@ -233,6 +301,18 @@
         0,
         1,
         2
+      ]
+    },
+    "ProfileDisplayMode": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Grouped",
+        "Flat"
+      ],
+      "enum": [
+        0,
+        1
       ]
     },
     "SortOrder": {

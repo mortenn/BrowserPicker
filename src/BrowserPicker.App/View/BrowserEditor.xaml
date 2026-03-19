@@ -67,6 +67,8 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 
 			<TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Text="Add a browser" HorizontalAlignment="Center" Margin="5" />
@@ -160,7 +162,71 @@
 				</TextBlock>
 			</Grid>
 			
-			<StackPanel Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
+			<!-- Firefox containers opt-in -->
+			<StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="4" Margin="2,8,2,0">
+				<StackPanel.Style>
+					<Style TargetType="StackPanel">
+						<Setter Property="Visibility" Value="Collapsed" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding SupportsContainers}" Value="True">
+								<Setter Property="Visibility" Value="Visible" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</StackPanel.Style>
+				<CheckBox IsChecked="{Binding Model.ContainersEnabled}" Margin="0,2">
+					<TextBlock TextWrapping="Wrap">Enable Firefox container support</TextBlock>
+				</CheckBox>
+				<TextBlock Margin="20,4,0,0" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" FontSize="11">
+					<Run Text="Requires" />
+					<Hyperlink Command="{Binding OpenExtensionLink}">Open URL in Container</Hyperlink>
+					<Run Text="extension." />
+				</TextBlock>
+			</StackPanel>
+
+			<!-- Profiles section -->
+			<StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="4" Margin="2,8,2,0">
+				<StackPanel.Style>
+					<Style TargetType="StackPanel">
+						<Setter Property="Visibility" Value="Collapsed" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding HasProfiles}" Value="True">
+								<Setter Property="Visibility" Value="Visible" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</StackPanel.Style>
+				<TextBlock Text="Profiles" FontWeight="Bold" Margin="0,0,0,4" />
+				<ItemsControl ItemsSource="{Binding Model.Profiles}" MaxHeight="200">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border Margin="0,1" Padding="4,2" CornerRadius="3" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}">
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+									<TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" FontSize="11" Margin="8,0,0,0">
+										<TextBlock.Style>
+											<Style TargetType="TextBlock">
+												<Setter Property="Text" Value="{Binding CommandArgs}" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding CommandArgs}" Value="{x:Null}">
+														<Setter Property="Text" Value="{Binding UrlTemplate}" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</TextBlock.Style>
+									</TextBlock>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+
+			<StackPanel Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="4" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,5,2,5">
 				<Button Content="Cancel" Click="Cancel_OnClick" Padding="10,0" />
 				<Button Content="Ok" Click="Ok_OnClick" Padding="10,0" Margin="10,0,0,0" />
 			</StackPanel>

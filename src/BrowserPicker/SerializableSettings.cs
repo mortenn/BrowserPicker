@@ -40,6 +40,7 @@ public sealed class SerializableSettings : IApplicationSettings
 		ConfigWindowHeight = applicationSettings.ConfigWindowHeight;
 		FontSize = applicationSettings.FontSize;
 		ThemeMode = applicationSettings.ThemeMode;
+		ProfileDisplayMode = applicationSettings.ProfileDisplayMode;
 	}
 
 	/// <summary>
@@ -104,6 +105,9 @@ public sealed class SerializableSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public ThemeMode ThemeMode { get; set; }
+
+	/// <inheritdoc />
+	public ProfileDisplayMode ProfileDisplayMode { get; set; }
 
 	/// <summary>
 	/// How to sort the browser list: automatic (by usage), manual, or alphabetical.

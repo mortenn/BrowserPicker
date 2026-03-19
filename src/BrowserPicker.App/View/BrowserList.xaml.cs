@@ -15,7 +15,6 @@ public partial class BrowserList
 
 	private void BrowserListScroll_SizeChanged(object? sender, SizeChangedEventArgs e)
 	{
-		// Update padding after layout so ExtentHeight/ViewportHeight are valid; only reserve space when scrollbar is visible.
 		Dispatcher.BeginInvoke(() =>
 		{
 			if (BrowserListScroll == null) return;
@@ -24,10 +23,5 @@ public partial class BrowserList
 			if (BrowserListScroll.Padding != pad)
 				BrowserListScroll.Padding = pad;
 		}, DispatcherPriority.Loaded);
-	}
-
-	private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-	{
-		e.Handled = true;
 	}
 }

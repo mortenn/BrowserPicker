@@ -1,4 +1,5 @@
 using BrowserPicker.Framework;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
@@ -189,6 +190,21 @@ public sealed class BrowserModel : ModelBase
         set => SetProperty(ref custom_key, value);
     }
 
+    /// <summary>
+    /// When true, Firefox containers are discovered and shown as selectable profiles for this browser.
+    /// Requires the "Open URL in Container" extension.
+    /// </summary>
+    public bool ContainersEnabled
+    {
+        get => containers_enabled;
+        set => SetProperty(ref containers_enabled, value);
+    }
+
+    /// <summary>
+    /// Profiles available for this browser (e.g. Chrome profiles, Firefox profiles/containers).
+    /// </summary>
+    public List<BrowserProfile> Profiles { get; init; } = [];
+
     private int usage;
     private bool disabled;
     private bool removed;
@@ -203,4 +219,5 @@ public sealed class BrowserModel : ModelBase
     private bool expand_file_url;
     private bool manual_override;
     private string custom_key = string.Empty;
+    private bool containers_enabled;
 }
