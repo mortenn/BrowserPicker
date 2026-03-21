@@ -22,13 +22,13 @@ public partial class App
 	/// </summary>
 	private static CancellationTokenSource ApplicationCancellationToken { get; } = new();
 
-	public static IBrowserPickerConfiguration Settings { get; set; } = null!;
+	public static IBrowserPickerConfiguration? Settings { get; set; }
 
 	/// <summary>Content area brushes updated when ThemeMode changes so inherited text/background are readable (avoids white-on-white).</summary>
-	public static readonly string ContentBackgroundBrushKey = "ContentBackgroundBrush";
+	public const string ContentBackgroundBrushKey = "ContentBackgroundBrush";
 	/// <summary>Semi-transparent content background used when transparency is enabled (DisableTransparency = false).</summary>
-	public static readonly string ContentBackgroundSemiTransparentBrushKey = "ContentBackgroundSemiTransparentBrush";
-	public static readonly string ContentForegroundBrushKey = "ContentForegroundBrush";
+	public const string ContentBackgroundSemiTransparentBrushKey = "ContentBackgroundSemiTransparentBrush";
+	public const string ContentForegroundBrushKey = "ContentForegroundBrush";
 
 	private class InvalidUTF8Patch : EncodingProvider
 	{
@@ -51,7 +51,8 @@ public partial class App
 	{
 		Encoding.RegisterProvider(new InvalidUTF8Patch());
 		Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-		BackgroundTasks.Add(Settings);
+		if (Settings != null)
+			BackgroundTasks.Add(Settings);
 
 		// Basic unhandled exception catchment
 		AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
@@ -59,18 +60,22 @@ public partial class App
 
 		// Get command line arguments and initialize ViewModel
 		var arguments = Environment.GetCommandLineArgs().Skip(1).ToList();
+		ApplicationViewModel? viewModel = null;
 		try
 		{
-			ViewModel = new ApplicationViewModel(arguments, Settings);
-			if (ViewModel.Url.TargetURL != null)
+			if (Settings != null)
 			{
-				BackgroundTasks.Add(ViewModel.Url);
+				viewModel = new ApplicationViewModel(arguments, Settings);
+				if (viewModel.Url.TargetURL != null)
+					BackgroundTasks.Add(viewModel.Url);
 			}
 		}
 		catch (Exception exception)
 		{
 			ShowExceptionReport(exception);
 		}
+
+		ViewModel = viewModel;
 	}
 
 	/// <summary>Add content theme brushes to app resources. Call from Program before Run() so they exist when windows load.</summary>
@@ -87,8 +92,11 @@ public partial class App
 
 	protected override void OnStartup(StartupEventArgs e)
 	{
-		ApplyThemeMode(Settings.ThemeMode);
-		Settings.PropertyChanged += Settings_PropertyChanged;
+		if (Settings != null)
+		{
+			ApplyThemeMode(Settings.ThemeMode);
+			Settings.PropertyChanged += Settings_PropertyChanged;
+		}
 		var worker = StartupBackgroundTasks();
 		worker.ContinueWith(CheckBackgroundTasks);
 	}
@@ -176,23 +184,18 @@ public partial class App
 	/// <summary>Returns current content theme brushes (for code-behind so Configuration always gets correct colors at runtime).</summary>
 	internal static void GetContentThemeBrushes(out SolidColorBrush background, out SolidColorBrush foreground)
 	{
-		var mode = ReferenceEquals(Settings, null) ? BrowserPicker.ThemeMode.System : Settings.ThemeMode;
-		var useLight = mode switch
+		var useLight = (Settings?.ThemeMode ?? BrowserPicker.ThemeMode.System) switch
 		{
 			BrowserPicker.ThemeMode.Light => true,
 			BrowserPicker.ThemeMode.Dark => false,
 			_ => IsSystemUsingLightTheme()
 		};
-		if (useLight)
-		{
-			background = new SolidColorBrush(Color.FromRgb(0xEB, 0xEB, 0xEB));
-			foreground = new SolidColorBrush(Colors.Black);
-		}
-		else
-		{
-			background = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
-			foreground = new SolidColorBrush(Colors.White);
-		}
+		background = useLight
+			? new SolidColorBrush(Color.FromRgb(0xEB, 0xEB, 0xEB))
+			: new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
+		foreground = useLight
+			? new SolidColorBrush(Colors.Black)
+			: new SolidColorBrush(Colors.White);
 	}
 
 	/// <summary>Invalidate visual tree so DynamicResource re-resolves for content theme brushes.</summary>

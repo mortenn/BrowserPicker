@@ -40,7 +40,8 @@ internal static class Program
 		
 		var host = builder.Build();
 		App.Services = host.Services;
-		App.Settings = host.Services.GetRequiredService<IBrowserPickerConfiguration>();
+		var configuration = host.Services.GetRequiredService<IBrowserPickerConfiguration>();
+		App.Settings = configuration;
 		var app = host.Services.GetRequiredService<App>();
 
 		// Fluent theme (Windows 10/11) first, then app resources
@@ -56,7 +57,7 @@ internal static class Program
 			)
 		});
 		// Content theme brushes before Run() so DynamicResource resolves when windows load.
-		app.AddContentThemeDictionary(App.Settings.ThemeMode);
+		app.AddContentThemeDictionary(configuration.ThemeMode);
 		var logger = host.Services.GetRequiredService<ILogger<App>>();
 		logger.LogApplicationLaunched(args.Length == 0 ? "(none)" : string.Join(" ", args));
 
