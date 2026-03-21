@@ -32,7 +32,7 @@ public sealed class ContainerColorConverter : IValueConverter
 			["orange"] = Frozen(0xff, 0x9f, 0x00),
 			["red"] = Frozen(0xff, 0x61, 0x3d),
 			["pink"] = Frozen(0xff, 0x4b, 0xda),
-			["purple"] = Frozen(0xaf, 0x51, 0xf5),
+			["purple"] = Frozen(0xaf, 0x51, 0xf5)
 		}.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
 	private static SolidColorBrush Frozen(byte r, byte g, byte b)
@@ -112,7 +112,7 @@ public sealed class ContainerIconConverter : IValueConverter
 				"M 2.5,4.5 L 4.5,4.8  M 2.5,4.5 L 3,6.3  " +
 				"M 13.5,4.5 L 11.5,4.8  M 13.5,4.5 L 13,6.3  " +
 				"M 2.5,11.5 L 4.5,11.2  M 2.5,11.5 L 3,9.7  " +
-				"M 13.5,11.5 L 11.5,11.2  M 13.5,11.5 L 13,9.7"),
+				"M 13.5,11.5 L 11.5,11.2  M 13.5,11.5 L 13,9.7")
 		};
 
 		foreach (var g in dict.Values)

@@ -79,7 +79,7 @@ public sealed class Firefox : IWellKnownBrowser
 
 	public ProfileType ProfileType => ProfileType.Firefox;
 
-	public string? UserDataPath => @"Mozilla\Firefox";
+	public string UserDataPath => @"Mozilla\Firefox";
 }
 
 public sealed class FirefoxDevEdition : IWellKnownBrowser
@@ -98,7 +98,7 @@ public sealed class FirefoxDevEdition : IWellKnownBrowser
 
 	public ProfileType ProfileType => ProfileType.Firefox;
 
-	public string? UserDataPath => @"Mozilla\Firefox";
+	public string UserDataPath => @"Mozilla\Firefox";
 }
 
 public sealed class Chrome : IWellKnownBrowser
@@ -117,7 +117,7 @@ public sealed class Chrome : IWellKnownBrowser
 
 	public ProfileType ProfileType => ProfileType.Chromium;
 
-	public string? UserDataPath => @"Google\Chrome\User Data";
+	public string UserDataPath => @"Google\Chrome\User Data";
 }
 
 public sealed class ChromeDevEdition : IWellKnownBrowser
@@ -136,7 +136,7 @@ public sealed class ChromeDevEdition : IWellKnownBrowser
 
 	public ProfileType ProfileType => ProfileType.Chromium;
 
-	public string? UserDataPath => @"Google\Chrome Dev\User Data";
+	public string UserDataPath => @"Google\Chrome Dev\User Data";
 }
 
 public sealed class MicrosoftEdge : IWellKnownBrowser
@@ -155,7 +155,7 @@ public sealed class MicrosoftEdge : IWellKnownBrowser
 
 	public ProfileType ProfileType => ProfileType.Chromium;
 
-	public string? UserDataPath => @"Microsoft\Edge\User Data";
+	public string UserDataPath => @"Microsoft\Edge\User Data";
 }
 
 public sealed class Edge : IWellKnownBrowser

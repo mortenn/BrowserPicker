@@ -38,13 +38,13 @@ public static class ChromiumProfileDiscovery
         foreach (var dir in Directory.GetDirectories(root))
         {
             var dirName = Path.GetFileName(dir);
-            var prefsFile = Path.Combine(dir, "Preferences");
-            if (!File.Exists(prefsFile))
+            var file = Path.Combine(dir, "Preferences");
+            if (!File.Exists(file))
             {
                 continue;
             }
 
-            var displayName = ReadProfileName(prefsFile, logger);
+            var displayName = ReadProfileName(file, logger);
             if (displayName == null)
             {
                 continue;
@@ -58,13 +58,13 @@ public static class ChromiumProfileDiscovery
             logger?.LogDebug("Discovered Chromium profile: {Id} ({Name})", dirName, displayName);
         }
 
-        if (profiles.Count <= 1)
+        if (profiles.Count > 1)
         {
-            logger?.LogDebug("Only {Count} Chromium profile(s) found, no profile selection needed", profiles.Count);
-            return [];
+            return profiles;
         }
 
-        return profiles;
+        logger?.LogDebug("Only {Count} Chromium profile(s) found, no profile selection needed", profiles.Count);
+        return [];
     }
 
     private static string? ReadProfileName(string preferencesPath, ILogger? logger)

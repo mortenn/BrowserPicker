@@ -28,7 +28,6 @@
 		<TextBox
 			x:Name="EditorTextBox"
 			Grid.Row="1"
-			Style="{StaticResource DefaultTextBoxBaseStyle}"
 			Text="{Binding EditedUrl, ElementName=Self, UpdateSourceTrigger=PropertyChanged}"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"

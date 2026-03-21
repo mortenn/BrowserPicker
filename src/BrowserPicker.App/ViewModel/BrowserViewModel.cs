@@ -20,6 +20,9 @@ namespace BrowserPicker.ViewModel;
 [DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
 public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 {
+	private const string MozillaContainerExtensionLaunchArgs =
+		"\"https://addons.mozilla.org/en-US/firefox/addon/open-url-in-container/\"";
+
 #if DEBUG
 	/// <summary>
 	/// Parameterless constructor for WPF Designer support during debugging.
@@ -31,8 +34,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Name = "Google Chrome",
 		Profiles =
 		{
-			new BrowserProfile("Default", "Personal", @"--profile-directory=""Default"""),
-			new BrowserProfile("Profile 1", "Work", @"--profile-directory=""Profile 1"""),
+			new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
+			new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """)
 		}
 	})
 	{
@@ -58,9 +61,15 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// </summary>
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(IApplicationSettings.SortBy))
+		switch (e.PropertyName)
 		{
-			OnPropertyChanged(nameof(IsManuallyOrdered));
+			case nameof(IApplicationSettings.SortBy):
+				OnPropertyChanged(nameof(IsManuallyOrdered));
+				break;
+			case nameof(IApplicationSettings.ProfileDisplayMode):
+				OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
+				OnPropertyChanged(nameof(ShowNestedProfileSubtree));
+				break;
 		}
 	}
 
@@ -110,6 +119,9 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		IsExpanded = false;
 		OnPropertyChanged(nameof(ProfileViewModels));
 		OnPropertyChanged(nameof(HasProfiles));
+		OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
+		OnPropertyChanged(nameof(ShowNestedProfileSubtree));
+		parent_view_model.RebuildPickerChoices();
 	}
 
 	/// <summary>
@@ -306,6 +318,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		Model.ContainersEnabled = save.ContainersEnabled;
 
 		parent_view_model.Configuration.Settings.PersistBrowser(Model);
+		parent_view_model.RebuildPickerChoices();
 	}
 
 	/// <summary>
@@ -372,6 +385,17 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	public bool HasProfiles => Model.Profiles.Any(p => !p.Disabled);
 
 	/// <summary>
+	/// True when the picker should show the chevron and nested profile list (grouped mode only).
+	/// </summary>
+	public bool ShowNestedProfilesInPicker =>
+		HasProfiles && parent_view_model.Configuration.Settings.ProfileDisplayMode == ProfileDisplayMode.Grouped;
+
+	/// <summary>
+	/// True when nested profiles are visible under the browser row.
+	/// </summary>
+	public bool ShowNestedProfileSubtree => ShowNestedProfilesInPicker && IsExpanded;
+
+	/// <summary>
 	/// Whether this browser supports Firefox-style containers (based on well-known browser type).
 	/// </summary>
 	public bool SupportsContainers
@@ -392,11 +416,9 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 
 	private void LaunchExtensionPage()
 	{
-		const string url = "https://addons.mozilla.org/en-US/firefox/addon/open-url-in-container/";
 		try
 		{
-			var args = $"\"{url}\"";
-			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
+			var process = new ProcessStartInfo(Model.Command, MozillaContainerExtensionLaunchArgs) { UseShellExecute = false };
 			Process.Start(process);
 		}
 		catch
@@ -411,7 +433,15 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	public bool IsExpanded
 	{
 		get => is_expanded;
-		set => SetProperty(ref is_expanded, value);
+		set
+		{
+			if (!SetProperty(ref is_expanded, value))
+			{
+				return;
+			}
+
+			OnPropertyChanged(nameof(ShowNestedProfileSubtree));
+		}
 	}
 
 	/// <summary>
@@ -427,11 +457,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	{
 		get
 		{
-			if (profile_view_models == null)
-			{
-				profile_view_models = new ObservableCollection<BrowserProfileViewModel>(
-					Model.Profiles.Where(p => !p.Disabled).Select(p => new BrowserProfileViewModel(p, this)));
-			}
+			profile_view_models ??= new ObservableCollection<BrowserProfileViewModel>(
+				Model.Profiles.Where(p => !p.Disabled).Select(p => new BrowserProfileViewModel(p, this)));
 			return profile_view_models;
 		}
 	}
@@ -468,7 +495,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 		try
 		{
-			if (App.Settings.SortBy == SerializableSettings.SortOrder.Automatic)
+			if (App.Settings?.SortBy == SerializableSettings.SortOrder.Automatic)
 			{
 				Model.Usage++;
 				if (profile != null)

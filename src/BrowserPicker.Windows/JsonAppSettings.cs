@@ -58,7 +58,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	/// <summary>
 	/// Full path to the JSON settings file (%LocalAppData%\BrowserPicker\settings.json).
 	/// </summary>
-	public static string GetSettingsFilePath()
+	private static string GetSettingsFilePath()
 	{
 		var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(BrowserPicker));
 		return Path.Combine(dir, "settings.json");
@@ -262,7 +262,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		SaveToFile();
 	}
 
-	public void PersistBrowser(BrowserModel browser) => SaveToFile();
+	public void PersistBrowser(BrowserModel _) => SaveToFile();
 
 	public void FindBrowsers()
 	{
@@ -335,13 +335,15 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			var expectedId = discovered[i].Id;
 			var currentIdx = browser.Profiles.FindIndex(i, p =>
 				string.Equals(p.Id, expectedId, StringComparison.OrdinalIgnoreCase));
-			if (currentIdx > i)
+			if (currentIdx <= i)
 			{
-				var item = browser.Profiles[currentIdx];
-				browser.Profiles.RemoveAt(currentIdx);
-				browser.Profiles.Insert(i, item);
-				changed = true;
+				continue;
 			}
+
+			var item = browser.Profiles[currentIdx];
+			browser.Profiles.RemoveAt(currentIdx);
+			browser.Profiles.Insert(i, item);
+			changed = true;
 		}
 
 		return changed;
@@ -563,18 +565,17 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		catch (Exception ex) { logger.LogWarning(ex, "Failed to save settings to {Path}", settings_path); }
 	}
 
-	public bool TryImportSettingsJson(string json, string sourceDescription)
+	public void TryImportSettingsJson(string json, string sourceDescription)
 	{
 		var settings = DeserializeSettings(json, sourceDescription);
 		if (settings == null)
 		{
-			return false;
+			return;
 		}
 
 		ApplyImportedSettings(settings);
 		AppendBackupLog($"Imported configuration from {sourceDescription}");
 		SaveToFile();
-		return true;
 	}
 
 	private SerializableSettings CreateSerializableSettings()
@@ -590,8 +591,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		try
 		{
-			var root = JsonNode.Parse(UnwrapJsonDocument(json)) as JsonObject;
-			if (root == null)
+			var rootNode = JsonNode.Parse(UnwrapJsonDocument(json));
+			if (rootNode is not JsonObject root)
 			{
 				AppendBackupLog($"Unable to import configuration from {sourceDescription}: expected a JSON object.");
 				return null;
@@ -604,13 +605,13 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			}
 
 			var settings = root.Deserialize<SerializableSettings>(JsonOptions);
-			if (settings == null)
+			if (settings != null)
 			{
-				AppendBackupLog($"Unable to import configuration from {sourceDescription}: document could not be deserialized.");
-				return null;
+				return settings;
 			}
 
-			return settings;
+			AppendBackupLog($"Unable to import configuration from {sourceDescription}: document could not be deserialized.");
+			return null;
 		}
 		catch (JsonException ex)
 		{
@@ -691,7 +692,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private static SerializableSettings.SortOrder NormalizeSortOrder(SerializableSettings.SortOrder value)
 	{
-		return Enum.IsDefined(typeof(SerializableSettings.SortOrder), value)
+		return Enum.IsDefined(value)
 			? value
 			: SerializableSettings.SortOrder.Automatic;
 	}

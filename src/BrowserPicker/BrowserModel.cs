@@ -203,7 +203,7 @@ public sealed class BrowserModel : ModelBase
     /// <summary>
     /// Profiles available for this browser (e.g. Chrome profiles, Firefox profiles/containers).
     /// </summary>
-    public List<BrowserProfile> Profiles { get; init; } = [];
+    public List<BrowserProfile> Profiles { get; } = [];
 
     private int usage;
     private bool disabled;

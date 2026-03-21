@@ -46,7 +46,7 @@
 					</Style.Triggers>
 				</Style>
 			</Border.Style>
-			<Grid x:Name="RootContent" TextElement.FontSize="{Binding Configuration.Settings.FontSize, FallbackValue=14}"
+			<Grid TextElement.FontSize="{Binding Configuration.Settings.FontSize, FallbackValue=14}"
 				TextElement.Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
 				<Grid Margin="10">
 					<Grid.RowDefinitions>
@@ -78,7 +78,7 @@
 						</Border.Style>
 						<view:Configuration DataContext="{Binding Configuration}" />
 					</Border>
-					<Canvas x:Name="ResizeGrip" Grid.Row="0" Grid.Column="0" Width="14" Height="14" Cursor="SizeNWSE"
+					<Canvas Grid.Row="0" Grid.Column="0" Width="14" Height="14" Cursor="SizeNWSE"
 						HorizontalAlignment="Right" VerticalAlignment="Bottom"
 						Background="Transparent"
 						PreviewMouseLeftButtonDown="ResizeGrip_PreviewMouseLeftButtonDown">

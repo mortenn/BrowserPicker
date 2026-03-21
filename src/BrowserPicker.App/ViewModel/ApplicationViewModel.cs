@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -36,7 +37,7 @@ public sealed class ApplicationViewModel : ModelBase
 	[UsedImplicitly]
 	public ApplicationViewModel()
 	{
-		if (ReferenceEquals(App.Settings, null))
+		if (App.Settings is not { } settings)
 		{
 			var designSettings = ConfigurationViewModel.CreateDesignTimeSettings();
 			Url = new UrlHandler(NullLogger<UrlHandler>.Instance, "https://github.com/mortenn/BrowserPicker", designSettings);
@@ -49,21 +50,25 @@ public sealed class ApplicationViewModel : ModelBase
 			{
 				Choices.Add(choice);
 			}
+			designSettings.PropertyChanged += OnSettingsPropertyChanged;
 			ApplyAutoCloseOnFocusLostSetting();
+			RebuildPickerChoices();
 			return;
 		}
 
 		Url = new UrlHandler();
 		force_choice = true;
 		Choices = [];
-		Configuration = new ConfigurationViewModel(App.Settings, this);
-		foreach (var choice in App.Settings.BrowserList
-			         .OrderBy(b => b, new BrowserSorter(App.Settings))
+		Configuration = new ConfigurationViewModel(settings, this);
+		settings.PropertyChanged += OnSettingsPropertyChanged;
+		foreach (var choice in settings.BrowserList
+			         .OrderBy(b => b, new BrowserSorter(settings))
 			         .Select(b => new BrowserViewModel(b, this)))
 		{
 			Choices.Add(choice);
 		}
 		ApplyAutoCloseOnFocusLostSetting();
+		RebuildPickerChoices();
 	}
 
 	/// <summary>
@@ -77,7 +82,9 @@ public sealed class ApplicationViewModel : ModelBase
 		force_choice = true;
 		Configuration = config;
 		Choices = [];
+		config.Settings.PropertyChanged += OnSettingsPropertyChanged;
 		ApplyAutoCloseOnFocusLostSetting();
+		RebuildPickerChoices();
 	}
 #endif
 
@@ -99,6 +106,7 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			ParentViewModel = this
 		};
+		settings.PropertyChanged += OnSettingsPropertyChanged;
 		var sorter = settings.BrowserSorter ?? new BrowserSorter(settings);
 		var choices = settings.BrowserList.OrderBy(m => m, sorter).Select(m => new BrowserViewModel(m, this)).ToList();
 		foreach (var choice in choices)
@@ -106,6 +114,7 @@ public sealed class ApplicationViewModel : ModelBase
 			Choices.Add(choice);
 		}
 		ApplyAutoCloseOnFocusLostSetting();
+		RebuildPickerChoices();
 	}
 
 	/// <summary>
@@ -195,20 +204,22 @@ public sealed class ApplicationViewModel : ModelBase
 				Configuration.Settings.AlwaysUseDefaults,
 				browser.IsRunning);
 		}
-		if (browser == null && Configuration.Settings.AlwaysAskWithoutDefault)
+		if (browser is null && Configuration.Settings.AlwaysAskWithoutDefault)
 		{
 			Logger.LogAutomationAlwaysPromptWithoutDefaults();
 			return (null, null);
 		}
+
 		var active = Choices.Where(b => b is { IsRunning: true, Model.Disabled: false }).ToList();
 		Logger.LogAutomationRunningCount(active.Count);
 		Logger.LogAutomationRunningBrowsers(string.Join(", ", active.Select(b => $"{b.Model.Name}({b.Model.Id})")));
-		if (active.Count == 1)
+		if (active.Count != 1)
 		{
-			Logger.LogAutomationSingleRunningBrowser(active[0].Model.Name);
-			return (active[0], null);
+			return (null, null);
 		}
-		return (null, null);
+
+		Logger.LogAutomationSingleRunningBrowser(active[0].Model.Name);
+		return (active[0], null);
 	}
 
 	/// <summary>
@@ -216,7 +227,7 @@ public sealed class ApplicationViewModel : ModelBase
 	/// </summary>
 	/// <param name="targetUrl">The URL to evaluate against browser rules.</param>
 	/// <returns>A tuple of the browser id and optional profile id, or (null, null) if none is found.</returns>
-	internal (string? BrowserId, string? ProfileId) GetBrowserToLaunchForUrl(string? targetUrl)
+	private (string? BrowserId, string? ProfileId) GetBrowserToLaunchForUrl(string? targetUrl)
 	{
 		var (matchedKey, profileId) = GetMatchedBrowserKeyForUrl(targetUrl);
 		if (string.IsNullOrWhiteSpace(matchedKey))
@@ -232,12 +243,9 @@ public sealed class ApplicationViewModel : ModelBase
 			resolved?.Model.Disabled,
 			resolved?.Model.Removed);
 
-		if (resolved is not { Model.Disabled: false, Model.Removed: false })
-		{
-			return (null, null);
-		}
-
-		return (resolved.Model.Id, profileId);
+		return resolved is { Model: { Disabled: false, Removed: false } }
+			? (resolved.Model.Id, profileId)
+			: (null, null);
 	}
 
 	/// <summary>
@@ -358,6 +366,11 @@ public sealed class ApplicationViewModel : ModelBase
 	/// Allowing the user to select a browser based on specific criteria or preferences.
 	/// </summary>
 	public ObservableCollection<BrowserViewModel> Choices { get; }
+
+	/// <summary>
+	/// Picker UI items: <see cref="BrowserViewModel"/> rows, or in flat profile mode one <see cref="BrowserProfileViewModel"/> per profile.
+	/// </summary>
+	public ObservableCollection<object> PickerChoices { get; } = [];
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the application is in configuration mode.
@@ -483,6 +496,131 @@ public sealed class ApplicationViewModel : ModelBase
 		foreach (var choice in newOrder)
 		{
 			Choices.Add(choice);
+		}
+		RebuildPickerChoices();
+	}
+
+	/// <summary>
+	/// Rebuilds <see cref="PickerChoices"/> from <see cref="Choices"/> using <see cref="IApplicationSettings.ProfileDisplayMode"/>
+	/// and sort mode (flat + automatic sorts parent row and profiles together by usage).
+	/// </summary>
+	internal void RebuildPickerChoices()
+	{
+		PickerChoices.Clear();
+		var mode = Configuration.Settings.ProfileDisplayMode;
+		var sortBy = Configuration.Settings.SortBy;
+
+		if (mode != ProfileDisplayMode.Flat)
+		{
+			foreach (var choice in Choices.Where(c => !c.Model.Removed))
+			{
+				PickerChoices.Add(choice);
+			}
+
+			return;
+		}
+
+		switch (sortBy)
+		{
+			case SerializableSettings.SortOrder.Automatic:
+			{
+				foreach (var e in Choices
+					         .Where(c => !c.Model.Removed)
+					         .SelectMany(ExpandFlatAutomaticRow)
+					         .OrderByDescending(x => x.Usage)
+					         .ThenBy(x => x.BrowserIdx)
+					         .ThenBy(x => x.Kind)
+					         .ThenBy(x => x.Tie, StringComparer.OrdinalIgnoreCase))
+				{
+					PickerChoices.Add(e.Item);
+				}
+
+				return;
+			}
+			case SerializableSettings.SortOrder.Alphabetical:
+			{
+				foreach (var e in Choices
+					         .Where(c => !c.Model.Removed)
+					         .SelectMany(ExpandFlatAlphabeticalRow)
+					         .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+					         .ThenBy(x => x.BrowserIdx)
+					         .ThenBy(x => x.Kind))
+				{
+					PickerChoices.Add(e.Item);
+				}
+
+				return;
+			}
+			case SerializableSettings.SortOrder.Manual:
+			default:
+			{
+				foreach (var choice in Choices.Where(c => !c.Model.Removed))
+				{
+					if (choice is { HasProfiles: true, Model.Disabled: false })
+					{
+						PickerChoices.Add(choice);
+						foreach (var profileVm in choice.ProfileViewModels)
+						{
+							PickerChoices.Add(profileVm);
+						}
+					}
+					else
+					{
+						PickerChoices.Add(choice);
+					}
+				}
+
+				return;
+			}
+		}
+
+		static IEnumerable<(object Item, int Usage, int BrowserIdx, int Kind, string Tie)> ExpandFlatAutomaticRow(
+			BrowserViewModel choice, int browserIdx)
+		{
+			if (choice is { HasProfiles: true, Model.Disabled: false })
+			{
+				yield return (choice, ParentLaunchUsage(choice.Model), browserIdx, 0, choice.Model.Name);
+				foreach (var pvm in choice.ProfileViewModels)
+				{
+					yield return (pvm, pvm.Model.Usage, browserIdx, 1, pvm.FlatDisplayName);
+				}
+			}
+			else
+			{
+				yield return (choice, choice.Model.Usage, browserIdx, 0, choice.Model.Name);
+			}
+		}
+
+		static IEnumerable<(object Item, string Name, int BrowserIdx, int Kind)> ExpandFlatAlphabeticalRow(
+			BrowserViewModel choice, int browserIdx)
+		{
+			if (choice is { HasProfiles: true, Model.Disabled: false })
+			{
+				yield return (choice, choice.Model.Name, browserIdx, 0);
+				foreach (var pvm in choice.ProfileViewModels)
+				{
+					yield return (pvm, pvm.FlatDisplayName, browserIdx, 1);
+				}
+			}
+			else
+			{
+				yield return (choice, choice.Model.Name, browserIdx, 0);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Launches without a profile increment <see cref="BrowserModel.Usage"/> only; profile launches also increment
+	/// <see cref="BrowserProfile.Usage"/>, so this yields how often the user picked the parent row.
+	/// </summary>
+	private static int ParentLaunchUsage(BrowserModel model) =>
+		Math.Max(0, model.Usage - model.Profiles.Sum(p => p.Usage));
+
+	private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(IApplicationSettings.ProfileDisplayMode) or nameof(IApplicationSettings.SortBy))
+		{
+			RebuildPickerChoices();
 		}
 	}
 

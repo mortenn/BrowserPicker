@@ -64,7 +64,7 @@ public sealed class ConfigurationViewModel : ModelBase
 				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name, "Profile 1"),
 				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
 			],
-			BrowserList = [.. WellKnownBrowsers.List.Select(b => CreateDesignTimeBrowser(b))],
+			BrowserList = [.. WellKnownBrowsers.List.Select(CreateDesignTimeBrowser)],
 			DefaultBrowser = Firefox.Instance.Name
 		};
 	}
@@ -76,8 +76,8 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			case ProfileType.Chromium:
 				model.Profiles.AddRange([
-					new BrowserProfile("Default", "Personal", @"--profile-directory=""Default"""),
-					new BrowserProfile("Profile 1", "Work", @"--profile-directory=""Profile 1"""),
+					new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
+					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """)
 				]);
 				break;
 			case ProfileType.Firefox:
@@ -85,8 +85,11 @@ public sealed class ConfigurationViewModel : ModelBase
 					new BrowserProfile("container:Work", "Work", null, "ext+container:name=Work&url={url}")
 						{ IconColor = "orange", ContainerIcon = "briefcase" },
 					new BrowserProfile("container:Personal", "Personal", null, "ext+container:name=Personal&url={url}")
-						{ IconColor = "blue", ContainerIcon = "fingerprint" },
+						{ IconColor = "blue", ContainerIcon = "fingerprint" }
 				]);
+				break;
+			case ProfileType.None:
+			default:
 				break;
 		}
 		return model;
@@ -133,7 +136,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
 		}
 
-		public void PersistBrowser(BrowserModel browser)
+		public void PersistBrowser(BrowserModel _)
 		{
 		}
 
@@ -304,7 +307,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	/// <summary>
 	/// Gets or sets whether the picker should close automatically when it loses focus.
-	/// JSON-backed settings persist this; legacy registry-backed migration defaults to enabled.
+	/// JSON-backed settings persist this; legacy registry-backed migration defaults to being enabled.
 	/// </summary>
 	public bool AutoCloseOnFocusLost
 	{
@@ -348,7 +351,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Match types available for per-URL rules. Excludes <see cref="MatchType.Default"/>, which is the special fallback and not a rule type.
 	/// </summary>
-	public IEnumerable<MatchType> MatchTypesForRules => Enum.GetValues<MatchType>().Where(t => t != MatchType.Default);
+	public static IEnumerable<MatchType> MatchTypesForRules { get; } =
+		Enum.GetValues<MatchType>().Where(t => t != MatchType.Default).ToArray();
 
 	/// <summary>
 	/// Gets or sets the match type for defining a new default setting.
@@ -385,11 +389,13 @@ public sealed class ConfigurationViewModel : ModelBase
 		get => new_fragment_browser;
 		set
 		{
-			if (SetProperty(ref new_fragment_browser, value))
+			if (!SetProperty(ref new_fragment_browser, value))
 			{
-				OnPropertyChanged(nameof(NewDefaultProfileChoices));
-				OnPropertyChanged(nameof(HasNewDefaultProfileChoices));
+				return;
 			}
+
+			OnPropertyChanged(nameof(NewDefaultProfileChoices));
+			OnPropertyChanged(nameof(HasNewDefaultProfileChoices));
 		}
 	}
 
@@ -633,11 +639,13 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	private void AddDefaultSetting()
 	{
-		if (AddNewDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser, NewDefaultProfile))
+		if (!AddNewDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser, NewDefaultProfile))
 		{
-			NewDefaultPattern = string.Empty;
-			NewDefaultProfile = null;
+			return;
 		}
+
+		NewDefaultPattern = string.Empty;
+		NewDefaultProfile = null;
 	}
 
 	private void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -804,6 +812,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 
 		OnTestDefaultsStateChanged();
+		ParentViewModel.RebuildPickerChoices();
 	}
 
 	private void ChoiceModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -811,6 +820,11 @@ public sealed class ConfigurationViewModel : ModelBase
 		if (e.PropertyName is nameof(BrowserModel.Disabled) or nameof(BrowserModel.Removed) or nameof(BrowserModel.Name))
 		{
 			OnTestDefaultsStateChanged();
+		}
+
+		if (e.PropertyName is nameof(BrowserModel.Disabled) or nameof(BrowserModel.Removed))
+		{
+			ParentViewModel.RebuildPickerChoices();
 		}
 	}
 

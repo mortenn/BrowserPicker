@@ -54,7 +54,7 @@ public sealed class SerializableSettings : IApplicationSettings
 	/// URL of the JSON schema describing this document.
 	/// </summary>
 	[JsonPropertyName("$schema")]
-	public string Schema { get; set; } = JsonSchemaUrl;
+	public string Schema { get; init; } = JsonSchemaUrl;
 
 	/// <inheritdoc />
 	public bool FirstTime { get; set; }
@@ -73,7 +73,7 @@ public sealed class SerializableSettings : IApplicationSettings
 	/// <inheritdoc />
 	public bool DisableNetworkAccess { get; set; }
 	/// <summary>
-	/// When true, the picker closes itself when it loses focus. Defaults to enabled.
+	/// When true, the picker closes itself when it loses focus. Defaults to being enabled.
 	/// </summary>
 	public bool AutoCloseOnFocusLost { get; set; } = true;
 	/// <inheritdoc />

@@ -184,7 +184,7 @@ public sealed class AppSettings : IApplicationSettings
 		return setting ?? null;
 	}
 
-	private List<BrowserModel> GetBrowsers(BrowserSorter sorter)
+	private static List<BrowserModel> GetBrowsers(BrowserSorter sorter)
 	{
 		if (Reg == null) return [];
 		using var list = Reg.OpenSubKey(nameof(BrowserList), false);
@@ -208,7 +208,7 @@ public sealed class AppSettings : IApplicationSettings
 		return browsers;
 	}
 
-	private BrowserModel? GetBrowser(RegistryKey list, string keyName)
+	private static BrowserModel? GetBrowser(RegistryKey list, string keyName)
 	{
 		using var config = list.OpenSubKey(keyName, false);
 		if (config == null) return null;
@@ -229,10 +229,7 @@ public sealed class AppSettings : IApplicationSettings
 			ManualOverride = config.GetBool(false, nameof(BrowserModel.ManualOverride)),
 			CustomKeyBind = keyBind != null ? keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == keyName) ?? string.Empty : string.Empty
 		};
-		if (string.IsNullOrWhiteSpace(browser.Command))
-			return null;
-
-		return browser;
+		return string.IsNullOrWhiteSpace(browser.Command) ? null : browser;
 	}
 
 	/// <summary>Read-only registry key for migration; never written to.</summary>

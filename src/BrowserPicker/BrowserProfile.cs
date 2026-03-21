@@ -1,27 +1,20 @@
 using System;
 using BrowserPicker.Framework;
 using System.Diagnostics;
+using JetBrains.Annotations;
 
 namespace BrowserPicker;
 
 /// <summary>
 /// Represents a single profile within a browser (e.g. a Chrome profile directory, Firefox profile, or Firefox container).
 /// </summary>
-[DebuggerDisplay("{" + nameof(Name) + "}")]
-public sealed class BrowserProfile : ModelBase
+[DebuggerDisplay("{" + nameof(Name) + "}"), PublicAPI]
+public sealed class BrowserProfile(string id, string name, string? commandArgs, string? urlTemplate = null)
+	: ModelBase
 {
-    public BrowserProfile()
+    [UsedImplicitly]
+    public BrowserProfile() : this(string.Empty, string.Empty, null)
     {
-        id = string.Empty;
-        name = string.Empty;
-    }
-
-    public BrowserProfile(string id, string name, string? commandArgs, string? urlTemplate = null)
-    {
-        this.id = id;
-        this.name = name;
-        command_args = commandArgs;
-        url_template = urlTemplate;
     }
 
     /// <summary>
@@ -30,7 +23,7 @@ public sealed class BrowserProfile : ModelBase
     public string Id
     {
         get => id;
-        set => SetProperty(ref id, value);
+        private set => _ = SetProperty(ref id, value);
     }
 
     /// <summary>
@@ -78,7 +71,7 @@ public sealed class BrowserProfile : ModelBase
     public bool Disabled
     {
         get => disabled;
-        set => SetProperty(ref disabled, value);
+        private set => _ = SetProperty(ref disabled, value);
     }
 
     /// <summary>
@@ -111,10 +104,10 @@ public sealed class BrowserProfile : ModelBase
         return url_template != null ? url_template.Replace("{url}", Uri.EscapeDataString(url)) : url;
     }
 
-    private string id;
-    private string name;
-    private string? command_args;
-    private string? url_template;
+    private string id = id;
+    private string name = name;
+    private string? command_args = commandArgs;
+    private string? url_template = urlTemplate;
     private int usage;
     private bool disabled;
     private string? icon_color;

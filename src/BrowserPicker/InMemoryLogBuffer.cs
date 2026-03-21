@@ -42,9 +42,6 @@ public sealed record InMemoryLogEntry(DateTimeOffset Timestamp, LogLevel Level, 
 	}
 
 	public string SearchText => $"{TimestampDisplay} {LevelDisplay} {Level} {Category} {CategoryDisplay} {EventDisplay} {Message}";
-
-	public string ToDisplayString() =>
-		$"{Timestamp.ToLocalTime():yyyy-MM-dd HH:mm:ss.fff} [{LevelDisplay}] {Category} ({EventDisplay}): {Message}";
 }
 
 /// <summary>
@@ -57,11 +54,7 @@ public sealed class InMemoryLogBuffer
 
 	public InMemoryLogBuffer(int capacity = 500)
 	{
-		if (capacity <= 0)
-		{
-			throw new ArgumentOutOfRangeException(nameof(capacity));
-		}
-
+		ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
 		Capacity = capacity;
 	}
 
@@ -74,12 +67,14 @@ public sealed class InMemoryLogBuffer
 	{
 		lock (gate)
 		{
-			Enqueue(new InMemoryLogEntry(timestamp, level, category, eventId, message, segments ?? [new(message, false)]));
+			Enqueue(new InMemoryLogEntry(timestamp, level, category, eventId, message,
+				segments ?? [new InMemoryLogSegment(message, false)]));
 
 			if (exception != null)
 			{
 				var exceptionText = exception.ToString();
-				Enqueue(new InMemoryLogEntry(timestamp, level, category, eventId, exceptionText, [new(exceptionText, false)]));
+				Enqueue(new InMemoryLogEntry(timestamp, level, category, eventId, exceptionText,
+					[new InMemoryLogSegment(exceptionText, false)]));
 			}
 		}
 
@@ -91,14 +86,6 @@ public sealed class InMemoryLogBuffer
 		lock (gate)
 		{
 			return [.. entries];
-		}
-	}
-
-	public string GetSnapshot()
-	{
-		lock (gate)
-		{
-			return string.Join(Environment.NewLine, entries.Select(entry => entry.ToDisplayString()));
 		}
 	}
 
@@ -146,18 +133,18 @@ public sealed class InMemoryLoggerProvider(InMemoryLogBuffer buffer) : ILoggerPr
 			buffer.Append(DateTimeOffset.UtcNow, categoryName, logLevel, eventId, message, CreateSegments(state, message), exception);
 		}
 
-		private static IReadOnlyList<InMemoryLogSegment> CreateSegments<TState>(TState state, string fallbackMessage)
+		private static List<InMemoryLogSegment> CreateSegments<TState>(TState state, string fallbackMessage)
 		{
 			if (state is not IEnumerable<KeyValuePair<string, object?>> structuredState)
 			{
-				return [new(fallbackMessage, false)];
+				return [new InMemoryLogSegment(fallbackMessage, false)];
 			}
 
 			var values = structuredState.ToList();
 			var originalFormat = values.FirstOrDefault(kv => kv.Key == "{OriginalFormat}").Value as string;
 			if (string.IsNullOrWhiteSpace(originalFormat))
 			{
-				return [new(fallbackMessage, false)];
+				return [new InMemoryLogSegment(fallbackMessage, false)];
 			}
 
 			var arguments = values
@@ -166,10 +153,10 @@ public sealed class InMemoryLoggerProvider(InMemoryLogBuffer buffer) : ILoggerPr
 				.ToList();
 
 			var segments = ParseTemplate(originalFormat, arguments);
-			return segments.Count > 0 ? segments : [new(fallbackMessage, false)];
+			return segments.Count > 0 ? segments : [new InMemoryLogSegment(fallbackMessage, false)];
 		}
 
-		private static List<InMemoryLogSegment> ParseTemplate(string template, IReadOnlyList<string> arguments)
+		private static List<InMemoryLogSegment> ParseTemplate(string template, List<string> arguments)
 		{
 			var segments = new List<InMemoryLogSegment>();
 			var literal = new System.Text.StringBuilder();
@@ -178,43 +165,42 @@ public sealed class InMemoryLoggerProvider(InMemoryLogBuffer buffer) : ILoggerPr
 			for (var i = 0; i < template.Length; i++)
 			{
 				var ch = template[i];
-				if (ch == '{')
+				switch (ch)
 				{
-					if (i + 1 < template.Length && template[i + 1] == '{')
-					{
-						literal.Append('{');
+					case '{':
+						if (i + 1 < template.Length && template[i + 1] == '{')
+						{
+							literal.Append('{');
+							i++;
+							break;
+						}
+
+						var end = template.IndexOf('}', i + 1);
+						if (end < 0)
+						{
+							literal.Append(ch);
+							break;
+						}
+
+						if (literal.Length > 0)
+						{
+							segments.Add(new InMemoryLogSegment(literal.ToString(), false));
+							literal.Clear();
+						}
+
+						var value = argumentIndex < arguments.Count ? arguments[argumentIndex] : template[(i + 1)..end];
+						segments.Add(new InMemoryLogSegment(value, true));
+						argumentIndex++;
+						i = end;
+						break;
+					case '}' when i + 1 < template.Length && template[i + 1] == '}':
+						literal.Append('}');
 						i++;
-						continue;
-					}
-
-					var end = template.IndexOf('}', i + 1);
-					if (end < 0)
-					{
+						break;
+					default:
 						literal.Append(ch);
-						continue;
-					}
-
-					if (literal.Length > 0)
-					{
-						segments.Add(new InMemoryLogSegment(literal.ToString(), false));
-						literal.Clear();
-					}
-
-					var value = argumentIndex < arguments.Count ? arguments[argumentIndex] : template[(i + 1)..end];
-					segments.Add(new InMemoryLogSegment(value, true));
-					argumentIndex++;
-					i = end;
-					continue;
+						break;
 				}
-
-				if (ch == '}' && i + 1 < template.Length && template[i + 1] == '}')
-				{
-					literal.Append('}');
-					i++;
-					continue;
-				}
-
-				literal.Append(ch);
 			}
 
 			if (literal.Length > 0)
