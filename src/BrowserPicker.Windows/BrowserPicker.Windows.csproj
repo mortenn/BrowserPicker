@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Version>2.0.0.3</Version>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BrowserPicker\BrowserPicker.csproj" />
+    <ProjectReference Include="..\BrowserPicker.Common\BrowserPicker.Common.csproj" />
   </ItemGroup>
 </Project>

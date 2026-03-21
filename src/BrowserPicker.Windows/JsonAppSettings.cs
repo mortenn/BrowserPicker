@@ -7,7 +7,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using BrowserPicker.Framework;
+using BrowserPicker.Common;
+using BrowserPicker.Common.Framework;
 using Microsoft.Extensions.Logging;
 
 namespace BrowserPicker.Windows;
@@ -99,7 +100,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			MigrateFrom(migrateFrom);
 		}
 
-		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser);
+		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == Common.MatchType.Default)?.Browser);
 
 		// When we migrated, UpdateDefaults and AddBrowser already attached handlers; otherwise attach now (e.g. after LoadFromFile).
 		var alreadySubscribed = migrateFrom != null;
@@ -222,7 +223,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		set
 		{
 			if (value == use_fallback_default) return;
-			if (value) { AlwaysAskWithoutDefault = false; use_fallback_default = true; if (Defaults.All(d => d.Type != MatchType.Default)) AddDefault(MatchType.Default, string.Empty, null); }
+			if (value) { AlwaysAskWithoutDefault = false; use_fallback_default = true; if (Defaults.All(d => d.Type != Common.MatchType.Default)) AddDefault(Common.MatchType.Default, string.Empty, null); }
 			else { use_fallback_default = false; DefaultBrowser = null; }
 			OnPropertyChanged();
 			SaveToFile();
@@ -231,14 +232,14 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public string? DefaultBrowser
 	{
-		get => Defaults.FirstOrDefault(d => d.Type == MatchType.Default)?.Browser;
+		get => Defaults.FirstOrDefault(d => d.Type == Common.MatchType.Default)?.Browser;
 		set
 		{
-			var selection = Defaults.FirstOrDefault(d => d.Type == MatchType.Default);
+			var selection = Defaults.FirstOrDefault(d => d.Type == Common.MatchType.Default);
 			if (selection == null && !string.IsNullOrWhiteSpace(value))
 			{
 				selection = GetDefaultSetting(string.Empty, string.Empty)!;
-				selection.Type = MatchType.Default;
+				selection.Type = Common.MatchType.Default;
 				selection.PropertyChanged += DefaultSetting_PropertyChanged;
 				Defaults.Add(selection);
 			}
@@ -369,7 +370,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		AddBrowser(model);
 	}
 
-	public void AddDefault(MatchType matchType, string pattern, string? browser, string? profile = null)
+	public void AddDefault(Common.MatchType matchType, string pattern, string? browser, string? profile = null)
 	{
 		var setting = GetDefaultSetting(null, browser);
 		if (setting == null) return;
@@ -487,12 +488,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private void UpdateDefaults(List<DefaultSetting> defaults)
 	{
-		var fallback = defaults.FirstOrDefault(d => d.Type == MatchType.Default);
+		var fallback = defaults.FirstOrDefault(d => d.Type == Common.MatchType.Default);
 		use_fallback_default = fallback?.Browser != null;
 		var fallbackId = fallback?.Browser != null ? BrowserList.FirstOrDefault(b => b.Id == fallback.Browser || b.Name == fallback.Browser)?.Id ?? fallback.Browser : null;
 		foreach (var d in Defaults) { d.PropertyChanged -= DefaultSetting_PropertyChanged; }
 		Defaults.Clear();
-		if (fallbackId != null) { var def = new DefaultSetting(MatchType.Default, string.Empty, fallbackId); def.PropertyChanged += DefaultSetting_PropertyChanged; Defaults.Add(def); }
+		if (fallbackId != null) { var def = new DefaultSetting(Common.MatchType.Default, string.Empty, fallbackId); def.PropertyChanged += DefaultSetting_PropertyChanged; Defaults.Add(def); }
 		foreach (var setting in defaults.Where(s => s != fallback))
 		{
 			var browserId = string.IsNullOrEmpty(setting.Browser) ? null : BrowserList.FirstOrDefault(b => b.Id == setting.Browser || b.Name == setting.Browser)?.Id ?? setting.Browser;
@@ -600,7 +601,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 			if (!LooksLikeSettingsDocument(root))
 			{
-				AppendBackupLog($"Unable to import configuration from {sourceDescription}: contents are not BrowserPicker settings JSON.");
+				AppendBackupLog($"Unable to import configuration from {sourceDescription}: contents are not Browser Picker settings JSON.");
 				return null;
 			}
 

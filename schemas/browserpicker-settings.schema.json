@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "https://cdn.jsdelivr.net/gh/mortenn/BrowserPicker@main/schemas/browserpicker-settings.schema.json",
-  "title": "BrowserPicker settings",
+  "title": "Browser Picker settings",
   "type": "object",
-  "description": "Settings document used by BrowserPicker for backups, clipboard import/export, and persisted JSON settings.",
+  "description": "Settings document used by Browser Picker for backups, clipboard import/export, and persisted JSON settings.",
   "properties": {
     "$schema": {
       "type": "string"

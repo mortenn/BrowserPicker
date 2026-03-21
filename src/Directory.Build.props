@@ -1,13 +1,16 @@
 <Project>
 	<PropertyGroup>
-		<TargetFramework>net9.0-windows</TargetFramework>
+		<TargetFramework>net10.0-windows</TargetFramework>
 		<VersionPrefix>2.0.0.4</VersionPrefix>
 		<VersionSuffix>-beta1</VersionSuffix>
 		<Company>Runsafe</Company>
-		<Copyright>Copyright ©  2017-2024</Copyright>
+		<Copyright>Copyright © Morten Nilsen 2017-2026</Copyright>
 		<Configurations>Debug;Release</Configurations>
 		<Platforms>x64</Platforms>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<Nullable>enable</Nullable>
+		<!-- UseArtifactsOutput not supported by WixToolset.Sdk -->
+		<!--<UseArtifactsOutput>true</UseArtifactsOutput>-->
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
 		<OutputPath>bin\SignedRelease\</OutputPath>

@@ -6,7 +6,7 @@ inputs:
     required: true
     description: "dotnet build configuration"
     default: "Release"
-  
+
   solution_path:
     required: true
     description: "The path to the solution file"
@@ -15,7 +15,7 @@ inputs:
   project_path:
     required: true
     description: "The path to the application project file to publish"
-    default: "src/BrowserPicker.App/BrowserPicker.App.csproj"
+    default: "src/BrowserPicker.UI/BrowserPicker.UI.csproj"
 
   dotnet_args:
     required: true
@@ -28,7 +28,7 @@ inputs:
   package_version:
     required: true
     description: "MSI package VersionPrefix"
-  
+
   package:
     required: true
     description: "Path to msi package to build and sign"
@@ -45,11 +45,11 @@ inputs:
     required: true
     description: "Pattern matching binaries to be signed and bundled"
     default: ""
-  
+
   bundle_name:
     required: true
     description: "Name of the uploaded bundle artifact"
-  
+
   bundle_path:
     required: true
     description: "Path to the files to bundle and upload"
@@ -60,7 +60,7 @@ runs:
   - name: Install .NET Core
     uses: actions/setup-dotnet@v4
     with:
-      dotnet-version: 9.x
+      dotnet-version: 10.x
 
   # Restore dotnet tools
   - name: Restore tools

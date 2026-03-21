@@ -1,20 +1,20 @@
 # Browser Picker
-A default browser replacement for windows to let you pick your preferred browser on the fly or in accordance with your own rules.
+A default browser replacement for Windows to let you pick your preferred browser on the fly or in accordance with your own rules.
 
-![Screenshot of browserpicker with three options, of which 2 are running and 1 is not](docs/selector_two_running.png)
+![Screenshot of Browser Picker with three options, of which 2 are running and 1 is not](docs/selector_two_running.png)
 
 You can easily configure it to use Firefox for `github.com` and `slashdot.org`, but leave Edge to handle `microsoft.com`  
 and even let Internet Explorer handle that old internal LOB app you'd rather not use but must.
 
 ## Installation
-You can find the latest release on [github](https://github.com/mortenn/BrowserPicker/releases).
+You can find the latest release on [GitHub](https://github.com/mortenn/BrowserPicker/releases).
 
 ### Default browser
 To enable the browser picker window, you need to set Browser Picker as your default browser. 
 
 ### .NET Runtime dependent binary
-BrowserPicker.msi and Dependent.zip are JIT compiled and require you have the [.NET 9.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
-Direct links: [64bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x64-installer), [32bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0.3-windows-x86-installer).
+BrowserPicker.msi and Dependent.zip are JIT compiled and require you have the [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed.
+Direct links: [64bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-10.0.5-windows-x64-installer), [32bit systems](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-10.0.5-windows-x86-installer).
 
 #### Native image generation
 As part of installation, `BrowserPicker.msi` will execute ngen to build a native image for your computer.  
@@ -31,30 +31,30 @@ This makes the file sizes quite significantly larger, but you do not need an add
 To avoid warnings about unknown publisher, you may [import](https://stackoverflow.com/questions/49039136/powershell-script-to-install-trusted-publisher-certificates) the provided certificate into your certificate store first.
 
 ### Manual steps
-You need to open the settings app from the start menu, navigate into Apps, select Default apps, then change the Web browser to BrowserPicker.  
-Please ensure BrowserPicker can be started before you do this.
+You need to open the settings app from the start menu, navigate into Apps, select Default apps, then change the Web browser to Browser Picker.  
+Please ensure Browser Picker can be started before you do this.
 
 ## Usage
 
 When you open a link outside a browser, one of these things will happen, in order:
 
 1. If you have previously selected `Always ask`, the browser selection window is shown.
-2. If you have set up a configuration rule matching the url being opened, the selected browser will be launched with the url (when that browser is already running, or when *Use defaults even when browser is not running* is checked in Behaviour).
+2. If you have set up a configuration rule matching the URL being opened, the selected browser will be launched with the URL (when that browser is already running, or when *Use defaults even when browser is not running* is checked in Behaviour).
 3. If you only have one browser running, the link will be opened in that browser.
-4. If you have configured a fallback default browser, it will be used to open the url (again only when running, or when the option above is checked).
+4. If you have configured a fallback default browser, it will be used to open the URL (again only when running, or when the option above is checked).
 5. Otherwise, you will be presented with a simple window asking you which browser you want to use.  
 
-The url is shown at the top of the window, and if it matches a list of known url shorteners, BrowserPicker will expand this address and show you the real one after a short delay.
-If you do not want BrowserPicker to perform this operation (it will call the internet), you may disable this feature in the settings.
+The URL is shown at the top of the window, and if it matches a list of known URL shorteners, Browser Picker will expand this address and show you the real one after a short delay.
+If you do not want Browser Picker to perform this operation (it will call the internet), you may disable this feature in the settings.
 
-### Copy url
-You can click the clipboard icon at the top to copy the url without opening it
+### Copy URL
+You can click the clipboard icon at the top to copy the URL without opening it
 
-### Edit url
-You can click the pencil icon at the top of the window to edit or copy the url before visiting it or cancelling:
+### Edit URL
+You can click the pencil icon at the top of the window to edit or copy the URL before visiting it or cancelling:
 
-![Screenshot of truncated url being edited](docs/selector_edit_url.png)
-![Screenshot of updated url in window](docs/selector_edited_url.png)
+![Screenshot of truncated URL being edited](docs/selector_edit_url.png)
+![Screenshot of updated URL in window](docs/selector_edited_url.png)
 
 ### Keyboard shortcuts
 
@@ -72,10 +72,10 @@ If you keep `[alt]` pressed while hitting one of these, the browser will be open
 
 `[esc]` Abort and close window
 
-If you click outside the window such that it loses focus, it will close without opening the url in any browser.
+If you click outside the window such that it loses focus, it will close without opening the URL in any browser.
 
 Each browser that supports it, has a blue shield button on the right side.
-Browsers currently supporting privacy mode are firefox, internet explorer, chrome, and edge.
+Browsers currently supporting privacy mode are Firefox, Internet Explorer, Chrome, Edge, and Vivaldi.
 
 Currently running browsers will have their name in bold, whilst browsers not currently running will have their names in cursive.
 
@@ -84,14 +84,14 @@ As you use the application, it keeps count of how many times you selected each b
 At the bottom of the window, there is a checkbox to enable "always ask" and a hyperlink to open settings.
 
 ## Settings
-By simply launching BrowserPicker from the start menu or double clicking the `BrowserPicker.exe` file, you will be presented with a GUI to configure the behaviour.
+By simply launching Browser Picker from the start menu or double clicking the `BrowserPicker.exe` file, you will be presented with a GUI to configure the behaviour.
 The configuration is saved in the Windows registry: `HKEY_CURRENT_USER\Software\BrowserPicker`, if you ever need to manually edit it or make a backup.
 
 ![Screenshot of the browser configuration interface with three browsers](docs/config_list.png)
 
 ### Browsers
 
-The browser list shows you the browsers BrowserPicker has been configured or detected to use.
+The browser list shows you the browsers Browser Picker has been configured or detected to use.
 
 #### Disabling browsers
 You can disable a browser by clicking `Enabled`, this will hide the browser from the selection list.
@@ -104,7 +104,7 @@ If you click the red X, you may remove a browser.
 Do note that if it was automatically detected, it will return to the list the next time auto configuration is performed.
 
 #### Automatic configuration
-The `Refresh broser list` function gets automatically executed in the background when you use BrowserPicker.
+The `Refresh browser list` function gets automatically executed in the background when you use Browser Picker.
 This helps it discovering newly installed browsers, in case a new browser has been installed,
 
 #### Manually adding browser
@@ -124,7 +124,7 @@ The name of the application will be attempted to be set automatically based on i
 ##### Chrome profiles
 
 Tip for Chrome Users: If you are using multiple Chrome profiles, by default if you choose Chrome it will launch in the last
-profile you launched Chrome with.  To make it possibe for browser picker to select a profile you can create a new browser 
+profile you launched Chrome with. To make it possible for Browser Picker to select a profile you can create a new browser 
 for each profile, set the program to the chrome executable, and add a command line argument to specify which profile to launch:
 `--profile-directory=Default` for the first profile, `--profile-directory="Profile 1"` for the second profile, and so on.
 
@@ -132,30 +132,30 @@ Please note that arguments with spaces do require "" around them to be properly 
 
 ##### Firefox profiles
 
-Similar configuration should be possible for firefox.
+Similar configuration should be possible for Firefox.
 
 ### Behaviour
-This tab contains various settings that govern how BrowserPicker operates.
+This tab contains various settings that govern how Browser Picker operates.
 
 ![Screenshot of all the options under the behaviour tab](docs/config_behaviour.png)
 
 > [ ] Turn off transparency
 
-This will make BrowserPicker have a simple black background, to help with legibility
+This will make Browser Picker have a simple black background, to help with legibility
 
 > [ ] Always show browser selection window
 
-This option is also available on the browser selection window. When enabled, BrowserPicker will always ask the user to make a choice.
+This option is also available on the browser selection window. When enabled, Browser Picker will always ask the user to make a choice.
 
-> [ ] When no default is configured matching the url, use: [__v]
+> [ ] When no default is configured matching the URL, use: [__v]
 
-When configured, BrowserPicker will always use this browser unless a default browser has been configured for that url.
+When configured, Browser Picker will always use this browser unless a default browser has been configured for that URL.
 
-> [ ] Always ask when no default is matching url
+> [ ] Always ask when no default is matching URL
 
-This option makes it so BrowserPicker will only pick matched default browsers and otherwise show the selection window.
+This option makes it so Browser Picker will only pick matched default browsers and otherwise show the selection window.
 
-> [ ] Disable url resolution
+> [ ] Disable URL resolution
 
 
 > [ ] Use defaults even when browser is not running
@@ -168,15 +168,15 @@ This option will make your list of browsers automatically sorted by how often yo
 
 > [ ] Disallow network activity
 
-BrowserPicker may perform DNS and HTTP calls to probe the specified url in order to check if the url redirects elsewhere.  
-This option turns this feature off, preventing BrowserPicker to call the network when you launch a url.
+Browser Picker may perform DNS and HTTP calls to probe the specified URL in order to check if the URL redirects elsewhere.  
+This option turns this feature off, preventing Browser Picker from calling the network when you launch a URL.
 
 > URL resolution timeout: [_____]
 
-You may adjust for how long BrowserPicker attempts to resolve an url here.
+You may adjust for how long Browser Picker attempts to resolve an URL here.
 
 ### Defaults
-The defaults tab lets you configure rules to map certain urls to certain browsers.
+The defaults tab lets you configure rules to map certain URLs to certain browsers.
 
 ![Illustration of the empty list of default browser choices](docs/config_defaults_empty.png)
 
@@ -187,30 +187,30 @@ The option will eventually get hidden in the interface, but for now it becomes H
 ![Illustration of a dropdown showing the four match types Hostname, Prefix, Regex and Default](docs/config_defaults_match_type.png)
 
 ###### Hostname match
-The pattern will match the end of the hostname part of the url, ie. `hub.com` would match `https://www.github.com/mortenn/BrowserPicker`, but not `https://example.com/cgi-bin/hub.com`
+The pattern will match the end of the hostname part of the URL, ie. `hub.com` would match `https://www.github.com/mortenn/BrowserPicker`, but not `https://example.com/cgi-bin/hub.com`
 
 ###### Prefix match
-The pattern will match the beginning of the url, ie. `https://github.com/mortenn` would match `https://github.com/mortenn/BrowserPicker` but not `https://www.github.com/mortenn/BrowserPicker`
+The pattern will match the beginning of the URL, ie. `https://github.com/mortenn` would match `https://github.com/mortenn/BrowserPicker` but not `https://www.github.com/mortenn/BrowserPicker`
 
 ###### Regex match
-The pattern is a .NET regular expression and will be executed against the url, see [.NET regular expressions](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions) for details.
+The pattern is a .NET regular expression and will be executed against the URL, see [.NET regular expressions](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions) for details.
 
 ##### Browser
-The selected browser will be the one to launch for matched urls.
+The selected browser will be the one to launch for matched URLs.
 
 ![Illustration of a dropdown showing each browser icon](docs/config_defaults_browsers.png)
 
 ### Test defaults
 There is even a handy dandy tool for verifying your settings,  
-just paste that url into the big white text box and get instant feedback on the browser selection process:
+just paste that URL into the big white text box and get instant feedback on the browser selection process:
 
 ![Example of the test defaults interface in use](docs/config_defaults_test_no_match.png)
 
 ### Logging
-BrowserPicker uses ILogger with EventLog support.
+Browser Picker uses ILogger with EventLog support.
 
 ### Adjusting log levels
-BrowserPicker uses the standard .NET logging configuration from `appsettings.json`.
+Browser Picker uses the standard .NET logging configuration from `appsettings.json`.
 
 The most useful settings are:
 
