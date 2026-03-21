@@ -41,7 +41,7 @@ public static class RegistryHelpers
 		var value = key.GetValue(name);
 		if (value == null)
 			return defaultValue;
-		
+
 		return (int)value == 1;
 	}
 

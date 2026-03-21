@@ -6,7 +6,7 @@
 		<MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="yes" />
 		<MediaTemplate EmbedCab="yes" />
 
-		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.App.TargetDir)\win-x64\publish\$(var.BrowserPicker.App.TargetName).exe" />
+		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.UI.TargetDir)\win-x64\publish\$(var.BrowserPicker.UI.TargetName).exe" />
 		<Property Id="ARPPRODUCTICON" Value="Icon.exe" />
 
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
@@ -24,14 +24,14 @@
 	</Fragment>
 
 	<Fragment>
-		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\win-x64\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
+		<ComponentGroup Source="$(var.BrowserPicker.UI.TargetDir)\win-x64\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
 
 			<Files Include="**">
-				<Exclude Files="$(var.BrowserPicker.App.TargetName).exe" />
+				<Exclude Files="$(var.BrowserPicker.UI.TargetName).exe" />
 			</Files>
-			
+
 			<Component Bitness="always64">
-				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
+				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.UI.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
 					<Shortcut Directory="ApplicationProgramsFolder" Id="ApplicationStartMenuShortcut" Name="Browser Picker" Description="Awesome Browser Picker" WorkingDirectory="INSTALLFOLDER" Icon="Icon.exe" Advertise="yes" />
 				</File>
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BrowserPicker.Common;
 using BrowserPicker.Windows.ProfileDiscovery;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;

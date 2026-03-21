@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31919.166
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11612.150
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F46B5958-C607-4E07-9C2C-F63538149287}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker", "src\BrowserPicker\BrowserPicker.csproj", "{D7695535-9C0D-4983-B8F7-09B067347E7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker.Common", "src\BrowserPicker.Common\BrowserPicker.Common.csproj", "{D7695535-9C0D-4983-B8F7-09B067347E7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker.App", "src\BrowserPicker.App\BrowserPicker.App.csproj", "{B875AE86-5212-4F7F-BB1C-2BAA1FC110BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker.UI", "src\BrowserPicker.UI\BrowserPicker.UI.csproj", "{B875AE86-5212-4F7F-BB1C-2BAA1FC110BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrowserPicker.Windows", "src\BrowserPicker.Windows\BrowserPicker.Windows.csproj", "{C3CE17EA-BAAE-4DE7-AFB2-319D50ECB2C8}"
 EndProject
@@ -25,11 +25,21 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dist", "dist", "{CD1CE02F-9EBF-48E0-81E4-E047F20F10C8}"
 	ProjectSection(SolutionItems) = preProject
 		dist\code_signing.cer = dist\code_signing.cer
+		dist\Directory.Build.props = dist\Directory.Build.props
+		dist\Directory.Packages.props = dist\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Dependent", "dist\Dependent\Dependent.wixproj", "{F9D9359C-6DA4-463E-86B9-505E04E01C3A}"
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Portable", "dist\Portable\Portable.wixproj", "{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{4F9A9F0E-98B5-459D-BFD1-9CFEAFE5D116}"
+	ProjectSection(SolutionItems) = preProject
+		tools\Directory.Build.props = tools\Directory.Build.props
+		tools\Directory.Packages.props = tools\Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrowserPicker.SchemaGen", "tools\BrowserPicker.SchemaGen\BrowserPicker.SchemaGen.csproj", "{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,25 +88,30 @@ Global
 		{C3CE17EA-BAAE-4DE7-AFB2-319D50ECB2C8}.Release|x86.ActiveCfg = Release|x64
 		{C3CE17EA-BAAE-4DE7-AFB2-319D50ECB2C8}.Release|x86.Build.0 = Release|x64
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Debug|ARM64.Build.0 = Debug|ARM64
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Debug|x64.ActiveCfg = Debug|x64
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Debug|x86.ActiveCfg = Debug|x86
-		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Debug|x86.Build.0 = Debug|x86
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Release|ARM64.ActiveCfg = Release|ARM64
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Release|ARM64.Build.0 = Release|ARM64
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Release|x64.ActiveCfg = Release|x64
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Release|x86.ActiveCfg = Release|x86
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A}.Release|x86.Build.0 = Release|x86
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Debug|ARM64.Build.0 = Debug|ARM64
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Debug|x64.ActiveCfg = Debug|x64
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Debug|x86.ActiveCfg = Debug|x86
-		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Debug|x86.Build.0 = Debug|x86
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Release|ARM64.ActiveCfg = Release|ARM64
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Release|ARM64.Build.0 = Release|ARM64
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Release|x64.ActiveCfg = Release|x64
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Release|x86.ActiveCfg = Release|x86
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA}.Release|x86.Build.0 = Release|x86
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Debug|ARM64.ActiveCfg = Debug|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Debug|x64.ActiveCfg = Debug|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Debug|x86.ActiveCfg = Debug|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Release|ARM64.ActiveCfg = Release|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Release|ARM64.Build.0 = Release|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Release|x64.ActiveCfg = Release|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Release|x64.Build.0 = Release|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Release|x86.ActiveCfg = Release|x64
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +122,7 @@ Global
 		{C3CE17EA-BAAE-4DE7-AFB2-319D50ECB2C8} = {A7A5C3AA-4BF6-4B3B-A515-6C1E21E0B4E1}
 		{F9D9359C-6DA4-463E-86B9-505E04E01C3A} = {CD1CE02F-9EBF-48E0-81E4-E047F20F10C8}
 		{FADE3CC5-5631-4BF0-A92B-A3464BA5A5EA} = {CD1CE02F-9EBF-48E0-81E4-E047F20F10C8}
+		{9D34ABBC-3A7D-BA41-F4CD-EED86E736900} = {4F9A9F0E-98B5-459D-BFD1-9CFEAFE5D116}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FA02F9A8-CC4F-4C63-A345-418FC0D10D32}

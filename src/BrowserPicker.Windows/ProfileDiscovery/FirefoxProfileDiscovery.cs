@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using BrowserPicker.Common;
 using Microsoft.Extensions.Logging;
 // ReSharper disable CommentTypo
 
@@ -187,9 +188,9 @@ public static class FirefoxProfileDiscovery
 		                where line.StartsWith("LastPlatformDir=", StringComparison.OrdinalIgnoreCase)
 		                select line["LastPlatformDir=".Length..].Trim()
 	                ).Any(platformDir => string.Equals(platformDir, installDir, StringComparison.OrdinalIgnoreCase));
-	                
+
 	                if (!compatiblePlatform) continue;
-	                
+
 	                logger?.LogDebug("Matched Firefox profile {Name} to installation {Dir}", entry.Name, installDir);
 	                return fullPath;
                 }
