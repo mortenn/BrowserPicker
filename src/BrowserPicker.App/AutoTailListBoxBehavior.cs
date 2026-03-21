@@ -1,8 +1,9 @@
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using JetBrains.Annotations;
 
 namespace BrowserPicker;
 
@@ -24,7 +25,7 @@ public static class AutoTailListBoxBehavior
 			typeof(Controller),
 			typeof(AutoTailListBoxBehavior));
 
-	// WPF uses these attached-property accessors implicitly from XAML.
+	[UsedImplicitly]
 	public static bool GetIsEnabled(DependencyObject element) => (bool)element.GetValue(IsEnabledProperty);
 
 	public static void SetIsEnabled(DependencyObject element, bool value) => element.SetValue(IsEnabledProperty, value);
@@ -50,8 +51,8 @@ public static class AutoTailListBoxBehavior
 
 	private sealed class Controller(ListBox listBox)
 	{
-		private ScrollViewer? scrollViewer;
-		private bool stickToBottom = true;
+		private ScrollViewer? scroll_viewer;
+		private bool stick_to_bottom = true;
 
 		public void Attach()
 		{
@@ -65,19 +66,19 @@ public static class AutoTailListBoxBehavior
 			listBox.Loaded -= ListBox_Loaded;
 			listBox.Unloaded -= ListBox_Unloaded;
 			UnhookCollectionChanged();
-			if (scrollViewer != null)
+			if (scroll_viewer != null)
 			{
-				scrollViewer.ScrollChanged -= ScrollViewer_ScrollChanged;
+				scroll_viewer.ScrollChanged -= ScrollViewer_ScrollChanged;
 			}
 		}
 
 		private void ListBox_Loaded(object sender, RoutedEventArgs e)
 		{
-			scrollViewer = FindScrollViewer(listBox);
-			if (scrollViewer != null)
+			scroll_viewer = FindScrollViewer(listBox);
+			if (scroll_viewer != null)
 			{
-				scrollViewer.ScrollChanged -= ScrollViewer_ScrollChanged;
-				scrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
+				scroll_viewer.ScrollChanged -= ScrollViewer_ScrollChanged;
+				scroll_viewer.ScrollChanged += ScrollViewer_ScrollChanged;
 			}
 
 			listBox.Dispatcher.BeginInvoke(ScrollToEnd, DispatcherPriority.Loaded);
@@ -85,18 +86,18 @@ public static class AutoTailListBoxBehavior
 
 		private void ListBox_Unloaded(object sender, RoutedEventArgs e)
 		{
-			if (scrollViewer == null)
+			if (scroll_viewer == null)
 			{
 				return;
 			}
 
-			scrollViewer.ScrollChanged -= ScrollViewer_ScrollChanged;
-			scrollViewer = null;
+			scroll_viewer.ScrollChanged -= ScrollViewer_ScrollChanged;
+			scroll_viewer = null;
 		}
 
 		private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
-			stickToBottom = e.VerticalOffset >= e.ExtentHeight - e.ViewportHeight - 1;
+			stick_to_bottom = e.VerticalOffset >= e.ExtentHeight - e.ViewportHeight - 1;
 		}
 
 		private void HookCollectionChanged()
@@ -117,7 +118,7 @@ public static class AutoTailListBoxBehavior
 
 		private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (!stickToBottom)
+			if (!stick_to_bottom)
 			{
 				return;
 			}
@@ -127,14 +128,16 @@ public static class AutoTailListBoxBehavior
 
 		private void ScrollToEnd()
 		{
-			scrollViewer?.ScrollToEnd();
-			if (listBox.Items.Count > 0)
+			scroll_viewer?.ScrollToEnd();
+			if (listBox.Items.Count == 0)
 			{
-				var lastItem = listBox.Items[listBox.Items.Count - 1];
-				if (lastItem != null)
-				{
-					listBox.ScrollIntoView(lastItem);
-				}
+				return;
+			}
+
+			var lastItem = listBox.Items[^1];
+			if (lastItem != null)
+			{
+				listBox.ScrollIntoView(lastItem);
 			}
 		}
 

@@ -26,7 +26,8 @@ public interface IBrowserPickerConfiguration : IApplicationSettings, INotifyProp
 	/// Writes the current state of an existing browser to the registry.
 	/// Use after editing a browser to ensure all properties (e.g. CommandArgs) are persisted.
 	/// </summary>
-	void PersistBrowser(BrowserModel browser);
+	/// <param name="_">The browser that was edited; some backends persist the full settings document and ignore this reference.</param>
+	void PersistBrowser(BrowserModel _);
 
 	/// <summary>
 	/// Scan the system for known browsers

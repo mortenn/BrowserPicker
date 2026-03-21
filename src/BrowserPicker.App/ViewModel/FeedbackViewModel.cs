@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 
 #if DEBUG
 using JetBrains.Annotations;
+// ReSharper disable StringLiteralTypo
 #endif
 
 namespace BrowserPicker.ViewModel;
@@ -28,10 +29,11 @@ namespace BrowserPicker.ViewModel;
 /// </summary>
 public sealed class FeedbackViewModel : ModelBase
 {
+	private static readonly JsonSerializerOptions JsonWriteIndented = new() { WriteIndented = true };
+
 	private readonly IBrowserPickerConfiguration settings;
 	private readonly InMemoryLogBuffer? runtime_log_buffer;
 	private readonly ObservableCollection<InMemoryLogEntry> application_log_entries = [];
-	private readonly ICollectionView filtered_application_log_entries;
 	private string application_log_filter = string.Empty;
 	private ApplicationLogLevelOption selected_application_log_level_option;
 	private DelegateCommand? copy_feedback_markdown;
@@ -51,10 +53,10 @@ public sealed class FeedbackViewModel : ModelBase
 	{
 		this.settings = settings;
 		runtime_log_buffer = runtimeLogBuffer;
-		selected_application_log_level_option = global::BrowserPicker.ViewModel.ApplicationLogLevelOptions.All.First(option =>
+		selected_application_log_level_option = ApplicationLogLevelOptions.All.First(option =>
 			option.MinimumLevel == LogLevel.Information);
-		filtered_application_log_entries = CollectionViewSource.GetDefaultView(application_log_entries);
-		filtered_application_log_entries.Filter = FilterApplicationLogEntry;
+		FilteredApplicationLogEntries = CollectionViewSource.GetDefaultView(application_log_entries);
+		FilteredApplicationLogEntries.Filter = FilterApplicationLogEntry;
 		if (runtime_log_buffer != null)
 		{
 			runtime_log_buffer.Updated += RuntimeLogBuffer_Updated;
@@ -71,9 +73,7 @@ public sealed class FeedbackViewModel : ModelBase
 
 	public ICommand ClearApplicationLogFilter => clear_application_log_filter ??= new DelegateCommand(() => ApplicationLogFilter = string.Empty);
 
-	public ICollectionView FilteredApplicationLogEntries => filtered_application_log_entries;
-
-	public IReadOnlyList<ApplicationLogLevelOption> ApplicationLogLevelOptions => global::BrowserPicker.ViewModel.ApplicationLogLevelOptions.All;
+	public ICollectionView FilteredApplicationLogEntries { get; }
 
 	public ApplicationLogLevelOption SelectedApplicationLogLevelOption
 	{
@@ -85,7 +85,7 @@ public sealed class FeedbackViewModel : ModelBase
 				return;
 			}
 
-			filtered_application_log_entries.Refresh();
+			FilteredApplicationLogEntries.Refresh();
 			OnPropertyChanged(nameof(VisibleApplicationLogEntryCount));
 			OnPropertyChanged(nameof(ApplicationLogStatus));
 		}
@@ -101,7 +101,7 @@ public sealed class FeedbackViewModel : ModelBase
 				return;
 			}
 
-			filtered_application_log_entries.Refresh();
+			FilteredApplicationLogEntries.Refresh();
 			OnPropertyChanged(nameof(VisibleApplicationLogEntryCount));
 			OnPropertyChanged(nameof(ApplicationLogStatus));
 			OnPropertyChanged(nameof(HasApplicationLogFilter));
@@ -157,25 +157,11 @@ public sealed class FeedbackViewModel : ModelBase
 		});
 	}
 
-	private bool FilterApplicationLogEntry(object? item)
-	{
-		if (item is not InMemoryLogEntry entry)
-		{
-			return false;
-		}
-
-		if (entry.Level < SelectedApplicationLogLevelOption.MinimumLevel)
-		{
-			return false;
-		}
-
-		if (string.IsNullOrWhiteSpace(application_log_filter))
-		{
-			return true;
-		}
-
-		return entry.SearchText.Contains(application_log_filter, StringComparison.OrdinalIgnoreCase);
-	}
+	private bool FilterApplicationLogEntry(object? item) =>
+		item is InMemoryLogEntry entry
+		&& entry.Level >= SelectedApplicationLogLevelOption.MinimumLevel
+		&& (string.IsNullOrWhiteSpace(application_log_filter)
+			|| entry.SearchText.Contains(application_log_filter, StringComparison.OrdinalIgnoreCase));
 
 	private void SyncApplicationLogEntries()
 	{
@@ -185,7 +171,7 @@ public sealed class FeedbackViewModel : ModelBase
 			application_log_entries.Add(entry);
 		}
 
-		filtered_application_log_entries.Refresh();
+		FilteredApplicationLogEntries.Refresh();
 	}
 
 	private string BuildFeedbackMarkdown(int maxLogCharacters = int.MaxValue, int maxSettingsCharacters = int.MaxValue)
@@ -208,7 +194,7 @@ public sealed class FeedbackViewModel : ModelBase
 		builder.AppendLine($"- .NET runtime: `{Environment.Version}`");
 		builder.AppendLine($"- 64-bit process: `{Environment.Is64BitProcess}`");
 		builder.AppendLine($"- Browser count: `{settings.BrowserList.Count(b => !b.Removed)}`");
-		builder.AppendLine($"- Disabled browsers: `{settings.BrowserList.Count(b => !b.Removed && b.Disabled)}`");
+		builder.AppendLine($"- Disabled browsers: `{settings.BrowserList.Count(b => b is { Removed: false, Disabled: true })}`");
 		builder.AppendLine($"- Default rules: `{settings.Defaults.Count(d => !d.Deleted)}`");
 		builder.AppendLine();
 		builder.AppendLine("## Settings Dump");
@@ -230,21 +216,20 @@ public sealed class FeedbackViewModel : ModelBase
 			snapshot.AutoCloseOnFocusLost = json.AutoCloseOnFocusLost;
 		}
 
-		var node = JsonSerializer.SerializeToNode(snapshot, new JsonSerializerOptions { WriteIndented = true })?.AsObject();
+		var node = JsonSerializer.SerializeToNode(snapshot, JsonWriteIndented)?.AsObject();
 		PruneJsonNode(node);
 		if (node == null)
 		{
 			return "{}";
 		}
 
-		var options = new JsonSerializerOptions { WriteIndented = true };
-		var settingsDump = node.ToJsonString(options);
+		var settingsDump = node.ToJsonString(JsonWriteIndented);
 		if (maxCharacters <= 0 || maxCharacters == int.MaxValue || settingsDump.Length <= maxCharacters)
 		{
 			return settingsDump;
 		}
 
-		return CompactJsonForLength(node, maxCharacters, options).ToJsonString(options);
+		return CompactJsonForLength(node, maxCharacters, JsonWriteIndented).ToJsonString(JsonWriteIndented);
 	}
 
 	private string BuildApplicationLogMarkdown(int maxCharacters)
@@ -258,7 +243,7 @@ public sealed class FeedbackViewModel : ModelBase
 			.AppendLine("| Time | Level | Context | Event | Message |")
 			.AppendLine("| --- | --- | --- | --- | --- |");
 
-		if (maxCharacters <= 0 || maxCharacters == int.MaxValue)
+		if (maxCharacters is <= 0 or int.MaxValue)
 		{
 			var table = new StringBuilder(header.ToString());
 			foreach (var entry in application_log_entries)
@@ -360,80 +345,51 @@ public sealed class FeedbackViewModel : ModelBase
 
 	private static string EscapeMarkdownTableCell(string text) =>
 		text
-			.Replace("\\", "\\\\")
+			.Replace("\\", @"\\")
 			.Replace("|", "\\|")
 			.Replace("\r\n", "<br/>")
 			.Replace("\n", "<br/>");
 
 	private static bool PruneJsonNode(JsonNode? node)
 	{
-		if (node == null)
+		switch (node)
 		{
-			return false;
-		}
-
-		if (node is JsonObject obj)
-		{
-			foreach (var property in obj.ToList())
+			case null:
+				return false;
+			case JsonObject obj:
 			{
-				if (!PruneJsonNode(property.Value))
+				var enumerable = obj.ToList().Where(pair => !PruneJsonNode(pair.Value));
+				foreach (var pair in enumerable)
 				{
-					obj.Remove(property.Key);
+					obj.Remove(pair.Key);
 				}
+
+				return obj.Count > 0;
 			}
-
-			return obj.Count > 0;
-		}
-
-		if (node is JsonArray array)
-		{
-			for (var i = array.Count - 1; i >= 0; i--)
+			case JsonArray array:
 			{
-				if (!PruneJsonNode(array[i]))
+				for (var i = array.Count - 1; i >= 0; i--)
 				{
-					array.RemoveAt(i);
+					if (!PruneJsonNode(array[i]))
+					{
+						array.RemoveAt(i);
+					}
 				}
+
+				return true;
 			}
-
-			return true;
 		}
 
-		if (node is not JsonValue value)
+		return node switch
 		{
-			return true;
-		}
-
-		if (value.TryGetValue<bool>(out var booleanValue))
-		{
-			return booleanValue;
-		}
-
-		if (value.TryGetValue<string>(out var stringValue))
-		{
-			return !string.IsNullOrEmpty(stringValue);
-		}
-
-		if (value.TryGetValue<int>(out var intValue))
-		{
-			return intValue != 0;
-		}
-
-		if (value.TryGetValue<long>(out var longValue))
-		{
-			return longValue != 0;
-		}
-
-		if (value.TryGetValue<double>(out var doubleValue))
-		{
-			return Math.Abs(doubleValue) > double.Epsilon;
-		}
-
-		if (value.TryGetValue<decimal>(out var decimalValue))
-		{
-			return decimalValue != 0;
-		}
-
-		return true;
+			JsonValue value when value.TryGetValue<bool>(out var booleanValue) => booleanValue,
+			JsonValue value when value.TryGetValue<string>(out var stringValue) => !string.IsNullOrEmpty(stringValue),
+			JsonValue value when value.TryGetValue<int>(out var intValue) => intValue != 0,
+			JsonValue value when value.TryGetValue<long>(out var longValue) => longValue != 0,
+			JsonValue value when value.TryGetValue<double>(out var doubleValue) => Math.Abs(doubleValue) > double.Epsilon,
+			JsonValue value when value.TryGetValue<decimal>(out var decimalValue) => decimalValue != 0,
+			_ => true
+		};
 	}
 
 	private static JsonObject CompactJsonForLength(JsonObject source, int maxCharacters, JsonSerializerOptions options)
@@ -456,49 +412,52 @@ public sealed class FeedbackViewModel : ModelBase
 
 	private static bool TryShortenJsonNode(JsonNode? node)
 	{
-		if (node is JsonObject obj)
+		switch (node)
 		{
-			foreach (var property in obj.ToList().Where(p => p.Key != "_Truncated").Reverse())
+			case JsonObject obj:
 			{
-				if (property.Value is JsonArray { Count: > 0 } array)
+				foreach (var property in obj.ToList().Where(p => p.Key != "_Truncated").Reverse())
 				{
-					array.RemoveAt(array.Count - 1);
-					if (array.Count == 0)
+					switch (property.Value)
 					{
-						obj.Remove(property.Key);
-					}
+						case JsonArray { Count: > 0 } array:
+						{
+							array.RemoveAt(array.Count - 1);
+							if (array.Count == 0)
+							{
+								obj.Remove(property.Key);
+							}
 
-					return true;
+							return true;
+						}
+						case JsonObject childObject when TryShortenJsonNode(childObject):
+						{
+							if (childObject.Count == 0)
+							{
+								obj.Remove(property.Key);
+							}
+
+							return true;
+						}
+					}
 				}
 
-				if (property.Value is JsonObject childObject && TryShortenJsonNode(childObject))
+				var removable = obj.ToList().Select(property => property.Key).LastOrDefault(key => key != "_Truncated");
+				if (removable == null)
 				{
-					if (childObject.Count == 0)
-					{
-						obj.Remove(property.Key);
-					}
-
-					return true;
+					return false;
 				}
-			}
 
-			var removable = obj.ToList().Select(property => property.Key).LastOrDefault(key => key != "_Truncated");
-			if (removable != null)
-			{
 				obj.Remove(removable);
 				return true;
+
 			}
-
-			return false;
+			case JsonArray { Count: > 0 } arr:
+				arr.RemoveAt(arr.Count - 1);
+				return true;
+			default:
+				return false;
 		}
-
-		if (node is JsonArray arr && arr.Count > 0)
-		{
-			arr.RemoveAt(arr.Count - 1);
-			return true;
-		}
-
-		return false;
 	}
 
 	private static string GetApplicationVersion()
@@ -577,7 +536,7 @@ public sealed class FeedbackViewModel : ModelBase
 		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
 		public List<BrowserModel> BrowserList { get; } =
 		[
-			new BrowserModel(Firefox.Instance, null, string.Empty)
+			new(Firefox.Instance, null, string.Empty)
 			{
 				Usage = 8,
 				Profiles =
@@ -585,24 +544,24 @@ public sealed class FeedbackViewModel : ModelBase
 					new BrowserProfile("container:Work", "Work", null, "ext+container:name=Work&url={url}")
 						{ IconColor = "orange", ContainerIcon = "briefcase" },
 					new BrowserProfile("container:Personal", "Personal", null, "ext+container:name=Personal&url={url}")
-						{ IconColor = "blue", ContainerIcon = "fingerprint" },
+						{ IconColor = "blue", ContainerIcon = "fingerprint" }
 				}
 			},
-			new BrowserModel(Edge.Instance, null, string.Empty) { Usage = 3, Disabled = true },
-			new BrowserModel(Chrome.Instance, null, string.Empty)
+			new(Edge.Instance, null, string.Empty) { Usage = 3, Disabled = true },
+			new(Chrome.Instance, null, string.Empty)
 			{
 				Usage = 5,
 				Profiles =
 				{
-					new BrowserProfile("Default", "Personal", @"--profile-directory=""Default"""),
-					new BrowserProfile("Profile 1", "Work", @"--profile-directory=""Profile 1"""),
+					new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
+					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """)
 				}
 			}
 		];
 		public List<DefaultSetting> Defaults { get; } =
 		[
-			new DefaultSetting(MatchType.Hostname, "github.com", Firefox.Instance.Name),
-			new DefaultSetting(MatchType.Default, string.Empty, Firefox.Instance.Name)
+			new(MatchType.Hostname, "github.com", Firefox.Instance.Name),
+			new(MatchType.Default, string.Empty, Firefox.Instance.Name)
 		];
 		public List<KeyBinding> KeyBindings { get; } = [];
 		public bool AutoSizeWindow { get; set; } = true;
@@ -624,7 +583,7 @@ public sealed class FeedbackViewModel : ModelBase
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
 		}
 
-		public void PersistBrowser(BrowserModel browser)
+		public void PersistBrowser(BrowserModel _)
 		{
 		}
 

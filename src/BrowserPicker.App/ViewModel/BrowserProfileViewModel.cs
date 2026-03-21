@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using BrowserPicker.Framework;
 
@@ -11,10 +11,10 @@ namespace BrowserPicker.ViewModel;
 [DebuggerDisplay("{Model.Name}")]
 public sealed class BrowserProfileViewModel : ViewModelBase<BrowserProfile>
 {
-    public BrowserProfileViewModel(BrowserProfile model, BrowserViewModel parent) : base(model)
+    public BrowserProfileViewModel(BrowserProfile model, BrowserViewModel parentBrowser) : base(model)
     {
-        this.parent = parent;
-        parent.PropertyChanged += OnParentPropertyChanged;
+        ParentBrowser = parentBrowser;
+        ParentBrowser.PropertyChanged += OnParentPropertyChanged;
     }
 
     private void OnParentPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -29,40 +29,49 @@ public sealed class BrowserProfileViewModel : ViewModelBase<BrowserProfile>
     /// Launches the parent browser with this profile.
     /// </summary>
     public DelegateCommand Select => select ??= new DelegateCommand(
-        () => parent.LaunchWithProfile(false, Model));
+        () => ParentBrowser.LaunchWithProfile(false, Model));
 
     /// <summary>
     /// Launches the parent browser with this profile in privacy mode.
     /// </summary>
     public DelegateCommand SelectPrivacy => select_privacy ??= new DelegateCommand(
-        () => parent.LaunchWithProfile(true, Model));
+        () => ParentBrowser.LaunchWithProfile(true, Model));
 
     /// <summary>
     /// Display name combining the browser name and profile name, used in flat mode.
     /// </summary>
-    public string FlatDisplayName => $"{parent.Model.Name} – {Model.Name}";
+    public string FlatDisplayName => $"{ParentBrowser.Model.Name} – {Model.Name}";
+
+    /// <summary>
+    /// The browser this profile belongs to (flat picker rows mirror <see cref="BrowserViewModel.IsRunning"/>).
+    /// </summary>
+    public BrowserViewModel ParentBrowser { get; }
+
+    /// <summary>
+    /// True when the parent browser has a running main window in this session.
+    /// </summary>
+    public bool IsRunning => ParentBrowser.IsRunning;
 
     /// <summary>
     /// The parent browser's icon path.
     /// </summary>
-    public string? IconPath => parent.Model.IconPath;
+    public string? IconPath => ParentBrowser.Model.IconPath;
 
     /// <summary>
     /// The parent browser's privacy tooltip.
     /// </summary>
-    public string PrivacyTooltip => parent.PrivacyTooltip;
+    public string PrivacyTooltip => ParentBrowser.PrivacyTooltip;
 
     /// <summary>
     /// Whether the parent browser has privacy mode args.
     /// </summary>
-    public bool HasPrivacyMode => parent.Model.PrivacyArgs != null;
+    public bool HasPrivacyMode => ParentBrowser.Model.PrivacyArgs != null;
 
     /// <summary>
-    /// Passthrough for Alt key state.
+    /// Pass-through for Alt key state.
     /// </summary>
-    public bool AltPressed => parent.AltPressed;
+    public bool AltPressed => ParentBrowser.AltPressed;
 
     private DelegateCommand? select;
     private DelegateCommand? select_privacy;
-    private readonly BrowserViewModel parent;
 }

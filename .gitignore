@@ -3,3 +3,6 @@ bin
 obj
 *.user
 packages/
+
+# JetBrains InspectCode CLI (jb inspectcode)
+inspectcode-report.*

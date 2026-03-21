@@ -89,12 +89,13 @@
 				<Setter Property="BorderThickness" Value="0" />
 				<Setter Property="CaretBrush" Value="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" />
 			</Style>
+			<converter:ComboBoxBrowserItemFlagConverter x:Key="ComboBoxBrowserItemFlagConverter" />
 			<Style x:Key="VisibleBrowserComboItemStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
 				<Style.Triggers>
-					<DataTrigger Binding="{Binding Content.Model.Disabled, RelativeSource={RelativeSource Self}}" Value="True">
+					<DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource ComboBoxBrowserItemFlagConverter}, ConverterParameter=Disabled}" Value="True">
 						<Setter Property="Visibility" Value="Collapsed" />
 					</DataTrigger>
-					<DataTrigger Binding="{Binding Content.Model.Removed, RelativeSource={RelativeSource Self}}" Value="True">
+					<DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource ComboBoxBrowserItemFlagConverter}, ConverterParameter=Removed}" Value="True">
 						<Setter Property="Visibility" Value="Collapsed" />
 					</DataTrigger>
 				</Style.Triggers>
@@ -490,12 +491,11 @@
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="browserPicker:DefaultSetting">
 										<ComboBox
-											ItemsSource="{Binding DataContext.MatchTypesForRules, RelativeSource={RelativeSource AncestorType=view:Configuration}}"
+											ItemsSource="{x:Static viewModel:ConfigurationViewModel.MatchTypesForRules}"
 											Style="{StaticResource DefaultsGridComboBoxStyle}"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedItem="{Binding Type}"
-											MinWidth="130"
-											VerticalContentAlignment="Center" />
+											MinWidth="130" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
@@ -542,7 +542,7 @@
 						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="Auto" />
 					</Grid.ColumnDefinitions>
-					<ComboBox ItemsSource="{Binding MatchTypesForRules}" SelectedItem="{Binding NewDefaultMatchType}"
+					<ComboBox ItemsSource="{x:Static viewModel:ConfigurationViewModel.MatchTypesForRules}" SelectedItem="{Binding NewDefaultMatchType}"
 						MinHeight="28" MinWidth="100" VerticalContentAlignment="Center" />
 					<TextBox Text="{Binding NewDefaultPattern}" Grid.Column="1" MinHeight="28" Padding="6,4" VerticalContentAlignment="Center" Margin="4,0,0,0" />
 					<ComboBox
@@ -709,7 +709,7 @@
 									Foreground="#94A3B8"
 									FontSize="11" />
 								<ComboBox Grid.Column="1"
-									ItemsSource="{Binding ApplicationLogLevelOptions}"
+									ItemsSource="{x:Static viewModel:ApplicationLogLevelOptions.All}"
 									SelectedItem="{Binding SelectedApplicationLogLevelOption}"
 									DisplayMemberPath="Label"
 									MinWidth="150"

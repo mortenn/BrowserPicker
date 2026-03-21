@@ -88,14 +88,126 @@
 			</Border>
 		</StackPanel>
 		<ScrollViewer x:Name="BrowserListScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" SizeChanged="BrowserListScroll_SizeChanged">
-			<ItemsControl ItemsSource="{Binding Choices}">
+			<ItemsControl ItemsSource="{Binding PickerChoices}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
 						<StackPanel Orientation="Vertical" />
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
-		<ItemsControl.ItemTemplate>
-			<DataTemplate DataType="viewModel:BrowserViewModel">
+				<ItemsControl.Resources>
+					<DataTemplate DataType="{x:Type viewModel:BrowserProfileViewModel}">
+						<StackPanel Margin="2">
+							<!-- Same column layout and min height as browser rows (chevron + privacy columns reserved) for visual alignment -->
+							<Border MinHeight="72" CornerRadius="5" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" BorderThickness="1">
+								<Grid MinHeight="72" VerticalAlignment="Stretch">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<Button Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
+										<Button.Template>
+											<ControlTemplate TargetType="Button">
+												<Grid MinHeight="72" Cursor="Hand" Background="Transparent" VerticalAlignment="Stretch">
+													<Grid.Style>
+														<Style>
+															<Style.Triggers>
+																<Trigger Property="Grid.IsMouseOver" Value="True">
+																	<Setter Property="Grid.Background" Value="#22ffffff" />
+																</Trigger>
+															</Style.Triggers>
+														</Style>
+													</Grid.Style>
+													<Grid.ColumnDefinitions>
+														<ColumnDefinition Width="Auto" />
+														<ColumnDefinition Width="*" />
+													</Grid.ColumnDefinitions>
+													<Image Margin="20,0,0,0" Width="40" Height="40" VerticalAlignment="Center" DataContext="{Binding IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
+														<Image.Style>
+															<Style TargetType="{x:Type Image}">
+																<Setter Property="Source" Value="{Binding}" />
+																<Style.Triggers>
+																	<DataTrigger Binding="{Binding}" Value="{x:Null}">
+																		<Setter Property="Source" Value="{DynamicResource DefaultIcon}" />
+																	</DataTrigger>
+																</Style.Triggers>
+															</Style>
+														</Image.Style>
+													</Image>
+													<StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20,0,20,0" VerticalAlignment="Center">
+														<Path
+															Data="{Binding Model.ContainerIcon, Converter={StaticResource ContainerIconConverter}}"
+															Fill="{Binding Model.IconColor, Converter={StaticResource ContainerColorConverter}}"
+															Stretch="Uniform" Width="16" Height="16" Margin="0,0,10,0" VerticalAlignment="Center">
+															<Path.Style>
+																<Style TargetType="Path">
+																	<Setter Property="Visibility" Value="Visible" />
+																	<Style.Triggers>
+																		<DataTrigger Binding="{Binding Model.ContainerIcon}" Value="{x:Null}">
+																			<Setter Property="Visibility" Value="Collapsed" />
+																		</DataTrigger>
+																	</Style.Triggers>
+																</Style>
+															</Path.Style>
+														</Path>
+														<TextBlock Text="{Binding FlatDisplayName}" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" FontSize="18" LineHeight="22" VerticalAlignment="Center">
+															<TextBlock.Style>
+																<Style>
+																	<Style.Triggers>
+																		<DataTrigger Binding="{Binding IsRunning}" Value="True">
+																			<Setter Property="TextBlock.FontWeight" Value="Bold" />
+																		</DataTrigger>
+																		<DataTrigger Binding="{Binding IsRunning}" Value="False">
+																			<Setter Property="TextBlock.FontStyle" Value="Italic" />
+																		</DataTrigger>
+																	</Style.Triggers>
+																</Style>
+															</TextBlock.Style>
+														</TextBlock>
+													</StackPanel>
+												</Grid>
+											</ControlTemplate>
+										</Button.Template>
+									</Button>
+									<Border Grid.Column="1" Width="34" Background="Transparent" IsHitTestVisible="False" />
+									<Button
+										Grid.Column="2"
+										VerticalAlignment="Stretch"
+										Command="{Binding SelectPrivacy}"
+										ToolTip="{Binding PrivacyTooltip}"
+										IsEnabled="{Binding HasPrivacyMode}">
+										<Button.Style>
+											<Style TargetType="Button">
+												<Style.Triggers>
+													<Trigger Property="IsEnabled" Value="False">
+														<Setter Property="UIElement.Visibility" Value="Collapsed" />
+													</Trigger>
+												</Style.Triggers>
+											</Style>
+										</Button.Style>
+										<Button.Template>
+											<ControlTemplate>
+												<Border Margin="10" Padding="10" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" Width="40" Height="40" CornerRadius="5" BorderThickness="2" BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}">
+													<Border.Style>
+														<Style TargetType="Border">
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding AltPressed}" Value="True">
+																	<Setter Property="BorderBrush" Value="White" />
+																	<Setter Property="BorderThickness" Value="1" />
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</Border.Style>
+													<Image Source="{DynamicResource PrivacyShield}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+												</Border>
+											</ControlTemplate>
+										</Button.Template>
+									</Button>
+								</Grid>
+							</Border>
+						</StackPanel>
+					</DataTemplate>
+					<DataTemplate DataType="{x:Type viewModel:BrowserViewModel}">
 				<StackPanel Margin="2">
 					<StackPanel.Style>
 						<Style TargetType="StackPanel">
@@ -108,18 +220,18 @@
 						</Style>
 					</StackPanel.Style>
 					<!-- Main browser row: a border wrapping the select area + optional expand + privacy -->
-					<Border CornerRadius="5" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" BorderThickness="1">
-						<Grid>
+					<Border MinHeight="72" CornerRadius="5" Background="{DynamicResource {x:Static app:App.ContentBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" BorderThickness="1">
+						<Grid MinHeight="72" VerticalAlignment="Stretch">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="*" />
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="Auto" />
 							</Grid.ColumnDefinitions>
 							<!-- Select: the main clickable area (icon + name) -->
-							<Button Grid.Column="0" Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
+							<Button Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Command="{Binding Select}" CommandParameter="{Binding Path=DataContext.Url.TargetURL,RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
 								<Button.Template>
 									<ControlTemplate TargetType="Button">
-										<Grid Cursor="Hand" Background="Transparent">
+										<Grid MinHeight="72" Cursor="Hand" Background="Transparent" VerticalAlignment="Stretch">
 											<Grid.Style>
 												<Style>
 													<Style.Triggers>
@@ -133,7 +245,7 @@
 												<ColumnDefinition Width="Auto" />
 												<ColumnDefinition Width="*" />
 											</Grid.ColumnDefinitions>
-											<Image Margin="20,0,0,0" Width="40" Height="40" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
+											<Image Margin="20,0,0,0" Width="40" Height="40" VerticalAlignment="Center" DataContext="{Binding Model.IconPath, Converter={StaticResource IconConverter}}" d:DataContext="{DynamicResource DefaultIcon}">
 												<Image.Style>
 													<Style TargetType="{x:Type Image}">
 														<Setter Property="Source" Value="{Binding}" />
@@ -145,7 +257,7 @@
 													</Style>
 												</Image.Style>
 											</Image>
-											<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" Margin="20" FontSize="18">
+											<TextBlock Text="{Binding Model.Name}" Grid.Column="1" Foreground="{DynamicResource {x:Static app:App.ContentForegroundBrushKey}}" Margin="20" FontSize="18" LineHeight="22" VerticalAlignment="Center">
 												<TextBlock.Style>
 													<Style>
 														<Style.Triggers>
@@ -164,12 +276,12 @@
 								</Button.Template>
 							</Button>
 							<!-- Expand/collapse toggle for browsers with profiles -->
-							<Button Grid.Column="1" Command="{Binding ExpandToggle}" ToolTip="Show profiles">
+							<Button Grid.Column="1" VerticalAlignment="Stretch" Command="{Binding ExpandToggle}" ToolTip="Show profiles">
 								<Button.Style>
 									<Style TargetType="Button">
 										<Setter Property="Visibility" Value="Collapsed" />
 										<Style.Triggers>
-											<DataTrigger Binding="{Binding HasProfiles}" Value="True">
+											<DataTrigger Binding="{Binding ShowNestedProfilesInPicker}" Value="True">
 												<Setter Property="Visibility" Value="Visible" />
 											</DataTrigger>
 										</Style.Triggers>
@@ -209,7 +321,7 @@
 							</Button.Template>
 							</Button>
 							<!-- Privacy mode button -->
-							<Button Grid.Column="2" Command="{Binding SelectPrivacy}" ToolTip="{Binding PrivacyTooltip}">
+							<Button Grid.Column="2" VerticalAlignment="Stretch" Command="{Binding SelectPrivacy}" ToolTip="{Binding PrivacyTooltip}">
 								<Button.Style>
 									<Style TargetType="Button">
 										<Style.Triggers>
@@ -239,13 +351,13 @@
 							</Button>
 						</Grid>
 					</Border>
-					<!-- Profile sub-entries (visible when expanded) -->
+					<!-- Profile sub-entries (visible when expanded in grouped mode only) -->
 					<DockPanel Margin="55,2,2,4">
 						<DockPanel.Style>
 							<Style TargetType="DockPanel">
 								<Setter Property="Visibility" Value="Collapsed" />
 								<Style.Triggers>
-									<DataTrigger Binding="{Binding IsExpanded}" Value="True">
+									<DataTrigger Binding="{Binding ShowNestedProfileSubtree}" Value="True">
 										<Setter Property="Visibility" Value="Visible" />
 									</DataTrigger>
 								</Style.Triggers>
@@ -296,8 +408,8 @@
 						</ItemsControl>
 					</DockPanel>
 				</StackPanel>
-			</DataTemplate>
-		</ItemsControl.ItemTemplate>
+					</DataTemplate>
+				</ItemsControl.Resources>
 			</ItemsControl>
 		</ScrollViewer>
 		<Grid Grid.Row="2">
