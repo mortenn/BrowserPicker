@@ -1,4 +1,4 @@
-﻿<Wix
+<Wix
 		xmlns="http://wixtoolset.org/schemas/v4/wxs"
 		xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 	<Package Name="BrowserPicker" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Runsafe" UpgradeCode="{31e74d4e-57dd-4786-beb8-b9b8188f2764}" InstallerVersion="200">
@@ -24,10 +24,11 @@
 	</Fragment>
 
 	<Fragment>
+		<!-- Same as Dependent Product.wxs (wixtoolset/issues#9084). -->
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\win-x64\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
 
-			<Files Include="**">
-				<Exclude Files="$(var.BrowserPicker.App.TargetName).exe" />
+			<Files Include="$(var.BrowserPicker.App.TargetDir)\win-x64\publish\**">
+				<Exclude Files="$(var.BrowserPicker.App.TargetDir)\win-x64\publish\$(var.BrowserPicker.App.TargetName).exe" />
 			</Files>
 			
 			<Component Bitness="always64">
