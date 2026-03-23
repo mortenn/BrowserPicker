@@ -23,12 +23,6 @@ jobs:
       with:
         version_format: "${major}.${minor}.${patch}"
 
-    - name: Upload certificate
-      uses: actions/upload-artifact@v4
-      with:
-        name: dist
-        path: dist/code_signing.cer
-
     outputs:
       version: ${{ steps.version.outputs.version}}
 
@@ -42,8 +36,8 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Build runtime dependent binaries
-      uses: "./.github/template/build-signed"
+    - name: Build dependent installer
+      uses: "./.github/template/build-installer"
       with:
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }}"
         package_project: dist/Dependent/Dependent.wixproj
@@ -51,8 +45,6 @@ jobs:
         package: dist\Dependent\bin\Release\BrowserPicker.msi
         package_name: DependentSetup-${{ needs.prepare.outputs.version }}-Release
         package_path: dist/Dependent/bin/Release
-        binaries: |
-          src\BrowserPicker.App\bin\Release\net9.0-windows\publish\BrowserPicker*.dll src\BrowserPicker.App\bin\Release\net9.0-windows\publish\BrowserPicker*.exe
         bundle_name: Dependent-${{ needs.prepare.outputs.version }}-Release
         bundle_path: src/BrowserPicker.App/bin/Release/net9.0-windows/publish
 
@@ -66,8 +58,8 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Build runtime independent binaries
-      uses: "./.github/template/build-signed"
+    - name: Build portable installer
+      uses: "./.github/template/build-installer"
       with:
         dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -r win-x64 -p:PublishSingleFile=true"
         package_project: dist/Portable/Portable.wixproj
@@ -75,7 +67,6 @@ jobs:
         package: dist\Portable\bin\Release\BrowserPicker-Portable.msi
         package_name: PortableSetup-${{ needs.prepare.outputs.version }}-Release
         package_path: dist/Portable/bin/Release
-        binaries: src\BrowserPicker.App\bin\Release\net9.0-windows\win-x64\publish\BrowserPicker.exe
         bundle_name: Portable-${{ needs.prepare.outputs.version }}-Release
         bundle_path: src/BrowserPicker.App/bin/Release/net9.0-windows/win-x64/publish
 
