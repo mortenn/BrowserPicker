@@ -1,4 +1,4 @@
-﻿<Wix
+<Wix
 	xmlns="http://wixtoolset.org/schemas/v4/wxs"
 	xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx"
 	xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
@@ -36,10 +36,11 @@
 	</Fragment>
 
 	<Fragment>
+		<!-- Bare ** with a ProjectReference harvests the ref bind path (TargetDir), not Source; see wixtoolset/issues#9084. -->
 		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
 
-			<Files Include="**">
-				<Exclude Files="$(var.BrowserPicker.App.TargetName).exe" />
+			<Files Include="$(var.BrowserPicker.App.TargetDir)\publish\**">
+				<Exclude Files="$(var.BrowserPicker.App.TargetDir)\publish\$(var.BrowserPicker.App.TargetName).exe" />
 			</Files>
 			
 			<Component Bitness="always64">

@@ -1,12 +1,12 @@
-name: build-signed
-description: builds a signed executable
+name: build-installer
+description: Publishes the app and builds the WiX MSI
 
 inputs:
   configuration:
     required: true
     description: "dotnet build configuration"
     default: "Release"
-  
+
   solution_path:
     required: true
     description: "The path to the solution file"
@@ -28,10 +28,10 @@ inputs:
   package_version:
     required: true
     description: "MSI package VersionPrefix"
-  
+
   package:
     required: true
-    description: "Path to msi package to build and sign"
+    description: "Path to msi package produced by the wixproj"
 
   package_name:
     required: true
@@ -39,20 +39,15 @@ inputs:
 
   package_path:
     required: true
-    description: "Path to the package to upload"
+    description: "Path to the package directory to upload"
 
-  binaries:
-    required: true
-    description: "Pattern matching binaries to be signed and bundled"
-    default: ""
-  
   bundle_name:
     required: true
     description: "Name of the uploaded bundle artifact"
-  
+
   bundle_path:
     required: true
-    description: "Path to the files to bundle and upload"
+    description: "Path to the published app folder to bundle and upload"
 
 runs:
   using: composite
@@ -62,22 +57,18 @@ runs:
     with:
       dotnet-version: 9.x
 
-  # Restore dotnet tools
   - name: Restore tools
     shell: bash
     run: dotnet tool restore
 
-  # Restore the application to populate the obj folder with RuntimeIdentifiers
   - name: Restore the application
     shell: bash
     run: dotnet restore ${{ inputs.solution_path }} ${{ inputs.dotnet_args }}
 
-  # Build and publish the application
-  - name: Build application
+  - name: Publish application
     shell: bash
     run: dotnet publish -c ${{ inputs.configuration }} ${{ inputs.project_path }} ${{ inputs.dotnet_args }}
 
-  # Create the app package by building and packaging the Windows Application Packaging project
   - name: Create the installer
     shell: bash
     run: dotnet build ${{ inputs.package_project }} --no-dependencies -c ${{ inputs.configuration }} -p Version=${{ inputs.package_version }}
