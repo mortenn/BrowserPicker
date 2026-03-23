@@ -1,0 +1,13 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<Company>Runsafe</Company>
+		<Copyright>Copyright © Morten Nilsen 2017-2026</Copyright>
+		<Platforms>x64</Platforms>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<!-- UseArtifactsOutput not supported by WixToolset.Sdk -->
+		<!--<UseArtifactsOutput>true</UseArtifactsOutput>-->
+	</PropertyGroup>
+</Project>

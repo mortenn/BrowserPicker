@@ -1,7 +1,6 @@
-﻿<Project Sdk="WixToolset.Sdk/6.0.0">
+﻿<Project Sdk="WixToolset.Sdk/6.0.2">
   <PropertyGroup>
     <OutputName>BrowserPicker</OutputName>
-    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
     <InstallerPlatform>x64</InstallerPlatform>
     <DefineConstants>ProductVersion=$(Version)</DefineConstants>
   </PropertyGroup>
@@ -10,8 +9,8 @@
     <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BrowserPicker.App\BrowserPicker.App.csproj">
-      <Name>BrowserPicker.App</Name>
+    <ProjectReference Include="..\..\src\BrowserPicker.UI\BrowserPicker.UI.csproj">
+      <Name>BrowserPicker.UI</Name>
       <Project>{b875ae86-5212-4f7f-bb1c-2baa1fc110bc}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>

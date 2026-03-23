@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BrowserPicker.Common;
 using Microsoft.Win32;
 
 namespace BrowserPicker.Windows;
