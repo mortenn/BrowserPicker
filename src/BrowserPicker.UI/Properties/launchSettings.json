@@ -1,0 +1,46 @@
+
+{
+  "profiles": {
+    "Configuration UI": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "rutracker": {
+      "commandName": "Project",
+      "commandLineArgs": "https://rutracker.org/forum/viewtopic.php?t=6350891",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "github URL": {
+      "commandName": "Project",
+      "commandLineArgs": "https://github.com/mortenn/BrowserPicker",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "file URL": {
+      "commandName": "Project",
+      "commandLineArgs": "file://c:/windows/win.ini",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "unc URL": {
+      "commandName": "Project",
+      "commandLineArgs": "file://server/share/file.txt",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    "long URL": {
+      "commandName": "Project",
+      "commandLineArgs": "https://extremely-long-domain-example-for-design-time-use.some-long-domain-name.com/with-a-long-query-path/Lorem-ipsum-dolor-sit-amet,-consectetur-adipiscing-elit.-Integer-fermentum,-ipsum-quis-cursus-finibus,-turpis-lectus-tincidunt-elit,-eget-consectetur-tellus-leo-eget-neque.-Praesent.?and-a-param-for-good-measure=42",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

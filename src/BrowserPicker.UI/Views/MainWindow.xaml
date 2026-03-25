@@ -1,0 +1,112 @@
+<Window
+	x:Class="BrowserPicker.UI.Views.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
+	xmlns:views="clr-namespace:BrowserPicker.UI.Views"
+	xmlns:ui="clr-namespace:BrowserPicker.UI"
+	Background="Transparent"
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance viewModels:ApplicationViewModel,d:IsDesignTimeCreatable=true}"
+	Title="Browser Picker" WindowStartupLocation="CenterScreen"
+	SizeToContent="WidthAndHeight" ResizeMode="CanResize"
+	MinWidth="320" MinHeight="200"
+	AllowsTransparency="True" WindowStyle="None"
+	WindowState="Normal" Topmost="True" KeyDown="MainWindow_OnKeyDown"
+	PreviewKeyUp="MainWindow_OnPreviewKeyUp" ShowInTaskbar="False"
+	SizeChanged="Window_SizeChanged"
+	Loaded="MainWindow_Loaded"
+	ContentRendered="MainWindow_ContentRendered"
+	Closing="MainWindow_Closing">
+	<Window.InputBindings>
+		<KeyBinding Command="{Binding CopyUrl}" Gesture="Ctrl+C" />
+	</Window.InputBindings>
+	<Border CornerRadius="5">
+		<Border.Style>
+			<Style TargetType="{x:Type Border}">
+				<Setter Property="Background" Value="Transparent" />
+				<Style.Triggers>
+					<DataTrigger Binding="{Binding Configuration.Settings.DisableTransparency}" Value="True">
+						<Setter Property="Background" Value="{DynamicResource {x:Static ui:App.ContentBackgroundBrushKey}}" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+		</Border.Style>
+		<Border CornerRadius="5" BorderBrush="#22FFFFFF" BorderThickness="2" MouseLeftButtonDown="DragWindow"
+			Background="{DynamicResource {x:Static ui:App.ContentBackgroundBrushKey}}">
+			<Border.Style>
+				<Style TargetType="{x:Type Border}">
+					<Setter Property="Opacity" Value="1" />
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding Configuration.Settings.DisableTransparency}" Value="False">
+							<Setter Property="Opacity" Value="{Binding Configuration.Settings.WindowOpacity}" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Border.Style>
+			<Grid TextElement.FontSize="{Binding Configuration.Settings.FontSize, FallbackValue=14}"
+				TextElement.Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
+				<Grid Margin="10">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<Border Grid.Row="0" Grid.Column="0">
+						<Border.Style>
+							<Style>
+								<Setter Property="UIElement.Visibility" Value="Visible" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding ConfigurationMode}" Value="True">
+										<Setter Property="UIElement.Visibility" Value="Collapsed" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Border.Style>
+						<views:BrowserList />
+					</Border>
+					<Border Grid.Row="0" Grid.Column="0">
+						<Border.Style>
+							<Style>
+								<Setter Property="UIElement.Visibility" Value="Collapsed" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding ConfigurationMode}" Value="True">
+										<Setter Property="UIElement.Visibility" Value="Visible" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Border.Style>
+						<views:Configuration DataContext="{Binding Configuration}" />
+					</Border>
+					<Canvas Grid.Row="0" Grid.Column="0" Width="14" Height="14" Cursor="SizeNWSE"
+						HorizontalAlignment="Right" VerticalAlignment="Bottom"
+						Background="Transparent"
+						PreviewMouseLeftButtonDown="ResizeGrip_PreviewMouseLeftButtonDown">
+						<!-- Two diagonal lines for grip (⌟), theme-aware -->
+						<Line X1="4" Y1="14" X2="14" Y2="4" Stroke="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" StrokeThickness="1.5" Opacity="0.6" />
+						<Line X1="9" Y1="14" X2="14" Y2="9" Stroke="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" StrokeThickness="1.5" Opacity="0.6" />
+					</Canvas>
+				</Grid>
+				<Button
+					Command="{Binding Exit}"
+					Cursor="Hand"
+					Width="50"
+					Height="40"
+					Padding="0,2,0,0"
+					FontSize="10"
+					FontFamily="Segoe MDL2 Assets"
+					FontWeight="Normal"
+					Background="Transparent"
+					Foreground="Silver"
+					BorderThickness="0"
+					BorderBrush="Transparent"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Top"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					ToolTip="Close Browser Picker"
+					Content="&#xE8BB;" />
+			</Grid>
+		</Border>
+	</Border>
+</Window>

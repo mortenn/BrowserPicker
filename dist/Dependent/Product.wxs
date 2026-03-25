@@ -7,7 +7,7 @@
 		<MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="yes" />
 		<MediaTemplate EmbedCab="yes" />
 
-		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.App.TargetPath)" />
+		<Icon Id="Icon.exe" SourceFile="$(var.BrowserPicker.UI.TargetPath)" />
 		<Property Id="ARPPRODUCTICON" Value="Icon.exe" />
 
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
@@ -18,11 +18,11 @@
 	<Fragment>
 		<netfx:DotNetCompatibilityCheck
 			Id="netCoreStatus"
-		  Property="NETCORESTATUS" RollForward="latestMajor"
-		  RuntimeType="core" Version="9.0.0" Platform="x64" />
+			Property="NETCORESTATUS" RollForward="latestMajor"
+			RuntimeType="core" Version="10.0.0" Platform="x64" />
 		<Launch
 			Condition="Installed OR NETCORESTATUS=&quot;0&quot;"
-		  Message="[ProductName] requires Microsoft .NET Core - 9.0.0 or greater." />
+			Message="[ProductName] requires Microsoft .NET Core - 10.0.0 or greater." />
 	</Fragment>
 
 
@@ -37,12 +37,12 @@
 
 	<Fragment>
 		<!-- Bare ** with a ProjectReference harvests the ref bind path (TargetDir), not Source; see wixtoolset/issues#9084. -->
-		<ComponentGroup Source="$(var.BrowserPicker.App.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
+		<ComponentGroup Source="$(var.BrowserPicker.UI.TargetDir)\publish" Id="ProductComponents" Directory="INSTALLFOLDER">
 
-			<Files Include="$(var.BrowserPicker.App.TargetDir)\publish\**">
-				<Exclude Files="$(var.BrowserPicker.App.TargetDir)\publish\$(var.BrowserPicker.App.TargetName).exe" />
+			<Files Include="$(var.BrowserPicker.UI.TargetDir)\publish\**">
+				<Exclude Files="$(var.BrowserPicker.UI.TargetDir)\publish\$(var.BrowserPicker.UI.TargetName).exe" />
 			</Files>
-			
+
 			<Component Bitness="always64">
 				<util:EventSource
 						Name="BrowserPicker" Log="Application"
@@ -50,8 +50,8 @@
 						KeyPath="yes"/>
 			</Component>
 			<Component Bitness="always64">
-				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.App.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
-					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.App.TargetName).exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER" />
+				<File Id="BrowserPicker.exe" Name="$(var.BrowserPicker.UI.TargetName).exe" KeyPath="yes" ProcessorArchitecture="x64">
+					<netfx:NativeImage Id="ngen_$(var.BrowserPicker.UI.TargetName).exe" Platform="64bit" Priority="0" AppBaseDirectory="INSTALLFOLDER" />
 					<Shortcut Directory="ApplicationProgramsFolder" Id="ApplicationStartMenuShortcut" Name="Browser Picker" Description="Awesome Browser Picker" WorkingDirectory="INSTALLFOLDER" Icon="Icon.exe" Advertise="yes" />
 				</File>
 

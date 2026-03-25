@@ -1,5 +1,5 @@
 using System.Text.Json;
-using BrowserPicker;
+using BrowserPicker.Common;
 using NJsonSchema;
 using NJsonSchema.Generation;
 
@@ -16,8 +16,8 @@ var generatorSettings = new SystemTextJsonSchemaGeneratorSettings
 };
 
 var schema = JsonSchema.FromType<SerializableSettings>(generatorSettings);
-schema.Title = "BrowserPicker settings";
-schema.Description = "Settings document used by BrowserPicker for backups, clipboard import/export, and persisted JSON settings.";
+schema.Title = "Browser Picker settings";
+schema.Description = "Settings document used by Browser Picker for backups, clipboard import/export, and persisted JSON settings.";
 schema.Id = SerializableSettings.JsonSchemaUrl;
 schema.AllowAdditionalProperties = true;
 

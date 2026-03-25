@@ -15,7 +15,7 @@ inputs:
   project_path:
     required: true
     description: "The path to the application project file to publish"
-    default: "src/BrowserPicker.App/BrowserPicker.App.csproj"
+    default: "src/BrowserPicker.UI/BrowserPicker.UI.csproj"
 
   dotnet_args:
     required: true
@@ -55,7 +55,7 @@ runs:
   - name: Install .NET Core
     uses: actions/setup-dotnet@v4
     with:
-      dotnet-version: 9.x
+      dotnet-version: 10.x
 
   - name: Restore tools
     shell: bash

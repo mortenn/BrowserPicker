@@ -1,0 +1,942 @@
+﻿using System.ComponentModel;
+using System.Threading;
+using System.Linq;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
+using BrowserPicker.UI.Views;
+using System.Windows;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+using BrowserPicker.Windows;
+using BrowserPicker.Common.Framework;
+using BrowserPicker.Common;
+
+#if DEBUG
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+#endif
+
+namespace BrowserPicker.UI.ViewModels;
+
+/// <summary>
+/// Represents the view model for configuring browser behaviour and default settings
+/// in the BrowserPicker application.
+/// </summary>
+public sealed class ConfigurationViewModel : ModelBase
+{
+#if DEBUG
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class for the WPF designer with design-time data.
+	/// </summary>
+	[UsedImplicitly]
+	public ConfigurationViewModel()
+	{
+		Settings = CreateDesignTimeSettings();
+		Welcome = true;
+		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
+		{
+			Defaults.Add(setting);
+		}
+
+		ParentViewModel = new ApplicationViewModel(this)
+		{
+			ConfigurationMode = true
+		};
+		var choices = Settings.BrowserList.OrderBy(v => v, new BrowserSorter(Settings)).Select(m => new BrowserViewModel(m, ParentViewModel));
+		foreach (var choice in choices)
+		{
+			ParentViewModel.Choices.Add(choice);
+		}
+		test_defaults_url = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
+	}
+
+	internal static IBrowserPickerConfiguration CreateDesignTimeSettings()
+	{
+		return new DesignTimeSettings
+		{
+			Defaults = [
+				new DefaultSetting(MatchType.Hostname, "github.com", Firefox.Instance.Name),
+				new DefaultSetting(MatchType.Prefix, "https://gitlab.com", Edge.Instance.Name),
+				new DefaultSetting(MatchType.Regex, @"runsafe\.no\/[0-9a-f]+$", InternetExplorer.Instance.Name),
+				new DefaultSetting(MatchType.Hostname, "gitlab.com", OperaStable.Instance.Name),
+				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name, "Profile 1"),
+				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
+			],
+			BrowserList = [.. WellKnownBrowsers.List.Select(CreateDesignTimeBrowser)],
+			DefaultBrowser = Firefox.Instance.Name
+		};
+	}
+
+	private static BrowserModel CreateDesignTimeBrowser(IWellKnownBrowser known)
+	{
+		var model = new BrowserModel(known, null, string.Empty);
+		switch (known.ProfileType)
+		{
+			case ProfileType.Chromium:
+				model.Profiles.AddRange([
+					new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
+					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """)
+				]);
+				break;
+			case ProfileType.Firefox:
+				model.Profiles.AddRange([
+					new BrowserProfile("container:Work", "Work", null, "ext+container:name=Work&url={url}")
+						{ IconColor = "orange", ContainerIcon = "briefcase" },
+					new BrowserProfile("container:Personal", "Personal", null, "ext+container:name=Personal&url={url}")
+						{ IconColor = "blue", ContainerIcon = "fingerprint" }
+				]);
+				break;
+			case ProfileType.None:
+			default:
+				break;
+		}
+		return model;
+	}
+
+	private sealed class DesignTimeSettings : IBrowserPickerConfiguration
+	{
+		public bool FirstTime { get; set; } = false;
+		public bool AlwaysPrompt { get; set; } = true;
+		public bool AlwaysUseDefaults { get; set; } = true;
+		public bool AlwaysAskWithoutDefault { get; set; }
+		public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
+		public SerializableSettings.SortOrder SortBy { get; set; } = SerializableSettings.SortOrder.Alphabetical;
+		public bool UseAutomaticOrdering { get => SortBy == SerializableSettings.SortOrder.Automatic; set { if (value) SortBy = SerializableSettings.SortOrder.Automatic; } }
+		public bool UseManualOrdering { get => SortBy == SerializableSettings.SortOrder.Manual; set { if (value) SortBy = SerializableSettings.SortOrder.Manual; } }
+		public bool UseAlphabeticalOrdering { get => SortBy == SerializableSettings.SortOrder.Alphabetical; set { if (value) SortBy = SerializableSettings.SortOrder.Alphabetical; } }
+		public bool DisableTransparency { get; set; } = true;
+		public double WindowOpacity { get; set; } = 0.92;
+		public bool DisableNetworkAccess { get; set; } = false;
+
+		public bool AutoSizeWindow { get; set; } = true;
+		public double WindowWidth { get; set; }
+		public double WindowHeight { get; set; }
+		public double ConfigWindowWidth { get; set; }
+		public double ConfigWindowHeight { get; set; }
+		public double FontSize { get; set; } = 14;
+		public Common.ThemeMode ThemeMode { get; set; } = Common.ThemeMode.System;
+		public ProfileDisplayMode ProfileDisplayMode { get; set; }
+
+		public string[] UrlShorteners { get; set; } = [..UrlHandler.DefaultUrlShorteners, "example.com"];
+
+		public List<BrowserModel> BrowserList { get; init; } = [];
+
+		public List<DefaultSetting> Defaults { get; init; } = [];
+		public List<Common.KeyBinding> KeyBindings { get; } = [];
+
+		public bool UseFallbackDefault { get; set; } = true;
+		public string? DefaultBrowser { get; set; }
+
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+		public void AddBrowser(BrowserModel browser)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
+		}
+
+		public void PersistBrowser(BrowserModel _)
+		{
+		}
+
+		public string BackupLog => "Backup log comes here\nWith multiple lines of text\nmaybe\nsometimes\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...";
+
+		public IComparer<BrowserModel>? BrowserSorter => null;
+
+		public void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null)
+		{
+		}
+
+		public void FindBrowsers()
+		{
+		}
+
+		public Task LoadAsync(string fileName)
+		{
+			throw new UnreachableException();
+		}
+
+		public Task SaveAsync(string fileName)
+		{
+			throw new UnreachableException();
+		}
+
+		public Task Start(CancellationToken cancellationToken)
+		{
+			return Task.CompletedTask;
+		}
+	}
+#endif
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="ConfigurationViewModel"/> class with specified settings and parent view model.
+	/// </summary>
+	/// <param name="settings">The browser picker configuration settings.</param>
+	/// <param name="parentViewModel">The parent application view model.</param>
+	public ConfigurationViewModel(IBrowserPickerConfiguration settings, ApplicationViewModel parentViewModel)
+	{
+		ParentViewModel = parentViewModel;
+		Defaults.CollectionChanged += Defaults_CollectionChanged;
+		Settings = settings;
+		ParentViewModel.Choices.CollectionChanged += Choices_CollectionChanged;
+		foreach (var choice in ParentViewModel.Choices)
+		{
+			choice.Model.PropertyChanged += ChoiceModel_PropertyChanged;
+		}
+		foreach (var setting in Settings.Defaults.Where(d => d.Type != MatchType.Default))
+		{
+			Defaults.Add(setting);
+		}
+		settings.PropertyChanged += Configuration_PropertyChanged;
+	}
+
+	/// <summary>
+	/// Handles changes in the Defaults collection and updates property change handlers.
+	/// </summary>
+	/// <param name="sender">The collection that triggered the event.</param>
+	/// <param name="e">The event data related to the collection changes.</param>
+	private void Defaults_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		if (e.NewItems?.Count > 0)
+		{
+			foreach (var item in e.NewItems.OfType<DefaultSetting>())
+			{
+				item.PropertyChanged += Item_PropertyChanged;
+			}
+		}
+
+		if (!(e.OldItems?.Count > 0))
+		{
+			return;
+		}
+
+		foreach (var item in e.OldItems.OfType<DefaultSetting>())
+		{
+			item.PropertyChanged -= Item_PropertyChanged;
+		}
+	}
+
+	/// <summary>
+	/// Handles property change events for individual <see cref="DefaultSetting"/> items.
+	/// Removes items from the Defaults collection if they are marked as deleted.
+	/// </summary>
+	/// <param name="sender">The default setting item triggering the event.</param>
+	/// <param name="e">Details of the property that was changed.</param>
+	private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName == nameof(DefaultSetting.Deleted) && sender is DefaultSetting { Deleted: true } item)
+		{
+			Defaults.Remove(item);
+		}
+	}
+
+	/// <summary>
+	/// Gets the configuration settings.
+	/// </summary>
+	public IBrowserPickerConfiguration Settings { get; }
+
+	/// <summary>
+	/// Gets the parent application ViewModel associated with this configuration.
+	/// </summary>
+	public ApplicationViewModel ParentViewModel { get; init; }
+
+	/// <summary>
+	/// Gets the default URL shorteners recognized by the application.
+	/// </summary>
+	public static string[] DefaultUrlShorteners => UrlHandler.DefaultUrlShorteners;
+
+	/// <summary>
+	/// Gets additional URL shorteners configured by the user that are not in the default list.
+	/// </summary>
+	public string[] AdditionalUrlShorteners => Settings.UrlShorteners.Except(DefaultUrlShorteners).ToArray();
+
+	/// <summary>
+	/// Gets or sets a value indicating whether the welcome message should be displayed to the user.
+	/// </summary>
+	public bool Welcome
+	{
+		get => welcome;
+		internal set
+		{
+			if (!SetProperty(ref welcome, value))
+			{
+				return;
+			}
+
+			if (value)
+			{
+				SelectedTabIndex = WelcomeTabIndex;
+			}
+			else if (selected_tab_index == WelcomeTabIndex)
+			{
+				SelectedTabIndex = BrowsersTabIndex;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the currently selected settings tab.
+	/// </summary>
+	public int SelectedTabIndex
+	{
+		get => selected_tab_index;
+		set
+		{
+			if (!SetProperty(ref selected_tab_index, value))
+			{
+				return;
+			}
+
+			if (value == TestDefaultsTabIndex)
+			{
+				PrefillTestDefaultsUrl();
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating whether defaults should be automatically added
+	/// based on user behaviour.
+	/// </summary>
+	public bool AutoAddDefault
+	{
+		get => auto_add_default;
+		set => SetProperty(ref auto_add_default, value);
+	}
+
+	/// <summary>
+	/// Gets or sets whether the picker should close automatically when it loses focus.
+	/// JSON-backed settings persist this; legacy registry-backed migration defaults to being enabled.
+	/// </summary>
+	public bool AutoCloseOnFocusLost
+	{
+		get => Settings is not JsonAppSettings json || json.AutoCloseOnFocusLost;
+		set
+		{
+			if (Settings is not JsonAppSettings json || json.AutoCloseOnFocusLost == value)
+			{
+				return;
+			}
+
+			json.AutoCloseOnFocusLost = value;
+			OnPropertyChanged();
+			ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
+		}
+	}
+
+	/// <summary>
+	/// Gets the collection of default settings used by the browser picker.
+	/// </summary>
+	public ObservableCollection<DefaultSetting> Defaults { get; } = [];
+
+	/// <summary>
+	/// True when profile display mode is Grouped (profiles shown as expandable sub-entries).
+	/// </summary>
+	public bool UseGroupedProfiles
+	{
+		get => Settings.ProfileDisplayMode == ProfileDisplayMode.Grouped;
+		set { if (value) Settings.ProfileDisplayMode = ProfileDisplayMode.Grouped; OnPropertyChanged(); OnPropertyChanged(nameof(UseFlatProfiles)); }
+	}
+
+	/// <summary>
+	/// True when profile display mode is Flat (each profile as a separate top-level entry).
+	/// </summary>
+	public bool UseFlatProfiles
+	{
+		get => Settings.ProfileDisplayMode == ProfileDisplayMode.Flat;
+		set { if (value) Settings.ProfileDisplayMode = ProfileDisplayMode.Flat; OnPropertyChanged(); OnPropertyChanged(nameof(UseGroupedProfiles)); }
+	}
+
+	/// <summary>
+	/// Match types available for per-URL rules. Excludes <see cref="MatchType.Default"/>, which is the special fallback and not a rule type.
+	/// </summary>
+	public static IEnumerable<MatchType> MatchTypesForRules { get; } =
+		Enum.GetValues<MatchType>().Where(t => t != MatchType.Default).ToArray();
+
+	/// <summary>
+	/// Gets or sets the match type for defining a new default setting.
+	/// </summary>
+	public MatchType NewDefaultMatchType
+	{
+		get => new_match_type;
+		set
+		{
+			// Ignore user if they select the special Default value and pretend they wanted Hostname
+			if (value == MatchType.Default)
+			{
+				if (!SetProperty(ref new_match_type, MatchType.Hostname))
+				{
+					// Always fire in this case
+					OnPropertyChanged();
+				}
+				return;
+			}
+			SetProperty(ref new_match_type, value);
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the pattern (e.g. hostname or URL fragment) for the new default rule being added.
+	/// </summary>
+	public string NewDefaultPattern { get => new_fragment; set => SetProperty(ref new_fragment, value); }
+
+	/// <summary>
+	/// Gets or sets the browser id or display name for the new default rule being added.
+	/// </summary>
+	public string NewDefaultBrowser
+	{
+		get => new_fragment_browser;
+		set
+		{
+			if (!SetProperty(ref new_fragment_browser, value))
+			{
+				return;
+			}
+
+			OnPropertyChanged(nameof(NewDefaultProfileChoices));
+			OnPropertyChanged(nameof(HasNewDefaultProfileChoices));
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the profile id for the new default rule being added. Null means no specific profile.
+	/// </summary>
+	public string? NewDefaultProfile { get => new_fragment_profile; set => SetProperty(ref new_fragment_profile, value); }
+
+	/// <summary>
+	/// Available profile choices for the currently selected <see cref="NewDefaultBrowser"/>.
+	/// </summary>
+	public IEnumerable<BrowserProfile> NewDefaultProfileChoices
+	{
+		get
+		{
+			var browser = ParentViewModel.Choices.FirstOrDefault(c => c.Model.Id == new_fragment_browser);
+			return browser?.Model.Profiles.Where(p => !p.Disabled) ?? [];
+		}
+	}
+
+	/// <summary>
+	/// True when the selected browser for the new default rule has profiles to choose from.
+	/// </summary>
+	public bool HasNewDefaultProfileChoices => NewDefaultProfileChoices.Any();
+
+	/// <summary>
+	/// Command to add a new default rule using <see cref="NewDefaultMatchType"/>, <see cref="NewDefaultPattern"/>, and <see cref="NewDefaultBrowser"/>.
+	/// </summary>
+	public ICommand AddDefault => add_default ??= new DelegateCommand(AddDefaultSetting);
+
+	/// <summary>
+	/// Command to scan the system for browsers and refresh the list.
+	/// </summary>
+	public ICommand RefreshBrowsers => refresh_browsers ??= new DelegateCommand(FindBrowsers);
+
+	/// <summary>
+	/// Command to open the new-browser editor to add a browser manually.
+	/// </summary>
+	public ICommand AddBrowser => add_browser ??= new DelegateCommand(AddBrowserManually);
+
+	/// <summary>
+	/// Command to prompt for a file and save the current settings (backup).
+	/// </summary>
+	public ICommand Backup => backup ??= new DelegateCommand(PerformBackup);
+
+	/// <summary>
+	/// Command to prompt for a backup file and restore settings.
+	/// </summary>
+	public ICommand Restore => restore ??= new DelegateCommand(PerformRestore);
+
+	/// <summary>
+	/// Command to copy the current settings JSON to the clipboard.
+	/// </summary>
+	public ICommand CopySettings => copy_settings ??= new DelegateCommand(CopySettingsToClipboard);
+
+	/// <summary>
+	/// Command to import settings JSON from the clipboard.
+	/// </summary>
+	public ICommand PasteSettings => paste_settings ??= new DelegateCommand(PasteSettingsFromClipboard);
+
+	/// <summary>
+	/// Command to add a URL shortener domain; parameter is the domain string.
+	/// </summary>
+	public ICommand AddShortener => add_shortener ??= new DelegateCommand<string>(AddUrlShortener, CanAddShortener);
+
+	/// <summary>
+	/// Command to remove a URL shortener domain; parameter is the domain string.
+	/// </summary>
+	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
+
+	/// <summary>
+	/// Prompts the user to select a backup file location and saves the current settings.
+	/// </summary>
+	private void PerformBackup()
+	{
+		var browser = new SaveFileDialog
+		{
+			FileName = "BrowserPicker.json",
+			DefaultExt = ".json",
+			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			CheckPathExists = true,
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		};
+		var result = browser.ShowDialog();
+		if (result != true)
+			return;
+		Settings.SaveAsync(browser.FileName);
+	}
+
+	/// <summary>
+	/// Prompts the user to select a backup file and restores settings from it.
+	/// </summary>
+	private void PerformRestore()
+	{
+		var browser = new OpenFileDialog
+		{
+			FileName = "BrowserPicker.json",
+			DefaultExt = ".json",
+			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			CheckPathExists = true,
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+		};
+		var result = browser.ShowDialog();
+		if (result != true)
+			return;
+		Settings.LoadAsync(browser.FileName);
+	}
+
+	private void CopySettingsToClipboard()
+	{
+		if (Settings is not JsonAppSettings jsonSettings)
+		{
+			return;
+		}
+
+		if (TrySetClipboardText(jsonSettings.ExportSettingsJson(), out var error))
+		{
+			jsonSettings.AppendBackupLog("Copied configuration JSON to the clipboard.");
+			return;
+		}
+
+		jsonSettings.AppendBackupLog($"Unable to copy configuration JSON to the clipboard: {error}");
+	}
+
+	private void PasteSettingsFromClipboard()
+	{
+		if (Settings is not JsonAppSettings jsonSettings)
+		{
+			return;
+		}
+
+		if (!TryGetClipboardText(out var text, out var error))
+		{
+			jsonSettings.AppendBackupLog($"Unable to paste configuration from the clipboard: {error}");
+			return;
+		}
+
+		jsonSettings.TryImportSettingsJson(text!, "the clipboard");
+	}
+
+	internal void ShowFeedbackTab()
+	{
+		Welcome = false;
+		SelectedTabIndex = FeedbackTabIndex;
+	}
+
+	private void AddBrowserManually()
+	{
+		var editor = new BrowserEditor(new BrowserViewModel(new BrowserModel(), ParentViewModel));
+		editor.Show();
+		editor.Closing += Editor_Closing;
+	}
+
+	/// <summary>
+	/// Gets or sets the URL shortener domain the user is entering to add.
+	/// </summary>
+	public string NewUrlShortener { get; set; } = string.Empty;
+
+	private bool CanAddShortener(string? domain) => !(string.IsNullOrWhiteSpace(domain) || Settings.UrlShorteners.Contains(domain));
+
+	private void AddUrlShortener(string? domain)
+	{
+		if (!CanAddShortener(domain))
+		{
+			return;
+		}
+		Settings.UrlShorteners = [..Settings.UrlShorteners, domain!];
+		NewUrlShortener = string.Empty;
+		OnPropertyChanged(nameof(NewUrlShortener));
+		OnPropertyChanged(nameof(DefaultUrlShorteners));
+		OnPropertyChanged(nameof(AdditionalUrlShorteners));
+	}
+
+	private bool CanRemoveShortener(string? domain) => !string.IsNullOrWhiteSpace(domain) && Settings.UrlShorteners.Contains(domain) && !UrlHandler.DefaultUrlShorteners.Contains(domain);
+
+	private void RemoveUrlShortener(string? domain)
+	{
+		if (!CanRemoveShortener(domain))
+		{
+			return;
+		}
+
+		Settings.UrlShorteners = Settings.UrlShorteners.Except([domain!]).ToArray();
+		OnPropertyChanged(nameof(DefaultUrlShorteners));
+		OnPropertyChanged(nameof(AdditionalUrlShorteners));
+	}
+
+	private void Editor_Closing(object? sender, CancelEventArgs e)
+	{
+		if (sender is Window window)
+		{
+			window.Closing -= Editor_Closing;
+		}
+		if (sender is not Window { DataContext: BrowserViewModel browser })
+		{
+			return;
+		}
+		if (string.IsNullOrEmpty(browser.Model.Name) || string.IsNullOrEmpty(browser.Model.Command))
+		{
+			return;
+		}
+		ParentViewModel.Choices.Add(browser);
+		Settings.AddBrowser(browser.Model);
+	}
+
+	/// <summary>
+	/// Called when a URL was opened with a browser; may add a hostname default if <see cref="AutoAddDefault"/> is set.
+	/// </summary>
+	/// <param name="hostName">Host name of the opened URL.</param>
+	/// <param name="browserId">The browser id of the browser that was used.</param>
+	internal void UrlOpened(string? hostName, string browserId)
+	{
+		if (!AutoAddDefault || hostName == null)
+		{
+			return;
+		}
+
+		try
+		{
+			AddNewDefault(MatchType.Hostname, hostName, browserId);
+		}
+		catch
+		{
+			// ignored
+		}
+	}
+
+	private bool AddNewDefault(MatchType matchType, string pattern, string browser, string? profile = null)
+	{
+		if (string.IsNullOrWhiteSpace(pattern) || string.IsNullOrWhiteSpace(browser))
+		{
+			return false;
+		}
+		Settings.AddDefault(matchType, pattern, browser, profile);
+		OnPropertyChanged(nameof(TestDefaultsResult));
+		return true;
+	}
+
+	/// <summary>
+	/// Adds a new default setting based on the currently defined properties.
+	/// </summary>
+	private void AddDefaultSetting()
+	{
+		if (!AddNewDefault(NewDefaultMatchType, NewDefaultPattern, NewDefaultBrowser, NewDefaultProfile))
+		{
+			return;
+		}
+
+		NewDefaultPattern = string.Empty;
+		NewDefaultProfile = null;
+	}
+
+	private void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		switch (e.PropertyName)
+		{
+			case nameof(Settings.Defaults):
+				UpdateDefaults();
+				break;
+
+			case nameof(Settings.BrowserList):
+				UpdateSettings();
+				break;
+
+			case nameof(JsonAppSettings.AutoCloseOnFocusLost):
+				OnPropertyChanged(nameof(AutoCloseOnFocusLost));
+				ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
+				break;
+
+			case nameof(IApplicationSettings.SortBy):
+				if (Settings.SortBy == SerializableSettings.SortOrder.Automatic)
+				{
+					CaptureBrowserOrder();
+				}
+
+				ParentViewModel.RefreshChoices();
+				break;
+		}
+	}
+
+	private static bool TrySetClipboardText(string text, out string? error)
+	{
+		error = null;
+		try
+		{
+			Exception? clipboardException = null;
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					Clipboard.SetText(text);
+				}
+				catch (Exception ex)
+				{
+					clipboardException = ex;
+				}
+			});
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.Start();
+			thread.Join();
+			if (clipboardException == null)
+			{
+				return true;
+			}
+
+			error = clipboardException.Message;
+			return false;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private static bool TryGetClipboardText(out string? text, out string? error)
+	{
+		text = null;
+		error = null;
+		try
+		{
+			Exception? clipboardException = null;
+			string? clipboardText = null;
+			string? clipboardError = null;
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					if (!Clipboard.ContainsText(TextDataFormat.UnicodeText))
+					{
+						clipboardError = "clipboard does not contain text";
+						return;
+					}
+
+					clipboardText = Clipboard.GetText(TextDataFormat.UnicodeText);
+					if (string.IsNullOrWhiteSpace(clipboardText))
+					{
+						clipboardError = "clipboard text is empty";
+					}
+				}
+				catch (Exception ex)
+				{
+					clipboardException = ex;
+				}
+			});
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.Start();
+			thread.Join();
+			text = clipboardText;
+			error = clipboardError;
+			if (clipboardException == null)
+			{
+				return error == null;
+			}
+
+			error = clipboardException.Message;
+			return false;
+		}
+		catch (Exception ex)
+		{
+			error = ex.Message;
+			return false;
+		}
+	}
+
+	private void CaptureBrowserOrder()
+	{
+		var choices = ParentViewModel.Choices.Where(choice => !choice.Model.Removed).ToArray();
+		for (var i = 0; i < choices.Length; i++)
+		{
+			choices[i].Model.ManualOrder = i;
+		}
+	}
+
+	private void UpdateSettings()
+	{
+		BrowserViewModel[] added = [..
+			from browser in Settings.BrowserList
+			where ParentViewModel.Choices.All(c => c.Model.Name != browser.Name)
+			select new BrowserViewModel(browser, ParentViewModel)
+		];
+		foreach (var vm in added)
+		{
+			ParentViewModel.Choices.Add(vm);
+		}
+
+		BrowserViewModel[] removed = [..
+			from choice in ParentViewModel.Choices
+			where Settings.BrowserList.All(b => b.Name != choice.Model.Name)
+			select choice
+		];
+		foreach (var m in removed)
+		{
+			ParentViewModel.Choices.Remove(m);
+		}
+	}
+
+	private void Choices_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		if (e.NewItems?.Count > 0)
+		{
+			foreach (var item in e.NewItems.OfType<BrowserViewModel>())
+			{
+				item.Model.PropertyChanged += ChoiceModel_PropertyChanged;
+			}
+		}
+
+		if (e.OldItems?.Count > 0)
+		{
+			foreach (var item in e.OldItems.OfType<BrowserViewModel>())
+			{
+				item.Model.PropertyChanged -= ChoiceModel_PropertyChanged;
+			}
+		}
+
+		OnTestDefaultsStateChanged();
+		ParentViewModel.RebuildPickerChoices();
+	}
+
+	private void ChoiceModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(BrowserModel.Disabled) or nameof(BrowserModel.Removed) or nameof(BrowserModel.Name))
+		{
+			OnTestDefaultsStateChanged();
+		}
+
+		if (e.PropertyName is nameof(BrowserModel.Disabled) or nameof(BrowserModel.Removed))
+		{
+			ParentViewModel.RebuildPickerChoices();
+		}
+	}
+
+	private void OnTestDefaultsStateChanged()
+	{
+		OnPropertyChanged(nameof(TestDefaultsResult));
+		OnPropertyChanged(nameof(TestActualResult));
+	}
+
+	private void UpdateDefaults()
+	{
+		DefaultSetting[] added = [..
+			from current in Settings.Defaults.Except(Defaults)
+			where current.Type != MatchType.Default && !current.Deleted
+			select current
+		];
+		foreach (var setting in added)
+		{
+			Defaults.Add(setting);
+		}
+
+		DefaultSetting[] removed = [.. Defaults.Except(Settings.Defaults)];
+		foreach (var setting in removed)
+		{
+			Defaults.Remove(setting);
+		}
+	}
+
+	internal CancellationTokenSource GetUrlLookupTimeout()
+	{
+		return new CancellationTokenSource(Settings.UrlLookupTimeoutMilliseconds);
+	}
+
+	private void FindBrowsers()
+	{
+		Settings.FindBrowsers();
+		OnPropertyChanged(nameof(TestDefaultsResult));
+	}
+
+	private MatchType new_match_type = MatchType.Hostname;
+	private const int WelcomeTabIndex = 0;
+	private const int BrowsersTabIndex = 1;
+	private const int TestDefaultsTabIndex = 4;
+	private const int FeedbackTabIndex = 6;
+	private string new_fragment = string.Empty;
+	private string new_fragment_browser = string.Empty;
+	private string? new_fragment_profile;
+	private bool auto_add_default;
+	private bool welcome;
+	private int selected_tab_index = BrowsersTabIndex;
+	private DelegateCommand? add_default;
+	private DelegateCommand? refresh_browsers;
+	private DelegateCommand? add_browser;
+	private DelegateCommand? backup;
+	private DelegateCommand? restore;
+	private DelegateCommand? copy_settings;
+	private DelegateCommand? paste_settings;
+	private DelegateCommand<string>? add_shortener;
+	private DelegateCommand<string>? remove_shortener;
+
+	private string? test_defaults_url;
+
+	/// <summary>
+	/// URL used to test which default rule would apply; used by the configuration UI.
+	/// </summary>
+	public string? TestDefaultsURL
+	{
+		get => test_defaults_url;
+		set
+		{
+			SetProperty(ref test_defaults_url, value);
+			OnPropertyChanged(nameof(TestDefaultsResult));
+			OnPropertyChanged(nameof(TestActualResult));
+		}
+	}
+
+	/// <summary>
+	/// The browser name that would be selected for <see cref="TestDefaultsURL"/> based on configured defaults only.
+	/// </summary>
+	public string TestDefaultsResult
+	{
+		get
+		{
+			var (idOrName, _) = ParentViewModel.GetMatchedBrowserKeyForUrl(test_defaults_url);
+			if (idOrName == null)
+			{
+				return "User choice";
+			}
+			var choice = ParentViewModel.Choices.FirstOrDefault(c => c.Model.Id == idOrName || c.Model.Name == idOrName);
+			return choice?.Model.Name ?? idOrName;
+		}
+	}
+
+	/// <summary>
+	/// The browser name that would actually be chosen for <see cref="TestDefaultsURL"/> (defaults plus running-browser logic).
+	/// </summary>
+	public string TestActualResult
+	{
+		get
+		{
+			return ParentViewModel.GetBrowserToLaunch(test_defaults_url).Browser?.Model.Name ?? "User choice";
+		}
+	}
+
+	private void PrefillTestDefaultsUrl()
+	{
+		if (!string.IsNullOrWhiteSpace(test_defaults_url))
+		{
+			return;
+		}
+
+		TestDefaultsURL = ParentViewModel.Url.UnderlyingTargetURL ?? ParentViewModel.Url.TargetURL;
+	}
+}
