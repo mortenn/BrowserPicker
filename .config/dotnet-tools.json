@@ -6,7 +6,15 @@
       "version": "6.0.2",
       "commands": [
         "wix"
-      ]
+      ],
+      "rollForward": false
+    },
+    "svg.skia.converter": {
+      "version": "3.7.0",
+      "commands": [
+        "Svg.Skia.Converter"
+      ],
+      "rollForward": false
     }
   }
 }
