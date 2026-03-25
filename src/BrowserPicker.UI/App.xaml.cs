@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,6 +30,11 @@ public partial class App
 	/// <summary>Semi-transparent content background used when transparency is enabled (DisableTransparency = false).</summary>
 	public const string ContentBackgroundSemiTransparentBrushKey = "ContentBackgroundSemiTransparentBrush";
 	public const string ContentForegroundBrushKey = "ContentForegroundBrush";
+
+	/// <summary>Address-bar strip behind favicon + URL (browser-like; stays light in both themes so dark favicons read clearly).</summary>
+	public const string UrlBarBackgroundBrushKey = "UrlBarBackgroundBrush";
+	public const string UrlBarForegroundBrushKey = "UrlBarForegroundBrush";
+	public const string UrlBarBorderBrushKey = "UrlBarBorderBrush";
 
 	private class InvalidUTF8Patch : EncodingProvider
 	{
@@ -172,12 +177,18 @@ public partial class App
 			d[ContentBackgroundBrushKey] = new SolidColorBrush(Color.FromRgb(0xEB, 0xEB, 0xEB));
 			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(Color.FromArgb(semiTransparentAlpha, 0xEB, 0xEB, 0xEB));
 			d[ContentForegroundBrushKey] = new SolidColorBrush(Colors.Black);
+			d[UrlBarBackgroundBrushKey] = new SolidColorBrush(Colors.White);
+			d[UrlBarForegroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x1A));
+			d[UrlBarBorderBrushKey] = new SolidColorBrush(Color.FromRgb(0xC8, 0xC8, 0xC8));
 		}
 		else
 		{
 			d[ContentBackgroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
 			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(Color.FromArgb(semiTransparentAlpha, 0x2D, 0x2D, 0x2D));
 			d[ContentForegroundBrushKey] = new SolidColorBrush(Colors.White);
+			d[UrlBarBackgroundBrushKey] = new SolidColorBrush(Colors.White);
+			d[UrlBarForegroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x1A));
+			d[UrlBarBorderBrushKey] = new SolidColorBrush(Color.FromRgb(0xB0, 0xB0, 0xB0));
 		}
 		return d;
 	}

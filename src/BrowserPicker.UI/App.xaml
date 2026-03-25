@@ -9,9 +9,12 @@
                 <ResourceDictionary Source="Resources/ResourceDictionary.xaml" />
                 <!-- Provide baseline theme brushes so design-time previews can resolve DynamicResource bindings. -->
                 <ResourceDictionary>
-                    <SolidColorBrush x:Key="{x:Static ui:App.ContentBackgroundBrushKey}" Color="#2D2D2D" />
-                    <SolidColorBrush x:Key="{x:Static ui:App.ContentBackgroundSemiTransparentBrushKey}" Color="#E62D2D2D" />
-                    <SolidColorBrush x:Key="{x:Static ui:App.ContentForegroundBrushKey}" Color="White" />
+                    <SolidColorBrush x:Key="{x:Static app:App.ContentBackgroundBrushKey}" Color="#2D2D2D" />
+                    <SolidColorBrush x:Key="{x:Static app:App.ContentBackgroundSemiTransparentBrushKey}" Color="#E62D2D2D" />
+                    <SolidColorBrush x:Key="{x:Static app:App.ContentForegroundBrushKey}" Color="White" />
+                    <SolidColorBrush x:Key="{x:Static app:App.UrlBarBackgroundBrushKey}" Color="White" />
+                    <SolidColorBrush x:Key="{x:Static app:App.UrlBarForegroundBrushKey}" Color="#1A1A1A" />
+                    <SolidColorBrush x:Key="{x:Static app:App.UrlBarBorderBrushKey}" Color="#B0B0B0" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
