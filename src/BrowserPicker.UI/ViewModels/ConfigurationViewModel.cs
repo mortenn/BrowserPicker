@@ -21,6 +21,13 @@ using JetBrains.Annotations;
 
 namespace BrowserPicker.UI.ViewModels;
 
+public enum SecurityProfile
+{
+	Default,
+	MaxPrivacy,
+	EnableAll
+}
+
 /// <summary>
 /// Represents the view model for configuring browser behaviour and default settings
 /// in the BrowserPicker application.
@@ -472,9 +479,31 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
 
 	/// <summary>
-	/// Command to apply a preset security profile to the automatic probe settings.
+	/// True when the current settings match the default security profile.
 	/// </summary>
-	public ICommand ApplySecurityProfile => apply_security_profile ??= new DelegateCommand<string>(ApplySecurityProfilePreset);
+	public bool UseDefaultSecurityProfile
+	{
+		get => MatchesSecurityProfile(SecurityProfile.Default);
+		set => ApplySecurityProfileFromSetter(value, SecurityProfile.Default);
+	}
+
+	/// <summary>
+	/// True when the current settings match the maximum privacy security profile.
+	/// </summary>
+	public bool UseMaxPrivacySecurityProfile
+	{
+		get => MatchesSecurityProfile(SecurityProfile.MaxPrivacy);
+		set => ApplySecurityProfileFromSetter(value, SecurityProfile.MaxPrivacy);
+	}
+
+	/// <summary>
+	/// True when the current settings match the fully enabled security profile.
+	/// </summary>
+	public bool UseEnableAllSecurityProfile
+	{
+		get => MatchesSecurityProfile(SecurityProfile.EnableAll);
+		set => ApplySecurityProfileFromSetter(value, SecurityProfile.EnableAll);
+	}
 
 	/// <summary>
 	/// Prompts the user to select a backup file location and saves the current settings.
@@ -658,29 +687,60 @@ public sealed class ConfigurationViewModel : ModelBase
 		NewDefaultProfile = null;
 	}
 
-	private void ApplySecurityProfilePreset(string? profile)
+	private void ApplySecurityProfilePreset(SecurityProfile profile)
 	{
 		switch (profile)
 		{
-			case "Default":
+			case SecurityProfile.Default:
 				Settings.ProbeRedirects = true;
 				Settings.RedirectsKnownOnly = true;
 				Settings.ProbeFavicons = true;
 				Settings.FaviconsForDefaults = true;
 				break;
 
-			case "MaxPrivacy":
+			case SecurityProfile.MaxPrivacy:
 				Settings.ProbeRedirects = false;
 				Settings.ProbeFavicons = false;
 				break;
 
-			case "EnableAll":
+			case SecurityProfile.EnableAll:
 				Settings.ProbeRedirects = true;
 				Settings.RedirectsKnownOnly = false;
 				Settings.ProbeFavicons = true;
 				Settings.FaviconsForDefaults = false;
 				break;
 		}
+	}
+
+	private void ApplySecurityProfileFromSetter(bool value, SecurityProfile profile)
+	{
+		if (!value || MatchesSecurityProfile(profile))
+		{
+			return;
+		}
+
+		ApplySecurityProfilePreset(profile);
+		OnPropertyChanged(nameof(UseDefaultSecurityProfile));
+		OnPropertyChanged(nameof(UseMaxPrivacySecurityProfile));
+		OnPropertyChanged(nameof(UseEnableAllSecurityProfile));
+	}
+
+	private bool MatchesSecurityProfile(SecurityProfile profile)
+	{
+		return profile switch
+		{
+			SecurityProfile.Default => Settings.ProbeRedirects
+				&& Settings.RedirectsKnownOnly
+				&& Settings.ProbeFavicons
+				&& Settings.FaviconsForDefaults,
+			SecurityProfile.MaxPrivacy => !Settings.ProbeRedirects
+				&& !Settings.ProbeFavicons,
+			SecurityProfile.EnableAll => Settings.ProbeRedirects
+				&& !Settings.RedirectsKnownOnly
+				&& Settings.ProbeFavicons
+				&& !Settings.FaviconsForDefaults,
+			_ => false
+		};
 	}
 
 	private void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -698,6 +758,15 @@ public sealed class ConfigurationViewModel : ModelBase
 			case nameof(JsonAppSettings.AutoCloseOnFocusLost):
 				OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 				ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
+				break;
+
+			case nameof(IApplicationSettings.ProbeRedirects):
+			case nameof(IApplicationSettings.RedirectsKnownOnly):
+			case nameof(IApplicationSettings.ProbeFavicons):
+			case nameof(IApplicationSettings.FaviconsForDefaults):
+				OnPropertyChanged(nameof(UseDefaultSecurityProfile));
+				OnPropertyChanged(nameof(UseMaxPrivacySecurityProfile));
+				OnPropertyChanged(nameof(UseEnableAllSecurityProfile));
 				break;
 
 			case nameof(IApplicationSettings.SortBy):
@@ -919,7 +988,6 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? paste_settings;
 	private DelegateCommand<string>? add_shortener;
 	private DelegateCommand<string>? remove_shortener;
-	private DelegateCommand<string>? apply_security_profile;
 
 	private string? test_defaults_url;
 

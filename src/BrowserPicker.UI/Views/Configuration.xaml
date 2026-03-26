@@ -441,9 +441,9 @@
 						<TextBlock Text="Automatic probes" FontWeight="Bold" Margin="0,4,0,6" />
 						<Menu Margin="0,0,0,10" Background="Transparent">
 							<MenuItem Header="Apply profile">
-								<MenuItem Header="Default" Command="{Binding ApplySecurityProfile}" CommandParameter="Default" />
-								<MenuItem Header="Max privacy" Command="{Binding ApplySecurityProfile}" CommandParameter="MaxPrivacy" />
-								<MenuItem Header="Enable all" Command="{Binding ApplySecurityProfile}" CommandParameter="EnableAll" />
+								<MenuItem Header="Default" IsCheckable="True" IsChecked="{Binding UseDefaultSecurityProfile, Mode=TwoWay}" />
+								<MenuItem Header="Max privacy" IsCheckable="True" IsChecked="{Binding UseMaxPrivacySecurityProfile, Mode=TwoWay}" />
+								<MenuItem Header="Enable all" IsCheckable="True" IsChecked="{Binding UseEnableAllSecurityProfile, Mode=TwoWay}" />
 							</MenuItem>
 						</Menu>
 
