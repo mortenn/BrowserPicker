@@ -13,6 +13,8 @@ using System.Diagnostics;
 using BrowserPicker.Windows;
 using BrowserPicker.Common.Framework;
 using BrowserPicker.Common;
+using BrowserPicker.UI.SecurityProfiles;
+
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -20,13 +22,6 @@ using JetBrains.Annotations;
 #endif
 
 namespace BrowserPicker.UI.ViewModels;
-
-public enum SecurityProfile
-{
-	Default,
-	MaxPrivacy,
-	EnableAll
-}
 
 /// <summary>
 /// Represents the view model for configuring browser behaviour and default settings
@@ -261,7 +256,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Gets additional URL shorteners configured by the user that are not in the default list.
 	/// </summary>
-	public string[] AdditionalUrlShorteners => Settings.UrlShorteners.Except(DefaultUrlShorteners).ToArray();
+	public string[] AdditionalUrlShorteners => [.. Settings.UrlShorteners.Except(DefaultUrlShorteners)];
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the welcome message should be displayed to the user.
@@ -364,7 +359,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// Match types available for per-URL rules. Excludes <see cref="MatchType.Default"/>, which is the special fallback and not a rule type.
 	/// </summary>
 	public static IEnumerable<MatchType> MatchTypesForRules { get; } =
-		Enum.GetValues<MatchType>().Where(t => t != MatchType.Default).ToArray();
+		[.. Enum.GetValues<MatchType>().Where(t => t != MatchType.Default)];
 
 	/// <summary>
 	/// Gets or sets the match type for defining a new default setting.
@@ -479,30 +474,32 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
 
 	/// <summary>
-	/// True when the current settings match the default security profile.
+	/// Applies a predefined security profile from the profile menu.
 	/// </summary>
-	public bool UseDefaultSecurityProfile
-	{
-		get => MatchesSecurityProfile(SecurityProfile.Default);
-		set => ApplySecurityProfileFromSetter(value, SecurityProfile.Default);
-	}
+	public ICommand ApplySecurityProfile => apply_security_profile ??= new DelegateCommand<ISecurityProfile>(SelectSecurityProfile, CanSelectSecurityProfile);
 
 	/// <summary>
-	/// True when the current settings match the maximum privacy security profile.
+	/// The currently active named security profile, or null when the settings are customized.
 	/// </summary>
-	public bool UseMaxPrivacySecurityProfile
+	public ISecurityProfile? SelectedSecurityProfile
 	{
-		get => MatchesSecurityProfile(SecurityProfile.MaxPrivacy);
-		set => ApplySecurityProfileFromSetter(value, SecurityProfile.MaxPrivacy);
-	}
+		get
+		{
+			var securityOptions = Settings.GetSecurityOptions();
+			return PredefinedSecurityProfiles.All.FirstOrDefault(profile => profile.Options == securityOptions);
+		}
 
-	/// <summary>
-	/// True when the current settings match the fully enabled security profile.
-	/// </summary>
-	public bool UseEnableAllSecurityProfile
-	{
-		get => MatchesSecurityProfile(SecurityProfile.EnableAll);
-		set => ApplySecurityProfileFromSetter(value, SecurityProfile.EnableAll);
+		set
+		{
+			if (value == null || value.Options == Settings.GetSecurityOptions())
+			{
+				return;
+			}
+
+			Settings.ApplySecurityOptions(value.Options);
+			OnPropertyChanged();
+			apply_security_profile?.RaiseCanExecuteChanged();
+		}
 	}
 
 	/// <summary>
@@ -617,9 +614,24 @@ public sealed class ConfigurationViewModel : ModelBase
 			return;
 		}
 
-		Settings.UrlShorteners = Settings.UrlShorteners.Except([domain!]).ToArray();
+		Settings.UrlShorteners = [.. Settings.UrlShorteners.Except([domain!])];
 		OnPropertyChanged(nameof(DefaultUrlShorteners));
 		OnPropertyChanged(nameof(AdditionalUrlShorteners));
+	}
+
+	private bool CanSelectSecurityProfile(ISecurityProfile? profile)
+	{
+		return profile != null && profile.Options != Settings.GetSecurityOptions();
+	}
+
+	private void SelectSecurityProfile(ISecurityProfile? profile)
+	{
+		if (!CanSelectSecurityProfile(profile))
+		{
+			return;
+		}
+
+		SelectedSecurityProfile = profile;
 	}
 
 	private void Editor_Closing(object? sender, CancelEventArgs e)
@@ -687,62 +699,6 @@ public sealed class ConfigurationViewModel : ModelBase
 		NewDefaultProfile = null;
 	}
 
-	private void ApplySecurityProfilePreset(SecurityProfile profile)
-	{
-		switch (profile)
-		{
-			case SecurityProfile.Default:
-				Settings.ProbeRedirects = true;
-				Settings.RedirectsKnownOnly = true;
-				Settings.ProbeFavicons = true;
-				Settings.FaviconsForDefaults = true;
-				break;
-
-			case SecurityProfile.MaxPrivacy:
-				Settings.ProbeRedirects = false;
-				Settings.ProbeFavicons = false;
-				break;
-
-			case SecurityProfile.EnableAll:
-				Settings.ProbeRedirects = true;
-				Settings.RedirectsKnownOnly = false;
-				Settings.ProbeFavicons = true;
-				Settings.FaviconsForDefaults = false;
-				break;
-		}
-	}
-
-	private void ApplySecurityProfileFromSetter(bool value, SecurityProfile profile)
-	{
-		if (!value || MatchesSecurityProfile(profile))
-		{
-			return;
-		}
-
-		ApplySecurityProfilePreset(profile);
-		OnPropertyChanged(nameof(UseDefaultSecurityProfile));
-		OnPropertyChanged(nameof(UseMaxPrivacySecurityProfile));
-		OnPropertyChanged(nameof(UseEnableAllSecurityProfile));
-	}
-
-	private bool MatchesSecurityProfile(SecurityProfile profile)
-	{
-		return profile switch
-		{
-			SecurityProfile.Default => Settings.ProbeRedirects
-				&& Settings.RedirectsKnownOnly
-				&& Settings.ProbeFavicons
-				&& Settings.FaviconsForDefaults,
-			SecurityProfile.MaxPrivacy => !Settings.ProbeRedirects
-				&& !Settings.ProbeFavicons,
-			SecurityProfile.EnableAll => Settings.ProbeRedirects
-				&& !Settings.RedirectsKnownOnly
-				&& Settings.ProbeFavicons
-				&& !Settings.FaviconsForDefaults,
-			_ => false
-		};
-	}
-
 	private void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		switch (e.PropertyName)
@@ -764,9 +720,8 @@ public sealed class ConfigurationViewModel : ModelBase
 			case nameof(IApplicationSettings.RedirectsKnownOnly):
 			case nameof(IApplicationSettings.ProbeFavicons):
 			case nameof(IApplicationSettings.FaviconsForDefaults):
-				OnPropertyChanged(nameof(UseDefaultSecurityProfile));
-				OnPropertyChanged(nameof(UseMaxPrivacySecurityProfile));
-				OnPropertyChanged(nameof(UseEnableAllSecurityProfile));
+				OnPropertyChanged(nameof(SelectedSecurityProfile));
+				apply_security_profile?.RaiseCanExecuteChanged();
 				break;
 
 			case nameof(IApplicationSettings.SortBy):
@@ -988,6 +943,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? paste_settings;
 	private DelegateCommand<string>? add_shortener;
 	private DelegateCommand<string>? remove_shortener;
+	private DelegateCommand<ISecurityProfile>? apply_security_profile;
 
 	private string? test_defaults_url;
 

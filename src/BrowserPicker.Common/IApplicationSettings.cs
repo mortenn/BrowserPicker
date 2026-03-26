@@ -5,7 +5,7 @@ namespace BrowserPicker.Common;
 /// <summary>
 /// Application settings for the browser picker: prompts, defaults, browser list, URL shorteners, and key bindings.
 /// </summary>
-public interface IApplicationSettings
+public interface IApplicationSettings : ISecuritySettings
 {
 	/// <summary>
 	/// First time the user launches the application
@@ -69,26 +69,6 @@ public interface IApplicationSettings
 	/// Disables all features that call out to the network
 	/// </summary>
 	bool DisableNetworkAccess { get; set; }
-
-	/// <summary>
-	/// When true, probes URLs for redirect targets.
-	/// </summary>
-	bool ProbeRedirects { get; set; }
-
-	/// <summary>
-	/// When true, only probes redirects for configured shortener hosts.
-	/// </summary>
-	bool RedirectsKnownOnly { get; set; }
-
-	/// <summary>
-	/// When true, probes URLs for a favicon to show in the picker UI.
-	/// </summary>
-	bool ProbeFavicons { get; set; }
-
-	/// <summary>
-	/// When true, only probes favicons for URLs matching a Defaults rule.
-	/// </summary>
-	bool FaviconsForDefaults { get; set; }
 
 	/// <summary>
 	/// List of host names known to be URL shorteners

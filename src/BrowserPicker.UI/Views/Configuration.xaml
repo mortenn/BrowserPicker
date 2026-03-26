@@ -5,6 +5,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:converters="clr-namespace:BrowserPicker.UI.Converters"
+	xmlns:securityProfiles="clr-namespace:BrowserPicker.UI.SecurityProfiles"
 	xmlns:views="clr-namespace:BrowserPicker.UI.Views"
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
 	xmlns:common="clr-namespace:BrowserPicker.Common;assembly=BrowserPicker.Common"
@@ -90,6 +91,7 @@
 				<Setter Property="CaretBrush" Value="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" />
 			</Style>
 			<converters:ComboBoxBrowserItemFlagConverter x:Key="ComboBoxBrowserItemFlagConverter" />
+			<converters:SecurityProfileSelectionConverter x:Key="SecurityProfileSelectionConverter" />
 			<Style x:Key="VisibleBrowserComboItemStyle" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
 				<Style.Triggers>
 					<DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource ComboBoxBrowserItemFlagConverter}, ConverterParameter=Disabled}" Value="True">
@@ -440,10 +442,24 @@
 					<StackPanel>
 						<TextBlock Text="Automatic probes" FontWeight="Bold" Margin="0,4,0,6" />
 						<Menu Margin="0,0,0,10" Background="Transparent">
-							<MenuItem Header="Apply profile">
-								<MenuItem Header="Default" IsCheckable="True" IsChecked="{Binding UseDefaultSecurityProfile, Mode=TwoWay}" />
-								<MenuItem Header="Max privacy" IsCheckable="True" IsChecked="{Binding UseMaxPrivacySecurityProfile, Mode=TwoWay}" />
-								<MenuItem Header="Enable all" IsCheckable="True" IsChecked="{Binding UseEnableAllSecurityProfile, Mode=TwoWay}" />
+							<MenuItem Header="Apply profile"
+								ItemsSource="{x:Static securityProfiles:PredefinedSecurityProfiles.All}">
+								<MenuItem.ItemContainerStyle>
+									<Style TargetType="{x:Type MenuItem}">
+										<Setter Property="Header" Value="{Binding DisplayName}" />
+										<Setter Property="IsCheckable" Value="True" />
+										<Setter Property="Command" Value="{Binding DataContext.ApplySecurityProfile, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+										<Setter Property="CommandParameter" Value="{Binding}" />
+										<Setter Property="IsChecked">
+											<Setter.Value>
+												<MultiBinding Converter="{StaticResource SecurityProfileSelectionConverter}" Mode="OneWay">
+													<Binding Path="DataContext.SelectedSecurityProfile" RelativeSource="{RelativeSource AncestorType={x:Type UserControl}}" />
+													<Binding />
+												</MultiBinding>
+											</Setter.Value>
+										</Setter>
+									</Style>
+								</MenuItem.ItemContainerStyle>
 							</MenuItem>
 						</Menu>
 
