@@ -27,6 +27,10 @@ public sealed class SerializableSettings : IApplicationSettings
 		DisableTransparency = applicationSettings.DisableTransparency;
 		WindowOpacity = applicationSettings.WindowOpacity;
 		DisableNetworkAccess = applicationSettings.DisableNetworkAccess;
+		ProbeRedirects = applicationSettings.ProbeRedirects;
+		RedirectsKnownOnly = applicationSettings.RedirectsKnownOnly;
+		ProbeFavicons = applicationSettings.ProbeFavicons;
+		FaviconsForDefaults = applicationSettings.FaviconsForDefaults;
 		UrlShorteners = applicationSettings.UrlShorteners;
 		BrowserList = [.. applicationSettings.BrowserList.Where(b => !b.Removed)];
 		Defaults = [.. applicationSettings.Defaults.Where(d => !d.Deleted && !string.IsNullOrWhiteSpace(d.Browser))];
@@ -72,6 +76,14 @@ public sealed class SerializableSettings : IApplicationSettings
 	public double WindowOpacity { get; set; } = 0.92;
 	/// <inheritdoc />
 	public bool DisableNetworkAccess { get; set; }
+	/// <inheritdoc />
+	public bool ProbeRedirects { get; set; } = true;
+	/// <inheritdoc />
+	public bool RedirectsKnownOnly { get; set; } = true;
+	/// <inheritdoc />
+	public bool ProbeFavicons { get; set; } = true;
+	/// <inheritdoc />
+	public bool FaviconsForDefaults { get; set; } = true;
 	/// <summary>
 	/// When true, the picker closes itself when it loses focus. Defaults to being enabled.
 	/// </summary>

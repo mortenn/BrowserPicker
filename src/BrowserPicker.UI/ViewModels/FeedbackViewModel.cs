@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -534,6 +534,10 @@ public sealed class FeedbackViewModel : ModelBase
 		public bool DisableTransparency { get; set; } = true;
 		public double WindowOpacity { get; set; } = 0.92;
 		public bool DisableNetworkAccess { get; set; }
+		public bool ProbeRedirects { get; set; } = true;
+		public bool RedirectsKnownOnly { get; set; } = true;
+		public bool ProbeFavicons { get; set; } = true;
+		public bool FaviconsForDefaults { get; set; } = true;
 		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
 		public List<BrowserModel> BrowserList { get; } =
 		[

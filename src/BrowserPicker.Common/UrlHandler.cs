@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -34,9 +35,14 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	{
 		this.logger = logger;
 		logger.LogRequestedUrl(requestedUrl);
-		disallow_network = requestedUrl == null || settings.DisableNetworkAccess;
-		logger.LogNetworkAccessDisabled(disallow_network);
+		var canProbe = requestedUrl != null;
+		probe_redirects = canProbe && settings.ProbeRedirects;
+		redirects_known_only = settings.RedirectsKnownOnly;
+		probe_favicons = canProbe && settings.ProbeFavicons;
+		favicons_for_defaults = settings.FaviconsForDefaults;
+		logger.LogNetworkAccessDisabled(!probe_redirects && !probe_favicons);
 		url_shorteners = [..settings.UrlShorteners];
+		defaults = [.. settings.Defaults];
 
 		// Add new ones to config as requested
 		var newShorteners = DefaultUrlShorteners.Except(url_shorteners).ToArray();
@@ -70,8 +76,12 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	public UrlHandler()
 	{
 		logger = NullLogger.Instance;
-		disallow_network = true;
+		probe_redirects = false;
+		redirects_known_only = true;
+		probe_favicons = false;
+		favicons_for_defaults = true;
 		url_shorteners = [..DefaultUrlShorteners];
+		defaults = [];
 		TargetURL = "https://www.github.com/mortenn/BrowserPicker";
 		uri = new Uri(TargetURL);
 		host_name = uri.Host;
@@ -103,10 +113,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 					continue;
 				}
 
-				if (disallow_network)
-					break;
-
-				var shortened = await ResolveShortener(uri, cancellationToken);
+				var shortened = await ResolveRedirect(uri, cancellationToken);
 				if (shortened != null)
 				{
 					logger.LogShortenedUrl(shortened);
@@ -117,7 +124,20 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 					continue;
 				}
 
-				await FindIcon(cancellationToken);
+				if (!TryGetCurrentPageUri(out var pageUri))
+				{
+					break;
+				}
+
+				if (TryLoadCachedFavicon(pageUri))
+				{
+					break;
+				}
+
+				if (ShouldProbeFavicon(pageUri, probe_favicons, favicons_for_defaults, defaults))
+				{
+					await FindIcon(pageUri, cancellationToken);
+				}
 				break;
 			}
 		}
@@ -128,13 +148,76 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		}
 	}
 
-	private async Task FindIcon(CancellationToken cancellationToken)
+	/// <summary>
+	/// Re-evaluates favicon policy against the current URL and fetches an icon if the current settings now allow it.
+	/// Intended for live settings changes while the picker is already open.
+	/// </summary>
+	public async Task RefreshFavicon(IApplicationSettings settings, CancellationToken cancellationToken)
+	{
+		if (FavIconProbed || FavIcon != null || !TryGetCurrentPageUri(out var pageUri))
+		{
+			return;
+		}
+
+		if (TryLoadCachedFavicon(pageUri))
+		{
+			return;
+		}
+
+		if (!ShouldProbeFavicon(pageUri, settings.ProbeFavicons, settings.FaviconsForDefaults, settings.Defaults))
+		{
+			return;
+		}
+
+		await favicon_refresh_lock.WaitAsync(cancellationToken);
+		try
+		{
+			if (FavIconProbed || FavIcon != null || !TryGetCurrentPageUri(out pageUri))
+			{
+				return;
+			}
+
+			if (TryLoadCachedFavicon(pageUri))
+			{
+				return;
+			}
+
+			if (!ShouldProbeFavicon(pageUri, settings.ProbeFavicons, settings.FaviconsForDefaults, settings.Defaults))
+			{
+				return;
+			}
+
+			await FindIcon(pageUri, cancellationToken);
+		}
+		finally
+		{
+			favicon_refresh_lock.Release();
+		}
+	}
+
+	private static bool TryGetCurrentPageUri(string? currentUrl, out Uri pageUri)
+	{
+		if (Uri.TryCreate(currentUrl, UriKind.Absolute, out var parsed))
+		{
+			pageUri = parsed;
+			return true;
+		}
+
+		pageUri = null!;
+		return false;
+	}
+
+	private bool TryGetCurrentPageUri(out Uri pageUri)
+	{
+		return TryGetCurrentPageUri(underlying_target_url ?? TargetURL, out pageUri);
+	}
+
+	private async Task FindIcon(Uri pageUri, CancellationToken cancellationToken)
 	{
 		var timeout = new CancellationTokenSource(2000);
 		await using var _ = cancellationToken.Register(timeout.Cancel);
 		try
 		{
-			var pageUri = new Uri(underlying_target_url ?? TargetURL ?? "about:blank");
 			if (pageUri.IsFile)
 			{
 				return;
@@ -144,6 +227,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			{
 				return;
 			}
+			FavIconProbed = true;
 			var result = await Client.GetAsync(pageUri, timeout.Token);
 			if (!result.IsSuccessStatusCode)
 			{
@@ -226,9 +310,76 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 
 			logger.LogFaviconLoaded(toFetch.AbsoluteUri);
 			FavIcon = bytes;
+			SaveFaviconToCache(pageUri, bytes);
 			return;
 		}
 		logger.LogFaviconFailed(icon.StatusCode);
+	}
+
+	private bool TryLoadCachedFavicon(Uri pageUri)
+	{
+		var cachePath = GetFaviconCachePath(pageUri);
+		if (cachePath == null || !File.Exists(cachePath))
+		{
+			return false;
+		}
+
+		try
+		{
+			var bytes = File.ReadAllBytes(cachePath);
+			if (bytes.Length == 0 || bytes.Length > MaxFaviconBytes)
+			{
+				File.Delete(cachePath);
+				return false;
+			}
+
+			FavIcon = bytes;
+			FavIconProbed = true;
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static void SaveFaviconToCache(Uri pageUri, byte[] bytes)
+	{
+		var cachePath = GetFaviconCachePath(pageUri);
+		if (cachePath == null || bytes.Length == 0 || bytes.Length > MaxFaviconBytes)
+		{
+			return;
+		}
+
+		try
+		{
+			var dir = Path.GetDirectoryName(cachePath);
+			if (!string.IsNullOrEmpty(dir))
+			{
+				Directory.CreateDirectory(dir);
+			}
+
+			File.WriteAllBytes(cachePath, bytes);
+		}
+		catch
+		{
+			// ignored
+		}
+	}
+
+	private static string? GetFaviconCachePath(Uri pageUri)
+	{
+		var host = pageUri.IdnHost.Trim().ToLowerInvariant();
+		if (string.IsNullOrWhiteSpace(host))
+		{
+			return null;
+		}
+
+		var root = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+			nameof(BrowserPicker),
+			"favicons");
+		return Path.Combine(root, $"{host}.bin");
 	}
 
 	private static string? ResolveJumpPage(Uri uri)
@@ -241,9 +392,29 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		).FirstOrDefault(underlyingUrl => underlyingUrl != null);
 	}
 
-	private async Task<string?> ResolveShortener(Uri shortenerUri, CancellationToken cancellationToken)
+	private static bool ShouldProbeFavicon(Uri pageUri, bool probeFavicons, bool faviconsForDefaults, IEnumerable<DefaultSetting> rules)
 	{
-		if (url_shorteners.All(s => !shortenerUri.Host.EndsWith(s)))
+		if (!probeFavicons)
+		{
+			return false;
+		}
+
+		return !faviconsForDefaults || DefaultsMatch(pageUri, rules);
+	}
+
+	private static bool DefaultsMatch(Uri url, IEnumerable<DefaultSetting> rules)
+	{
+		return rules.Any(rule => rule.MatchLength(url) > 0);
+	}
+
+	private async Task<string?> ResolveRedirect(Uri shortenerUri, CancellationToken cancellationToken)
+	{
+		if (!probe_redirects)
+		{
+			return null;
+		}
+
+		if (redirects_known_only && url_shorteners.All(s => !shortenerUri.Host.EndsWith(s)))
 		{
 			return null;
 		}
@@ -318,6 +489,15 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	}
 
 	/// <summary>
+	/// True when a network favicon probe was attempted for the current URL.
+	/// </summary>
+	public bool FavIconProbed
+	{
+		get => fav_icon_probed;
+		private set => SetProperty(ref fav_icon_probed, value);
+	}
+
+	/// <summary>
 	/// The URL to display in the UI (underlying resolved URL or original target).
 	/// </summary>
 	public string? DisplayURL => UnderlyingTargetURL ?? TargetURL;
@@ -356,7 +536,13 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	private bool is_shortened_url;
 	private string? host_name;
 	private byte[]? fav_icon;
+	private bool fav_icon_probed;
 	private readonly List<string> url_shorteners;
+	private readonly List<DefaultSetting> defaults;
+	private readonly SemaphoreSlim favicon_refresh_lock = new(1, 1);
 	private static readonly HttpClient Client = new(new HttpClientHandler { AllowAutoRedirect = false });
-	private readonly bool disallow_network;
+	private readonly bool probe_redirects;
+	private readonly bool redirects_known_only;
+	private readonly bool probe_favicons;
+	private readonly bool favicons_for_defaults;
 }

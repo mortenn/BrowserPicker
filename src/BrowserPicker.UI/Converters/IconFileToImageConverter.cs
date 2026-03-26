@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -18,8 +18,20 @@ public sealed class IconFileToImageConverter : IValueConverter
 	/// <inheritdoc />
 	public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 	{
-		if (value is byte[])
-			return value;
+		if (value is byte[] bytes && bytes.Length > 0)
+		{
+			try
+			{
+				using var stream = new MemoryStream(bytes);
+				var frame = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+				frame.Freeze();
+				return frame;
+			}
+			catch
+			{
+				return GetDefaultIcon();
+			}
+		}
 
 		if (value?.ToString() is not { } iconPath)
 			return GetDefaultIcon();

@@ -100,11 +100,22 @@
 					</Grid.ColumnDefinitions>
 					<Image
 						Grid.Column="0"
-						Source="{Binding Url.FavIcon}"
+						Source="{Binding Url.FavIcon, Converter={StaticResource IconConverter}}"
 						Width="16"
 						Height="16"
 						VerticalAlignment="Top"
-						Margin="0,2,6,0" />
+						Margin="0,2,6,0">
+						<Image.Style>
+							<Style TargetType="Image">
+								<Setter Property="Visibility" Value="Visible" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Url.FavIconProbed}" Value="False">
+										<Setter Property="Visibility" Value="Collapsed" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Image.Style>
+					</Image>
 					<TextBlock
 						Grid.Column="1"
 						MinWidth="0"

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Threading;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -110,6 +110,10 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool DisableTransparency { get; set; } = true;
 		public double WindowOpacity { get; set; } = 0.92;
 		public bool DisableNetworkAccess { get; set; } = false;
+		public bool ProbeRedirects { get; set; } = true;
+		public bool RedirectsKnownOnly { get; set; } = true;
+		public bool ProbeFavicons { get; set; } = true;
+		public bool FaviconsForDefaults { get; set; } = true;
 
 		public bool AutoSizeWindow { get; set; } = true;
 		public double WindowWidth { get; set; }
@@ -468,6 +472,11 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
 
 	/// <summary>
+	/// Command to apply a preset security profile to the automatic probe settings.
+	/// </summary>
+	public ICommand ApplySecurityProfile => apply_security_profile ??= new DelegateCommand<string>(ApplySecurityProfilePreset);
+
+	/// <summary>
 	/// Prompts the user to select a backup file location and saves the current settings.
 	/// </summary>
 	private void PerformBackup()
@@ -647,6 +656,31 @@ public sealed class ConfigurationViewModel : ModelBase
 
 		NewDefaultPattern = string.Empty;
 		NewDefaultProfile = null;
+	}
+
+	private void ApplySecurityProfilePreset(string? profile)
+	{
+		switch (profile)
+		{
+			case "Default":
+				Settings.ProbeRedirects = true;
+				Settings.RedirectsKnownOnly = true;
+				Settings.ProbeFavicons = true;
+				Settings.FaviconsForDefaults = true;
+				break;
+
+			case "MaxPrivacy":
+				Settings.ProbeRedirects = false;
+				Settings.ProbeFavicons = false;
+				break;
+
+			case "EnableAll":
+				Settings.ProbeRedirects = true;
+				Settings.RedirectsKnownOnly = false;
+				Settings.ProbeFavicons = true;
+				Settings.FaviconsForDefaults = false;
+				break;
+		}
 	}
 
 	private void Configuration_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -868,8 +902,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	private MatchType new_match_type = MatchType.Hostname;
 	private const int WelcomeTabIndex = 0;
 	private const int BrowsersTabIndex = 1;
-	private const int TestDefaultsTabIndex = 4;
-	private const int FeedbackTabIndex = 6;
+	private const int TestDefaultsTabIndex = 5;
+	private const int FeedbackTabIndex = 7;
 	private string new_fragment = string.Empty;
 	private string new_fragment_browser = string.Empty;
 	private string? new_fragment_profile;
@@ -885,6 +919,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? paste_settings;
 	private DelegateCommand<string>? add_shortener;
 	private DelegateCommand<string>? remove_shortener;
+	private DelegateCommand<string>? apply_security_profile;
 
 	private string? test_defaults_url;
 

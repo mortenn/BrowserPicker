@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.UI.Views;
@@ -620,9 +621,27 @@ public sealed class ApplicationViewModel : ModelBase
 
 	private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
+		if (e.PropertyName is nameof(IApplicationSettings.ProbeFavicons) or nameof(IApplicationSettings.FaviconsForDefaults) or nameof(IApplicationSettings.Defaults))
+		{
+			RefreshCurrentUrlFavicon();
+		}
+
 		if (e.PropertyName is nameof(IApplicationSettings.ProfileDisplayMode) or nameof(IApplicationSettings.SortBy))
 		{
 			RebuildPickerChoices();
+		}
+	}
+
+	private async void RefreshCurrentUrlFavicon()
+	{
+		try
+		{
+			using var timeout = new CancellationTokenSource(Configuration.Settings.UrlLookupTimeoutMilliseconds);
+			await Url.RefreshFavicon(Configuration.Settings, timeout.Token);
+		}
+		catch (TaskCanceledException)
+		{
+			// ignored
 		}
 	}
 
