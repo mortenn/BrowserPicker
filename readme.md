@@ -155,9 +155,6 @@ When configured, Browser Picker will always use this browser unless a default br
 
 This option makes it so Browser Picker will only pick matched default browsers and otherwise show the selection window.
 
-> [ ] Disable URL resolution
-
-
 > [ ] Use defaults even when browser is not running
 
 When unchecked, the selection window is shown if your default browser is not running (so you can choose which profile or browser to start). When checked, links always open in your default or fallback browser without showing the selection window, even when no instance is running.
@@ -166,14 +163,27 @@ When unchecked, the selection window is shown if your default browser is not run
 
 This option will make your list of browsers automatically sorted by how often you pick them.
 
-> [ ] Disallow network activity
-
-Browser Picker may perform DNS and HTTP calls to probe the specified URL in order to check if the URL redirects elsewhere.  
-This option turns this feature off, preventing Browser Picker from calling the network when you launch a URL.
-
 > URL resolution timeout: [_____]
 
-You may adjust for how long Browser Picker attempts to resolve an URL here.
+You may adjust for how long Browser Picker attempts to resolve a URL here.
+
+### Security
+
+The security tab controls the automatic network lookups Browser Picker may perform while preparing the picker UI.
+
+> [ ] Probe URL shorteners / redirects
+>> [ ] Only for known URL shorteners
+
+When enabled, Browser Picker may request the URL to discover whether it redirects somewhere else before matching defaults or showing the final target. By default this is restricted to configured shortener hosts only.
+
+> [ ] Probe favicon
+>> [ ] Only for URLs matching defaults
+
+When enabled, Browser Picker may request the resolved page to discover a favicon for the URL bar in the picker. By default this only happens when the URL matches one of your configured Defaults rules.
+
+> Disable all
+
+Use this button to turn off both automatic probe types at once.
 
 ### Defaults
 The defaults tab lets you configure rules to map certain URLs to certain browsers.

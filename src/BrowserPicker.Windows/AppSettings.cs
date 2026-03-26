@@ -31,6 +31,10 @@ public sealed class AppSettings : IApplicationSettings
 					: SerializableSettings.SortOrder.Automatic;
 			DisableTransparency = Reg.Get<bool>();
 			DisableNetworkAccess = Reg.Get<bool>();
+			ProbeRedirects = !DisableNetworkAccess;
+			RedirectsKnownOnly = true;
+			ProbeFavicons = !DisableNetworkAccess;
+			FaviconsForDefaults = true;
 			UrlShorteners = Reg.Get<string[]>() ?? [];
 			WindowWidth = double.TryParse(Reg.GetValue("WindowWidth") as string, out var w) ? w : 0;
 			WindowHeight = double.TryParse(Reg.GetValue("WindowHeight") as string, out var h) ? h : 0;
@@ -109,6 +113,18 @@ public sealed class AppSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public bool DisableNetworkAccess { get; set; }
+
+	/// <inheritdoc />
+	public bool ProbeRedirects { get; set; } = true;
+
+	/// <inheritdoc />
+	public bool RedirectsKnownOnly { get; set; } = true;
+
+	/// <inheritdoc />
+	public bool ProbeFavicons { get; set; } = true;
+
+	/// <inheritdoc />
+	public bool FaviconsForDefaults { get; set; } = true;
 
 	/// <inheritdoc />
 	public string[] UrlShorteners { get; set; } = [];

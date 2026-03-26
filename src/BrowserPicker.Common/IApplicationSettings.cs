@@ -5,7 +5,7 @@ namespace BrowserPicker.Common;
 /// <summary>
 /// Application settings for the browser picker: prompts, defaults, browser list, URL shorteners, and key bindings.
 /// </summary>
-public interface IApplicationSettings
+public interface IApplicationSettings : ISecuritySettings
 {
 	/// <summary>
 	/// First time the user launches the application

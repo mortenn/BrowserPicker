@@ -36,6 +36,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool disable_transparency;
 	private double window_opacity = 0.92;
 	private bool disable_network_access;
+	private bool probe_redirects = true;
+	private bool redirects_known_only = true;
+	private bool probe_favicons = true;
+	private bool favicons_for_defaults = true;
 	private bool auto_close_on_focus_lost = true;
 	private string[] url_shorteners = [];
 	private bool use_fallback_default;
@@ -196,6 +200,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public bool DisableTransparency { get => disable_transparency; set { if (SetProperty(ref disable_transparency, value)) SaveToFile(); } }
 	public double WindowOpacity { get => window_opacity; set { var rounded = Math.Round(Math.Clamp(value, 0.5, 1.0), 2); if (SetProperty(ref window_opacity, rounded)) SaveToFile(); } }
 	public bool DisableNetworkAccess { get => disable_network_access; set { if (SetProperty(ref disable_network_access, value)) SaveToFile(); } }
+	public bool ProbeRedirects { get => probe_redirects; set { if (SetProperty(ref probe_redirects, value)) SaveToFile(); } }
+	public bool RedirectsKnownOnly { get => redirects_known_only; set { if (SetProperty(ref redirects_known_only, value)) SaveToFile(); } }
+	public bool ProbeFavicons { get => probe_favicons; set { if (SetProperty(ref probe_favicons, value)) SaveToFile(); } }
+	public bool FaviconsForDefaults { get => favicons_for_defaults; set { if (SetProperty(ref favicons_for_defaults, value)) SaveToFile(); } }
 	public bool AutoCloseOnFocusLost { get => auto_close_on_focus_lost; set { if (SetProperty(ref auto_close_on_focus_lost, value)) SaveToFile(); } }
 	public string[] UrlShorteners { get => url_shorteners; set { if (SetProperty(ref url_shorteners, value)) SaveToFile(); } }
 	public bool AutoSizeWindow { get => auto_size_window; set { if (SetProperty(ref auto_size_window, value)) SaveToFile(); } }
@@ -432,6 +440,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		disable_transparency = s.DisableTransparency;
 		window_opacity = Math.Round(Math.Clamp(s.WindowOpacity, 0.5, 1.0), 2);
 		disable_network_access = s.DisableNetworkAccess;
+		probe_redirects = s.ProbeRedirects;
+		redirects_known_only = s.RedirectsKnownOnly;
+		probe_favicons = s.ProbeFavicons;
+		favicons_for_defaults = s.FaviconsForDefaults;
 		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
 		url_shorteners = s.UrlShorteners;
 		window_width = NormalizeMainWindowDimension(s.WindowWidth, MinWindowWidth);
@@ -446,6 +458,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(UseManualOrdering));
 		OnPropertyChanged(nameof(UseAlphabeticalOrdering));
 		OnPropertyChanged(nameof(AlwaysPrompt));
+		OnPropertyChanged(nameof(DisableNetworkAccess));
+		OnPropertyChanged(nameof(UrlLookupTimeoutMilliseconds));
+		OnPropertyChanged(nameof(ProbeRedirects));
+		OnPropertyChanged(nameof(RedirectsKnownOnly));
+		OnPropertyChanged(nameof(ProbeFavicons));
+		OnPropertyChanged(nameof(FaviconsForDefaults));
 		OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 		OnPropertyChanged(nameof(WindowWidth));
 		OnPropertyChanged(nameof(WindowHeight));
@@ -548,10 +566,14 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private void LoadFromFile()
 	{
 		var text = File.ReadAllText(settings_path);
-		var settings = DeserializeSettings(text, settings_path);
+		var settings = DeserializeSettings(text, settings_path, out var upgradedLegacySecurity);
 		if (settings != null)
 		{
 			ApplyImportedSettings(settings);
+			if (upgradedLegacySecurity)
+			{
+				SaveToFile();
+			}
 		}
 	}
 
@@ -568,7 +590,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public void TryImportSettingsJson(string json, string sourceDescription)
 	{
-		var settings = DeserializeSettings(json, sourceDescription);
+		var settings = DeserializeSettings(json, sourceDescription, out _);
 		if (settings == null)
 		{
 			return;
@@ -588,8 +610,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		};
 	}
 
-	private SerializableSettings? DeserializeSettings(string json, string sourceDescription)
+	private SerializableSettings? DeserializeSettings(string json, string sourceDescription, out bool upgradedLegacySecurity)
 	{
+		upgradedLegacySecurity = false;
 		try
 		{
 			var rootNode = JsonNode.Parse(UnwrapJsonDocument(json));
@@ -608,6 +631,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			var settings = root.Deserialize<SerializableSettings>(JsonOptions);
 			if (settings != null)
 			{
+				upgradedLegacySecurity = SeedLegacySecuritySettings(root, settings);
 				return settings;
 			}
 
@@ -619,6 +643,46 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			AppendBackupLog($"Unable to import configuration from {sourceDescription}: {ex.Message}");
 			return null;
 		}
+	}
+
+	private static bool SeedLegacySecuritySettings(JsonObject root, SerializableSettings settings)
+	{
+		if (!TryReadBoolean(root, nameof(SerializableSettings.DisableNetworkAccess), out var disableNetworkAccess))
+		{
+			return false;
+		}
+
+		var upgraded = false;
+		if (!root.ContainsKey(nameof(SerializableSettings.ProbeRedirects)))
+		{
+			settings.ProbeRedirects = !disableNetworkAccess;
+			upgraded = true;
+		}
+		if (!root.ContainsKey(nameof(SerializableSettings.RedirectsKnownOnly)))
+		{
+			settings.RedirectsKnownOnly = true;
+			upgraded = true;
+		}
+		if (!root.ContainsKey(nameof(SerializableSettings.ProbeFavicons)))
+		{
+			settings.ProbeFavicons = !disableNetworkAccess;
+			upgraded = true;
+		}
+		if (!root.ContainsKey(nameof(SerializableSettings.FaviconsForDefaults)))
+		{
+			settings.FaviconsForDefaults = true;
+			upgraded = true;
+		}
+
+		return upgraded;
+	}
+
+	private static bool TryReadBoolean(JsonObject root, string propertyName, out bool value)
+	{
+		value = false;
+		return root.TryGetPropertyValue(propertyName, out var node)
+			&& node is JsonValue jsonValue
+			&& jsonValue.TryGetValue(out value);
 	}
 
 	private void ApplyImportedSettings(SerializableSettings settings)

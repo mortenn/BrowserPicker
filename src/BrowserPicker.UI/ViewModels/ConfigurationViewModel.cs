@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Threading;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -13,6 +13,8 @@ using System.Diagnostics;
 using BrowserPicker.Windows;
 using BrowserPicker.Common.Framework;
 using BrowserPicker.Common;
+using BrowserPicker.UI.SecurityProfiles;
+
 
 #if DEBUG
 using System.Threading.Tasks;
@@ -110,6 +112,10 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool DisableTransparency { get; set; } = true;
 		public double WindowOpacity { get; set; } = 0.92;
 		public bool DisableNetworkAccess { get; set; } = false;
+		public bool ProbeRedirects { get; set; } = true;
+		public bool RedirectsKnownOnly { get; set; } = true;
+		public bool ProbeFavicons { get; set; } = true;
+		public bool FaviconsForDefaults { get; set; } = true;
 
 		public bool AutoSizeWindow { get; set; } = true;
 		public double WindowWidth { get; set; }
@@ -250,7 +256,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Gets additional URL shorteners configured by the user that are not in the default list.
 	/// </summary>
-	public string[] AdditionalUrlShorteners => Settings.UrlShorteners.Except(DefaultUrlShorteners).ToArray();
+	public string[] AdditionalUrlShorteners => [.. Settings.UrlShorteners.Except(DefaultUrlShorteners)];
 
 	/// <summary>
 	/// Gets or sets a value indicating whether the welcome message should be displayed to the user.
@@ -353,7 +359,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// Match types available for per-URL rules. Excludes <see cref="MatchType.Default"/>, which is the special fallback and not a rule type.
 	/// </summary>
 	public static IEnumerable<MatchType> MatchTypesForRules { get; } =
-		Enum.GetValues<MatchType>().Where(t => t != MatchType.Default).ToArray();
+		[.. Enum.GetValues<MatchType>().Where(t => t != MatchType.Default)];
 
 	/// <summary>
 	/// Gets or sets the match type for defining a new default setting.
@@ -468,6 +474,35 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
 
 	/// <summary>
+	/// Applies a predefined security profile from the profile menu.
+	/// </summary>
+	public ICommand ApplySecurityProfile => apply_security_profile ??= new DelegateCommand<ISecurityProfile>(SelectSecurityProfile, CanSelectSecurityProfile);
+
+	/// <summary>
+	/// The currently active named security profile, or null when the settings are customized.
+	/// </summary>
+	public ISecurityProfile? SelectedSecurityProfile
+	{
+		get
+		{
+			var securityOptions = Settings.GetSecurityOptions();
+			return PredefinedSecurityProfiles.All.FirstOrDefault(profile => profile.Options == securityOptions);
+		}
+
+		set
+		{
+			if (value == null || value.Options == Settings.GetSecurityOptions())
+			{
+				return;
+			}
+
+			Settings.ApplySecurityOptions(value.Options);
+			OnPropertyChanged();
+			apply_security_profile?.RaiseCanExecuteChanged();
+		}
+	}
+
+	/// <summary>
 	/// Prompts the user to select a backup file location and saves the current settings.
 	/// </summary>
 	private void PerformBackup()
@@ -579,9 +614,24 @@ public sealed class ConfigurationViewModel : ModelBase
 			return;
 		}
 
-		Settings.UrlShorteners = Settings.UrlShorteners.Except([domain!]).ToArray();
+		Settings.UrlShorteners = [.. Settings.UrlShorteners.Except([domain!])];
 		OnPropertyChanged(nameof(DefaultUrlShorteners));
 		OnPropertyChanged(nameof(AdditionalUrlShorteners));
+	}
+
+	private bool CanSelectSecurityProfile(ISecurityProfile? profile)
+	{
+		return profile != null && profile.Options != Settings.GetSecurityOptions();
+	}
+
+	private void SelectSecurityProfile(ISecurityProfile? profile)
+	{
+		if (!CanSelectSecurityProfile(profile))
+		{
+			return;
+		}
+
+		SelectedSecurityProfile = profile;
 	}
 
 	private void Editor_Closing(object? sender, CancelEventArgs e)
@@ -664,6 +714,14 @@ public sealed class ConfigurationViewModel : ModelBase
 			case nameof(JsonAppSettings.AutoCloseOnFocusLost):
 				OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 				ParentViewModel.ApplyAutoCloseOnFocusLostSetting();
+				break;
+
+			case nameof(IApplicationSettings.ProbeRedirects):
+			case nameof(IApplicationSettings.RedirectsKnownOnly):
+			case nameof(IApplicationSettings.ProbeFavicons):
+			case nameof(IApplicationSettings.FaviconsForDefaults):
+				OnPropertyChanged(nameof(SelectedSecurityProfile));
+				apply_security_profile?.RaiseCanExecuteChanged();
 				break;
 
 			case nameof(IApplicationSettings.SortBy):
@@ -868,8 +926,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	private MatchType new_match_type = MatchType.Hostname;
 	private const int WelcomeTabIndex = 0;
 	private const int BrowsersTabIndex = 1;
-	private const int TestDefaultsTabIndex = 4;
-	private const int FeedbackTabIndex = 6;
+	private const int TestDefaultsTabIndex = 5;
+	private const int FeedbackTabIndex = 7;
 	private string new_fragment = string.Empty;
 	private string new_fragment_browser = string.Empty;
 	private string? new_fragment_profile;
@@ -885,6 +943,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? paste_settings;
 	private DelegateCommand<string>? add_shortener;
 	private DelegateCommand<string>? remove_shortener;
+	private DelegateCommand<ISecurityProfile>? apply_security_profile;
 
 	private string? test_defaults_url;
 
