@@ -1,21 +1,19 @@
-using System.ComponentModel;
-using System.Threading;
-using System.Linq;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using BrowserPicker.UI.Views;
-using System.Windows;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
-using BrowserPicker.Windows;
-using BrowserPicker.Common.Framework;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Input;
 using BrowserPicker.Common;
+using BrowserPicker.Common.Framework;
 using BrowserPicker.UI.SecurityProfiles;
-
-
+using BrowserPicker.UI.Views;
+using BrowserPicker.Windows;
+using Microsoft.Win32;
 #if DEBUG
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -43,11 +41,10 @@ public sealed class ConfigurationViewModel : ModelBase
 			Defaults.Add(setting);
 		}
 
-		ParentViewModel = new ApplicationViewModel(this)
-		{
-			ConfigurationMode = true
-		};
-		var choices = Settings.BrowserList.OrderBy(v => v, new BrowserSorter(Settings)).Select(m => new BrowserViewModel(m, ParentViewModel));
+		ParentViewModel = new ApplicationViewModel(this) { ConfigurationMode = true };
+		var choices = Settings
+			.BrowserList.OrderBy(v => v, new BrowserSorter(Settings))
+			.Select(m => new BrowserViewModel(m, ParentViewModel));
 		foreach (var choice in choices)
 		{
 			ParentViewModel.Choices.Add(choice);
@@ -59,16 +56,17 @@ public sealed class ConfigurationViewModel : ModelBase
 	{
 		return new DesignTimeSettings
 		{
-			Defaults = [
+			Defaults =
+			[
 				new DefaultSetting(MatchType.Hostname, "github.com", Firefox.Instance.Name),
 				new DefaultSetting(MatchType.Prefix, "https://gitlab.com", Edge.Instance.Name),
 				new DefaultSetting(MatchType.Regex, @"runsafe\.no\/[0-9a-f]+$", InternetExplorer.Instance.Name),
 				new DefaultSetting(MatchType.Hostname, "gitlab.com", OperaStable.Instance.Name),
 				new DefaultSetting(MatchType.Hostname, "microsoft.com", MicrosoftEdge.Instance.Name, "Profile 1"),
-				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name)
+				new DefaultSetting(MatchType.Default, "", Firefox.Instance.Name),
 			],
 			BrowserList = [.. WellKnownBrowsers.List.Select(CreateDesignTimeBrowser)],
-			DefaultBrowser = Firefox.Instance.Name
+			DefaultBrowser = Firefox.Instance.Name,
 		};
 	}
 
@@ -80,15 +78,21 @@ public sealed class ConfigurationViewModel : ModelBase
 			case ProfileType.Chromium:
 				model.Profiles.AddRange([
 					new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
-					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """)
+					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """),
 				]);
 				break;
 			case ProfileType.Firefox:
 				model.Profiles.AddRange([
 					new BrowserProfile("container:Work", "Work", null, "ext+container:name=Work&url={url}")
-						{ IconColor = "orange", ContainerIcon = "briefcase" },
+					{
+						IconColor = "orange",
+						ContainerIcon = "briefcase",
+					},
 					new BrowserProfile("container:Personal", "Personal", null, "ext+container:name=Personal&url={url}")
-						{ IconColor = "blue", ContainerIcon = "fingerprint" }
+					{
+						IconColor = "blue",
+						ContainerIcon = "fingerprint",
+					},
 				]);
 				break;
 			case ProfileType.None:
@@ -106,9 +110,33 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool AlwaysAskWithoutDefault { get; set; }
 		public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
 		public SerializableSettings.SortOrder SortBy { get; set; } = SerializableSettings.SortOrder.Alphabetical;
-		public bool UseAutomaticOrdering { get => SortBy == SerializableSettings.SortOrder.Automatic; set { if (value) SortBy = SerializableSettings.SortOrder.Automatic; } }
-		public bool UseManualOrdering { get => SortBy == SerializableSettings.SortOrder.Manual; set { if (value) SortBy = SerializableSettings.SortOrder.Manual; } }
-		public bool UseAlphabeticalOrdering { get => SortBy == SerializableSettings.SortOrder.Alphabetical; set { if (value) SortBy = SerializableSettings.SortOrder.Alphabetical; } }
+		public bool UseAutomaticOrdering
+		{
+			get => SortBy == SerializableSettings.SortOrder.Automatic;
+			set
+			{
+				if (value)
+					SortBy = SerializableSettings.SortOrder.Automatic;
+			}
+		}
+		public bool UseManualOrdering
+		{
+			get => SortBy == SerializableSettings.SortOrder.Manual;
+			set
+			{
+				if (value)
+					SortBy = SerializableSettings.SortOrder.Manual;
+			}
+		}
+		public bool UseAlphabeticalOrdering
+		{
+			get => SortBy == SerializableSettings.SortOrder.Alphabetical;
+			set
+			{
+				if (value)
+					SortBy = SerializableSettings.SortOrder.Alphabetical;
+			}
+		}
 		public bool DisableTransparency { get; set; } = true;
 		public double WindowOpacity { get; set; } = 0.92;
 		public bool DisableNetworkAccess { get; set; } = false;
@@ -126,7 +154,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public Common.ThemeMode ThemeMode { get; set; } = Common.ThemeMode.System;
 		public ProfileDisplayMode ProfileDisplayMode { get; set; }
 
-		public string[] UrlShorteners { get; set; } = [..UrlHandler.DefaultUrlShorteners, "example.com"];
+		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
 
 		public List<BrowserModel> BrowserList { get; init; } = [];
 
@@ -143,21 +171,16 @@ public sealed class ConfigurationViewModel : ModelBase
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
 		}
 
-		public void PersistBrowser(BrowserModel _)
-		{
-		}
+		public void PersistBrowser(BrowserModel _) { }
 
-		public string BackupLog => "Backup log comes here\nWith multiple lines of text\nmaybe\nsometimes\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...";
+		public string BackupLog =>
+			"Backup log comes here\nWith multiple lines of text\nmaybe\nsometimes\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...";
 
 		public IComparer<BrowserModel>? BrowserSorter => null;
 
-		public void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null)
-		{
-		}
+		public void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null) { }
 
-		public void FindBrowsers()
-		{
-		}
+		public void FindBrowsers() { }
 
 		public Task LoadAsync(string fileName)
 		{
@@ -343,7 +366,13 @@ public sealed class ConfigurationViewModel : ModelBase
 	public bool UseGroupedProfiles
 	{
 		get => Settings.ProfileDisplayMode == ProfileDisplayMode.Grouped;
-		set { if (value) Settings.ProfileDisplayMode = ProfileDisplayMode.Grouped; OnPropertyChanged(); OnPropertyChanged(nameof(UseFlatProfiles)); }
+		set
+		{
+			if (value)
+				Settings.ProfileDisplayMode = ProfileDisplayMode.Grouped;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(UseFlatProfiles));
+		}
 	}
 
 	/// <summary>
@@ -352,14 +381,20 @@ public sealed class ConfigurationViewModel : ModelBase
 	public bool UseFlatProfiles
 	{
 		get => Settings.ProfileDisplayMode == ProfileDisplayMode.Flat;
-		set { if (value) Settings.ProfileDisplayMode = ProfileDisplayMode.Flat; OnPropertyChanged(); OnPropertyChanged(nameof(UseGroupedProfiles)); }
+		set
+		{
+			if (value)
+				Settings.ProfileDisplayMode = ProfileDisplayMode.Flat;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(UseGroupedProfiles));
+		}
 	}
 
 	/// <summary>
 	/// Match types available for per-URL rules. Excludes <see cref="MatchType.Default"/>, which is the special fallback and not a rule type.
 	/// </summary>
 	public static IEnumerable<MatchType> MatchTypesForRules { get; } =
-		[.. Enum.GetValues<MatchType>().Where(t => t != MatchType.Default)];
+	[.. Enum.GetValues<MatchType>().Where(t => t != MatchType.Default)];
 
 	/// <summary>
 	/// Gets or sets the match type for defining a new default setting.
@@ -386,7 +421,11 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Gets or sets the pattern (e.g. hostname or URL fragment) for the new default rule being added.
 	/// </summary>
-	public string NewDefaultPattern { get => new_fragment; set => SetProperty(ref new_fragment, value); }
+	public string NewDefaultPattern
+	{
+		get => new_fragment;
+		set => SetProperty(ref new_fragment, value);
+	}
 
 	/// <summary>
 	/// Gets or sets the browser id or display name for the new default rule being added.
@@ -409,7 +448,11 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Gets or sets the profile id for the new default rule being added. Null means no specific profile.
 	/// </summary>
-	public string? NewDefaultProfile { get => new_fragment_profile; set => SetProperty(ref new_fragment_profile, value); }
+	public string? NewDefaultProfile
+	{
+		get => new_fragment_profile;
+		set => SetProperty(ref new_fragment_profile, value);
+	}
 
 	/// <summary>
 	/// Available profile choices for the currently selected <see cref="NewDefaultBrowser"/>.
@@ -471,12 +514,17 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Command to remove a URL shortener domain; parameter is the domain string.
 	/// </summary>
-	public ICommand RemoveShortener => remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
+	public ICommand RemoveShortener =>
+		remove_shortener ??= new DelegateCommand<string>(RemoveUrlShortener, CanRemoveShortener);
 
 	/// <summary>
 	/// Applies a predefined security profile from the profile menu.
 	/// </summary>
-	public ICommand ApplySecurityProfile => apply_security_profile ??= new DelegateCommand<ISecurityProfile>(SelectSecurityProfile, CanSelectSecurityProfile);
+	public ICommand ApplySecurityProfile =>
+		apply_security_profile ??= new DelegateCommand<ISecurityProfile>(
+			SelectSecurityProfile,
+			CanSelectSecurityProfile
+		);
 
 	/// <summary>
 	/// The currently active named security profile, or null when the settings are customized.
@@ -488,7 +536,6 @@ public sealed class ConfigurationViewModel : ModelBase
 			var securityOptions = Settings.GetSecurityOptions();
 			return PredefinedSecurityProfiles.All.FirstOrDefault(profile => profile.Options == securityOptions);
 		}
-
 		set
 		{
 			if (value == null || value.Options == Settings.GetSecurityOptions())
@@ -513,7 +560,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			DefaultExt = ".json",
 			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
 			CheckPathExists = true,
-			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
 		};
 		var result = browser.ShowDialog();
 		if (result != true)
@@ -532,7 +579,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			DefaultExt = ".json",
 			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
 			CheckPathExists = true,
-			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
 		};
 		var result = browser.ShowDialog();
 		if (result != true)
@@ -590,7 +637,8 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	public string NewUrlShortener { get; set; } = string.Empty;
 
-	private bool CanAddShortener(string? domain) => !(string.IsNullOrWhiteSpace(domain) || Settings.UrlShorteners.Contains(domain));
+	private bool CanAddShortener(string? domain) =>
+		!(string.IsNullOrWhiteSpace(domain) || Settings.UrlShorteners.Contains(domain));
 
 	private void AddUrlShortener(string? domain)
 	{
@@ -598,14 +646,17 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			return;
 		}
-		Settings.UrlShorteners = [..Settings.UrlShorteners, domain!];
+		Settings.UrlShorteners = [.. Settings.UrlShorteners, domain!];
 		NewUrlShortener = string.Empty;
 		OnPropertyChanged(nameof(NewUrlShortener));
 		OnPropertyChanged(nameof(DefaultUrlShorteners));
 		OnPropertyChanged(nameof(AdditionalUrlShorteners));
 	}
 
-	private bool CanRemoveShortener(string? domain) => !string.IsNullOrWhiteSpace(domain) && Settings.UrlShorteners.Contains(domain) && !UrlHandler.DefaultUrlShorteners.Contains(domain);
+	private bool CanRemoveShortener(string? domain) =>
+		!string.IsNullOrWhiteSpace(domain)
+		&& Settings.UrlShorteners.Contains(domain)
+		&& !UrlHandler.DefaultUrlShorteners.Contains(domain);
 
 	private void RemoveUrlShortener(string? domain)
 	{
@@ -831,20 +882,22 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void UpdateSettings()
 	{
-		BrowserViewModel[] added = [..
-			from browser in Settings.BrowserList
+		BrowserViewModel[] added =
+		[
+			.. from browser in Settings.BrowserList
 			where ParentViewModel.Choices.All(c => c.Model.Name != browser.Name)
-			select new BrowserViewModel(browser, ParentViewModel)
+			select new BrowserViewModel(browser, ParentViewModel),
 		];
 		foreach (var vm in added)
 		{
 			ParentViewModel.Choices.Add(vm);
 		}
 
-		BrowserViewModel[] removed = [..
-			from choice in ParentViewModel.Choices
+		BrowserViewModel[] removed =
+		[
+			.. from choice in ParentViewModel.Choices
 			where Settings.BrowserList.All(b => b.Name != choice.Model.Name)
-			select choice
+			select choice,
 		];
 		foreach (var m in removed)
 		{
@@ -876,7 +929,9 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void ChoiceModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName is nameof(BrowserModel.Disabled) or nameof(BrowserModel.Removed) or nameof(BrowserModel.Name))
+		if (
+			e.PropertyName is nameof(BrowserModel.Disabled) or nameof(BrowserModel.Removed) or nameof(BrowserModel.Name)
+		)
 		{
 			OnTestDefaultsStateChanged();
 		}
@@ -895,10 +950,11 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void UpdateDefaults()
 	{
-		DefaultSetting[] added = [..
-			from current in Settings.Defaults.Except(Defaults)
+		DefaultSetting[] added =
+		[
+			.. from current in Settings.Defaults.Except(Defaults)
 			where current.Type != MatchType.Default && !current.Deleted
-			select current
+			select current,
 		];
 		foreach (var setting in added)
 		{
@@ -973,7 +1029,9 @@ public sealed class ConfigurationViewModel : ModelBase
 			{
 				return "User choice";
 			}
-			var choice = ParentViewModel.Choices.FirstOrDefault(c => c.Model.Id == idOrName || c.Model.Name == idOrName);
+			var choice = ParentViewModel.Choices.FirstOrDefault(c =>
+				c.Model.Id == idOrName || c.Model.Name == idOrName
+			);
 			return choice?.Model.Name ?? idOrName;
 		}
 	}
@@ -983,10 +1041,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	public string TestActualResult
 	{
-		get
-		{
-			return ParentViewModel.GetBrowserToLaunch(test_defaults_url).Browser?.Model.Name ?? "User choice";
-		}
+		get { return ParentViewModel.GetBrowserToLaunch(test_defaults_url).Browser?.Model.Name ?? "User choice"; }
 	}
 
 	private void PrefillTestDefaultsUrl()

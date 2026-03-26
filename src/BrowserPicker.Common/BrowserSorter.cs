@@ -13,14 +13,16 @@ public class BrowserSorter(IApplicationSettings configuration) : IComparer<Brows
 	{
 		if (x == null || y == null)
 		{
-			return x == null && y == null ? 0 : x == null ? -1 : 1;
+			return x == null && y == null ? 0
+				: x == null ? -1
+				: 1;
 		}
 
 		return configuration.SortBy switch
 		{
 			SerializableSettings.SortOrder.Alphabetical => string.Compare(x.Name, y.Name, StringComparison.Ordinal),
 			SerializableSettings.SortOrder.Manual => x.ManualOrder.CompareTo(y.ManualOrder),
-			_ => y.Usage.CompareTo(x.Usage)
+			_ => y.Usage.CompareTo(x.Usage),
 		};
 	}
 }

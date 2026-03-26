@@ -9,7 +9,8 @@ namespace BrowserPicker.Common;
 /// </summary>
 public sealed class SerializableSettings : IApplicationSettings
 {
-	public const string JsonSchemaUrl = "https://cdn.jsdelivr.net/gh/mortenn/BrowserPicker@main/schemas/browserpicker-settings.schema.json";
+	public const string JsonSchemaUrl =
+		"https://cdn.jsdelivr.net/gh/mortenn/BrowserPicker@main/schemas/browserpicker-settings.schema.json";
 
 	/// <summary>
 	/// Initializes a new instance by copying from an existing <see cref="IApplicationSettings"/> instance.
@@ -34,8 +35,10 @@ public sealed class SerializableSettings : IApplicationSettings
 		UrlShorteners = applicationSettings.UrlShorteners;
 		BrowserList = [.. applicationSettings.BrowserList.Where(b => !b.Removed)];
 		Defaults = [.. applicationSettings.Defaults.Where(d => !d.Deleted && !string.IsNullOrWhiteSpace(d.Browser))];
-		KeyBindings = applicationSettings.KeyBindings
-			.Where(kb => applicationSettings.BrowserList.Any(b => (b.Id == kb.Browser || b.Name == kb.Browser) && !b.Removed))
+		KeyBindings = applicationSettings
+			.KeyBindings.Where(kb =>
+				applicationSettings.BrowserList.Any(b => (b.Id == kb.Browser || b.Name == kb.Browser) && !b.Removed)
+			)
 			.ToList();
 		AutoSizeWindow = applicationSettings.AutoSizeWindow;
 		WindowWidth = applicationSettings.WindowWidth;
@@ -50,9 +53,7 @@ public sealed class SerializableSettings : IApplicationSettings
 	/// <summary>
 	/// Parameterless constructor for JSON deserialization.
 	/// </summary>
-	public SerializableSettings()
-	{
-	}
+	public SerializableSettings() { }
 
 	/// <summary>
 	/// URL of the JSON schema describing this document.
@@ -62,38 +63,54 @@ public sealed class SerializableSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public bool FirstTime { get; set; }
+
 	/// <inheritdoc />
 	public bool AlwaysPrompt { get; set; }
+
 	/// <inheritdoc />
 	public bool AlwaysUseDefaults { get; set; }
+
 	/// <inheritdoc />
 	public bool AlwaysAskWithoutDefault { get; set; }
+
 	/// <inheritdoc />
 	public int UrlLookupTimeoutMilliseconds { get; set; }
+
 	/// <inheritdoc />
 	public bool DisableTransparency { get; set; }
+
 	/// <inheritdoc />
 	public double WindowOpacity { get; set; } = 0.92;
+
 	/// <inheritdoc />
 	public bool DisableNetworkAccess { get; set; }
+
 	/// <inheritdoc />
 	public bool ProbeRedirects { get; set; } = true;
+
 	/// <inheritdoc />
 	public bool RedirectsKnownOnly { get; set; } = true;
+
 	/// <inheritdoc />
 	public bool ProbeFavicons { get; set; } = true;
+
 	/// <inheritdoc />
 	public bool FaviconsForDefaults { get; set; } = true;
+
 	/// <summary>
 	/// When true, the picker closes itself when it loses focus. Defaults to being enabled.
 	/// </summary>
 	public bool AutoCloseOnFocusLost { get; set; } = true;
+
 	/// <inheritdoc />
 	public string[] UrlShorteners { get; set; } = [];
+
 	/// <inheritdoc />
 	public List<BrowserModel> BrowserList { get; init; } = [];
+
 	/// <inheritdoc />
 	public List<DefaultSetting> Defaults { get; init; } = [];
+
 	/// <inheritdoc />
 	public List<KeyBinding> KeyBindings { get; init; } = [];
 
@@ -175,9 +192,11 @@ public sealed class SerializableSettings : IApplicationSettings
 	{
 		/// <summary>Order by usage (most used first).</summary>
 		Automatic,
+
 		/// <summary>Order by user-defined manual order.</summary>
 		Manual,
+
 		/// <summary>Order alphabetically by browser name.</summary>
-		Alphabetical
+		Alphabetical,
 	}
 }

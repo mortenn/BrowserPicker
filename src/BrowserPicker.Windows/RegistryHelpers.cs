@@ -1,5 +1,5 @@
-﻿using Microsoft.Win32;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.Win32;
 
 namespace BrowserPicker.Windows;
 

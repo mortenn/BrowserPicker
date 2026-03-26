@@ -4,14 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Text.RegularExpressions;
+using BrowserPicker.Common.Framework;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using BrowserPicker.Common.Framework;
-
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -41,14 +40,14 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		probe_favicons = canProbe && settings.ProbeFavicons;
 		favicons_for_defaults = settings.FaviconsForDefaults;
 		logger.LogNetworkAccessDisabled(!probe_redirects && !probe_favicons);
-		url_shorteners = [..settings.UrlShorteners];
+		url_shorteners = [.. settings.UrlShorteners];
 		defaults = [.. settings.Defaults];
 
 		// Add new ones to config as requested
 		var newShorteners = DefaultUrlShorteners.Except(url_shorteners).ToArray();
 		if (newShorteners.Length > 0)
 		{
-			settings.UrlShorteners = [..settings.UrlShorteners, ..newShorteners];
+			settings.UrlShorteners = [.. settings.UrlShorteners, .. newShorteners];
 		}
 
 		TargetURL = requestedUrl;
@@ -80,7 +79,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		redirects_known_only = true;
 		probe_favicons = false;
 		favicons_for_defaults = true;
-		url_shorteners = [..DefaultUrlShorteners];
+		url_shorteners = [.. DefaultUrlShorteners];
 		defaults = [];
 		TargetURL = "https://www.github.com/mortenn/BrowserPicker";
 		uri = new Uri(TargetURL);
@@ -378,7 +377,8 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		var root = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
 			nameof(BrowserPicker),
-			"favicons");
+			"favicons"
+		);
 		return Path.Combine(root, $"{host}.bin");
 	}
 
@@ -392,7 +392,12 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		).FirstOrDefault(underlyingUrl => underlyingUrl != null);
 	}
 
-	private static bool ShouldProbeFavicon(Uri pageUri, bool probeFavicons, bool faviconsForDefaults, IEnumerable<DefaultSetting> rules)
+	private static bool ShouldProbeFavicon(
+		Uri pageUri,
+		bool probeFavicons,
+		bool faviconsForDefaults,
+		IEnumerable<DefaultSetting> rules
+	)
 	{
 		if (!probeFavicons)
 		{
@@ -521,14 +526,14 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		"bit.do",
 		"mcaf.ee",
 		"su.pr",
-		"go.microsoft.com"
+		"go.microsoft.com",
 	];
 
 	private static readonly List<(string url, string parameter)> JumpPages =
 	[
 		("safelinks.protection.outlook.com", "url"),
 		("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),
-		("https://l.facebook.com/l.php", "u")
+		("https://l.facebook.com/l.php", "u"),
 	];
 
 	private Uri? uri;

@@ -57,7 +57,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		WriteIndented = true,
 		AllowTrailingCommas = true,
-		ReadCommentHandling = JsonCommentHandling.Skip
+		ReadCommentHandling = JsonCommentHandling.Skip,
 	};
 
 	/// <summary>
@@ -65,7 +65,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	/// </summary>
 	private static string GetSettingsFilePath()
 	{
-		var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(BrowserPicker));
+		var dir = Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+			nameof(BrowserPicker)
+		);
 		return Path.Combine(dir, "settings.json");
 	}
 
@@ -104,7 +107,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			MigrateFrom(migrateFrom);
 		}
 
-		use_fallback_default = !string.IsNullOrWhiteSpace(Defaults.FirstOrDefault(d => d.Type == Common.MatchType.Default)?.Browser);
+		use_fallback_default = !string.IsNullOrWhiteSpace(
+			Defaults.FirstOrDefault(d => d.Type == Common.MatchType.Default)?.Browser
+		);
 
 		// When we migrated, UpdateDefaults and AddBrowser already attached handlers; otherwise attach now (e.g. after LoadFromFile).
 		var alreadySubscribed = migrateFrom != null;
@@ -139,11 +144,53 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		logger.LogInformation("Migrated configuration from registry to {Path}", settings_path);
 	}
 
-	public bool FirstTime { get => first_time; set { if (SetProperty(ref first_time, value)) SaveToFile(); } }
-	public bool AlwaysPrompt { get => always_prompt; set { if (SetProperty(ref always_prompt, value)) SaveToFile(); } }
-	public bool AlwaysUseDefaults { get => always_use_defaults; set { if (SetProperty(ref always_use_defaults, value)) SaveToFile(); } }
-	public bool AlwaysAskWithoutDefault { get => always_ask_without_default; set { if (SetProperty(ref always_ask_without_default, value)) SaveToFile(); if (value && use_fallback_default) UseFallbackDefault = false; } }
-	public int UrlLookupTimeoutMilliseconds { get => url_lookup_timeout_milliseconds; set { if (SetProperty(ref url_lookup_timeout_milliseconds, value)) SaveToFile(); } }
+	public bool FirstTime
+	{
+		get => first_time;
+		set
+		{
+			if (SetProperty(ref first_time, value))
+				SaveToFile();
+		}
+	}
+	public bool AlwaysPrompt
+	{
+		get => always_prompt;
+		set
+		{
+			if (SetProperty(ref always_prompt, value))
+				SaveToFile();
+		}
+	}
+	public bool AlwaysUseDefaults
+	{
+		get => always_use_defaults;
+		set
+		{
+			if (SetProperty(ref always_use_defaults, value))
+				SaveToFile();
+		}
+	}
+	public bool AlwaysAskWithoutDefault
+	{
+		get => always_ask_without_default;
+		set
+		{
+			if (SetProperty(ref always_ask_without_default, value))
+				SaveToFile();
+			if (value && use_fallback_default)
+				UseFallbackDefault = false;
+		}
+	}
+	public int UrlLookupTimeoutMilliseconds
+	{
+		get => url_lookup_timeout_milliseconds;
+		set
+		{
+			if (SetProperty(ref url_lookup_timeout_milliseconds, value))
+				SaveToFile();
+		}
+	}
 	public SerializableSettings.SortOrder SortBy
 	{
 		get => sort_by;
@@ -197,23 +244,164 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			}
 		}
 	}
-	public bool DisableTransparency { get => disable_transparency; set { if (SetProperty(ref disable_transparency, value)) SaveToFile(); } }
-	public double WindowOpacity { get => window_opacity; set { var rounded = Math.Round(Math.Clamp(value, 0.5, 1.0), 2); if (SetProperty(ref window_opacity, rounded)) SaveToFile(); } }
-	public bool DisableNetworkAccess { get => disable_network_access; set { if (SetProperty(ref disable_network_access, value)) SaveToFile(); } }
-	public bool ProbeRedirects { get => probe_redirects; set { if (SetProperty(ref probe_redirects, value)) SaveToFile(); } }
-	public bool RedirectsKnownOnly { get => redirects_known_only; set { if (SetProperty(ref redirects_known_only, value)) SaveToFile(); } }
-	public bool ProbeFavicons { get => probe_favicons; set { if (SetProperty(ref probe_favicons, value)) SaveToFile(); } }
-	public bool FaviconsForDefaults { get => favicons_for_defaults; set { if (SetProperty(ref favicons_for_defaults, value)) SaveToFile(); } }
-	public bool AutoCloseOnFocusLost { get => auto_close_on_focus_lost; set { if (SetProperty(ref auto_close_on_focus_lost, value)) SaveToFile(); } }
-	public string[] UrlShorteners { get => url_shorteners; set { if (SetProperty(ref url_shorteners, value)) SaveToFile(); } }
-	public bool AutoSizeWindow { get => auto_size_window; set { if (SetProperty(ref auto_size_window, value)) SaveToFile(); } }
-	public double WindowWidth { get => window_width; set { var normalized = NormalizeMainWindowDimension(value, MinWindowWidth); if (SetProperty(ref window_width, normalized)) SaveToFile(); } }
-	public double WindowHeight { get => window_height; set { var normalized = NormalizeMainWindowDimension(value, MinWindowHeight); if (SetProperty(ref window_height, normalized)) SaveToFile(); } }
-	public double ConfigWindowWidth { get => config_window_width; set { var normalized = NormalizeConfigWindowDimension(value, MinWindowWidth, DefaultConfigWindowWidth); if (SetProperty(ref config_window_width, normalized)) SaveToFile(); } }
-	public double ConfigWindowHeight { get => config_window_height; set { var normalized = NormalizeConfigWindowDimension(value, MinWindowHeight, DefaultConfigWindowHeight); if (SetProperty(ref config_window_height, normalized)) SaveToFile(); } }
-	public double FontSize { get => font_size; set { if (SetProperty(ref font_size, value)) SaveToFile(); } }
-	public ThemeMode ThemeMode { get => theme_mode; set { if (SetProperty(ref theme_mode, value)) SaveToFile(); } }
-	public ProfileDisplayMode ProfileDisplayMode { get => profile_display_mode; set { if (SetProperty(ref profile_display_mode, value)) SaveToFile(); } }
+	public bool DisableTransparency
+	{
+		get => disable_transparency;
+		set
+		{
+			if (SetProperty(ref disable_transparency, value))
+				SaveToFile();
+		}
+	}
+	public double WindowOpacity
+	{
+		get => window_opacity;
+		set
+		{
+			var rounded = Math.Round(Math.Clamp(value, 0.5, 1.0), 2);
+			if (SetProperty(ref window_opacity, rounded))
+				SaveToFile();
+		}
+	}
+	public bool DisableNetworkAccess
+	{
+		get => disable_network_access;
+		set
+		{
+			if (SetProperty(ref disable_network_access, value))
+				SaveToFile();
+		}
+	}
+	public bool ProbeRedirects
+	{
+		get => probe_redirects;
+		set
+		{
+			if (SetProperty(ref probe_redirects, value))
+				SaveToFile();
+		}
+	}
+	public bool RedirectsKnownOnly
+	{
+		get => redirects_known_only;
+		set
+		{
+			if (SetProperty(ref redirects_known_only, value))
+				SaveToFile();
+		}
+	}
+	public bool ProbeFavicons
+	{
+		get => probe_favicons;
+		set
+		{
+			if (SetProperty(ref probe_favicons, value))
+				SaveToFile();
+		}
+	}
+	public bool FaviconsForDefaults
+	{
+		get => favicons_for_defaults;
+		set
+		{
+			if (SetProperty(ref favicons_for_defaults, value))
+				SaveToFile();
+		}
+	}
+	public bool AutoCloseOnFocusLost
+	{
+		get => auto_close_on_focus_lost;
+		set
+		{
+			if (SetProperty(ref auto_close_on_focus_lost, value))
+				SaveToFile();
+		}
+	}
+	public string[] UrlShorteners
+	{
+		get => url_shorteners;
+		set
+		{
+			if (SetProperty(ref url_shorteners, value))
+				SaveToFile();
+		}
+	}
+	public bool AutoSizeWindow
+	{
+		get => auto_size_window;
+		set
+		{
+			if (SetProperty(ref auto_size_window, value))
+				SaveToFile();
+		}
+	}
+	public double WindowWidth
+	{
+		get => window_width;
+		set
+		{
+			var normalized = NormalizeMainWindowDimension(value, MinWindowWidth);
+			if (SetProperty(ref window_width, normalized))
+				SaveToFile();
+		}
+	}
+	public double WindowHeight
+	{
+		get => window_height;
+		set
+		{
+			var normalized = NormalizeMainWindowDimension(value, MinWindowHeight);
+			if (SetProperty(ref window_height, normalized))
+				SaveToFile();
+		}
+	}
+	public double ConfigWindowWidth
+	{
+		get => config_window_width;
+		set
+		{
+			var normalized = NormalizeConfigWindowDimension(value, MinWindowWidth, DefaultConfigWindowWidth);
+			if (SetProperty(ref config_window_width, normalized))
+				SaveToFile();
+		}
+	}
+	public double ConfigWindowHeight
+	{
+		get => config_window_height;
+		set
+		{
+			var normalized = NormalizeConfigWindowDimension(value, MinWindowHeight, DefaultConfigWindowHeight);
+			if (SetProperty(ref config_window_height, normalized))
+				SaveToFile();
+		}
+	}
+	public double FontSize
+	{
+		get => font_size;
+		set
+		{
+			if (SetProperty(ref font_size, value))
+				SaveToFile();
+		}
+	}
+	public ThemeMode ThemeMode
+	{
+		get => theme_mode;
+		set
+		{
+			if (SetProperty(ref theme_mode, value))
+				SaveToFile();
+		}
+	}
+	public ProfileDisplayMode ProfileDisplayMode
+	{
+		get => profile_display_mode;
+		set
+		{
+			if (SetProperty(ref profile_display_mode, value))
+				SaveToFile();
+		}
+	}
 
 	public List<BrowserModel> BrowserList { get; }
 
@@ -230,9 +418,20 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		get => use_fallback_default;
 		set
 		{
-			if (value == use_fallback_default) return;
-			if (value) { AlwaysAskWithoutDefault = false; use_fallback_default = true; if (Defaults.All(d => d.Type != Common.MatchType.Default)) AddDefault(Common.MatchType.Default, string.Empty, null); }
-			else { use_fallback_default = false; DefaultBrowser = null; }
+			if (value == use_fallback_default)
+				return;
+			if (value)
+			{
+				AlwaysAskWithoutDefault = false;
+				use_fallback_default = true;
+				if (Defaults.All(d => d.Type != Common.MatchType.Default))
+					AddDefault(Common.MatchType.Default, string.Empty, null);
+			}
+			else
+			{
+				use_fallback_default = false;
+				DefaultBrowser = null;
+			}
 			OnPropertyChanged();
 			SaveToFile();
 		}
@@ -251,7 +450,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 				selection.PropertyChanged += DefaultSetting_PropertyChanged;
 				Defaults.Add(selection);
 			}
-			if (selection != null && value != selection.Browser) { selection.Browser = value; use_fallback_default = value != null; OnPropertyChanged(nameof(UseFallbackDefault)); }
+			if (selection != null && value != selection.Browser)
+			{
+				selection.Browser = value;
+				use_fallback_default = value != null;
+				OnPropertyChanged(nameof(UseFallbackDefault));
+			}
 			OnPropertyChanged();
 			SaveToFile();
 		}
@@ -310,15 +514,36 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		foreach (var profile in discovered)
 		{
 			var existing = browser.Profiles.FirstOrDefault(p =>
-				string.Equals(p.Id, profile.Id, StringComparison.OrdinalIgnoreCase));
+				string.Equals(p.Id, profile.Id, StringComparison.OrdinalIgnoreCase)
+			);
 
 			if (existing != null)
 			{
-				if (existing.Name != profile.Name) { existing.Name = profile.Name; changed = true; }
-				if (existing.CommandArgs != profile.CommandArgs) { existing.CommandArgs = profile.CommandArgs; changed = true; }
-				if (existing.UrlTemplate != profile.UrlTemplate) { existing.UrlTemplate = profile.UrlTemplate; changed = true; }
-				if (existing.IconColor != profile.IconColor) { existing.IconColor = profile.IconColor; changed = true; }
-				if (existing.ContainerIcon != profile.ContainerIcon) { existing.ContainerIcon = profile.ContainerIcon; changed = true; }
+				if (existing.Name != profile.Name)
+				{
+					existing.Name = profile.Name;
+					changed = true;
+				}
+				if (existing.CommandArgs != profile.CommandArgs)
+				{
+					existing.CommandArgs = profile.CommandArgs;
+					changed = true;
+				}
+				if (existing.UrlTemplate != profile.UrlTemplate)
+				{
+					existing.UrlTemplate = profile.UrlTemplate;
+					changed = true;
+				}
+				if (existing.IconColor != profile.IconColor)
+				{
+					existing.IconColor = profile.IconColor;
+					changed = true;
+				}
+				if (existing.ContainerIcon != profile.ContainerIcon)
+				{
+					existing.ContainerIcon = profile.ContainerIcon;
+					changed = true;
+				}
 				continue;
 			}
 
@@ -327,8 +552,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			changed = true;
 		}
 
-		var stale = browser.Profiles
-			.Where(p => discovered.All(d => !string.Equals(d.Id, p.Id, StringComparison.OrdinalIgnoreCase)))
+		var stale = browser
+			.Profiles.Where(p => discovered.All(d => !string.Equals(d.Id, p.Id, StringComparison.OrdinalIgnoreCase)))
 			.ToArray();
 
 		foreach (var profile in stale)
@@ -342,8 +567,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		for (var i = 0; i < discovered.Count && i < browser.Profiles.Count; i++)
 		{
 			var expectedId = discovered[i].Id;
-			var currentIdx = browser.Profiles.FindIndex(i, p =>
-				string.Equals(p.Id, expectedId, StringComparison.OrdinalIgnoreCase));
+			var currentIdx = browser.Profiles.FindIndex(
+				i,
+				p => string.Equals(p.Id, expectedId, StringComparison.OrdinalIgnoreCase)
+			);
 			if (currentIdx <= i)
 			{
 				continue;
@@ -364,10 +591,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			string.Equals(m.Id, model.Id, StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(m.Id, model.Name, StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(m.Name, model.Id, StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(m.Name, model.Name, StringComparison.OrdinalIgnoreCase));
+			|| string.Equals(m.Name, model.Name, StringComparison.OrdinalIgnoreCase)
+		);
 		if (update != null)
 		{
-			if (update.ManualOverride) return;
+			if (update.ManualOverride)
+				return;
 			update.Command = model.Command;
 			update.CommandArgs = model.CommandArgs;
 			update.PrivacyArgs = model.PrivacyArgs;
@@ -381,7 +610,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	public void AddDefault(Common.MatchType matchType, string pattern, string? browser, string? profile = null)
 	{
 		var setting = GetDefaultSetting(null, browser);
-		if (setting == null) return;
+		if (setting == null)
+			return;
 		setting.Type = matchType;
 		setting.Pattern = pattern;
 		setting.Profile = profile;
@@ -394,8 +624,13 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public Task Start(CancellationToken cancellationToken) => Task.Run(FindBrowsers, cancellationToken);
 
-	public string BackupLog { get => backup_log; private set => SetProperty(ref backup_log, value); }
+	public string BackupLog
+	{
+		get => backup_log;
+		private set => SetProperty(ref backup_log, value);
+	}
 	public IComparer<BrowserModel> BrowserSorter => sorter;
+
 	public string ExportSettingsJson() => JsonSerializer.Serialize(CreateSerializableSettings(), JsonOptions);
 
 	public void AppendBackupLog(string message)
@@ -410,7 +645,10 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			await File.WriteAllTextAsync(fileName, ExportSettingsJson());
 			AppendBackupLog($"Exported configuration to {fileName}");
 		}
-		catch (Exception e) { AppendBackupLog($"Unable to export configuration to {fileName}: {e.Message}"); }
+		catch (Exception e)
+		{
+			AppendBackupLog($"Unable to export configuration to {fileName}: {e.Message}");
+		}
 	}
 
 	public async Task LoadAsync(string fileName)
@@ -420,12 +658,16 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			var text = await File.ReadAllTextAsync(fileName);
 			TryImportSettingsJson(text, fileName);
 		}
-		catch (Exception ex) { AppendBackupLog($"Unable to read configuration from {fileName}: {ex.Message}"); }
+		catch (Exception ex)
+		{
+			AppendBackupLog($"Unable to read configuration from {fileName}: {ex.Message}");
+		}
 	}
 
 	private static DefaultSetting? GetDefaultSetting(string? key, string? value)
 	{
-		if (value == null) return null;
+		if (value == null)
+			return null;
 		var setting = DefaultSetting.Decode(key, value);
 		return setting ?? null;
 	}
@@ -448,8 +690,16 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		url_shorteners = s.UrlShorteners;
 		window_width = NormalizeMainWindowDimension(s.WindowWidth, MinWindowWidth);
 		window_height = NormalizeMainWindowDimension(s.WindowHeight, MinWindowHeight);
-		config_window_width = NormalizeConfigWindowDimension(s.ConfigWindowWidth, MinWindowWidth, DefaultConfigWindowWidth);
-		config_window_height = NormalizeConfigWindowDimension(s.ConfigWindowHeight, MinWindowHeight, DefaultConfigWindowHeight);
+		config_window_width = NormalizeConfigWindowDimension(
+			s.ConfigWindowWidth,
+			MinWindowWidth,
+			DefaultConfigWindowWidth
+		);
+		config_window_height = NormalizeConfigWindowDimension(
+			s.ConfigWindowHeight,
+			MinWindowHeight,
+			DefaultConfigWindowHeight
+		);
 		font_size = s.FontSize > 0 ? s.FontSize : 14;
 		theme_mode = s.ThemeMode;
 		profile_display_mode = s.ProfileDisplayMode;
@@ -478,8 +728,14 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		foreach (var browser in browserList)
 		{
 			browser.Id = string.IsNullOrEmpty(browser.Id) ? browser.Name : browser.Id;
-			var existing = BrowserList.FirstOrDefault(b => !b.Removed && (b.Id == browser.Id || b.Name == browser.Name));
-			if (existing == null || existing.Removed) { AddBrowser(browser); continue; }
+			var existing = BrowserList.FirstOrDefault(b =>
+				!b.Removed && (b.Id == browser.Id || b.Name == browser.Name)
+			);
+			if (existing == null || existing.Removed)
+			{
+				AddBrowser(browser);
+				continue;
+			}
 			existing.Name = browser.Name;
 			existing.Disabled = browser.Disabled;
 			existing.Executable = browser.Executable;
@@ -508,13 +764,28 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	{
 		var fallback = defaults.FirstOrDefault(d => d.Type == Common.MatchType.Default);
 		use_fallback_default = fallback?.Browser != null;
-		var fallbackId = fallback?.Browser != null ? BrowserList.FirstOrDefault(b => b.Id == fallback.Browser || b.Name == fallback.Browser)?.Id ?? fallback.Browser : null;
-		foreach (var d in Defaults) { d.PropertyChanged -= DefaultSetting_PropertyChanged; }
+		var fallbackId =
+			fallback?.Browser != null
+				? BrowserList.FirstOrDefault(b => b.Id == fallback.Browser || b.Name == fallback.Browser)?.Id
+					?? fallback.Browser
+				: null;
+		foreach (var d in Defaults)
+		{
+			d.PropertyChanged -= DefaultSetting_PropertyChanged;
+		}
 		Defaults.Clear();
-		if (fallbackId != null) { var def = new DefaultSetting(Common.MatchType.Default, string.Empty, fallbackId); def.PropertyChanged += DefaultSetting_PropertyChanged; Defaults.Add(def); }
+		if (fallbackId != null)
+		{
+			var def = new DefaultSetting(Common.MatchType.Default, string.Empty, fallbackId);
+			def.PropertyChanged += DefaultSetting_PropertyChanged;
+			Defaults.Add(def);
+		}
 		foreach (var setting in defaults.Where(s => s != fallback))
 		{
-			var browserId = string.IsNullOrEmpty(setting.Browser) ? null : BrowserList.FirstOrDefault(b => b.Id == setting.Browser || b.Name == setting.Browser)?.Id ?? setting.Browser;
+			var browserId = string.IsNullOrEmpty(setting.Browser)
+				? null
+				: BrowserList.FirstOrDefault(b => b.Id == setting.Browser || b.Name == setting.Browser)?.Id
+					?? setting.Browser;
 			var newSetting = new DefaultSetting(setting.Type, setting.Pattern, null, setting.Profile);
 			newSetting.PropertyChanged += DefaultSetting_PropertyChanged;
 			Defaults.Add(newSetting);
@@ -530,13 +801,15 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		foreach (var binding in keyBindings)
 		{
 			var browser = BrowserList.FirstOrDefault(b => b.Id == binding.Browser || b.Name == binding.Browser);
-			if (browser != null) browser.CustomKeyBind = binding.Key;
+			if (browser != null)
+				browser.CustomKeyBind = binding.Key;
 		}
 	}
 
 	private void DefaultSetting_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (sender is DefaultSetting) SaveToFile();
+		if (sender is DefaultSetting)
+			SaveToFile();
 	}
 
 	private void Browser_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -582,10 +855,14 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		try
 		{
 			var dir = Path.GetDirectoryName(settings_path);
-			if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+			if (!string.IsNullOrEmpty(dir))
+				Directory.CreateDirectory(dir);
 			File.WriteAllText(settings_path, ExportSettingsJson());
 		}
-		catch (Exception ex) { logger.LogWarning(ex, "Failed to save settings to {Path}", settings_path); }
+		catch (Exception ex)
+		{
+			logger.LogWarning(ex, "Failed to save settings to {Path}", settings_path);
+		}
 	}
 
 	public void TryImportSettingsJson(string json, string sourceDescription)
@@ -606,11 +883,15 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		return new SerializableSettings(this)
 		{
 			AutoCloseOnFocusLost = auto_close_on_focus_lost,
-			Schema = SerializableSettings.JsonSchemaUrl
+			Schema = SerializableSettings.JsonSchemaUrl,
 		};
 	}
 
-	private SerializableSettings? DeserializeSettings(string json, string sourceDescription, out bool upgradedLegacySecurity)
+	private SerializableSettings? DeserializeSettings(
+		string json,
+		string sourceDescription,
+		out bool upgradedLegacySecurity
+	)
 	{
 		upgradedLegacySecurity = false;
 		try
@@ -624,7 +905,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 			if (!LooksLikeSettingsDocument(root))
 			{
-				AppendBackupLog($"Unable to import configuration from {sourceDescription}: contents are not Browser Picker settings JSON.");
+				AppendBackupLog(
+					$"Unable to import configuration from {sourceDescription}: contents are not Browser Picker settings JSON."
+				);
 				return null;
 			}
 
@@ -635,7 +918,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 				return settings;
 			}
 
-			AppendBackupLog($"Unable to import configuration from {sourceDescription}: document could not be deserialized.");
+			AppendBackupLog(
+				$"Unable to import configuration from {sourceDescription}: document could not be deserialized."
+			);
 			return null;
 		}
 		catch (JsonException ex)
@@ -696,10 +981,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private static bool LooksLikeSettingsDocument(JsonObject root)
 	{
-		if (root.TryGetPropertyValue("$schema", out var schemaNode)
+		if (
+			root.TryGetPropertyValue("$schema", out var schemaNode)
 			&& schemaNode is JsonValue schemaValue
 			&& schemaValue.TryGetValue<string>(out var schema)
-			&& string.Equals(schema, SerializableSettings.JsonSchemaUrl, StringComparison.OrdinalIgnoreCase))
+			&& string.Equals(schema, SerializableSettings.JsonSchemaUrl, StringComparison.OrdinalIgnoreCase)
+		)
 		{
 			return true;
 		}
@@ -711,7 +998,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			nameof(SerializableSettings.UrlShorteners),
 			nameof(SerializableSettings.SortBy),
 			nameof(SerializableSettings.AutoSizeWindow),
-			nameof(SerializableSettings.AlwaysPrompt)
+			nameof(SerializableSettings.AlwaysPrompt),
 		];
 
 		return knownProperties.Count(root.ContainsKey) >= 2;
@@ -757,8 +1044,6 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private static SerializableSettings.SortOrder NormalizeSortOrder(SerializableSettings.SortOrder value)
 	{
-		return Enum.IsDefined(value)
-			? value
-			: SerializableSettings.SortOrder.Automatic;
+		return Enum.IsDefined(value) ? value : SerializableSettings.SortOrder.Automatic;
 	}
 }

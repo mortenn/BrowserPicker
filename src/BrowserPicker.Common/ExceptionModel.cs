@@ -1,6 +1,6 @@
+using System;
 using BrowserPicker.Common.Framework;
 using JetBrains.Annotations;
-using System;
 
 namespace BrowserPicker.Common;
 
@@ -13,9 +13,8 @@ public sealed class ExceptionModel(Exception exception) : ModelBase
 	/// Parameterless constructor for WPF designer; uses a sample exception.
 	/// </summary>
 	[UsedImplicitly]
-	public ExceptionModel() : this(new Exception("Test", new Exception("Test 2", new Exception("Test 3"))))
-	{
-	}
+	public ExceptionModel()
+		: this(new Exception("Test", new Exception("Test 2", new Exception("Test 3")))) { }
 
 	/// <summary>
 	/// The exception to display.

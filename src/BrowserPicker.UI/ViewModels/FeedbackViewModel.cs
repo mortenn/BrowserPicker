@@ -13,11 +13,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using BrowserPicker.Windows;
-using Microsoft.Extensions.Logging;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
-
+using BrowserPicker.Windows;
+using Microsoft.Extensions.Logging;
 #if DEBUG
 using JetBrains.Annotations;
 // ReSharper disable StringLiteralTypo
@@ -45,9 +44,7 @@ public sealed class FeedbackViewModel : ModelBase
 #if DEBUG
 	[UsedImplicitly]
 	public FeedbackViewModel()
-		: this(new DesignTimeSettings(), CreateDesignTimeLogBuffer())
-	{
-	}
+		: this(new DesignTimeSettings(), CreateDesignTimeLogBuffer()) { }
 #endif
 
 	public FeedbackViewModel(IBrowserPickerConfiguration settings, InMemoryLogBuffer? runtimeLogBuffer = null)
@@ -55,7 +52,8 @@ public sealed class FeedbackViewModel : ModelBase
 		this.settings = settings;
 		runtime_log_buffer = runtimeLogBuffer;
 		selected_application_log_level_option = ApplicationLogLevelOptions.All.First(option =>
-			option.MinimumLevel == LogLevel.Information);
+			option.MinimumLevel == LogLevel.Information
+		);
 		FilteredApplicationLogEntries = CollectionViewSource.GetDefaultView(application_log_entries);
 		FilteredApplicationLogEntries.Filter = FilterApplicationLogEntry;
 		if (runtime_log_buffer != null)
@@ -66,13 +64,15 @@ public sealed class FeedbackViewModel : ModelBase
 		SyncApplicationLogEntries();
 	}
 
-	public ICommand CopyFeedbackMarkdown => copy_feedback_markdown ??= new DelegateCommand(CopyFeedbackMarkdownToClipboard);
+	public ICommand CopyFeedbackMarkdown =>
+		copy_feedback_markdown ??= new DelegateCommand(CopyFeedbackMarkdownToClipboard);
 
 	public ICommand ReportBug => report_bug ??= new DelegateCommand(OpenBugReport);
 
 	public ICommand CopyApplicationLog => copy_application_log ??= new DelegateCommand(CopyApplicationLogToClipboard);
 
-	public ICommand ClearApplicationLogFilter => clear_application_log_filter ??= new DelegateCommand(() => ApplicationLogFilter = string.Empty);
+	public ICommand ClearApplicationLogFilter =>
+		clear_application_log_filter ??= new DelegateCommand(() => ApplicationLogFilter = string.Empty);
 
 	public ICollectionView FilteredApplicationLogEntries { get; }
 
@@ -115,12 +115,11 @@ public sealed class FeedbackViewModel : ModelBase
 
 	public int VisibleApplicationLogEntryCount => application_log_entries.Count(FilterApplicationLogEntry);
 
-	public string ApplicationLogStatus => runtime_log_buffer == null
-		? "Runtime logging is unavailable."
-		: string.IsNullOrWhiteSpace(ApplicationLogFilter)
-			&& VisibleApplicationLogEntryCount == ApplicationLogEntryCount
+	public string ApplicationLogStatus =>
+		runtime_log_buffer == null ? "Runtime logging is unavailable."
+		: string.IsNullOrWhiteSpace(ApplicationLogFilter) && VisibleApplicationLogEntryCount == ApplicationLogEntryCount
 			? $"Live capture · {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} retained · capacity {runtime_log_buffer.Capacity}"
-			: $"Live capture · showing {VisibleApplicationLogEntryCount} of {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} · {SelectedApplicationLogLevelOption.Label} · capacity {runtime_log_buffer.Capacity}";
+		: $"Live capture · showing {VisibleApplicationLogEntryCount} of {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} · {SelectedApplicationLogLevelOption.Label} · capacity {runtime_log_buffer.Capacity}";
 
 	private void CopyFeedbackMarkdownToClipboard()
 	{
@@ -161,8 +160,10 @@ public sealed class FeedbackViewModel : ModelBase
 	private bool FilterApplicationLogEntry(object? item) =>
 		item is InMemoryLogEntry entry
 		&& entry.Level >= SelectedApplicationLogLevelOption.MinimumLevel
-		&& (string.IsNullOrWhiteSpace(application_log_filter)
-			|| entry.SearchText.Contains(application_log_filter, StringComparison.OrdinalIgnoreCase));
+		&& (
+			string.IsNullOrWhiteSpace(application_log_filter)
+			|| entry.SearchText.Contains(application_log_filter, StringComparison.OrdinalIgnoreCase)
+		);
 
 	private void SyncApplicationLogEntries()
 	{
@@ -195,7 +196,9 @@ public sealed class FeedbackViewModel : ModelBase
 		builder.AppendLine($"- .NET runtime: `{Environment.Version}`");
 		builder.AppendLine($"- 64-bit process: `{Environment.Is64BitProcess}`");
 		builder.AppendLine($"- Browser count: `{settings.BrowserList.Count(b => !b.Removed)}`");
-		builder.AppendLine($"- Disabled browsers: `{settings.BrowserList.Count(b => b is { Removed: false, Disabled: true })}`");
+		builder.AppendLine(
+			$"- Disabled browsers: `{settings.BrowserList.Count(b => b is { Removed: false, Disabled: true })}`"
+		);
 		builder.AppendLine($"- Default rules: `{settings.Defaults.Count(d => !d.Deleted)}`");
 		builder.AppendLine();
 		builder.AppendLine("## Settings Dump");
@@ -295,7 +298,9 @@ public sealed class FeedbackViewModel : ModelBase
 		var builder = new StringBuilder();
 		foreach (var entry in application_log_entries)
 		{
-			builder.AppendLine($"{entry.TimestampDisplay} [{entry.LevelDisplay}] {entry.CategoryDisplay} {entry.EventDisplay} {FormatPlainTextMessage(entry.Segments, markdownCompatible)}");
+			builder.AppendLine(
+				$"{entry.TimestampDisplay} [{entry.LevelDisplay}] {entry.CategoryDisplay} {entry.EventDisplay} {FormatPlainTextMessage(entry.Segments, markdownCompatible)}"
+			);
 		}
 
 		return builder.ToString().TrimEnd();
@@ -345,11 +350,7 @@ public sealed class FeedbackViewModel : ModelBase
 	}
 
 	private static string EscapeMarkdownTableCell(string text) =>
-		text
-			.Replace("\\", @"\\")
-			.Replace("|", "\\|")
-			.Replace("\r\n", "<br/>")
-			.Replace("\n", "<br/>");
+		text.Replace("\\", @"\\").Replace("|", "\\|").Replace("\r\n", "<br/>").Replace("\n", "<br/>");
 
 	private static bool PruneJsonNode(JsonNode? node)
 	{
@@ -387,9 +388,10 @@ public sealed class FeedbackViewModel : ModelBase
 			JsonValue value when value.TryGetValue<string>(out var stringValue) => !string.IsNullOrEmpty(stringValue),
 			JsonValue value when value.TryGetValue<int>(out var intValue) => intValue != 0,
 			JsonValue value when value.TryGetValue<long>(out var longValue) => longValue != 0,
-			JsonValue value when value.TryGetValue<double>(out var doubleValue) => Math.Abs(doubleValue) > double.Epsilon,
+			JsonValue value when value.TryGetValue<double>(out var doubleValue) => Math.Abs(doubleValue)
+				> double.Epsilon,
 			JsonValue value when value.TryGetValue<decimal>(out var decimalValue) => decimalValue != 0,
-			_ => true
+			_ => true,
 		};
 	}
 
@@ -401,10 +403,7 @@ public sealed class FeedbackViewModel : ModelBase
 		{
 			if (!TryShortenJsonNode(working))
 			{
-				return new JsonObject
-				{
-					["_Truncated"] = "settings dump shortened for GitHub prefill"
-				};
+				return new JsonObject { ["_Truncated"] = "settings dump shortened for GitHub prefill" };
 			}
 		}
 
@@ -451,7 +450,6 @@ public sealed class FeedbackViewModel : ModelBase
 
 				obj.Remove(removable);
 				return true;
-
 			}
 			case JsonArray { Count: > 0 } arr:
 				arr.RemoveAt(arr.Count - 1);
@@ -492,31 +490,66 @@ public sealed class FeedbackViewModel : ModelBase
 	{
 		var buffer = new InMemoryLogBuffer(200);
 		var now = DateTimeOffset.Now;
-		buffer.Append(now.AddSeconds(-24), "BrowserPicker.UI", LogLevel.Debug, new EventId(1001, "LogApplicationLaunched"),
+		buffer.Append(
+			now.AddSeconds(-24),
+			"BrowserPicker.UI",
+			LogLevel.Debug,
+			new EventId(1001, "LogApplicationLaunched"),
 			"Application launched with arguments: https://github.com/mortenn/BrowserPicker",
 			[
 				new InMemoryLogSegment("Application launched with arguments: ", false),
-				new InMemoryLogSegment("https://github.com/mortenn/BrowserPicker", true)
-			], null);
-		buffer.Append(now.AddSeconds(-19), "BrowserPicker.Common.UrlHandler", LogLevel.Information, new EventId(1012, "LogFaviconLoaded"),
+				new InMemoryLogSegment("https://github.com/mortenn/BrowserPicker", true),
+			],
+			null
+		);
+		buffer.Append(
+			now.AddSeconds(-19),
+			"BrowserPicker.Common.UrlHandler",
+			LogLevel.Information,
+			new EventId(1012, "LogFaviconLoaded"),
 			"Favicon successfully loaded from URL: https://github.com/favicon.ico",
 			[
 				new InMemoryLogSegment("Favicon successfully loaded from URL: ", false),
-				new InMemoryLogSegment("https://github.com/favicon.ico", true)
-			], null);
-		buffer.Append(now.AddSeconds(-11), "BrowserPicker.UI.ViewModels.ApplicationViewModel", LogLevel.Information, new EventId(1020, "LogAutomationMatchesFound"),
+				new InMemoryLogSegment("https://github.com/favicon.ico", true),
+			],
+			null
+		);
+		buffer.Append(
+			now.AddSeconds(-11),
+			"BrowserPicker.UI.ViewModels.ApplicationViewModel",
+			LogLevel.Information,
+			new EventId(1020, "LogAutomationMatchesFound"),
 			"2 configured defaults match the url",
 			[
 				new InMemoryLogSegment("", false),
 				new InMemoryLogSegment("2", true),
-				new InMemoryLogSegment(" configured defaults match the url", false)
-			], null);
-		buffer.Append(now.AddSeconds(-6), "BrowserPicker.UI.ViewModels.ApplicationViewModel", LogLevel.Warning, new EventId(1104, "LogAutomationFallback"),
+				new InMemoryLogSegment(" configured defaults match the url", false),
+			],
+			null
+		);
+		buffer.Append(
+			now.AddSeconds(-6),
+			"BrowserPicker.UI.ViewModels.ApplicationViewModel",
+			LogLevel.Warning,
+			new EventId(1104, "LogAutomationFallback"),
 			"No running browser matched; falling back to user choice",
-			[new InMemoryLogSegment("No running browser matched; falling back to user choice", false)], null);
-		buffer.Append(now.AddSeconds(-2), "BrowserPicker.Windows.JsonAppSettings", LogLevel.Error, new EventId(1203, "LogImportFailed"),
+			[new InMemoryLogSegment("No running browser matched; falling back to user choice", false)],
+			null
+		);
+		buffer.Append(
+			now.AddSeconds(-2),
+			"BrowserPicker.Windows.JsonAppSettings",
+			LogLevel.Error,
+			new EventId(1203, "LogImportFailed"),
 			"Unable to import configuration from the clipboard: expected a JSON object.",
-			[new InMemoryLogSegment("Unable to import configuration from the clipboard: expected a JSON object.", false)], null);
+			[
+				new InMemoryLogSegment(
+					"Unable to import configuration from the clipboard: expected a JSON object.",
+					false
+				),
+			],
+			null
+		);
 		return buffer;
 	}
 
@@ -528,9 +561,33 @@ public sealed class FeedbackViewModel : ModelBase
 		public bool AlwaysAskWithoutDefault { get; set; }
 		public int UrlLookupTimeoutMilliseconds { get; set; } = 2000;
 		public SerializableSettings.SortOrder SortBy { get; set; } = SerializableSettings.SortOrder.Automatic;
-		public bool UseManualOrdering { get => SortBy == SerializableSettings.SortOrder.Manual; set { if (value) SortBy = SerializableSettings.SortOrder.Manual; } }
-		public bool UseAutomaticOrdering { get => SortBy == SerializableSettings.SortOrder.Automatic; set { if (value) SortBy = SerializableSettings.SortOrder.Automatic; } }
-		public bool UseAlphabeticalOrdering { get => SortBy == SerializableSettings.SortOrder.Alphabetical; set { if (value) SortBy = SerializableSettings.SortOrder.Alphabetical; } }
+		public bool UseManualOrdering
+		{
+			get => SortBy == SerializableSettings.SortOrder.Manual;
+			set
+			{
+				if (value)
+					SortBy = SerializableSettings.SortOrder.Manual;
+			}
+		}
+		public bool UseAutomaticOrdering
+		{
+			get => SortBy == SerializableSettings.SortOrder.Automatic;
+			set
+			{
+				if (value)
+					SortBy = SerializableSettings.SortOrder.Automatic;
+			}
+		}
+		public bool UseAlphabeticalOrdering
+		{
+			get => SortBy == SerializableSettings.SortOrder.Alphabetical;
+			set
+			{
+				if (value)
+					SortBy = SerializableSettings.SortOrder.Alphabetical;
+			}
+		}
 		public bool DisableTransparency { get; set; } = true;
 		public double WindowOpacity { get; set; } = 0.92;
 		public bool DisableNetworkAccess { get; set; }
@@ -547,10 +604,16 @@ public sealed class FeedbackViewModel : ModelBase
 				Profiles =
 				{
 					new BrowserProfile("container:Work", "Work", null, "ext+container:name=Work&url={url}")
-						{ IconColor = "orange", ContainerIcon = "briefcase" },
+					{
+						IconColor = "orange",
+						ContainerIcon = "briefcase",
+					},
 					new BrowserProfile("container:Personal", "Personal", null, "ext+container:name=Personal&url={url}")
-						{ IconColor = "blue", ContainerIcon = "fingerprint" }
-				}
+					{
+						IconColor = "blue",
+						ContainerIcon = "fingerprint",
+					},
+				},
 			},
 			new(Edge.Instance, null, string.Empty) { Usage = 3, Disabled = true },
 			new(Chrome.Instance, null, string.Empty)
@@ -559,14 +622,14 @@ public sealed class FeedbackViewModel : ModelBase
 				Profiles =
 				{
 					new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
-					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """)
-				}
-			}
+					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """),
+				},
+			},
 		];
 		public List<DefaultSetting> Defaults { get; } =
 		[
 			new(MatchType.Hostname, "github.com", Firefox.Instance.Name),
-			new(MatchType.Default, string.Empty, Firefox.Instance.Name)
+			new(MatchType.Default, string.Empty, Firefox.Instance.Name),
 		];
 		public List<Common.KeyBinding> KeyBindings { get; } = [];
 		public bool AutoSizeWindow { get; set; } = true;
@@ -588,17 +651,11 @@ public sealed class FeedbackViewModel : ModelBase
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BrowserList)));
 		}
 
-		public void PersistBrowser(BrowserModel _)
-		{
-		}
+		public void PersistBrowser(BrowserModel _) { }
 
-		public void FindBrowsers()
-		{
-		}
+		public void FindBrowsers() { }
 
-		public void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null)
-		{
-		}
+		public void AddDefault(MatchType matchType, string pattern, string browser, string? profile = null) { }
 
 		public Task SaveAsync(string fileName) => Task.CompletedTask;
 

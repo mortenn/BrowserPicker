@@ -46,17 +46,24 @@ internal static class Program
 		var app = host.Services.GetRequiredService<App>();
 
 		// Fluent theme (Windows 10/11) first, then app resources
-		app.Resources.MergedDictionaries.Add(new ResourceDictionary
-		{
-			Source = new Uri("pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml", UriKind.Absolute)
-		});
-		app.Resources.MergedDictionaries.Add(new ResourceDictionary
-		{
-			Source = new Uri(
-				"pack://application:,,,/BrowserPicker;component/Resources/ResourceDictionary.xaml",
-				UriKind.Absolute
-			)
-		});
+		app.Resources.MergedDictionaries.Add(
+			new ResourceDictionary
+			{
+				Source = new Uri(
+					"pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml",
+					UriKind.Absolute
+				),
+			}
+		);
+		app.Resources.MergedDictionaries.Add(
+			new ResourceDictionary
+			{
+				Source = new Uri(
+					"pack://application:,,,/BrowserPicker;component/Resources/ResourceDictionary.xaml",
+					UriKind.Absolute
+				),
+			}
+		);
 		// Content theme brushes before Run() so DynamicResource resolves when windows load.
 		app.AddContentThemeDictionary(configuration.ThemeMode);
 		var logger = host.Services.GetRequiredService<ILogger<App>>();

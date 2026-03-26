@@ -24,11 +24,10 @@ public sealed class AppSettings : IApplicationSettings
 			AlwaysUseDefaults = Reg.Get<bool>();
 			AlwaysAskWithoutDefault = Reg.Get<bool>();
 			UrlLookupTimeoutMilliseconds = Reg.Get(2000);
-			SortBy = Reg.Get<bool>(name: nameof(UseManualOrdering))
-				? SerializableSettings.SortOrder.Manual
-				: Reg.Get<bool>(name: nameof(UseAlphabeticalOrdering))
-					? SerializableSettings.SortOrder.Alphabetical
-					: SerializableSettings.SortOrder.Automatic;
+			SortBy =
+				Reg.Get<bool>(name: nameof(UseManualOrdering)) ? SerializableSettings.SortOrder.Manual
+				: Reg.Get<bool>(name: nameof(UseAlphabeticalOrdering)) ? SerializableSettings.SortOrder.Alphabetical
+				: SerializableSettings.SortOrder.Automatic;
 			DisableTransparency = Reg.Get<bool>();
 			DisableNetworkAccess = Reg.Get<bool>();
 			ProbeRedirects = !DisableNetworkAccess;
@@ -168,25 +167,32 @@ public sealed class AppSettings : IApplicationSettings
 
 	private List<DefaultSetting> GetDefaults()
 	{
-		if (Reg == null) return [];
+		if (Reg == null)
+			return [];
 		using var key = Reg.OpenSubKey(nameof(Defaults), false);
-		if (key == null) return [];
+		if (key == null)
+			return [];
 		var valueNames = key.GetValueNames();
 		var list = new List<DefaultSetting>();
 		// Read-only: treat legacy |Default| as default (empty pattern); do not mutate registry.
 		if (valueNames.Contains("|Default|") && key.GetValue("|Default|") is string legacyDefault)
 		{
-			var browserId = BrowserList.FirstOrDefault(b => b.Id == legacyDefault || b.Name == legacyDefault)?.Id ?? legacyDefault;
+			var browserId =
+				BrowserList.FirstOrDefault(b => b.Id == legacyDefault || b.Name == legacyDefault)?.Id ?? legacyDefault;
 			var setting = GetDefaultSetting(string.Empty, browserId);
-			if (setting != null) list.Add(setting);
+			if (setting != null)
+				list.Add(setting);
 		}
 		foreach (var pattern in valueNames.Where(p => p != "|Default|"))
 		{
-			if (key.GetValue(pattern) is not string value) continue;
-			var browser = BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value);
+			if (key.GetValue(pattern) is not string value)
+				continue;
+			var browser =
+				BrowserList.FirstOrDefault(b => b.Id == value) ?? BrowserList.FirstOrDefault(b => b.Name == value);
 			var browserId = browser?.Id ?? value;
 			var setting = GetDefaultSetting(pattern, browserId);
-			if (setting != null) list.Add(setting);
+			if (setting != null)
+				list.Add(setting);
 		}
 		return list;
 	}
@@ -203,9 +209,11 @@ public sealed class AppSettings : IApplicationSettings
 
 	private static List<BrowserModel> GetBrowsers(BrowserSorter sorter)
 	{
-		if (Reg == null) return [];
+		if (Reg == null)
+			return [];
 		using var list = Reg.OpenSubKey(nameof(BrowserList), false);
-		if (list == null) return [];
+		if (list == null)
+			return [];
 
 		var browsers = list.GetSubKeyNames()
 			.Select(browser => GetBrowser(list, browser))
@@ -228,7 +236,8 @@ public sealed class AppSettings : IApplicationSettings
 	private static BrowserModel? GetBrowser(RegistryKey list, string keyName)
 	{
 		using var config = list.OpenSubKey(keyName, false);
-		if (config == null) return null;
+		if (config == null)
+			return null;
 		using var keyBind = Reg?.OpenSubKey(nameof(BrowserModel.CustomKeyBind), false);
 		var browser = new BrowserModel
 		{
@@ -244,7 +253,11 @@ public sealed class AppSettings : IApplicationSettings
 			Disabled = config.GetBool(false, nameof(BrowserModel.Disabled)),
 			ExpandFileUrls = config.GetBool(false, nameof(BrowserModel.ExpandFileUrls)),
 			ManualOverride = config.GetBool(false, nameof(BrowserModel.ManualOverride)),
-			CustomKeyBind = keyBind != null ? keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == keyName) ?? string.Empty : string.Empty
+			CustomKeyBind =
+				keyBind != null
+					? keyBind.GetValueNames().FirstOrDefault(v => keyBind.Get<string>(null, v) == keyName)
+						?? string.Empty
+					: string.Empty,
 		};
 		return string.IsNullOrWhiteSpace(browser.Command) ? null : browser;
 	}

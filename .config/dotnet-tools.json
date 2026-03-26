@@ -2,10 +2,10 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "wix": {
-      "version": "6.0.2",
+    "csharpier": {
+      "version": "1.2.6",
       "commands": [
-        "wix"
+        "csharpier"
       ],
       "rollForward": false
     },
@@ -13,6 +13,13 @@
       "version": "3.7.0",
       "commands": [
         "Svg.Skia.Converter"
+      ],
+      "rollForward": false
+    },
+    "wix": {
+      "version": "6.0.2",
+      "commands": [
+        "wix"
       ],
       "rollForward": false
     }

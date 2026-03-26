@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-
 #if DEBUG
 using JetBrains.Annotations;
 #endif

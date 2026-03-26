@@ -1,15 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="NJsonSchema" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\BrowserPicker.Common\BrowserPicker.Common.csproj" />
   </ItemGroup>
-
 </Project>

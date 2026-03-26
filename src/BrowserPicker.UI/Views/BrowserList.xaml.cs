@@ -15,13 +15,20 @@ public partial class BrowserList
 
 	private void BrowserListScroll_SizeChanged(object? sender, SizeChangedEventArgs e)
 	{
-		Dispatcher.BeginInvoke(() =>
-		{
-			if (BrowserListScroll == null) return;
-			var pad = BrowserListScroll.ExtentHeight > BrowserListScroll.ViewportHeight && BrowserListScroll.ViewportHeight > 0
-				? new Thickness(0, 0, 18, 0) : new Thickness(0);
-			if (BrowserListScroll.Padding != pad)
-				BrowserListScroll.Padding = pad;
-		}, DispatcherPriority.Loaded);
+		Dispatcher.BeginInvoke(
+			() =>
+			{
+				if (BrowserListScroll == null)
+					return;
+				var pad =
+					BrowserListScroll.ExtentHeight > BrowserListScroll.ViewportHeight
+					&& BrowserListScroll.ViewportHeight > 0
+						? new Thickness(0, 0, 18, 0)
+						: new Thickness(0);
+				if (BrowserListScroll.Padding != pad)
+					BrowserListScroll.Padding = pad;
+			},
+			DispatcherPriority.Loaded
+		);
 	}
 }

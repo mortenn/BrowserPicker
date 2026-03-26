@@ -8,27 +8,22 @@ public static class PredefinedSecurityProfiles
 	{
 		Id = "default",
 		DisplayName = "Default",
-		Options = SecurityOptions.Default
+		Options = SecurityOptions.Default,
 	};
 
 	public static readonly ISecurityProfile MaxPrivacy = new SecurityProfile
 	{
 		Id = "max-privacy",
 		DisplayName = "Max privacy",
-		Options = SecurityOptions.MaxPrivacy
+		Options = SecurityOptions.MaxPrivacy,
 	};
 
 	public static readonly ISecurityProfile EnableAll = new SecurityProfile
 	{
 		Id = "enable-all",
 		DisplayName = "Enable all",
-		Options = SecurityOptions.EnableAll
+		Options = SecurityOptions.EnableAll,
 	};
 
-	public static readonly ISecurityProfile[] All =
-	[
-		Default,
-		MaxPrivacy,
-		EnableAll
-	];
+	public static readonly ISecurityProfile[] All = [Default, MaxPrivacy, EnableAll];
 }

@@ -12,12 +12,12 @@ namespace BrowserPicker.UI;
 /// </summary>
 public static class TextBlockInlineSegments
 {
-	public static readonly DependencyProperty SegmentsProperty =
-		DependencyProperty.RegisterAttached(
-			"Segments",
-			typeof(IEnumerable<InMemoryLogSegment>),
-			typeof(TextBlockInlineSegments),
-			new PropertyMetadata(null, OnSegmentsChanged));
+	public static readonly DependencyProperty SegmentsProperty = DependencyProperty.RegisterAttached(
+		"Segments",
+		typeof(IEnumerable<InMemoryLogSegment>),
+		typeof(TextBlockInlineSegments),
+		new PropertyMetadata(null, OnSegmentsChanged)
+	);
 
 	// ReSharper disable once UnusedMember.Global
 	public static void SetSegments(DependencyObject element, IEnumerable<InMemoryLogSegment>? value) =>

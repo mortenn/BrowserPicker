@@ -14,6 +14,6 @@ public static class ApplicationLogLevelOptions
 		new("Information and above", LogLevel.Information),
 		new("Warning and above", LogLevel.Warning),
 		new("Error and above", LogLevel.Error),
-		new("Critical only", LogLevel.Critical)
+		new("Critical only", LogLevel.Critical),
 	];
 }

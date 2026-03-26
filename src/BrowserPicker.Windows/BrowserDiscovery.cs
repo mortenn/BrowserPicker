@@ -82,9 +82,7 @@ public static class BrowserDiscovery
 			return null;
 
 		var known = WellKnownBrowsers.Lookup(name, shell);
-		return known != null
-			? new BrowserModel(known, icon, shell)
-			: new BrowserModel(name, icon, shell);
+		return known != null ? new BrowserModel(known, icon, shell) : new BrowserModel(name, icon, shell);
 	}
 
 	/// <summary>
@@ -101,7 +99,8 @@ public static class BrowserDiscovery
 	{
 		var known = WellKnownBrowsers.Lookup(
 			string.IsNullOrWhiteSpace(browser.Id) ? browser.Name : browser.Id,
-			browser.Executable ?? browser.Command);
+			browser.Executable ?? browser.Command
+		);
 
 		if (known?.UserDataPath == null)
 		{
@@ -112,7 +111,7 @@ public static class BrowserDiscovery
 		{
 			ProfileType.Chromium => ChromiumProfileDiscovery.Discover(known.UserDataPath, logger),
 			ProfileType.Firefox => FirefoxProfileDiscovery.Discover(known.UserDataPath, browser.Command, logger),
-			_ => null
+			_ => null,
 		};
 	}
 

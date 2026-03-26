@@ -54,11 +54,18 @@ public partial class Configuration
 	{
 		var hasLocalFeedbackDataContext =
 			FeedbackContentRoot.ReadLocalValue(DataContextProperty) != DependencyProperty.UnsetValue;
-		if (!FeedbackTab.IsSelected || hasLocalFeedbackDataContext || DataContext is not ConfigurationViewModel viewModel)
+		if (
+			!FeedbackTab.IsSelected
+			|| hasLocalFeedbackDataContext
+			|| DataContext is not ConfigurationViewModel viewModel
+		)
 		{
 			return;
 		}
 
-		FeedbackContentRoot.DataContext = new FeedbackViewModel(viewModel.Settings, App.Services.GetService<InMemoryLogBuffer>());
+		FeedbackContentRoot.DataContext = new FeedbackViewModel(
+			viewModel.Settings,
+			App.Services.GetService<InMemoryLogBuffer>()
+		);
 	}
 }
