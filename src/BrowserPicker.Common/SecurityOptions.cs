@@ -7,29 +7,32 @@ public sealed record SecurityOptions
 	public bool ProbeFavicons { get; set; }
 	public bool FaviconsForDefaults { get; set; }
 
-	public static SecurityOptions Default => new()
-	{
-		ProbeRedirects = true,
-		RedirectsKnownOnly = true,
-		ProbeFavicons = true,
-		FaviconsForDefaults = true
-	};
+	public static SecurityOptions Default =>
+		new()
+		{
+			ProbeRedirects = true,
+			RedirectsKnownOnly = true,
+			ProbeFavicons = true,
+			FaviconsForDefaults = true,
+		};
 
-	public static SecurityOptions MaxPrivacy => new()
-	{
-		ProbeRedirects = false,
-		RedirectsKnownOnly = true,
-		ProbeFavicons = false,
-		FaviconsForDefaults = true
-	};
+	public static SecurityOptions MaxPrivacy =>
+		new()
+		{
+			ProbeRedirects = false,
+			RedirectsKnownOnly = true,
+			ProbeFavicons = false,
+			FaviconsForDefaults = true,
+		};
 
-	public static SecurityOptions EnableAll => new()
-	{
-		ProbeRedirects = true,
-		RedirectsKnownOnly = false,
-		ProbeFavicons = true,
-		FaviconsForDefaults = false
-	};
+	public static SecurityOptions EnableAll =>
+		new()
+		{
+			ProbeRedirects = true,
+			RedirectsKnownOnly = false,
+			ProbeFavicons = true,
+			FaviconsForDefaults = false,
+		};
 }
 
 public static class SecuritySettingsExtensions
@@ -41,7 +44,7 @@ public static class SecuritySettingsExtensions
 			ProbeRedirects = settings.ProbeRedirects,
 			RedirectsKnownOnly = settings.RedirectsKnownOnly,
 			ProbeFavicons = settings.ProbeFavicons,
-			FaviconsForDefaults = settings.FaviconsForDefaults
+			FaviconsForDefaults = settings.FaviconsForDefaults,
 		};
 	}
 

@@ -1,0 +1,11 @@
+# WiX installer projects (no C# source)
+dist/
+
+# Generated schema files
+schemas/
+
+# XAML files – formatting managed by the IDE, XAML Styler used instead of CSharpier
+**/*.xaml
+
+*.csproj
+*.props

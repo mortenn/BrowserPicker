@@ -27,6 +27,7 @@ public partial class App
 
 	/// <summary>Content area brushes updated when ThemeMode changes so inherited text/background are readable (avoids white-on-white).</summary>
 	public const string ContentBackgroundBrushKey = "ContentBackgroundBrush";
+
 	/// <summary>Semi-transparent content background used when transparency is enabled (DisableTransparency = false).</summary>
 	public const string ContentBackgroundSemiTransparentBrushKey = "ContentBackgroundSemiTransparentBrush";
 	public const string ContentForegroundBrushKey = "ContentForegroundBrush";
@@ -48,7 +49,7 @@ public partial class App
 			return name.ToLowerInvariant().Replace("-", "") switch
 			{
 				"utf8" => Encoding.UTF8,
-				_ => null
+				_ => null,
 			};
 		}
 	}
@@ -91,7 +92,7 @@ public partial class App
 		{
 			Common.ThemeMode.Light => true,
 			Common.ThemeMode.Dark => false,
-			_ => IsSystemUsingLightTheme()
+			_ => IsSystemUsingLightTheme(),
 		};
 		Resources.MergedDictionaries.Add(CreateContentThemeDictionary(useLight));
 	}
@@ -123,7 +124,7 @@ public partial class App
 		{
 			Common.ThemeMode.Light => System.Windows.ThemeMode.Light,
 			Common.ThemeMode.Dark => System.Windows.ThemeMode.Dark,
-			_ => System.Windows.ThemeMode.System
+			_ => System.Windows.ThemeMode.System,
 		};
 #pragma warning disable WPF0001
 		var app = Current;
@@ -136,7 +137,7 @@ public partial class App
 		{
 			Common.ThemeMode.Light => true,
 			Common.ThemeMode.Dark => false,
-			_ => IsSystemUsingLightTheme()
+			_ => IsSystemUsingLightTheme(),
 		};
 		SwapContentThemeDictionary(Current.Resources, useLight);
 		// Force visual refresh so updated theme brushes are applied.
@@ -147,7 +148,9 @@ public partial class App
 	{
 		try
 		{
-			using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+			using var key = Registry.CurrentUser.OpenSubKey(
+				@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+			);
 			var value = key?.GetValue("AppsUseLightTheme");
 			return value is int i && i != 0;
 		}
@@ -175,7 +178,9 @@ public partial class App
 		{
 			// Slightly off-white so it's not stark; still clearly light.
 			d[ContentBackgroundBrushKey] = new SolidColorBrush(Color.FromRgb(0xEB, 0xEB, 0xEB));
-			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(Color.FromArgb(semiTransparentAlpha, 0xEB, 0xEB, 0xEB));
+			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(
+				Color.FromArgb(semiTransparentAlpha, 0xEB, 0xEB, 0xEB)
+			);
 			d[ContentForegroundBrushKey] = new SolidColorBrush(Colors.Black);
 			d[UrlBarBackgroundBrushKey] = new SolidColorBrush(Colors.White);
 			d[UrlBarForegroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x1A));
@@ -184,7 +189,9 @@ public partial class App
 		else
 		{
 			d[ContentBackgroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
-			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(Color.FromArgb(semiTransparentAlpha, 0x2D, 0x2D, 0x2D));
+			d[ContentBackgroundSemiTransparentBrushKey] = new SolidColorBrush(
+				Color.FromArgb(semiTransparentAlpha, 0x2D, 0x2D, 0x2D)
+			);
 			d[ContentForegroundBrushKey] = new SolidColorBrush(Colors.White);
 			d[UrlBarBackgroundBrushKey] = new SolidColorBrush(Colors.White);
 			d[UrlBarForegroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x1A));
@@ -200,21 +207,20 @@ public partial class App
 		{
 			Common.ThemeMode.Light => true,
 			Common.ThemeMode.Dark => false,
-			_ => IsSystemUsingLightTheme()
+			_ => IsSystemUsingLightTheme(),
 		};
 		background = useLight
 			? new SolidColorBrush(Color.FromRgb(0xEB, 0xEB, 0xEB))
 			: new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
-		foreground = useLight
-			? new SolidColorBrush(Colors.Black)
-			: new SolidColorBrush(Colors.White);
+		foreground = useLight ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.White);
 	}
 
 	/// <summary>Invalidate visual tree so DynamicResource re-resolves for content theme brushes.</summary>
 	private static void InvalidateContentTheme()
 	{
 		var main = Current.MainWindow;
-		if (main == null) return;
+		if (main == null)
+			return;
 		main.InvalidateVisual();
 		main.UpdateLayout();
 		foreach (Window w in Current.Windows)
@@ -300,9 +306,30 @@ public partial class App
 		}
 		catch (Exception exception)
 		{
-			try { if (urlLookup != null) await urlLookup.CancelAsync(); } catch { /* ignored */ }
-			try { if (loadingWindow != null) (await loadingWindow)?.Close(); } catch { /* ignored */ }
-			try { if (ViewModel != null) ViewModel.OnShutdown -= ExitApplication; } catch { /* ignored */ }
+			try
+			{
+				if (urlLookup != null)
+					await urlLookup.CancelAsync();
+			}
+			catch
+			{ /* ignored */
+			}
+			try
+			{
+				if (loadingWindow != null)
+					(await loadingWindow)?.Close();
+			}
+			catch
+			{ /* ignored */
+			}
+			try
+			{
+				if (ViewModel != null)
+					ViewModel.OnShutdown -= ExitApplication;
+			}
+			catch
+			{ /* ignored */
+			}
 			ShowExceptionReport(exception);
 		}
 	}
@@ -333,10 +360,7 @@ public partial class App
 		{
 			return;
 		}
-		MainWindow = new MainWindow
-		{
-			DataContext = ViewModel
-		};
+		MainWindow = new MainWindow { DataContext = ViewModel };
 		MainWindow.Show();
 		MainWindow.Focus();
 	}

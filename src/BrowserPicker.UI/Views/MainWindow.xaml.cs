@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using JetBrains.Annotations;
-using System.Linq;
 using BrowserPicker.Common;
 using BrowserPicker.UI.ViewModels;
+using JetBrains.Annotations;
 
 namespace BrowserPicker.UI.Views;
 
@@ -18,8 +18,10 @@ public partial class MainWindow
 	/// <summary>Ignore the next N SizeChanged events (programmatic or content-driven resize); only save when the user drags to resize.</summary>
 	private int suppress_size_change_save_count;
 	private bool content_rendered_handled;
+
 	/// <summary>True only after the user started a resize via the grip; ensures we only turn off AutoSizeWindow on actual user resize.</summary>
 	private bool user_initiated_resize;
+
 	/// <summary>True while the user is dragging the resize grip; we update Width/Height from mouse position.</summary>
 	private bool resizing_via_grip;
 
@@ -103,7 +105,11 @@ public partial class MainWindow
 			return;
 		content_rendered_handled = true;
 		// Re-apply saved size so it sticks after first layout; then center. In config mode we use config size (already set when entering config).
-		if (App.Settings is { } settings && !ViewModel.ConfigurationMode && settings is { AutoSizeWindow: false, WindowWidth: > 0, WindowHeight: > 0 })
+		if (
+			App.Settings is { } settings
+			&& !ViewModel.ConfigurationMode
+			&& settings is { AutoSizeWindow: false, WindowWidth: > 0, WindowHeight: > 0 }
+		)
 		{
 			Width = Math.Max(MinWidth, settings.WindowWidth);
 			Height = Math.Max(MinHeight, settings.WindowHeight);
@@ -189,7 +195,11 @@ public partial class MainWindow
 			{
 				var binding =
 					(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl) ? "Ctrl+" : string.Empty)
-					+ (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) ? "Shift+" : string.Empty)
+					+ (
+						Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)
+							? "Shift+"
+							: string.Empty
+					)
 					+ TypeDescriptor.GetConverter(typeof(Key)).ConvertToInvariantString(e.Key);
 
 				var configured = ViewModel.Choices.FirstOrDefault(vm => vm.Model.CustomKeyBind == binding);
@@ -221,29 +231,50 @@ public partial class MainWindow
 			switch (e.Key == Key.System ? e.SystemKey : e.Key)
 			{
 				case Key.Enter:
-				case Key.D1: n = 1; break;
-				case Key.D2: n = 2; break;
-				case Key.D3: n = 3; break;
-				case Key.D4: n = 4; break;
-				case Key.D5: n = 5; break;
-				case Key.D6: n = 6; break;
-				case Key.D7: n = 7; break;
-				case Key.D8: n = 8; break;
-				case Key.D9: n = 9; break;
+				case Key.D1:
+					n = 1;
+					break;
+				case Key.D2:
+					n = 2;
+					break;
+				case Key.D3:
+					n = 3;
+					break;
+				case Key.D4:
+					n = 4;
+					break;
+				case Key.D5:
+					n = 5;
+					break;
+				case Key.D6:
+					n = 6;
+					break;
+				case Key.D7:
+					n = 7;
+					break;
+				case Key.D8:
+					n = 8;
+					break;
+				case Key.D9:
+					n = 9;
+					break;
 				case Key.C:
 					e.Handled = true;
 					ViewModel.CopyUrl.Execute(null);
 					return;
-				default: return;
+				default:
+					return;
 			}
 
-			var digitShortcutChoices = ViewModel.PickerChoices
-				.Where(o => o switch
-				{
-					BrowserViewModel { Model: { Disabled: false, Removed: false } } => true,
-					BrowserProfileViewModel { ParentBrowser.Model: { Disabled: false, Removed: false } } => true,
-					_ => false
-				})
+			var digitShortcutChoices = ViewModel
+				.PickerChoices.Where(o =>
+					o switch
+					{
+						BrowserViewModel { Model: { Disabled: false, Removed: false } } => true,
+						BrowserProfileViewModel { ParentBrowser.Model: { Disabled: false, Removed: false } } => true,
+						_ => false,
+					}
+				)
 				.ToArray();
 
 			if (digitShortcutChoices.Length < n)

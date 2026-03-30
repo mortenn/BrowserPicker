@@ -2,10 +2,10 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "wix": {
-      "version": "6.0.2",
+    "csharpier": {
+      "version": "1.2.6",
       "commands": [
-        "wix"
+        "csharpier"
       ],
       "rollForward": false
     },
@@ -16,17 +16,17 @@
       ],
       "rollForward": false
     },
-    "csharpier": {
-      "version": "1.2.6",
-      "commands": [
-        "csharpier"
-      ],
-      "rollForward": false
-    },
     "xamlstyler.console": {
       "version": "3.2501.8",
       "commands": [
         "xstyler"
+      ],
+      "rollForward": false
+    },
+    "wix": {
+      "version": "6.0.2",
+      "commands": [
+        "wix"
       ],
       "rollForward": false
     }

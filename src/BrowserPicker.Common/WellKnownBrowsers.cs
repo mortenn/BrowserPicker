@@ -18,8 +18,8 @@ public static class WellKnownBrowsers
 	public static IWellKnownBrowser? Lookup(string? name, string? executable)
 	{
 		return List.FirstOrDefault(b => b.Name == name)
-			?? List.FirstOrDefault(b => executable != null
-				&& executable.Contains(b.Executable, StringComparison.CurrentCultureIgnoreCase)
+			?? List.FirstOrDefault(b =>
+				executable != null && executable.Contains(b.Executable, StringComparison.CurrentCultureIgnoreCase)
 			);
 	}
 
@@ -36,7 +36,7 @@ public static class WellKnownBrowsers
 		Edge.Instance,
 		InternetExplorer.Instance,
 		OperaStable.Instance,
-		Vivaldi.Instance
+		Vivaldi.Instance,
 	];
 }
 
@@ -47,16 +47,22 @@ public interface IWellKnownBrowser
 {
 	/// <summary>Display name of the browser.</summary>
 	string Name { get; }
+
 	/// <summary>Primary executable or protocol (e.g. "chrome.exe", "microsoft-edge:").</summary>
 	string Executable { get; }
+
 	/// <summary>Actual executable path when different from <see cref="Executable"/> (e.g. for protocol handlers).</summary>
 	string? RealExecutable { get; }
+
 	/// <summary>Arguments to pass for private/privacy mode.</summary>
 	string? PrivacyArgs { get; }
+
 	/// <summary>Label for the privacy mode action (e.g. "Open incognito").</summary>
 	string PrivacyMode { get; }
+
 	/// <summary>Type of profile discovery supported by this browser.</summary>
 	ProfileType ProfileType { get; }
+
 	/// <summary>
 	/// Path to the user data / profile root directory, relative to <c>%LocalAppData%</c> (Chromium)
 	/// or <c>%AppData%</c> (Firefox). Null when profiles are not supported.

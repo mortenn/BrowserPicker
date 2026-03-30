@@ -23,7 +23,11 @@ public sealed class IconFileToImageConverter : IValueConverter
 			try
 			{
 				using var stream = new MemoryStream(bytes);
-				var frame = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+				var frame = BitmapFrame.Create(
+					stream,
+					BitmapCreateOptions.PreservePixelFormat,
+					BitmapCacheOption.OnLoad
+				);
 				frame.Freeze();
 				return frame;
 			}

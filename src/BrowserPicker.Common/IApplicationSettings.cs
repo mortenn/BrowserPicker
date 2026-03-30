@@ -129,5 +129,4 @@ public interface IApplicationSettings : ISecuritySettings
 	/// How browser profiles are displayed in the picker UI: grouped under their browser or as flat top-level entries.
 	/// </summary>
 	ProfileDisplayMode ProfileDisplayMode { get; set; }
-
 }

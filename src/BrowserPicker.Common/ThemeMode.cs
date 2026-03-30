@@ -12,5 +12,5 @@ public enum ThemeMode
 	Light,
 
 	/// <summary>Force dark theme.</summary>
-	Dark
+	Dark,
 }

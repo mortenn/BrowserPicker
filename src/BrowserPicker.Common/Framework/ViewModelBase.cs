@@ -5,7 +5,8 @@ namespace BrowserPicker.Common.Framework;
 /// </summary>
 /// <typeparam name="T">The model type.</typeparam>
 /// <param name="model">The model instance.</param>
-public abstract class ViewModelBase<T>(T model) : ModelBase where T : ModelBase
+public abstract class ViewModelBase<T>(T model) : ModelBase
+	where T : ModelBase
 {
 	/// <summary>
 	/// Gets the wrapped model.

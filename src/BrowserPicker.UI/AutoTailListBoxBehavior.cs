@@ -12,18 +12,18 @@ namespace BrowserPicker.UI;
 /// </summary>
 public static class AutoTailListBoxBehavior
 {
-	public static readonly DependencyProperty IsEnabledProperty =
-		DependencyProperty.RegisterAttached(
-			"IsEnabled",
-			typeof(bool),
-			typeof(AutoTailListBoxBehavior),
-			new PropertyMetadata(false, OnIsEnabledChanged));
+	public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.RegisterAttached(
+		"IsEnabled",
+		typeof(bool),
+		typeof(AutoTailListBoxBehavior),
+		new PropertyMetadata(false, OnIsEnabledChanged)
+	);
 
-	private static readonly DependencyProperty ControllerProperty =
-		DependencyProperty.RegisterAttached(
-			"Controller",
-			typeof(Controller),
-			typeof(AutoTailListBoxBehavior));
+	private static readonly DependencyProperty ControllerProperty = DependencyProperty.RegisterAttached(
+		"Controller",
+		typeof(Controller),
+		typeof(AutoTailListBoxBehavior)
+	);
 
 	[UsedImplicitly]
 	public static bool GetIsEnabled(DependencyObject element) => (bool)element.GetValue(IsEnabledProperty);

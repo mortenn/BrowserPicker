@@ -1,9 +1,9 @@
-using BrowserPicker.Common.Framework;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using BrowserPicker.Common.Framework;
 
 namespace BrowserPicker.Common;
 
@@ -11,7 +11,12 @@ namespace BrowserPicker.Common;
 /// Represents a per-URL default browser rule: when a URL matches the pattern, the associated browser is preferred.
 /// </summary>
 [JsonConverter(typeof(DefaultSettingJsonConverter))]
-public sealed class DefaultSetting(MatchType initialType, string? initialPattern, string? initialBrowser, string? initialProfile = null) : ModelBase, INotifyPropertyChanging
+public sealed class DefaultSetting(
+	MatchType initialType,
+	string? initialPattern,
+	string? initialBrowser,
+	string? initialProfile = null
+) : ModelBase, INotifyPropertyChanging
 {
 	private readonly Guid id = Guid.NewGuid();
 	private MatchType type = initialType;
@@ -36,19 +41,17 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 		return config.Length switch
 		{
 			// Default browser choice
-			1 when rule == string.Empty
-				=> new DefaultSetting(MatchType.Default, string.Empty, browser),
+			1 when rule == string.Empty => new DefaultSetting(MatchType.Default, string.Empty, browser),
 
 			// Original hostname match type
-			<= 1
-				=> new DefaultSetting(MatchType.Hostname, rule, browser),
+			<= 1 => new DefaultSetting(MatchType.Hostname, rule, browser),
 
 			// New configuration format using MatchType
-			3 when Enum.TryParse<MatchType>(rule[1..rule.IndexOf('|', 1)], true, out var matchType)
-				=> new DefaultSetting(matchType, config[2], browser),
+			3 when Enum.TryParse<MatchType>(rule[1..rule.IndexOf('|', 1)], true, out var matchType) =>
+				new DefaultSetting(matchType, config[2], browser),
 
 			// Unsupported format, ignore
-			_ => null
+			_ => null,
 		};
 	}
 
@@ -148,14 +151,17 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 	/// True when the rule has a valid pattern, or is a default (fallback) rule with empty pattern.
 	/// </summary>
 	[JsonIgnore]
-	public bool IsValid => !string.IsNullOrWhiteSpace(pattern)
-		|| pattern == string.Empty && Type == MatchType.Default;
+	public bool IsValid => !string.IsNullOrWhiteSpace(pattern) || pattern == string.Empty && Type == MatchType.Default;
 
 	/// <summary>
 	/// Command that marks this rule as deleted.
 	/// </summary>
 	[JsonIgnore]
-	public DelegateCommand Remove => new(() => { Deleted = true; });
+	public DelegateCommand Remove =>
+		new(() =>
+		{
+			Deleted = true;
+		});
 
 	/// <summary>
 	/// Returns the length of the match when this rule is applied to the given URL; 0 if no match.
@@ -176,17 +182,18 @@ public sealed class DefaultSetting(MatchType initialType, string? initialPattern
 			MatchType.Prefix when pattern is not null => url.OriginalString.StartsWith(pattern) ? pattern.Length : 0,
 			MatchType.Regex when pattern is not null => Regex.Match(url.OriginalString, pattern).Length,
 			MatchType.Contains when pattern is not null => url.OriginalString.Contains(pattern) ? pattern.Length : 0,
-			_ => 0
+			_ => 0,
 		};
 	}
 
 	/// <inheritdoc />
-	public override string? ToString() => Type switch
-	{
-		MatchType.Hostname => pattern,
-		MatchType.Default => string.Empty,
-		_ => $"|{Type}|{pattern}"
-	};
+	public override string? ToString() =>
+		Type switch
+		{
+			MatchType.Hostname => pattern,
+			MatchType.Default => string.Empty,
+			_ => $"|{Type}|{pattern}",
+		};
 
 	/// <inheritdoc />
 	public override int GetHashCode() => Type.GetHashCode() ^ id.GetHashCode();

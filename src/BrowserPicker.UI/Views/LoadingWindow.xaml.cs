@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Windows;
 
 namespace BrowserPicker.UI.Views;
 

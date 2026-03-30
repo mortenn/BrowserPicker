@@ -15,20 +15,28 @@ public sealed record InMemoryLogSegment(string Text, bool IsValue);
 /// <summary>
 /// Structured runtime log entry for the in-memory feedback viewer.
 /// </summary>
-public sealed record InMemoryLogEntry(DateTimeOffset Timestamp, LogLevel Level, string Category, EventId EventId, string Message, IReadOnlyList<InMemoryLogSegment> Segments)
+public sealed record InMemoryLogEntry(
+	DateTimeOffset Timestamp,
+	LogLevel Level,
+	string Category,
+	EventId EventId,
+	string Message,
+	IReadOnlyList<InMemoryLogSegment> Segments
+)
 {
 	public string TimestampDisplay => Timestamp.ToLocalTime().ToString("HH:mm:ss.fff");
 
-	public string LevelDisplay => Level switch
-	{
-		LogLevel.Trace => "TRC",
-		LogLevel.Debug => "DBG",
-		LogLevel.Information => "INF",
-		LogLevel.Warning => "WRN",
-		LogLevel.Error => "ERR",
-		LogLevel.Critical => "CRT",
-		_ => "LOG"
-	};
+	public string LevelDisplay =>
+		Level switch
+		{
+			LogLevel.Trace => "TRC",
+			LogLevel.Debug => "DBG",
+			LogLevel.Information => "INF",
+			LogLevel.Warning => "WRN",
+			LogLevel.Error => "ERR",
+			LogLevel.Critical => "CRT",
+			_ => "LOG",
+		};
 
 	public string CategoryDisplay => Category.Split('.').LastOrDefault() ?? Category;
 
@@ -41,7 +49,8 @@ public sealed record InMemoryLogEntry(DateTimeOffset Timestamp, LogLevel Level, 
 		}
 	}
 
-	public string SearchText => $"{TimestampDisplay} {LevelDisplay} {Level} {Category} {CategoryDisplay} {EventDisplay} {Message}";
+	public string SearchText =>
+		$"{TimestampDisplay} {LevelDisplay} {Level} {Category} {CategoryDisplay} {EventDisplay} {Message}";
 }
 
 /// <summary>
@@ -62,19 +71,42 @@ public sealed class InMemoryLogBuffer
 
 	public event EventHandler? Updated;
 
-	public void Append(DateTimeOffset timestamp, string category, LogLevel level, EventId eventId, string message,
-		IReadOnlyList<InMemoryLogSegment>? segments, Exception? exception)
+	public void Append(
+		DateTimeOffset timestamp,
+		string category,
+		LogLevel level,
+		EventId eventId,
+		string message,
+		IReadOnlyList<InMemoryLogSegment>? segments,
+		Exception? exception
+	)
 	{
 		lock (gate)
 		{
-			Enqueue(new InMemoryLogEntry(timestamp, level, category, eventId, message,
-				segments ?? [new InMemoryLogSegment(message, false)]));
+			Enqueue(
+				new InMemoryLogEntry(
+					timestamp,
+					level,
+					category,
+					eventId,
+					message,
+					segments ?? [new InMemoryLogSegment(message, false)]
+				)
+			);
 
 			if (exception != null)
 			{
 				var exceptionText = exception.ToString();
-				Enqueue(new InMemoryLogEntry(timestamp, level, category, eventId, exceptionText,
-					[new InMemoryLogSegment(exceptionText, false)]));
+				Enqueue(
+					new InMemoryLogEntry(
+						timestamp,
+						level,
+						category,
+						eventId,
+						exceptionText,
+						[new InMemoryLogSegment(exceptionText, false)]
+					)
+				);
 			}
 		}
 
@@ -106,18 +138,22 @@ public sealed class InMemoryLoggerProvider(InMemoryLogBuffer buffer) : ILoggerPr
 {
 	public ILogger CreateLogger(string categoryName) => new InMemoryLogger(categoryName, buffer);
 
-	public void Dispose()
-	{
-	}
+	public void Dispose() { }
 
 	private sealed class InMemoryLogger(string categoryName, InMemoryLogBuffer buffer) : ILogger
 	{
-		public IDisposable BeginScope<TState>(TState state) where TState : notnull => NullScope.Instance;
+		public IDisposable BeginScope<TState>(TState state)
+			where TState : notnull => NullScope.Instance;
 
 		public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
-		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
-			Func<TState, Exception?, string> formatter)
+		public void Log<TState>(
+			LogLevel logLevel,
+			EventId eventId,
+			TState state,
+			Exception? exception,
+			Func<TState, Exception?, string> formatter
+		)
 		{
 			if (!IsEnabled(logLevel))
 			{
@@ -130,7 +166,15 @@ public sealed class InMemoryLoggerProvider(InMemoryLogBuffer buffer) : ILoggerPr
 				return;
 			}
 
-			buffer.Append(DateTimeOffset.UtcNow, categoryName, logLevel, eventId, message, CreateSegments(state, message), exception);
+			buffer.Append(
+				DateTimeOffset.UtcNow,
+				categoryName,
+				logLevel,
+				eventId,
+				message,
+				CreateSegments(state, message),
+				exception
+			);
 		}
 
 		private static List<InMemoryLogSegment> CreateSegments<TState>(TState state, string fallbackMessage)
@@ -211,20 +255,19 @@ public sealed class InMemoryLoggerProvider(InMemoryLogBuffer buffer) : ILoggerPr
 			return segments;
 		}
 
-		private static string FormatValue(object? value) => value switch
-		{
-			null => "null",
-			IFormattable formattable => formattable.ToString(null, CultureInfo.InvariantCulture),
-			_ => value.ToString() ?? "null"
-		};
+		private static string FormatValue(object? value) =>
+			value switch
+			{
+				null => "null",
+				IFormattable formattable => formattable.ToString(null, CultureInfo.InvariantCulture),
+				_ => value.ToString() ?? "null",
+			};
 
 		private sealed class NullScope : IDisposable
 		{
 			public static readonly NullScope Instance = new();
 
-			public void Dispose()
-			{
-			}
+			public void Dispose() { }
 		}
 	}
 }
