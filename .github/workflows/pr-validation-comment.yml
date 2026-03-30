@@ -1,0 +1,95 @@
+name: PR Validation Comment
+
+on:
+  workflow_run:
+    workflows: ["PR Validation"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != 'cancelled' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download PR validation summary
+        id: artifact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+
+          artifact_id="$(
+            curl -fsSL \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPOSITORY}/actions/runs/${RUN_ID}/artifacts" |
+            jq -r '.artifacts[] | select(.name == "pr-validation-summary") | .id' |
+            head -n 1
+          )"
+
+          if [ -z "${artifact_id}" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          mkdir -p pr-validation-summary
+
+          curl -fsSL \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${REPOSITORY}/actions/artifacts/${artifact_id}/zip" \
+            -o pr-validation-summary.zip
+
+          unzip -o pr-validation-summary.zip -d pr-validation-summary >/dev/null
+
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "path=pr-validation-summary/summary.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update PR comment
+        if: ${{ steps.artifact.outputs.found == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          SUMMARY_PATH: ${{ steps.artifact.outputs.path }}
+        run: |
+          set -euo pipefail
+
+          comment_body="$(cat "${SUMMARY_PATH}")"
+          comment_body="${comment_body}
+
+          _Run: [PR Validation #${RUN_NUMBER}](${RUN_URL})_"
+
+          comment_id="$(
+            curl -fsSL \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=100" |
+            jq -r 'map(select(.user.login == "github-actions[bot]" and (.body | contains("<!-- pr-validation-summary -->")))) | last | .id // empty'
+          )"
+
+          payload="$(jq -n --arg body "${comment_body}" '{body: $body}')"
+
+          if [ -n "${comment_id}" ]; then
+            curl -fsSL \
+              -X PATCH \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPOSITORY}/issues/comments/${comment_id}" \
+              -d "${payload}" >/dev/null
+          else
+            curl -fsSL \
+              -X POST \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
+              -d "${payload}" >/dev/null
+          fi
