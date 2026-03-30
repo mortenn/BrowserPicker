@@ -3,8 +3,6 @@ name: CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -13,7 +11,6 @@ jobs:
   ci:
     permissions:
       contents: read
-    uses: mortenn/BrowserPicker.Actions/.github/workflows/ci.yml@f8d4053b126ad3f0b3ee6792c5895acaa3b87f04
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/ci.yml@df09aef9449ac751b48cbc4a8ffc8f7d01e86947
     with:
       dotnet_version: 10.x
-      publish_deliverables: ${{ github.event_name == 'push' }}

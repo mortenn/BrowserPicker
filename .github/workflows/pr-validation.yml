@@ -1,0 +1,16 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    permissions:
+      contents: read
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/pr-validation.yml@df09aef9449ac751b48cbc4a8ffc8f7d01e86947
+    with:
+      dotnet_version: 10.x

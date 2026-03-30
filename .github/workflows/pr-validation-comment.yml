@@ -2,7 +2,7 @@ name: PR Validation Comment
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["PR Validation"]
     types: [completed]
 
 permissions:
@@ -66,7 +66,7 @@ jobs:
           comment_body="$(cat "${SUMMARY_PATH}")"
           comment_body="${comment_body}
 
-          _Run: [CI #${RUN_NUMBER}](${RUN_URL})_"
+          _Run: [PR Validation #${RUN_NUMBER}](${RUN_URL})_"
 
           comment_id="$(
             curl -fsSL \

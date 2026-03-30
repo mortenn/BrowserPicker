@@ -8,7 +8,7 @@
 *.props text eol=lf
 *.sln text eol=crlf
 *.targets text eol=lf
-*.xaml text eol=lf
+*.xaml text eol=crlf
 *.xml text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
