@@ -1,13 +1,16 @@
-﻿<Window x:Class="BrowserPicker.UI.Views.ExceptionReport"
+﻿<Window
+	x:Class="BrowserPicker.UI.Views.ExceptionReport"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
 	xmlns:system="clr-namespace:System;assembly=mscorlib"
-	mc:Ignorable="d"
-	d:DataContext="{d:DesignInstance viewModels:ExceptionViewModel,d:IsDesignTimeCreatable=True}"
-	Title="An unhandled exception has occurred" SizeToContent="WidthAndHeight">
+	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
+	Title="An unhandled exception has occurred"
+	d:DataContext="{d:DesignInstance viewModels:ExceptionViewModel,
+									 d:IsDesignTimeCreatable=True}"
+	SizeToContent="WidthAndHeight"
+	mc:Ignorable="d">
 	<Window.Resources>
 		<ResourceDictionary>
 			<DataTemplate DataType="{x:Type system:Exception}">
@@ -15,7 +18,13 @@
 					<StackPanel>
 						<StackPanel Orientation="Vertical">
 							<StackPanel Orientation="Horizontal">
-								<ToggleButton FontSize="10" Padding="2,0" Margin="0,0,2,0" Width="15" Height="15" x:Name="toggleButton">
+								<ToggleButton
+									x:Name="toggleButton"
+									Width="15"
+									Height="15"
+									Margin="0,0,2,0"
+									Padding="2,0"
+									FontSize="10">
 									<ToggleButton.Style>
 										<Style TargetType="ToggleButton">
 											<Setter Property="Content" Value="+" />
@@ -48,7 +57,7 @@
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition />
 							</Grid.ColumnDefinitions>
-							<Border BorderBrush="Silver" BorderThickness="1" Grid.Column="1">
+							<Border Grid.Column="1" BorderBrush="Silver" BorderThickness="1">
 								<Border.Style>
 									<Style TargetType="Border">
 										<Setter Property="Visibility" Value="Collapsed" />
@@ -69,9 +78,9 @@
 	</Window.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical">
 			<TextBlock Text="Unfortunately, BrowserPicker has crashed." />
@@ -81,9 +90,9 @@
 		<Border Grid.Row="1" Margin="5">
 			<ContentPresenter Content="{Binding Model.Exception}" />
 		</Border>
-		<StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
-			<Button Content="Copy to clipboard" Command="{Binding CopyToClipboard}" Margin="4" Padding="10,0" />
-			<Button Content="Ok" Command="{Binding Ok}" Margin="4" Padding="10,0" />
+		<StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
+			<Button Margin="4" Padding="10,0" Command="{Binding CopyToClipboard}" Content="Copy to clipboard" />
+			<Button Margin="4" Padding="10,0" Command="{Binding Ok}" Content="Ok" />
 		</StackPanel>
 	</Grid>
 </Window>
