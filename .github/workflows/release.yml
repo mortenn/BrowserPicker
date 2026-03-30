@@ -12,6 +12,6 @@ jobs:
   release:
     permissions:
       contents: write
-    uses: mortenn/BrowserPicker.Actions/.github/workflows/release.yml@b2803f3abd28e96a397fcd8cab6996797cea5b01
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/release.yml@627f29ef7223135c3c64c5a7503786373cc721bf
     with:
       dotnet_version: 10.x
