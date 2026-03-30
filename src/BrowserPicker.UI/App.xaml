@@ -1,22 +1,23 @@
-<Application x:Class="BrowserPicker.UI.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:app="clr-namespace:BrowserPicker.UI">
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- Provide image resources for the XAML designer; runtime also merges this dictionary in Program.cs. -->
-                <ResourceDictionary Source="Resources/ResourceDictionary.xaml" />
-                <!-- Provide baseline theme brushes so design-time previews can resolve DynamicResource bindings. -->
-                <ResourceDictionary>
-                    <SolidColorBrush x:Key="{x:Static app:App.ContentBackgroundBrushKey}" Color="#2D2D2D" />
-                    <SolidColorBrush x:Key="{x:Static app:App.ContentBackgroundSemiTransparentBrushKey}" Color="#E62D2D2D" />
-                    <SolidColorBrush x:Key="{x:Static app:App.ContentForegroundBrushKey}" Color="White" />
-                    <SolidColorBrush x:Key="{x:Static app:App.UrlBarBackgroundBrushKey}" Color="White" />
-                    <SolidColorBrush x:Key="{x:Static app:App.UrlBarForegroundBrushKey}" Color="#1A1A1A" />
-                    <SolidColorBrush x:Key="{x:Static app:App.UrlBarBorderBrushKey}" Color="#B0B0B0" />
-                </ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+﻿<Application
+	x:Class="BrowserPicker.UI.App"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:app="clr-namespace:BrowserPicker.UI">
+	<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<!--  Provide image resources for the XAML designer; runtime also merges this dictionary in Program.cs.  -->
+				<ResourceDictionary Source="Resources/ResourceDictionary.xaml" />
+				<!--  Provide baseline theme brushes so design-time previews can resolve DynamicResource bindings.  -->
+				<ResourceDictionary>
+					<SolidColorBrush x:Key="{x:Static app:App.ContentBackgroundBrushKey}" Color="#2D2D2D" />
+					<SolidColorBrush x:Key="{x:Static app:App.ContentBackgroundSemiTransparentBrushKey}" Color="#E62D2D2D" />
+					<SolidColorBrush x:Key="{x:Static app:App.ContentForegroundBrushKey}" Color="White" />
+					<SolidColorBrush x:Key="{x:Static app:App.UrlBarBackgroundBrushKey}" Color="White" />
+					<SolidColorBrush x:Key="{x:Static app:App.UrlBarForegroundBrushKey}" Color="#1A1A1A" />
+					<SolidColorBrush x:Key="{x:Static app:App.UrlBarBorderBrushKey}" Color="#B0B0B0" />
+				</ResourceDictionary>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
 </Application>

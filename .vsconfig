@@ -3,6 +3,7 @@
   "components": [
   ],
   "extensions": [
-    "https://marketplace.visualstudio.com/items?itemName=FireGiant.FireGiantHeatWaveDev17"
+    "https://marketplace.visualstudio.com/items?itemName=FireGiant.FireGiantHeatWaveDev17",
+    "https://marketplace.visualstudio.com/items?itemName=TeamXavalon.XAMLStyler2022"
   ]
 }
