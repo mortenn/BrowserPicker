@@ -27,3 +27,7 @@ dotnet xstyler --recursive --directory .
 
 This reformats every `*.xaml` file in the repository according to the shared
 `Settings.XamlStyler` configuration.
+
+The repository also declares formatter-specific line ending expectations in
+`.gitattributes`, so `*.xaml` files follow the conventions expected by XAML
+Styler on Windows.
