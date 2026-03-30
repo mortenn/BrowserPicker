@@ -13,7 +13,7 @@ jobs:
   ci:
     permissions:
       contents: read
-    uses: mortenn/BrowserPicker.Actions/.github/workflows/ci.yml@fd5cb1c79ec3a6649a3546b5a983dfc7b75386b8
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/ci.yml@f8d4053b126ad3f0b3ee6792c5895acaa3b87f04
     with:
       dotnet_version: 10.x
       publish_deliverables: ${{ github.event_name == 'push' }}

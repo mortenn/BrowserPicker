@@ -2,6 +2,7 @@
 
 *.cs text eol=lf
 *.csproj text eol=lf
+*.config text eol=lf
 *.json text eol=lf
 *.md text eol=lf
 *.props text eol=lf
