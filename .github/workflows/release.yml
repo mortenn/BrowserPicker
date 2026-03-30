@@ -5,102 +5,13 @@ on:
     tags:
       - "v*.*.*"
 
+permissions:
+  contents: read
+
 jobs:
-
-  prepare:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Determine version
-      id: version
-      uses: paulhatch/semantic-version@v5.4.0
-      with:
-        version_format: "${major}.${minor}.${patch}"
-
-    outputs:
-      version: ${{ steps.version.outputs.version}}
-
-  dependent:
-    runs-on: windows-latest
-    needs: prepare
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Build dependent installer
-      uses: "./.github/template/build-installer"
-      with:
-        configuration: Release
-        dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }}"
-        package_project: dist/Dependent/Dependent.wixproj
-        package_version: ${{ needs.prepare.outputs.version }}
-        package: dist/Dependent/bin/Release/BrowserPicker.msi
-        package_name: DependentSetup-${{ needs.prepare.outputs.version }}-Release
-        package_path: dist/Dependent/bin/Release
-        bundle_name: Dependent-${{ needs.prepare.outputs.version }}-Release
-        bundle_path: src/BrowserPicker.UI/bin/Release/net10.0-windows/publish
-
-  portable:
-    runs-on: windows-latest
-    needs: prepare
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Build portable installer
-      uses: "./.github/template/build-installer"
-      with:
-        configuration: Release
-        dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -r win-x64 -p:PublishSingleFile=true"
-        package_project: dist/Portable/Portable.wixproj
-        package_version: ${{ needs.prepare.outputs.version }}
-        package: dist/Portable/bin/Release/BrowserPicker-Portable.msi
-        package_name: PortableSetup-${{ needs.prepare.outputs.version }}-Release
-        package_path: dist/Portable/bin/Release
-        bundle_name: Portable-${{ needs.prepare.outputs.version }}-Release
-        bundle_path: src/BrowserPicker.UI/bin/Release/net10.0-windows/win-x64/publish
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: [prepare, dependent, portable]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Retrieve artifacts
-      uses: actions/download-artifact@v4
-
-    - name: Package bundles
-      run: |
-        rm -rf *.zip
-        for bundle in Dependent Portable; do
-          (cd $bundle-${{ needs.prepare.outputs.version }}-Release; zip -r ../$bundle.zip *)
-        done
-
-    - name: Release
-      uses: softprops/action-gh-release@v2
-      with:
-        generate_release_notes: true
-        draft: true
-        prerelease: true
-        files: |
-          DependentSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker.msi
-          PortableSetup-${{ needs.prepare.outputs.version }}-Release/BrowserPicker-Portable.msi
-          schemas/browserpicker-settings.schema.json
-          Dependent.zip
-          Portable.zip
+  release:
+    permissions:
+      contents: write
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/release.yml@26e97f05ef9173c03ba5ae8eec115d2528aa42d2
+    with:
+      dotnet_version: 10.x

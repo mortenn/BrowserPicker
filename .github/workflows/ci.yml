@@ -3,103 +3,17 @@ name: CI
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
 
 jobs:
-  prepare:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Determine version
-      id: version
-      uses: paulhatch/semantic-version@v5.4.0
-      with:
-        version_format: "${major}.${minor}.${patch}"
-
-    outputs:
-      version: ${{ steps.version.outputs.version}}
-      version_suffix: "beta${{ steps.version.outputs.increment }}"
-      package_version: "${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}.${{ steps.version.outputs.patch }}.${{ steps.version.outputs.increment }}"
-
-  schema:
-
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Generate settings schema
-      run: dotnet run --project tools/BrowserPicker.SchemaGen/BrowserPicker.SchemaGen.csproj -- schemas/browserpicker-settings.schema.json
-
-    - name: Verify generated schema is committed
-      run: git diff --exit-code -- schemas/browserpicker-settings.schema.json
-
-    - name: Upload schema artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: BrowserPicker-settings-schema
-        path: schemas/browserpicker-settings.schema.json
-
-  dependent:
-
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
-    runs-on: windows-latest
-    needs: prepare
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Build dependent installer
-      uses: "./.github/template/build-installer"
-      with:
-        configuration: ${{ matrix.configuration }}
-        dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -p VersionSuffix=${{ needs.prepare.outputs.version_suffix }}"
-        package_project: dist/Dependent/Dependent.wixproj
-        package_version: ${{ needs.prepare.outputs.package_version }}
-        package: dist/Dependent/bin/${{ matrix.configuration }}/BrowserPicker.msi
-        package_name: DependentSetup-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
-        package_path: dist/Dependent/bin/${{ matrix.configuration }}
-        bundle_name: Dependent-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
-        bundle_path: src/BrowserPicker.UI/bin/${{ matrix.configuration }}/net10.0-windows/publish
-
-  portable:
-
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
-    runs-on: windows-latest
-    needs: prepare
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Build portable installer
-      uses: "./.github/template/build-installer"
-      with:
-        configuration: ${{ matrix.configuration }}
-        dotnet_args: "-p VersionPrefix=${{ needs.prepare.outputs.version }} -p VersionSuffix=${{ needs.prepare.outputs.version_suffix }} -r win-x64 -p:PublishSingleFile=true"
-        package_project: dist/Portable/Portable.wixproj
-        package_version: ${{ needs.prepare.outputs.package_version }}
-        package: dist/Portable/bin/${{ matrix.configuration }}/BrowserPicker-Portable.msi
-        package_name: PortableSetup-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
-        package_path: dist/Portable/bin/${{ matrix.configuration }}
-        bundle_name: Portable-${{ needs.prepare.outputs.version }}-${{ matrix.configuration }}
-        bundle_path: src/BrowserPicker.UI/bin/${{ matrix.configuration }}/net10.0-windows/win-x64/publish
+  ci:
+    permissions:
+      contents: read
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/ci.yml@26e97f05ef9173c03ba5ae8eec115d2528aa42d2
+    with:
+      dotnet_version: 10.x
+      publish_deliverables: ${{ github.event_name == 'push' }}
