@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Win32;
 using BrowserPicker.UI.ViewModels;
-
+using Microsoft.Win32;
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -55,7 +54,7 @@ public partial class BrowserEditor
 		var browser = new OpenFileDialog
 		{
 			DefaultExt = ".exe",
-			Filter = "Executable Files (*.exe)|*.exe|All Files|*.*"
+			Filter = "Executable Files (*.exe)|*.exe|All Files|*.*",
 		};
 		var result = browser.ShowDialog(this);
 		if (result != true)
@@ -84,12 +83,12 @@ public partial class BrowserEditor
 		var browser = new OpenFileDialog
 		{
 			DefaultExt = ".exe",
-			Filter = "Executable Files (*.exe)|*.exe|Icon Files (*.ico)|*.ico|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif|All Files|*.*"
+			Filter =
+				"Executable Files (*.exe)|*.exe|Icon Files (*.ico)|*.ico|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif|All Files|*.*",
 		};
 		if (browser.ShowDialog(this) == true)
 			Browser.Model.IconPath = browser.FileName;
 	}
-
 
 	private void DragWindow(object sender, MouseButtonEventArgs args)
 	{

@@ -1,9 +1,9 @@
-﻿using BrowserPicker.Common;
-using BrowserPicker.Common.Framework;
-using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Threading;
 using System.Windows;
+using BrowserPicker.Common;
+using BrowserPicker.Common.Framework;
+using JetBrains.Annotations;
 
 namespace BrowserPicker.UI.ViewModels;
 
@@ -16,15 +16,15 @@ public sealed class ExceptionViewModel : ViewModelBase<ExceptionModel>
 	/// Parameterless constructor for WPF designer; uses a sample exception.
 	/// </summary>
 	[UsedImplicitly]
-	public ExceptionViewModel() : base(new ExceptionModel(new Exception("Test", new Exception("Test 2", new Exception("Test 3")))))
-	{
-	}
+	public ExceptionViewModel()
+		: base(new ExceptionModel(new Exception("Test", new Exception("Test 2", new Exception("Test 3"))))) { }
 
 	/// <summary>
 	/// Initializes the view model with the exception to display.
 	/// </summary>
 	/// <param name="exception">The exception to show in the report.</param>
-	public ExceptionViewModel(Exception exception) : base (new ExceptionModel(exception))
+	public ExceptionViewModel(Exception exception)
+		: base(new ExceptionModel(exception))
 	{
 		CopyToClipboard = new DelegateCommand(CopyExceptionDetailsToClipboard);
 		Ok = new DelegateCommand(CloseWindow);
@@ -34,6 +34,7 @@ public sealed class ExceptionViewModel : ViewModelBase<ExceptionModel>
 	/// Command to copy the exception details to the clipboard.
 	/// </summary>
 	public DelegateCommand? CopyToClipboard { get; }
+
 	/// <summary>
 	/// Command to close the exception report window.
 	/// </summary>

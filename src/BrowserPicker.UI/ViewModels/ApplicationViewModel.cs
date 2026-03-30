@@ -8,13 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using BrowserPicker.Common;
+using BrowserPicker.Common.Framework;
 using BrowserPicker.UI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using BrowserPicker.Common.Framework;
-using BrowserPicker.Common;
-
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -43,13 +42,19 @@ public sealed class ApplicationViewModel : ModelBase
 		if (App.Settings is not { } settings)
 		{
 			var designSettings = ConfigurationViewModel.CreateDesignTimeSettings();
-			Url = new UrlHandler(NullLogger<UrlHandler>.Instance, "https://github.com/mortenn/BrowserPicker", designSettings);
+			Url = new UrlHandler(
+				NullLogger<UrlHandler>.Instance,
+				"https://github.com/mortenn/BrowserPicker",
+				designSettings
+			);
 			force_choice = true;
 			Choices = [];
 			Configuration = new ConfigurationViewModel(designSettings, this);
-			foreach (var choice in designSettings.BrowserList
-				         .OrderBy(b => b, new BrowserSorter(designSettings))
-				         .Select(b => new BrowserViewModel(b, this)))
+			foreach (
+				var choice in designSettings
+					.BrowserList.OrderBy(b => b, new BrowserSorter(designSettings))
+					.Select(b => new BrowserViewModel(b, this))
+			)
 			{
 				Choices.Add(choice);
 			}
@@ -64,9 +69,11 @@ public sealed class ApplicationViewModel : ModelBase
 		Choices = [];
 		Configuration = new ConfigurationViewModel(settings, this);
 		settings.PropertyChanged += OnSettingsPropertyChanged;
-		foreach (var choice in settings.BrowserList
-			         .OrderBy(b => b, new BrowserSorter(settings))
-			         .Select(b => new BrowserViewModel(b, this)))
+		foreach (
+			var choice in settings
+				.BrowserList.OrderBy(b => b, new BrowserSorter(settings))
+				.Select(b => new BrowserViewModel(b, this))
+		)
 		{
 			Choices.Add(choice);
 		}
@@ -81,7 +88,11 @@ public sealed class ApplicationViewModel : ModelBase
 	/// <param name="config">The configuration view model to initialize the application state.</param>
 	internal ApplicationViewModel(ConfigurationViewModel config)
 	{
-		Url = new UrlHandler(NullLogger<UrlHandler>.Instance, "https://github.com/mortenn/BrowserPicker", config.Settings);
+		Url = new UrlHandler(
+			NullLogger<UrlHandler>.Instance,
+			"https://github.com/mortenn/BrowserPicker",
+			config.Settings
+		);
 		force_choice = true;
 		Configuration = config;
 		Choices = [];
@@ -105,10 +116,7 @@ public sealed class ApplicationViewModel : ModelBase
 		Url = new UrlHandler(App.Services.GetRequiredService<ILogger<UrlHandler>>(), url, settings);
 		ConfigurationMode = url == null;
 		Choices = [];
-		Configuration = new ConfigurationViewModel(settings, this)
-		{
-			ParentViewModel = this
-		};
+		Configuration = new ConfigurationViewModel(settings, this) { ParentViewModel = this };
 		settings.PropertyChanged += OnSettingsPropertyChanged;
 		var sorter = settings.BrowserSorter ?? new BrowserSorter(settings);
 		var choices = settings.BrowserList.OrderBy(m => m, sorter).Select(m => new BrowserViewModel(m, this)).ToList();
@@ -145,7 +153,8 @@ public sealed class ApplicationViewModel : ModelBase
 			|| Keyboard.Modifiers == ModifierKeys.Alt
 			|| Configuration.Settings.AlwaysPrompt
 			|| ConfigurationMode
-			|| force_choice)
+			|| force_choice
+		)
 		{
 			return true;
 		}
@@ -182,7 +191,8 @@ public sealed class ApplicationViewModel : ModelBase
 			Configuration.Settings.AlwaysUseDefaults,
 			Configuration.Settings.AlwaysAskWithoutDefault,
 			Configuration.Settings.UseFallbackDefault,
-			Configuration.Settings.DefaultBrowser);
+			Configuration.Settings.DefaultBrowser
+		);
 		if (Configuration.Settings.AlwaysPrompt)
 		{
 			Logger.LogAutomationAlwaysPrompt();
@@ -197,7 +207,8 @@ public sealed class ApplicationViewModel : ModelBase
 			Logger.LogAutomationUsingConfiguredBrowser(
 				browser.Model.Name,
 				Configuration.Settings.AlwaysUseDefaults,
-				browser.IsRunning);
+				browser.IsRunning
+			);
 			return (browser, profile);
 		}
 		if (browser != null)
@@ -205,7 +216,8 @@ public sealed class ApplicationViewModel : ModelBase
 			Logger.LogAutomationSkippingConfiguredBrowser(
 				browser.Model.Name,
 				Configuration.Settings.AlwaysUseDefaults,
-				browser.IsRunning);
+				browser.IsRunning
+			);
 		}
 		if (browser is null && Configuration.Settings.AlwaysAskWithoutDefault)
 		{
@@ -244,7 +256,8 @@ public sealed class ApplicationViewModel : ModelBase
 			resolved?.Model.Id,
 			resolved?.Model.Name,
 			resolved?.Model.Disabled,
-			resolved?.Model.Removed);
+			resolved?.Model.Removed
+		);
 
 		return resolved is { Model: { Disabled: false, Removed: false } }
 			? (resolved.Model.Id, profileId)
@@ -273,8 +286,8 @@ public sealed class ApplicationViewModel : ModelBase
 			Logger.LogAutomationInvalidUrl(targetUrl);
 			return (null, null);
 		}
-		var auto = Configuration.Settings.Defaults
-			.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
+		var auto = Configuration
+			.Settings.Defaults.Select(rule => new { rule, matchLength = rule.MatchLength(url) })
 			.Where(o => o.matchLength > 0)
 			.ToList();
 
@@ -285,7 +298,8 @@ public sealed class ApplicationViewModel : ModelBase
 				match.rule.Type.ToString(),
 				match.rule.Pattern,
 				match.rule.Browser,
-				match.matchLength);
+				match.matchLength
+			);
 		}
 
 		string? matchedKey = null;
@@ -298,7 +312,10 @@ public sealed class ApplicationViewModel : ModelBase
 			matchedProfile = best.Profile;
 			matchedSource = "rule";
 		}
-		else if (Configuration.Settings.UseFallbackDefault && !string.IsNullOrWhiteSpace(Configuration.Settings.DefaultBrowser))
+		else if (
+			Configuration.Settings.UseFallbackDefault
+			&& !string.IsNullOrWhiteSpace(Configuration.Settings.DefaultBrowser)
+		)
 		{
 			matchedKey = Configuration.Settings.DefaultBrowser;
 			matchedSource = "fallback";
@@ -318,7 +335,8 @@ public sealed class ApplicationViewModel : ModelBase
 		return Choices.FirstOrDefault(c =>
 			(includeDisabled || !c.Model.Disabled)
 			&& !c.Model.Removed
-			&& (c.Model.Id == browserKey || c.Model.Name == browserKey));
+			&& (c.Model.Id == browserKey || c.Model.Name == browserKey)
+		);
 	}
 
 	private static BrowserProfile? ResolveProfile(BrowserViewModel? browser, string? profileId)
@@ -329,8 +347,8 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		return browser.Model.Profiles.FirstOrDefault(p =>
-			!p.Disabled
-			&& string.Equals(p.Id, profileId, StringComparison.OrdinalIgnoreCase));
+			!p.Disabled && string.Equals(p.Id, profileId, StringComparison.OrdinalIgnoreCase)
+		);
 	}
 
 	/// <summary>
@@ -382,10 +400,7 @@ public sealed class ApplicationViewModel : ModelBase
 	public bool ConfigurationMode
 	{
 		get => configuration_mode;
-		set
-		{
-			SetProperty(ref configuration_mode, value);
-		}
+		set { SetProperty(ref configuration_mode, value); }
 	}
 
 	/// <summary>
@@ -479,10 +494,7 @@ public sealed class ApplicationViewModel : ModelBase
 	/// </summary>
 	private void OpenURLEditor()
 	{
-		var editor = new UrlEditor(Url.UnderlyingTargetURL)
-		{
-			Owner = Application.Current?.MainWindow
-		};
+		var editor = new UrlEditor(Url.UnderlyingTargetURL) { Owner = Application.Current?.MainWindow };
 		if (editor.ShowDialog() == true)
 		{
 			Url.UnderlyingTargetURL = editor.EditedUrl;
@@ -527,13 +539,15 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			case SerializableSettings.SortOrder.Automatic:
 			{
-				foreach (var e in Choices
-					         .Where(c => !c.Model.Removed)
-					         .SelectMany(ExpandFlatAutomaticRow)
-					         .OrderByDescending(x => x.Usage)
-					         .ThenBy(x => x.BrowserIdx)
-					         .ThenBy(x => x.Kind)
-					         .ThenBy(x => x.Tie, StringComparer.OrdinalIgnoreCase))
+				foreach (
+					var e in Choices
+						.Where(c => !c.Model.Removed)
+						.SelectMany(ExpandFlatAutomaticRow)
+						.OrderByDescending(x => x.Usage)
+						.ThenBy(x => x.BrowserIdx)
+						.ThenBy(x => x.Kind)
+						.ThenBy(x => x.Tie, StringComparer.OrdinalIgnoreCase)
+				)
 				{
 					PickerChoices.Add(e.Item);
 				}
@@ -542,12 +556,14 @@ public sealed class ApplicationViewModel : ModelBase
 			}
 			case SerializableSettings.SortOrder.Alphabetical:
 			{
-				foreach (var e in Choices
-					         .Where(c => !c.Model.Removed)
-					         .SelectMany(ExpandFlatAlphabeticalRow)
-					         .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
-					         .ThenBy(x => x.BrowserIdx)
-					         .ThenBy(x => x.Kind))
+				foreach (
+					var e in Choices
+						.Where(c => !c.Model.Removed)
+						.SelectMany(ExpandFlatAlphabeticalRow)
+						.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+						.ThenBy(x => x.BrowserIdx)
+						.ThenBy(x => x.Kind)
+				)
 				{
 					PickerChoices.Add(e.Item);
 				}
@@ -578,7 +594,9 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		static IEnumerable<(object Item, int Usage, int BrowserIdx, int Kind, string Tie)> ExpandFlatAutomaticRow(
-			BrowserViewModel choice, int browserIdx)
+			BrowserViewModel choice,
+			int browserIdx
+		)
 		{
 			if (choice is { HasProfiles: true, Model.Disabled: false })
 			{
@@ -595,7 +613,9 @@ public sealed class ApplicationViewModel : ModelBase
 		}
 
 		static IEnumerable<(object Item, string Name, int BrowserIdx, int Kind)> ExpandFlatAlphabeticalRow(
-			BrowserViewModel choice, int browserIdx)
+			BrowserViewModel choice,
+			int browserIdx
+		)
 		{
 			if (choice is { HasProfiles: true, Model.Disabled: false })
 			{
@@ -621,7 +641,12 @@ public sealed class ApplicationViewModel : ModelBase
 
 	private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName is nameof(IApplicationSettings.ProbeFavicons) or nameof(IApplicationSettings.FaviconsForDefaults) or nameof(IApplicationSettings.Defaults))
+		if (
+			e.PropertyName
+			is nameof(IApplicationSettings.ProbeFavicons)
+				or nameof(IApplicationSettings.FaviconsForDefaults)
+				or nameof(IApplicationSettings.Defaults)
+		)
 		{
 			RefreshCurrentUrlFavicon();
 		}

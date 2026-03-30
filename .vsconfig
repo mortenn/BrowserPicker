@@ -4,6 +4,7 @@
   ],
   "extensions": [
     "https://marketplace.visualstudio.com/items?itemName=FireGiant.FireGiantHeatWaveDev17",
+    "https://marketplace.visualstudio.com/items?itemName=csharpier.CSharpier",
     "https://marketplace.visualstudio.com/items?itemName=TeamXavalon.XAMLStyler2022"
   ]
 }

@@ -5,6 +5,20 @@ on:
     branches: [ "main" ]
 
 jobs:
+  formatting:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Restore dotnet tools
+      run: dotnet tool restore
+
+    - name: Check formatting
+      run: dotnet csharpier check .
+
   prepare:
 
     runs-on: ubuntu-latest

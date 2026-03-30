@@ -8,7 +8,6 @@ using System.Windows;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
 using BrowserPicker.UI.Views;
-
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -31,15 +30,18 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// Initializes the ViewModel with default values.
 	/// </summary>
 	[UsedImplicitly]
-	public BrowserViewModel() : base(new BrowserModel
-	{
-		Name = "Google Chrome",
-		Profiles =
-		{
-			new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
-			new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """)
-		}
-	})
+	public BrowserViewModel()
+		: base(
+			new BrowserModel
+			{
+				Name = "Google Chrome",
+				Profiles =
+				{
+					new BrowserProfile("Default", "Personal", """--profile-directory="Default" """),
+					new BrowserProfile("Profile 1", "Work", """--profile-directory="Profile 1" """),
+				},
+			}
+		)
 	{
 		parent_view_model = new ApplicationViewModel();
 	}
@@ -50,7 +52,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// </summary>
 	/// <param name="model">The browser model associated with this ViewModel.</param>
 	/// <param name="viewModel">The parent application ViewModel.</param>
-	public BrowserViewModel(BrowserModel model, ApplicationViewModel viewModel) : base(model)
+	public BrowserViewModel(BrowserModel model, ApplicationViewModel viewModel)
+		: base(model)
 	{
 		model.PropertyChanged += Model_PropertyChanged;
 		parent_view_model = viewModel;
@@ -129,12 +132,14 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// <summary>
 	/// Gets a value indicating whether the browser list is ordered manually.
 	/// </summary>
-	public bool IsManuallyOrdered => parent_view_model.Configuration.Settings.SortBy == SerializableSettings.SortOrder.Manual;
+	public bool IsManuallyOrdered =>
+		parent_view_model.Configuration.Settings.SortBy == SerializableSettings.SortOrder.Manual;
 
 	/// <summary>
 	/// Gets a value indicating whether this browser came from the built-in well-known browser list.
 	/// </summary>
-	public bool IsWellKnown => WellKnownBrowsers.Lookup(string.IsNullOrWhiteSpace(Model.Id) ? Model.Name : Model.Id, null) != null;
+	public bool IsWellKnown =>
+		WellKnownBrowsers.Lookup(string.IsNullOrWhiteSpace(Model.Id) ? Model.Name : Model.Id, null) != null;
 
 	/// <summary>
 	/// Gets a value indicating whether this browser can be permanently removed from the configuration.
@@ -149,7 +154,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// <summary>
 	/// Gets the command to select the browser with privacy mode enabled.
 	/// </summary>
-	public DelegateCommand SelectPrivacy => select_privacy ??= new DelegateCommand(() => Launch(true), () => CanLaunch(true));
+	public DelegateCommand SelectPrivacy =>
+		select_privacy ??= new DelegateCommand(() => Launch(true), () => CanLaunch(true));
 
 	/// <summary>
 	/// Gets the command to enable or disable the browser.
@@ -238,7 +244,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			Disabled = false,
 			Usage = 0,
 			ExpandFileUrls = Model.ExpandFileUrls,
-			ContainersEnabled = Model.ContainersEnabled
+			ContainersEnabled = Model.ContainersEnabled,
 		};
 		var editorVm = new BrowserViewModel(clone, parent_view_model);
 		var editor = new BrowserEditor(editorVm);
@@ -286,7 +292,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			ManualOrder = model.ManualOrder,
 			Usage = model.Usage,
 			ExpandFileUrls = model.ExpandFileUrls,
-			ContainersEnabled = model.ContainersEnabled
+			ContainersEnabled = model.ContainersEnabled,
 		};
 		var editor = new BrowserEditor(new BrowserViewModel(temp, parent_view_model));
 		editor.Show();
@@ -365,7 +371,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 						break;
 				}
 
-				return Process.GetProcessesByName(Path.GetFileNameWithoutExtension(target))
+				return Process
+					.GetProcessesByName(Path.GetFileNameWithoutExtension(target))
 					.Any(p => p.SessionId == session && p.MainWindowHandle != 0 && p.MainModule?.FileName == target);
 			}
 			catch
@@ -406,7 +413,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		{
 			var known = WellKnownBrowsers.Lookup(
 				string.IsNullOrWhiteSpace(Model.Id) ? Model.Name : Model.Id,
-				Model.Executable ?? Model.Command);
+				Model.Executable ?? Model.Command
+			);
 			return known?.ProfileType == ProfileType.Firefox;
 		}
 	}
@@ -420,7 +428,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	{
 		try
 		{
-			var process = new ProcessStartInfo(Model.Command, MozillaContainerExtensionLaunchArgs) { UseShellExecute = false };
+			var process = new ProcessStartInfo(Model.Command, MozillaContainerExtensionLaunchArgs)
+			{
+				UseShellExecute = false,
+			};
 			Process.Start(process);
 		}
 		catch
@@ -460,7 +471,8 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		get
 		{
 			profile_view_models ??= new ObservableCollection<BrowserProfileViewModel>(
-				Model.Profiles.Where(p => !p.Disabled).Select(p => new BrowserProfileViewModel(p, this)));
+				Model.Profiles.Where(p => !p.Disabled).Select(p => new BrowserProfileViewModel(p, this))
+			);
 			return profile_view_models;
 		}
 	}

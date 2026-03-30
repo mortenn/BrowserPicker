@@ -19,7 +19,7 @@ public sealed class ComboBoxBrowserItemFlagConverter : IValueConverter
 		{
 			"Disabled" => vm.Model.Disabled,
 			"Removed" => vm.Model.Removed,
-			_ => false
+			_ => false,
 		};
 	}
 

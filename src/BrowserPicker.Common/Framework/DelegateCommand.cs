@@ -54,7 +54,8 @@ public sealed class DelegateCommand(Action callback, Func<bool>? canExecute = nu
 /// <param name="callback">The action to execute with the parameter.</param>
 /// <param name="canExecute">Optional predicate; when null, the command is always executable.</param>
 [PublicAPI]
-public sealed class DelegateCommand<T>(Action<T?> callback, Func<T?, bool>? canExecute = null) : DelegateCommandBase where T : class
+public sealed class DelegateCommand<T>(Action<T?> callback, Func<T?, bool>? canExecute = null) : DelegateCommandBase
+	where T : class
 {
 	/// <inheritdoc />
 	public override bool CanExecute(object? parameter)
