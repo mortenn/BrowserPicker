@@ -128,6 +128,8 @@ profile you launched Chrome with. To make it possible for Browser Picker to sele
 for each profile, set the program to the chrome executable, and add a command line argument to specify which profile to launch:
 `--profile-directory=Default` for the first profile, `--profile-directory="Profile 1"` for the second profile, and so on.
 
+Another tip for Chrome Users: If you're using multiple Chrome profiles and the profile list shown in BrowserPicker doesn't match the list shown when in your browser: Chrome stored profile data in 2x places: "Local State" file and in the Preferences file with the Profile subfolder. BrowserPicker uses the Preferences file, whereas Chrome uses the LocalState file. These 2 can become out of sync. If that happens, then identify which profiles aren't shown in BrowerPicker and rename them in Chrome - this should cause the Preferences file to refresh and the Profiles to show correctly.
+
 Please note that arguments with spaces do require "" around them to be properly passed to chrome.
 
 ##### Firefox profiles
