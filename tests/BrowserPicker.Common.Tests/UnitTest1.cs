@@ -36,12 +36,19 @@ public class UrlSecurityPresentationTests
 			.Be(
 				string.Join(
 					Environment.NewLine,
-					"Local URL hints",
 					"Scheme: HTTPS (secure scheme; TLS was not checked)",
 					"Host: www.github.com",
 					"Highlighted domain: github.com",
-					"No network request was made."
+					"Note: No network request was made."
 				)
+			);
+		presentation
+			.ToolTipLines.Should()
+			.Equal(
+				new UrlToolTipLine("Scheme", "HTTPS (secure scheme; TLS was not checked)"),
+				new UrlToolTipLine("Host", "www.github.com"),
+				new UrlToolTipLine("Highlighted domain", "github.com"),
+				new UrlToolTipLine("Note", "No network request was made.")
 			);
 	}
 
@@ -55,12 +62,11 @@ public class UrlSecurityPresentationTests
 			.Be(
 				string.Join(
 					Environment.NewLine,
-					"Local URL hints",
 					"Scheme: HTTPS (secure scheme; TLS was not checked)",
 					"Host: bücher.example",
 					"Highlighted domain: xn--bcher-kva.example",
 					"IDN ASCII: xn--bcher-kva.example",
-					"No network request was made."
+					"Note: No network request was made."
 				)
 			);
 	}
@@ -76,11 +82,9 @@ public class UrlSecurityPresentationTests
 			.Be(
 				string.Join(
 					Environment.NewLine,
-					"Local URL hints",
 					"Scheme: FILE (local scheme)",
 					@"Path: C:\windows\win.ini",
-					$"Original URL: {url}",
-					"No network request was made."
+					"Note: No network request was made."
 				)
 			);
 	}
@@ -130,7 +134,7 @@ public class UrlSecurityPresentationTests
 				new UrlDisplaySegment("\\windows\\", UrlDisplaySegmentKind.Path),
 				new UrlDisplaySegment("win.ini", UrlDisplaySegmentKind.FileName),
 			]);
-		presentation.ToolTip.Should().Contain($"Original URL: {url}");
+		presentation.ToolTip.Should().Contain(@"Path: C:\windows\win.ini");
 	}
 
 	[Fact]
@@ -147,7 +151,7 @@ public class UrlSecurityPresentationTests
 				new UrlDisplaySegment(@"\share\", UrlDisplaySegmentKind.Path),
 				new UrlDisplaySegment("file.txt", UrlDisplaySegmentKind.FileName),
 			]);
-		presentation.ToolTip.Should().Contain($"Original URL: {url}");
+		presentation.ToolTip.Should().Contain(@"Path: \\server\share\file.txt");
 	}
 
 	[Fact]

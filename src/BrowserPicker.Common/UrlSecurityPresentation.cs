@@ -29,12 +29,15 @@ public enum UrlDisplaySegmentKind
 
 public sealed record UrlDisplaySegment(string Text, UrlDisplaySegmentKind Kind);
 
+public sealed record UrlToolTipLine(string Label, string Value);
+
 public sealed record UrlSecurityPresentation(
 	IReadOnlyList<UrlDisplaySegment> Segments,
 	string SchemeLabel,
 	UrlSecuritySchemeState SchemeState,
 	string SchemeToolTip,
 	string ToolTip,
+	IReadOnlyList<UrlToolTipLine> ToolTipLines,
 	string? RegistrableDomain
 )
 {
@@ -65,6 +68,7 @@ public sealed record UrlSecurityPresentation(
 				UrlSecuritySchemeState.Neutral,
 				"No URL to inspect.",
 				string.Empty,
+				Array.Empty<UrlToolTipLine>(),
 				null
 			);
 		}
@@ -77,6 +81,7 @@ public sealed record UrlSecurityPresentation(
 				UrlSecuritySchemeState.Neutral,
 				"This text is not an absolute URL.",
 				displayUrl,
+				[new UrlToolTipLine("URL", "This text is not an absolute URL.")],
 				null
 			);
 		}
@@ -86,12 +91,14 @@ public sealed record UrlSecurityPresentation(
 		if (uri.IsFile)
 		{
 			var filePath = GetCanonicalFilePath(uri);
+			var fileToolTipLines = BuildFileToolTipLines(uri, filePath);
 			return new(
 				BuildFileSegments(filePath),
 				schemeLabel,
 				schemeState,
 				BuildSchemeToolTip(uri, schemeState),
-				BuildFileToolTip(displayUrl, filePath),
+				BuildToolTip(fileToolTipLines),
+				fileToolTipLines,
 				null
 			);
 		}
@@ -104,9 +111,17 @@ public sealed record UrlSecurityPresentation(
 			out var asciiHost
 		);
 		var schemeToolTip = BuildSchemeToolTip(uri, schemeState);
-		var toolTip = BuildToolTip(schemeToolTip, registrableDomain, unicodeHost, asciiHost);
+		var toolTipLines = BuildToolTipLines(schemeToolTip, registrableDomain, unicodeHost, asciiHost);
 
-		return new(segments, schemeLabel, schemeState, schemeToolTip, toolTip, registrableDomain);
+		return new(
+			segments,
+			schemeLabel,
+			schemeState,
+			schemeToolTip,
+			BuildToolTip(toolTipLines),
+			toolTipLines,
+			registrableDomain
+		);
 	}
 
 	private static string GetCanonicalFilePath(Uri uri)
@@ -166,16 +181,14 @@ public sealed record UrlSecurityPresentation(
 		];
 	}
 
-	private static string BuildFileToolTip(string displayUrl, string filePath)
+	private static IReadOnlyList<UrlToolTipLine> BuildFileToolTipLines(Uri uri, string filePath)
 	{
-		return string.Join(
-			Environment.NewLine,
-			"Local URL hints",
-			"Scheme: FILE (local scheme)",
-			$"Path: {filePath}",
-			$"Original URL: {displayUrl}",
-			"No network request was made."
-		);
+		return
+		[
+			new UrlToolTipLine("Scheme", BuildSchemeToolTip(uri, UrlSecuritySchemeState.Neutral)),
+			new UrlToolTipLine("Path", filePath),
+			new UrlToolTipLine("Note", "No network request was made."),
+		];
 	}
 
 	private static UrlSecuritySchemeState GetSchemeState(Uri uri)
@@ -192,29 +205,29 @@ public sealed record UrlSecurityPresentation(
 	{
 		return schemeState switch
 		{
-			UrlSecuritySchemeState.Secure => "Scheme: HTTPS (secure scheme; TLS was not checked)",
-			UrlSecuritySchemeState.Insecure => "Scheme: HTTP (not encrypted)",
-			_ => $"Scheme: {uri.Scheme.ToUpperInvariant()} (local scheme)",
+			UrlSecuritySchemeState.Secure => "HTTPS (secure scheme; TLS was not checked)",
+			UrlSecuritySchemeState.Insecure => "HTTP (not encrypted)",
+			_ => $"{uri.Scheme.ToUpperInvariant()} (local scheme)",
 		};
 	}
 
-	private static string BuildToolTip(
+	private static IReadOnlyList<UrlToolTipLine> BuildToolTipLines(
 		string schemeToolTip,
 		string? registrableDomain,
 		string? unicodeHost,
 		string? asciiHost
 	)
 	{
-		var lines = new List<string> { "Local URL hints", schemeToolTip };
+		var lines = new List<UrlToolTipLine> { new("Scheme", schemeToolTip) };
 
 		if (!string.IsNullOrWhiteSpace(unicodeHost))
 		{
-			lines.Add($"Host: {unicodeHost}");
+			lines.Add(new UrlToolTipLine("Host", unicodeHost));
 		}
 
 		if (!string.IsNullOrWhiteSpace(registrableDomain))
 		{
-			lines.Add($"Highlighted domain: {registrableDomain}");
+			lines.Add(new UrlToolTipLine("Highlighted domain", registrableDomain));
 		}
 
 		if (
@@ -223,11 +236,16 @@ public sealed record UrlSecurityPresentation(
 			&& !string.Equals(unicodeHost, asciiHost, StringComparison.OrdinalIgnoreCase)
 		)
 		{
-			lines.Add($"IDN ASCII: {asciiHost}");
+			lines.Add(new UrlToolTipLine("IDN ASCII", asciiHost));
 		}
 
-		lines.Add("No network request was made.");
-		return string.Join(Environment.NewLine, lines);
+		lines.Add(new UrlToolTipLine("Note", "No network request was made."));
+		return lines;
+	}
+
+	private static string BuildToolTip(IReadOnlyList<UrlToolTipLine> lines)
+	{
+		return string.Join(Environment.NewLine, lines.Select(line => $"{line.Label}: {line.Value}"));
 	}
 
 	private static IReadOnlyList<UrlDisplaySegment> BuildSegments(

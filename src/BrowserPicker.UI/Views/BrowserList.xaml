@@ -101,7 +101,20 @@
 					<ToolTip>
 						<StackPanel MaxWidth="640">
 							<TextBlock Text="{Binding Url.DisplayURL}" TextWrapping="Wrap" />
-							<TextBlock Margin="0,8,0,0" Opacity="0.85" Text="{Binding Url.SecurityPresentation.ToolTip}" TextWrapping="Wrap" />
+							<ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Url.SecurityPresentation.ToolTipLines}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Grid Margin="0,1">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="Auto" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+											<TextBlock MinWidth="118" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Text="{Binding Label}" />
+											<TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+										</Grid>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
 						</StackPanel>
 					</ToolTip>
 				</Border.ToolTip>
