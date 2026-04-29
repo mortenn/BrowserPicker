@@ -99,7 +99,10 @@
 				CornerRadius="5">
 				<Border.ToolTip>
 					<ToolTip>
-						<TextBlock MaxWidth="420" Text="{Binding Url.SecurityPresentation.ToolTip}" TextWrapping="Wrap" />
+						<StackPanel MaxWidth="640">
+							<TextBlock Text="{Binding Url.DisplayURL}" TextWrapping="Wrap" />
+							<TextBlock Margin="0,8,0,0" Opacity="0.85" Text="{Binding Url.SecurityPresentation.ToolTip}" TextWrapping="Wrap" />
+						</StackPanel>
 					</ToolTip>
 				</Border.ToolTip>
 				<Grid>
