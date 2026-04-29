@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -518,7 +518,11 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				}
 			}
 
-			parent_view_model.Configuration.UrlOpened(parent_view_model.Url.HostName, Model.Id);
+			parent_view_model.Configuration.UrlOpened(
+				parent_view_model.Url.HostName,
+				parent_view_model.Url.RegistrableDomain,
+				Model.Id
+			);
 
 			var profileArgs = profile?.CommandArgs ?? string.Empty;
 			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;

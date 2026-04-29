@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
 	x:Class="BrowserPicker.UI.Views.BrowserList"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -16,9 +16,15 @@
 			<converters:ContainerColorConverter x:Key="ContainerColorConverter" />
 			<converters:ContainerIconConverter x:Key="ContainerIconConverter" />
 			<converters:PickerUrlBarMaxWidthConverter x:Key="PickerUrlBarMaxWidthConverter" />
+			<Style x:Key="RememberValueTextBlockStyle" TargetType="TextBlock">
+				<Setter Property="MaxWidth" Value="235" />
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" />
+				<Setter Property="TextTrimming" Value="CharacterEllipsis" />
+				<Setter Property="TextWrapping" Value="NoWrap" />
+			</Style>
 		</ResourceDictionary>
 	</UserControl.Resources>
-	<Grid MinWidth="350" MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PickerUrlBarMaxWidthConverter}}">
+	<Grid MinWidth="390" MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource PickerUrlBarMaxWidthConverter}}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
@@ -82,7 +88,7 @@
 					</TextBlock.Style>
 				</TextBlock>
 			</StackPanel>
-			<!--  Wrapped URL (omnibox-style bar); MaxHeight caps height so absurd URLs do not dominate the picker. Tooltip shows full string.  -->
+			<!--  Wrapped URL (omnibox-style bar); MaxHeight caps height so absurd URLs do not dominate the picker. Tooltip explains local-only hints.  -->
 			<Border
 				Margin="2"
 				Padding="6,4"
@@ -90,8 +96,25 @@
 				Background="{DynamicResource {x:Static ui:App.UrlBarBackgroundBrushKey}}"
 				BorderBrush="{DynamicResource {x:Static ui:App.UrlBarBorderBrushKey}}"
 				BorderThickness="1"
-				CornerRadius="5"
-				ToolTip="{Binding Url.DisplayURL}">
+				CornerRadius="5">
+				<Border.ToolTip>
+					<ToolTip>
+						<StackPanel MaxWidth="640">
+							<TextBlock Text="{Binding Url.DisplayURL}" TextWrapping="Wrap" />
+							<ItemsControl Margin="0,8,0,0" ItemsSource="{Binding Url.SecurityPresentation.ToolTipLines}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Margin="0,1" TextWrapping="Wrap">
+											<Run FontWeight="SemiBold" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Text="{Binding Label, Mode=OneWay}" />
+											<Run FontWeight="SemiBold" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" Text=": " />
+											<Run Text="{Binding Value, Mode=OneWay}" />
+										</TextBlock>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</StackPanel>
+					</ToolTip>
+				</Border.ToolTip>
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -121,20 +144,17 @@
 						MaxHeight="76"
 						HorizontalAlignment="Stretch"
 						VerticalAlignment="Top"
+						ui:UrlTextBlockSegments.Segments="{Binding Url.SecurityPresentation.Segments}"
 						Foreground="{DynamicResource {x:Static ui:App.UrlBarForegroundBrushKey}}"
-						Text="{Binding Url.DisplayURL, Mode=OneWay}"
+						LineHeight="18"
+						LineStackingStrategy="BlockLineHeight"
 						TextAlignment="Left"
 						TextTrimming="CharacterEllipsis"
 						TextWrapping="Wrap" />
 				</Grid>
 			</Border>
 		</StackPanel>
-		<ScrollViewer
-			x:Name="BrowserListScroll"
-			Grid.Row="1"
-			HorizontalScrollBarVisibility="Disabled"
-			SizeChanged="BrowserListScroll_SizeChanged"
-			VerticalScrollBarVisibility="Auto">
+		<ScrollViewer x:Name="BrowserListScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 			<ItemsControl ItemsSource="{Binding PickerChoices}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
@@ -177,7 +197,7 @@
 													</Grid.Style>
 													<Grid.ColumnDefinitions>
 														<ColumnDefinition Width="Auto" />
-														<ColumnDefinition Width="*" />
+														<ColumnDefinition Width="*" MinWidth="230" />
 													</Grid.ColumnDefinitions>
 													<Image
 														Width="40"
@@ -197,7 +217,12 @@
 															</Style>
 														</Image.Style>
 													</Image>
-													<StackPanel Grid.Column="1" Margin="20,0,20,0" VerticalAlignment="Center" Orientation="Horizontal">
+													<StackPanel
+														Grid.Column="1"
+														MinWidth="310"
+														Margin="20,0,20,0"
+														VerticalAlignment="Center"
+														Orientation="Horizontal">
 														<Path
 															Width="16"
 															Height="16"
@@ -333,7 +358,7 @@
 													</Grid.Style>
 													<Grid.ColumnDefinitions>
 														<ColumnDefinition Width="Auto" />
-														<ColumnDefinition Width="*" />
+														<ColumnDefinition Width="*" MinWidth="310" />
 													</Grid.ColumnDefinitions>
 													<Image
 														Width="40"
@@ -585,19 +610,48 @@
 				Content="Always ask"
 				Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}"
 				IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" />
-			<CheckBox
+			<StackPanel
 				Grid.Row="1"
 				Grid.Column="0"
 				Grid.ColumnSpan="2"
 				Width="350"
 				Margin="0,4,0,0"
-				HorizontalAlignment="Left"
-				IsChecked="{Binding Configuration.AutoAddDefault}">
-				<TextBlock MaxHeight="50" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" TextWrapping="Wrap">
-					<Run Text="Remember my choice for" />
-					<Run Text="{Binding Url.HostName}" />
-				</TextBlock>
-			</CheckBox>
+				HorizontalAlignment="Left">
+				<StackPanel.Style>
+					<Style TargetType="StackPanel">
+						<Setter Property="Visibility" Value="Visible" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Url.CanRememberChoice}" Value="False">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</StackPanel.Style>
+				<CheckBox IsChecked="{Binding Configuration.AutoAddDefault}">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="Remember " />
+						<TextBlock Style="{StaticResource RememberValueTextBlockStyle}" Text="{Binding Url.HostName}" ToolTip="{Binding Url.HostName}" />
+					</StackPanel>
+				</CheckBox>
+				<StackPanel Margin="0,2,0,0">
+					<StackPanel.Style>
+						<Style TargetType="StackPanel">
+							<Setter Property="Visibility" Value="Visible" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding Url.CanRememberRegistrableDomain}" Value="False">
+									<Setter Property="Visibility" Value="Collapsed" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</StackPanel.Style>
+					<CheckBox IsChecked="{Binding Configuration.AutoAddRegistrableDefault}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="Remember " />
+							<TextBlock Style="{StaticResource RememberValueTextBlockStyle}" Text="{Binding Url.RegistrableDomain, Mode=OneWay}" ToolTip="{Binding Url.RegistrableDomain}" />
+						</StackPanel>
+					</CheckBox>
+				</StackPanel>
+			</StackPanel>
 		</Grid>
 	</Grid>
 </UserControl>

@@ -11,6 +11,6 @@ jobs:
   ci:
     permissions:
       contents: read
-    uses: mortenn/BrowserPicker.Actions/.github/workflows/ci.yml@acb9b119377245e0bb213408e8da15f7b0a678b5
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/ci.yml@1f35242bb89d3bc12c83ca4bd4727f3414204340
     with:
       dotnet_version: 10.x
