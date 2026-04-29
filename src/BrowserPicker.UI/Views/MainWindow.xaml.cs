@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using BrowserPicker.Common;
 using BrowserPicker.UI.ViewModels;
 using JetBrains.Annotations;
@@ -24,6 +25,9 @@ public partial class MainWindow
 
 	/// <summary>True while the user is dragging the resize grip; we update Width/Height from mouse position.</summary>
 	private bool resizing_via_grip;
+	private Point resize_start_screen;
+	private Size resize_start_size;
+	private DispatcherTimer? resize_mouse_button_watchdog;
 
 	public MainWindow()
 	{
@@ -323,7 +327,10 @@ public partial class MainWindow
 		if (suppress_size_change_save_count > 0)
 		{
 			suppress_size_change_save_count--;
-			CenterWindow(e.NewSize);
+			if (!resizing_via_grip)
+			{
+				CenterWindow(e.NewSize);
+			}
 			return;
 		}
 
@@ -367,21 +374,49 @@ public partial class MainWindow
 	{
 		e.Handled = true;
 		user_initiated_resize = true;
-		SizeToContent = SizeToContent.Manual;
+		suppress_size_change_save_count = 0;
 		resizing_via_grip = true;
+		resize_start_screen = PointToScreen(e.GetPosition(this));
+		resize_start_size = new Size(ActualWidth, ActualHeight);
+		var left = Left;
+		var top = Top;
+		SizeToContent = SizeToContent.Manual;
+		Width = Math.Max(MinWidth, resize_start_size.Width);
+		Height = Math.Max(MinHeight, resize_start_size.Height);
+		Left = left;
+		Top = top;
 		Mouse.Capture(this, CaptureMode.SubTree);
 		MouseMove += Window_ResizeGripMouseMove;
 		MouseLeftButtonUp += Window_ResizeGripMouseUp;
 		LostMouseCapture += Window_ResizeGripLostCapture;
+		StartResizeMouseButtonWatchdog();
 	}
 
 	private void Window_ResizeGripMouseMove(object sender, MouseEventArgs e)
 	{
 		if (!resizing_via_grip)
 			return;
-		var pt = PointToScreen(Mouse.GetPosition(this));
-		Width = Math.Max(MinWidth, pt.X - Left);
-		Height = Math.Max(MinHeight, pt.Y - Top);
+		if (e.LeftButton != MouseButtonState.Pressed)
+		{
+			EndResizeGripDrag();
+			return;
+		}
+		var pt = PointToScreen(e.GetPosition(this));
+		Width = Math.Max(GetResizeMinWidth(), resize_start_size.Width + pt.X - resize_start_screen.X);
+		Height = Math.Max(MinHeight, resize_start_size.Height + pt.Y - resize_start_screen.Y);
+	}
+
+	private double GetResizeMinWidth()
+	{
+		if (ViewModel.ConfigurationMode || PickerHost is not { IsVisible: true })
+		{
+			return MinWidth;
+		}
+
+		PickerHost.Measure(
+			new Size(double.PositiveInfinity, ActualHeight > 0 ? ActualHeight : double.PositiveInfinity)
+		);
+		return Math.Max(MinWidth, PickerHost.DesiredSize.Width + 20);
 	}
 
 	private void Window_ResizeGripMouseUp(object sender, MouseButtonEventArgs e)
@@ -402,6 +437,23 @@ public partial class MainWindow
 		MouseMove -= Window_ResizeGripMouseMove;
 		MouseLeftButtonUp -= Window_ResizeGripMouseUp;
 		LostMouseCapture -= Window_ResizeGripLostCapture;
+		resize_mouse_button_watchdog?.Stop();
 		ReleaseMouseCapture();
+	}
+
+	private void StartResizeMouseButtonWatchdog()
+	{
+		resize_mouse_button_watchdog ??= new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+		resize_mouse_button_watchdog.Tick -= ResizeMouseButtonWatchdog_Tick;
+		resize_mouse_button_watchdog.Tick += ResizeMouseButtonWatchdog_Tick;
+		resize_mouse_button_watchdog.Start();
+	}
+
+	private void ResizeMouseButtonWatchdog_Tick(object? sender, EventArgs e)
+	{
+		if (resizing_via_grip && Mouse.LeftButton != MouseButtonState.Pressed)
+		{
+			EndResizeGripDrag();
+		}
 	}
 }

@@ -60,7 +60,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 		try
 		{
 			uri = new Uri(requestedUrl);
-			host_name = uri.Host;
+			host_name = uri.IsFile ? null : uri.Host;
 		}
 		catch
 		{
@@ -99,7 +99,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			{
 				return;
 			}
-			HostName = uri.IsFile && !uri.IsUnc ? null : uri.Host;
+			HostName = uri.IsFile ? null : uri.Host;
 			while (true)
 			{
 				var jump = ResolveJumpPage(uri);
@@ -108,7 +108,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 					logger.LogJumpUrl(uri);
 					UnderlyingTargetURL = jump;
 					uri = new Uri(jump);
-					HostName = uri.IsFile && !uri.IsUnc ? null : uri.Host;
+					HostName = uri.IsFile ? null : uri.Host;
 					continue;
 				}
 
@@ -119,7 +119,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 					IsShortenedURL = true;
 					UnderlyingTargetURL = shortened;
 					uri = new Uri(shortened);
-					HostName = uri.IsFile && !uri.IsUnc ? null : uri.Host;
+					HostName = uri.IsFile ? null : uri.Host;
 					continue;
 				}
 
@@ -462,6 +462,9 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			if (SetProperty(ref underlying_target_url, value))
 			{
 				OnPropertyChanged(nameof(DisplayURL));
+				OnPropertyChanged(nameof(SecurityPresentation));
+				OnPropertyChanged(nameof(RegistrableDomain));
+				OnPropertyChanged(nameof(CanRememberRegistrableDomain));
 			}
 		}
 	}
@@ -476,13 +479,37 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	}
 
 	/// <summary>
-	/// Host name of the (possibly resolved) URL; null for file URLs when not UNC.
+	/// Host name of the (possibly resolved) URL; null for file URLs.
 	/// </summary>
 	public string? HostName
 	{
 		get => host_name;
-		set => SetProperty(ref host_name, value);
+		set
+		{
+			if (SetProperty(ref host_name, value))
+			{
+				OnPropertyChanged(nameof(CanRememberChoice));
+				OnPropertyChanged(nameof(CanRememberRegistrableDomain));
+			}
+		}
 	}
+
+	/// <summary>
+	/// True when the current URL has a host that can be stored as a hostname default.
+	/// </summary>
+	public bool CanRememberChoice => !string.IsNullOrWhiteSpace(HostName);
+
+	/// <summary>
+	/// Registrable domain derived from the current display URL, if it can be classified locally.
+	/// </summary>
+	public string? RegistrableDomain => SecurityPresentation.RegistrableDomain;
+
+	/// <summary>
+	/// True when the registrable domain is a useful broader default than the full host.
+	/// </summary>
+	public bool CanRememberRegistrableDomain =>
+		!string.IsNullOrWhiteSpace(RegistrableDomain)
+		&& !string.Equals(RegistrableDomain, HostName, StringComparison.OrdinalIgnoreCase);
 
 	/// <summary>
 	/// Favicon image bytes loaded from the target page, if available.
@@ -506,6 +533,11 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	/// The URL to display in the UI (underlying resolved URL or original target).
 	/// </summary>
 	public string? DisplayURL => UnderlyingTargetURL ?? TargetURL;
+
+	/// <summary>
+	/// Local-only URL presentation hints derived from <see cref="DisplayURL"/>.
+	/// </summary>
+	public UrlSecurityPresentation SecurityPresentation => UrlSecurityPresentation.FromDisplayUrl(DisplayURL);
 
 	/// <summary>
 	/// Default list of URL shortener host names used to resolve redirects.

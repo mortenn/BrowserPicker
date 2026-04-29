@@ -336,6 +336,16 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether defaults should be automatically added
+	/// for the registrable domain of the opened URL.
+	/// </summary>
+	public bool AutoAddRegistrableDefault
+	{
+		get => auto_add_registrable_default;
+		set => SetProperty(ref auto_add_registrable_default, value);
+	}
+
+	/// <summary>
 	/// Gets or sets whether the picker should close automatically when it loses focus.
 	/// JSON-backed settings persist this; legacy registry-backed migration defaults to being enabled.
 	/// </summary>
@@ -707,17 +717,30 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// Called when a URL was opened with a browser; may add a hostname default if <see cref="AutoAddDefault"/> is set.
 	/// </summary>
 	/// <param name="hostName">Host name of the opened URL.</param>
+	/// <param name="registrableDomain">Registrable domain of the opened URL, when it differs from the full host.</param>
 	/// <param name="browserId">The browser id of the browser that was used.</param>
-	internal void UrlOpened(string? hostName, string browserId)
+	internal void UrlOpened(string? hostName, string? registrableDomain, string browserId)
 	{
-		if (!AutoAddDefault || hostName == null)
+		if (!AutoAddDefault && !AutoAddRegistrableDefault)
 		{
 			return;
 		}
 
 		try
 		{
-			AddNewDefault(MatchType.Hostname, hostName, browserId);
+			if (AutoAddDefault && !string.IsNullOrWhiteSpace(hostName))
+			{
+				AddNewDefault(MatchType.Hostname, hostName, browserId);
+			}
+
+			if (
+				AutoAddRegistrableDefault
+				&& !string.IsNullOrWhiteSpace(registrableDomain)
+				&& !string.Equals(registrableDomain, hostName, StringComparison.OrdinalIgnoreCase)
+			)
+			{
+				AddNewDefault(MatchType.Hostname, registrableDomain, browserId);
+			}
 		}
 		catch
 		{
@@ -988,6 +1011,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	private string new_fragment_browser = string.Empty;
 	private string? new_fragment_profile;
 	private bool auto_add_default;
+	private bool auto_add_registrable_default;
 	private bool welcome;
 	private int selected_tab_index = BrowsersTabIndex;
 	private DelegateCommand? add_default;

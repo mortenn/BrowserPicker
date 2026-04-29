@@ -8,7 +8,7 @@
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
 	xmlns:views="clr-namespace:BrowserPicker.UI.Views"
 	Title="Browser Picker"
-	MinWidth="320"
+	MinWidth="430"
 	MinHeight="200"
 	d:DataContext="{d:DesignInstance viewModels:ApplicationViewModel,
 									 d:IsDesignTimeCreatable=true}"
@@ -63,7 +63,7 @@
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
-					<Border Grid.Row="0" Grid.Column="0">
+					<Border x:Name="PickerHost" Grid.Row="0" Grid.Column="0">
 						<Border.Style>
 							<Style>
 								<Setter Property="UIElement.Visibility" Value="Visible" />
