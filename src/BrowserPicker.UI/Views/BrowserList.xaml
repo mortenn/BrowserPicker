@@ -105,8 +105,8 @@
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
 										<TextBlock Margin="0,1" TextWrapping="Wrap">
-											<Run Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Text="{Binding Label, Mode=OneWay}" />
-											<Run Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Text=": " />
+											<Run FontWeight="SemiBold" Text="{Binding Label, Mode=OneWay}" />
+											<Run FontWeight="SemiBold" Text=": " />
 											<Run Text="{Binding Value, Mode=OneWay}" />
 										</TextBlock>
 									</DataTemplate>
