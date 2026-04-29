@@ -40,19 +40,19 @@ public sealed record UrlSecurityPresentation(
 {
 	private static readonly IdnMapping Idn = new();
 
-	private static readonly string[] KnownMultiPartSuffixes =
+	private static readonly (string Suffix, int LabelCount)[] KnownMultiPartSuffixes =
 	[
-		"co.uk",
-		"org.uk",
-		"ac.uk",
-		"gov.uk",
-		"com.au",
-		"net.au",
-		"org.au",
-		"co.nz",
-		"com.br",
-		"com.tr",
-		"co.jp",
+		("co.uk", 2),
+		("org.uk", 2),
+		("ac.uk", 2),
+		("gov.uk", 2),
+		("com.au", 2),
+		("net.au", 2),
+		("org.au", 2),
+		("co.nz", 2),
+		("com.br", 2),
+		("com.tr", 2),
+		("co.jp", 2),
 	];
 
 	public static UrlSecurityPresentation FromDisplayUrl(string? displayUrl)
@@ -104,7 +104,7 @@ public sealed record UrlSecurityPresentation(
 			out var asciiHost
 		);
 		var schemeToolTip = BuildSchemeToolTip(uri, schemeState);
-		var toolTip = BuildToolTip(displayUrl, schemeToolTip, registrableDomain, unicodeHost, asciiHost);
+		var toolTip = BuildToolTip(schemeToolTip, registrableDomain, unicodeHost, asciiHost);
 
 		return new(segments, schemeLabel, schemeState, schemeToolTip, toolTip, registrableDomain);
 	}
@@ -170,9 +170,11 @@ public sealed record UrlSecurityPresentation(
 	{
 		return string.Join(
 			Environment.NewLine,
-			filePath,
+			"Local URL hints",
+			"Scheme: FILE (local scheme)",
+			$"Path: {filePath}",
 			$"Original URL: {displayUrl}",
-			"Local file path: no host is contacted and certificates are not checked."
+			"No network request was made."
 		);
 	}
 
@@ -188,25 +190,22 @@ public sealed record UrlSecurityPresentation(
 
 	private static string BuildSchemeToolTip(Uri uri, UrlSecuritySchemeState schemeState)
 	{
-		var state = schemeState switch
+		return schemeState switch
 		{
-			UrlSecuritySchemeState.Secure => "HTTPS URL. This is a local scheme hint; TLS is not checked.",
-			UrlSecuritySchemeState.Insecure => "HTTP URL. This is a local scheme hint; no connection is made.",
-			_ => $"{uri.Scheme.ToUpperInvariant()} URL. This is a local scheme hint.",
+			UrlSecuritySchemeState.Secure => "Scheme: HTTPS (secure scheme; TLS was not checked)",
+			UrlSecuritySchemeState.Insecure => "Scheme: HTTP (not encrypted)",
+			_ => $"Scheme: {uri.Scheme.ToUpperInvariant()} (local scheme)",
 		};
-
-		return state;
 	}
 
 	private static string BuildToolTip(
-		string displayUrl,
 		string schemeToolTip,
 		string? registrableDomain,
 		string? unicodeHost,
 		string? asciiHost
 	)
 	{
-		var lines = new List<string> { displayUrl, schemeToolTip };
+		var lines = new List<string> { "Local URL hints", schemeToolTip };
 
 		if (!string.IsNullOrWhiteSpace(unicodeHost))
 		{
@@ -224,10 +223,10 @@ public sealed record UrlSecurityPresentation(
 			&& !string.Equals(unicodeHost, asciiHost, StringComparison.OrdinalIgnoreCase)
 		)
 		{
-			lines.Add($"IDN: {unicodeHost} (ASCII: {asciiHost})");
+			lines.Add($"IDN ASCII: {asciiHost}");
 		}
 
-		lines.Add("Local only: no host is contacted and certificates are not checked.");
+		lines.Add("No network request was made.");
 		return string.Join(Environment.NewLine, lines);
 	}
 
@@ -449,11 +448,11 @@ public sealed record UrlSecurityPresentation(
 		foreach (var suffix in KnownMultiPartSuffixes)
 		{
 			if (
-				normalized.EndsWith($".{suffix}", StringComparison.OrdinalIgnoreCase)
-				&& labels.Length > suffix.Count(c => c == '.') + 1
+				normalized.EndsWith($".{suffix.Suffix}", StringComparison.OrdinalIgnoreCase)
+				&& labels.Length > suffix.LabelCount
 			)
 			{
-				return suffix.Count(c => c == '.') + 2;
+				return suffix.LabelCount + 1;
 			}
 		}
 

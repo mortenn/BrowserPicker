@@ -11,20 +11,6 @@ jobs:
   validate:
     permissions:
       contents: read
-    uses: mortenn/BrowserPicker.Actions/.github/workflows/pr-validation.yml@acb9b119377245e0bb213408e8da15f7b0a678b5
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/pr-validation.yml@d6c7563889c25c3df4ab20c3535fea675d6e9d12
     with:
       dotnet_version: 10.x
-
-  tests:
-    name: Tests
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.x
-
-      - name: Run unit tests
-        run: dotnet test tests/BrowserPicker.Common.Tests/BrowserPicker.Common.Tests.csproj -p:Version=1.0.0 -p:Platform=x64 --verbosity normal
