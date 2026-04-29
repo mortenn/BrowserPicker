@@ -24,7 +24,7 @@
       "rollForward": false
     },
     "wix": {
-      "version": "6.0.2",
+      "version": "7.0.0",
       "commands": [
         "wix"
       ],
