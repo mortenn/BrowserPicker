@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
 	x:Class="BrowserPicker.UI.Views.Configuration"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -479,14 +479,8 @@
 							</Style>
 						</Grid.Resources>
 						<StackPanel>
-							<Menu
-								Margin="0,4,0,10"
-								Background="Transparent"
-								Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
-								<MenuItem
-									Header="Apply profile"
-									Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}"
-									ItemsSource="{x:Static securityProfiles:PredefinedSecurityProfiles.All}">
+							<Menu Margin="0,4,0,10" Background="Transparent" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
+								<MenuItem Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Header="Apply profile" ItemsSource="{x:Static securityProfiles:PredefinedSecurityProfiles.All}">
 									<MenuItem.ItemContainerStyle>
 										<Style TargetType="{x:Type MenuItem}">
 											<Setter Property="Header" Value="{Binding DisplayName}" />
@@ -539,18 +533,9 @@
 							</StackPanel>
 
 							<TextBlock Margin="0,8,0,6" FontWeight="Bold" Text="Manual probes" />
-							<CheckBox
-								Content="Include DNS CAA and certificate transparency evidence"
-								IsChecked="{Binding Settings.CheckCertificateRecords}"
-								ToolTip="Used only when you click Check connection. CAA requires a DNS lookup; CT checks embedded certificate transparency evidence." />
-							<CheckBox
-								Content="Hide connection check button"
-								IsChecked="{Binding Settings.HideManualConnectionCheck}"
-								ToolTip="Removes the padlock connection check action from the picker." />
-							<CheckBox
-								Content="Skip confirmation prompt"
-								IsChecked="{Binding Settings.SkipConnectionCheckConfirmation}"
-								ToolTip="Starts the connection check immediately when you click the padlock." />
+							<CheckBox Content="Include DNS CAA and certificate transparency evidence" IsChecked="{Binding Settings.CheckCertificateRecords}" ToolTip="Used only when you click Check connection. CAA requires a DNS lookup; CT checks embedded certificate transparency evidence." />
+							<CheckBox Content="Hide connection check button" IsChecked="{Binding Settings.HideManualConnectionCheck}" ToolTip="Removes the padlock connection check action from the picker." />
+							<CheckBox Content="Skip confirmation prompt" IsChecked="{Binding Settings.SkipConnectionCheckConfirmation}" ToolTip="Starts the connection check immediately when you click the padlock." />
 						</StackPanel>
 					</Grid>
 				</ScrollViewer>

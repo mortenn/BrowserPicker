@@ -336,16 +336,10 @@ public class UrlSecurityPresentationTests
 		summary.ToDisplayText().Should().Contain("CAA: None");
 	}
 
-	private static X509Certificate2 CreateCertificate(
-		string commonName,
-		params string[] dnsNames
-	) => CreateCertificate(commonName, dnsNames, includeEmbeddedSct: false);
+	private static X509Certificate2 CreateCertificate(string commonName, params string[] dnsNames) =>
+		CreateCertificate(commonName, dnsNames, includeEmbeddedSct: false);
 
-	private static X509Certificate2 CreateCertificate(
-		string commonName,
-		string[] dnsNames,
-		bool includeEmbeddedSct
-	)
+	private static X509Certificate2 CreateCertificate(string commonName, string[] dnsNames, bool includeEmbeddedSct)
 	{
 		using var key = RSA.Create(2048);
 		var request = new CertificateRequest(

@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
 	x:Class="BrowserPicker.UI.Views.BrowserList"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -75,10 +75,7 @@
 					<Hyperlink Command="{Binding Edit}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextDecorations="None" ToolTip="Edit the URL before opening it">
 						✏
 					</Hyperlink>
-					<Hyperlink
-						Command="{Binding CheckConnection}"
-						TextDecorations="None"
-						ToolTip="{Binding ConnectionCheckToolTip}">
+					<Hyperlink Command="{Binding CheckConnection}" TextDecorations="None" ToolTip="{Binding ConnectionCheckToolTip}">
 						<Hyperlink.Style>
 							<Style TargetType="{x:Type Hyperlink}">
 								<Setter Property="Foreground" Value="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" />
@@ -96,11 +93,7 @@
 							</Style>
 						</Hyperlink.Style>
 						<InlineUIContainer BaselineAlignment="Center">
-							<TextBlock
-								Margin="0,1,0,0"
-								FontFamily="Segoe MDL2 Assets"
-								FontSize="14"
-								Text="&#xE72E;">
+							<TextBlock Margin="0,1,0,0" FontFamily="Segoe MDL2 Assets" FontSize="14" Text="&#xE72E;">
 								<TextBlock.Style>
 									<Style TargetType="{x:Type TextBlock}">
 										<Setter Property="Visibility" Value="Visible" />
