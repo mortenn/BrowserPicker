@@ -24,4 +24,19 @@ public interface ISecuritySettings
 	/// When true, only probes favicons for URLs matching a Defaults rule.
 	/// </summary>
 	bool FaviconsForDefaults { get; set; }
+
+	/// <summary>
+	/// When true, explicit certificate checks also inspect DNS CAA records and certificate transparency evidence.
+	/// </summary>
+	bool CheckCertificateRecords { get; set; }
+
+	/// <summary>
+	/// When true, hides the manual connection check action from the picker.
+	/// </summary>
+	bool HideManualConnectionCheck { get; set; }
+
+	/// <summary>
+	/// When true, manual connection checks start immediately without showing the confirmation prompt.
+	/// </summary>
+	bool SkipConnectionCheckConfirmation { get; set; }
 }

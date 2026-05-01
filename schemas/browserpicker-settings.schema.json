@@ -46,6 +46,15 @@
     "FaviconsForDefaults": {
       "type": "boolean"
     },
+    "CheckCertificateRecords": {
+      "type": "boolean"
+    },
+    "HideManualConnectionCheck": {
+      "type": "boolean"
+    },
+    "SkipConnectionCheckConfirmation": {
+      "type": "boolean"
+    },
     "AutoCloseOnFocusLost": {
       "type": "boolean"
     },

@@ -40,6 +40,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool redirects_known_only = true;
 	private bool probe_favicons = true;
 	private bool favicons_for_defaults = true;
+	private bool check_certificate_records = true;
+	private bool hide_manual_connection_check;
+	private bool skip_connection_check_confirmation;
 	private bool auto_close_on_focus_lost = true;
 	private string[] url_shorteners = [];
 	private bool use_fallback_default;
@@ -305,6 +308,33 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		set
 		{
 			if (SetProperty(ref favicons_for_defaults, value))
+				SaveToFile();
+		}
+	}
+	public bool CheckCertificateRecords
+	{
+		get => check_certificate_records;
+		set
+		{
+			if (SetProperty(ref check_certificate_records, value))
+				SaveToFile();
+		}
+	}
+	public bool HideManualConnectionCheck
+	{
+		get => hide_manual_connection_check;
+		set
+		{
+			if (SetProperty(ref hide_manual_connection_check, value))
+				SaveToFile();
+		}
+	}
+	public bool SkipConnectionCheckConfirmation
+	{
+		get => skip_connection_check_confirmation;
+		set
+		{
+			if (SetProperty(ref skip_connection_check_confirmation, value))
 				SaveToFile();
 		}
 	}
@@ -686,6 +716,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		redirects_known_only = s.RedirectsKnownOnly;
 		probe_favicons = s.ProbeFavicons;
 		favicons_for_defaults = s.FaviconsForDefaults;
+		check_certificate_records = s.CheckCertificateRecords;
+		hide_manual_connection_check = s.HideManualConnectionCheck;
+		skip_connection_check_confirmation = s.SkipConnectionCheckConfirmation;
 		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
 		url_shorteners = s.UrlShorteners;
 		window_width = NormalizeMainWindowDimension(s.WindowWidth, MinWindowWidth);
@@ -714,6 +747,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(RedirectsKnownOnly));
 		OnPropertyChanged(nameof(ProbeFavicons));
 		OnPropertyChanged(nameof(FaviconsForDefaults));
+		OnPropertyChanged(nameof(CheckCertificateRecords));
+		OnPropertyChanged(nameof(HideManualConnectionCheck));
+		OnPropertyChanged(nameof(SkipConnectionCheckConfirmation));
 		OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 		OnPropertyChanged(nameof(WindowWidth));
 		OnPropertyChanged(nameof(WindowHeight));
@@ -956,6 +992,21 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		if (!root.ContainsKey(nameof(SerializableSettings.FaviconsForDefaults)))
 		{
 			settings.FaviconsForDefaults = true;
+			upgraded = true;
+		}
+		if (!root.ContainsKey(nameof(SerializableSettings.CheckCertificateRecords)))
+		{
+			settings.CheckCertificateRecords = true;
+			upgraded = true;
+		}
+		if (!root.ContainsKey(nameof(SerializableSettings.HideManualConnectionCheck)))
+		{
+			settings.HideManualConnectionCheck = false;
+			upgraded = true;
+		}
+		if (!root.ContainsKey(nameof(SerializableSettings.SkipConnectionCheckConfirmation)))
+		{
+			settings.SkipConnectionCheckConfirmation = false;
 			upgraded = true;
 		}
 

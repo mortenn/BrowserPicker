@@ -144,6 +144,9 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool RedirectsKnownOnly { get; set; } = true;
 		public bool ProbeFavicons { get; set; } = true;
 		public bool FaviconsForDefaults { get; set; } = true;
+		public bool CheckCertificateRecords { get; set; } = true;
+		public bool HideManualConnectionCheck { get; set; }
+		public bool SkipConnectionCheckConfirmation { get; set; }
 
 		public bool AutoSizeWindow { get; set; } = true;
 		public double WindowWidth { get; set; }
@@ -794,6 +797,9 @@ public sealed class ConfigurationViewModel : ModelBase
 			case nameof(IApplicationSettings.RedirectsKnownOnly):
 			case nameof(IApplicationSettings.ProbeFavicons):
 			case nameof(IApplicationSettings.FaviconsForDefaults):
+			case nameof(IApplicationSettings.CheckCertificateRecords):
+			case nameof(IApplicationSettings.HideManualConnectionCheck):
+			case nameof(IApplicationSettings.SkipConnectionCheckConfirmation):
 				OnPropertyChanged(nameof(SelectedSecurityProfile));
 				apply_security_profile?.RaiseCanExecuteChanged();
 				break;

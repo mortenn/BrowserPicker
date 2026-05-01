@@ -479,12 +479,12 @@
 							</Style>
 						</Grid.Resources>
 						<StackPanel>
-							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="Automatic probes" />
-							<Menu Margin="0,0,0,10" Background="Transparent">
-								<MenuItem Header="Apply profile" ItemsSource="{x:Static securityProfiles:PredefinedSecurityProfiles.All}">
+							<Menu Margin="0,4,0,10" Background="Transparent" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
+								<MenuItem Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Header="Apply profile" ItemsSource="{x:Static securityProfiles:PredefinedSecurityProfiles.All}">
 									<MenuItem.ItemContainerStyle>
 										<Style TargetType="{x:Type MenuItem}">
 											<Setter Property="Header" Value="{Binding DisplayName}" />
+											<Setter Property="Foreground" Value="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" />
 											<Setter Property="IsCheckable" Value="True" />
 											<Setter Property="Command" Value="{Binding DataContext.ApplySecurityProfile, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
 											<Setter Property="CommandParameter" Value="{Binding}" />
@@ -501,6 +501,7 @@
 								</MenuItem>
 							</Menu>
 
+							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="Automatic probes" />
 							<CheckBox Content="Probe URL shorteners / redirects" IsChecked="{Binding Settings.ProbeRedirects}" />
 							<StackPanel Margin="20,0,0,8">
 								<StackPanel.Style>
@@ -530,6 +531,11 @@
 								</StackPanel.Style>
 								<CheckBox Content="Only for URLs matching defaults" IsChecked="{Binding Settings.FaviconsForDefaults}" />
 							</StackPanel>
+
+							<TextBlock Margin="0,8,0,6" FontWeight="Bold" Text="Manual probes" />
+							<CheckBox Content="Include DNS CAA and certificate transparency evidence" IsChecked="{Binding Settings.CheckCertificateRecords}" ToolTip="Used only when you click Check connection. CAA requires a DNS lookup; CT checks embedded certificate transparency evidence." />
+							<CheckBox Content="Hide connection check button" IsChecked="{Binding Settings.HideManualConnectionCheck}" ToolTip="Removes the padlock connection check action from the picker." />
+							<CheckBox Content="Skip confirmation prompt" IsChecked="{Binding Settings.SkipConnectionCheckConfirmation}" ToolTip="Starts the connection check immediately when you click the padlock." />
 						</StackPanel>
 					</Grid>
 				</ScrollViewer>

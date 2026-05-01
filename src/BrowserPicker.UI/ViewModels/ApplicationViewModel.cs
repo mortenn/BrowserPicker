@@ -377,6 +377,35 @@ public sealed class ApplicationViewModel : ModelBase
 	public ICommand Edit => new DelegateCommand(OpenURLEditor);
 
 	/// <summary>
+	/// Runs an explicit TLS/certificate check for the current HTTPS URL.
+	/// </summary>
+	public ICommand CheckConnection =>
+		check_connection ??= new DelegateCommand(OpenConnectionCheckWindow, CanCheckConnection);
+
+	public ConnectionCheckIndicatorState ConnectionCheckState
+	{
+		get => connection_check_state;
+		private set
+		{
+			if (SetProperty(ref connection_check_state, value))
+			{
+				OnPropertyChanged(nameof(ConnectionCheckToolTip));
+			}
+		}
+	}
+
+	public string ConnectionCheckToolTip =>
+		ConnectionCheckState switch
+		{
+			ConnectionCheckIndicatorState.Good => "Connection check passed",
+			ConnectionCheckIndicatorState.Warning => "Connection check found warnings",
+			ConnectionCheckIndicatorState.Error => "Connection check found problems",
+			ConnectionCheckIndicatorState.Unresolved => "Connection check could not resolve the host",
+			_ =>
+				"Check the TLS certificate. This contacts the target host and may be visible to the website or proxies.",
+		};
+
+	/// <summary>
 	/// Gets the view model responsible for managing application configuration settings.
 	/// Provides access to user preferences and saved browser configurations.
 	/// </summary>
@@ -498,6 +527,48 @@ public sealed class ApplicationViewModel : ModelBase
 		if (editor.ShowDialog() == true)
 		{
 			Url.UnderlyingTargetURL = editor.EditedUrl;
+			ConnectionCheckState = ConnectionCheckIndicatorState.NotScanned;
+			check_connection?.RaiseCanExecuteChanged();
+		}
+	}
+
+	private bool CanCheckConnection()
+	{
+		return !Configuration.Settings.HideManualConnectionCheck
+			&& !string.IsNullOrWhiteSpace(Url.UnderlyingTargetURL ?? Url.TargetURL);
+	}
+
+	private void OpenConnectionCheckWindow()
+	{
+		ConnectionCheckViewModel viewModel;
+		if (Configuration.Settings.DisableNetworkAccess)
+		{
+			viewModel = new ConnectionCheckViewModel("Network checks are disabled in settings.");
+		}
+		else if (
+			!TlsCertificateSummary.TryCreateTarget(
+				Url.UnderlyingTargetURL ?? Url.TargetURL,
+				out var uri,
+				out var errorMessage
+			)
+		)
+		{
+			viewModel = new ConnectionCheckViewModel(errorMessage);
+		}
+		else
+		{
+			viewModel = new ConnectionCheckViewModel(
+				uri,
+				Configuration.Settings.CheckCertificateRecords,
+				Configuration.Settings.SkipConnectionCheckConfirmation
+			);
+		}
+
+		var window = new ConnectionCheckWindow(viewModel) { Owner = Application.Current?.MainWindow };
+		window.ShowDialog();
+		if (viewModel.ResultState != ConnectionCheckIndicatorState.NotScanned)
+		{
+			ConnectionCheckState = viewModel.ResultState;
 		}
 	}
 
@@ -655,6 +726,11 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			RebuildPickerChoices();
 		}
+
+		if (e.PropertyName == nameof(IApplicationSettings.HideManualConnectionCheck))
+		{
+			check_connection?.RaiseCanExecuteChanged();
+		}
 	}
 
 	private async void RefreshCurrentUrlFavicon()
@@ -675,4 +751,6 @@ public sealed class ApplicationViewModel : ModelBase
 	private readonly bool force_choice;
 	private bool pinned;
 	private bool copied;
+	private ConnectionCheckIndicatorState connection_check_state;
+	private DelegateCommand? check_connection;
 }

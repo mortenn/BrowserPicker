@@ -32,6 +32,9 @@ public sealed class SerializableSettings : IApplicationSettings
 		RedirectsKnownOnly = applicationSettings.RedirectsKnownOnly;
 		ProbeFavicons = applicationSettings.ProbeFavicons;
 		FaviconsForDefaults = applicationSettings.FaviconsForDefaults;
+		CheckCertificateRecords = applicationSettings.CheckCertificateRecords;
+		HideManualConnectionCheck = applicationSettings.HideManualConnectionCheck;
+		SkipConnectionCheckConfirmation = applicationSettings.SkipConnectionCheckConfirmation;
 		UrlShorteners = applicationSettings.UrlShorteners;
 		BrowserList = [.. applicationSettings.BrowserList.Where(b => !b.Removed)];
 		Defaults = [.. applicationSettings.Defaults.Where(d => !d.Deleted && !string.IsNullOrWhiteSpace(d.Browser))];
@@ -96,6 +99,15 @@ public sealed class SerializableSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public bool FaviconsForDefaults { get; set; } = true;
+
+	/// <inheritdoc />
+	public bool CheckCertificateRecords { get; set; } = true;
+
+	/// <inheritdoc />
+	public bool HideManualConnectionCheck { get; set; }
+
+	/// <inheritdoc />
+	public bool SkipConnectionCheckConfirmation { get; set; }
 
 	/// <summary>
 	/// When true, the picker closes itself when it loses focus. Defaults to being enabled.
