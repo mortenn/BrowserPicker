@@ -595,6 +595,9 @@ public sealed class FeedbackViewModel : ModelBase
 		public bool RedirectsKnownOnly { get; set; } = true;
 		public bool ProbeFavicons { get; set; } = true;
 		public bool FaviconsForDefaults { get; set; } = true;
+		public bool CheckCertificateRecords { get; set; } = true;
+		public bool HideManualConnectionCheck { get; set; }
+		public bool SkipConnectionCheckConfirmation { get; set; }
 		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
 		public List<BrowserModel> BrowserList { get; } =
 		[

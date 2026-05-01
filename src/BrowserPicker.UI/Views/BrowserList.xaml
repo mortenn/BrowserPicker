@@ -75,6 +75,45 @@
 					<Hyperlink Command="{Binding Edit}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextDecorations="None" ToolTip="Edit the URL before opening it">
 						✏
 					</Hyperlink>
+					<Hyperlink
+						Command="{Binding CheckConnection}"
+						TextDecorations="None"
+						ToolTip="{Binding ConnectionCheckToolTip}">
+						<Hyperlink.Style>
+							<Style TargetType="{x:Type Hyperlink}">
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding ConnectionCheckState}" Value="{x:Static viewModels:ConnectionCheckIndicatorState.Good}">
+										<Setter Property="Foreground" Value="#4CAF50" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ConnectionCheckState}" Value="{x:Static viewModels:ConnectionCheckIndicatorState.Warning}">
+										<Setter Property="Foreground" Value="#FFC107" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding ConnectionCheckState}" Value="{x:Static viewModels:ConnectionCheckIndicatorState.Error}">
+										<Setter Property="Foreground" Value="#F44336" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Hyperlink.Style>
+						<InlineUIContainer BaselineAlignment="Center">
+							<TextBlock
+								Margin="0,1,0,0"
+								FontFamily="Segoe MDL2 Assets"
+								FontSize="14"
+								Text="&#xE72E;">
+								<TextBlock.Style>
+									<Style TargetType="{x:Type TextBlock}">
+										<Setter Property="Visibility" Value="Visible" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding Configuration.Settings.HideManualConnectionCheck}" Value="True">
+												<Setter Property="Visibility" Value="Collapsed" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+						</InlineUIContainer>
+					</Hyperlink>
 				</TextBlock>
 				<TextBlock Margin="5,5,0,0" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Text="Redirected URL">
 					<TextBlock.Style>
