@@ -479,9 +479,9 @@
 								<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="Windows integration" />
 								<TextBlock Margin="0,0,0,6" Text="{Binding BrowserRegistrationDescription}" TextWrapping="Wrap" />
 								<Button
-									HorizontalAlignment="Left"
 									Margin="0,0,0,6"
 									Padding="10,4"
+									HorizontalAlignment="Left"
 									Command="{Binding RegisterBrowserForCurrentUser}"
 									Content="{Binding BrowserRegistrationActionText}" />
 								<TextBlock FontSize="11" Text="{Binding BrowserRegistrationStatus}" TextWrapping="Wrap" />
