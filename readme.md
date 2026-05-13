@@ -27,6 +27,13 @@ If you do not want to have the .net runtime installed on your computer, you may 
 `BrowserPicker-Portable.msi` and `Portable.zip` contain a win-x64 binary executable with embedded .NET runtime.  
 This makes the file sizes quite significantly larger, but you do not need an additional runtime to use these.
 
+#### Portable default browser registration
+The portable build can register itself for the current Windows user as `Browser Picker (Portable)`, using `HKCU` rather than requiring administrator access. This keeps it distinct from the normal installed `Browser Picker` registration.
+
+When the release portable app starts, it automatically adds this current-user registration if Browser Picker is not already installed for the machine, or if the installed machine-wide registration points to a different executable. If a portable registration already exists and points somewhere else, Browser Picker leaves it alone; use the settings window to change it manually.
+
+You can manage this from `Behaviour` -> `Windows integration`. The button registers `Browser Picker (Portable)` when it is missing, and changes to an unregister action when the current user registration exists. This option is hidden when the running executable is already the machine-wide `Browser Picker` install.
+
 ### Signing certificate
 To avoid warnings about unknown publisher, you may [import](https://stackoverflow.com/questions/49039136/powershell-script-to-install-trusted-publisher-certificates) the provided certificate into your certificate store first.
 
