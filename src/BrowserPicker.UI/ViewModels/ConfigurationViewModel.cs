@@ -682,6 +682,7 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	private void ToggleCurrentUserBrowserRegistration()
 	{
+#if BROWSERPICKER_PORTABLE
 		try
 		{
 			if (BrowserRegisteredForCurrentUser)
@@ -703,12 +704,21 @@ public sealed class ConfigurationViewModel : ModelBase
 			BrowserRegistrationStatus = $"Unable to update Browser Picker registration: {ex.Message}";
 			RefreshBrowserRegistrationState();
 		}
+#else
+		BrowserRegistrationStatus = "Current-user browser registration is only available in portable builds.";
+		RefreshBrowserRegistrationState();
+#endif
 	}
 
 	private void RefreshBrowserRegistrationState()
 	{
+#if BROWSERPICKER_PORTABLE
 		ShowCurrentUserBrowserRegistration = !UserDefaultBrowserRegistration.IsCurrentExecutableMachineRegistered();
 		BrowserRegisteredForCurrentUser = UserDefaultBrowserRegistration.IsRegisteredForCurrentUser();
+#else
+		ShowCurrentUserBrowserRegistration = false;
+		BrowserRegisteredForCurrentUser = false;
+#endif
 	}
 
 	internal void ShowFeedbackTab()

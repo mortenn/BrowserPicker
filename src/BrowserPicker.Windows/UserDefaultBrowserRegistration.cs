@@ -1,3 +1,4 @@
+#if BROWSERPICKER_PORTABLE
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -282,3 +283,4 @@ public static class UserDefaultBrowserRegistration
 		return true;
 	}
 }
+#endif
