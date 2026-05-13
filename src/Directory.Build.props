@@ -12,6 +12,12 @@
     <!-- UseArtifactsOutput not supported by WixToolset.Sdk -->
     <!--<UseArtifactsOutput>true</UseArtifactsOutput>-->
   </PropertyGroup>
+  <PropertyGroup Condition="'$(BrowserPickerPortable)' == '' and '$(PublishSingleFile)' == 'true'">
+    <BrowserPickerPortable>true</BrowserPickerPortable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BrowserPickerPortable)' == 'true'">
+    <DefineConstants>$(DefineConstants);BROWSERPICKER_PORTABLE</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
     <OutputPath>bin\SignedRelease\</OutputPath>
     <Optimize>true</Optimize>

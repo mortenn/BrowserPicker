@@ -68,6 +68,16 @@ internal static class Program
 		app.AddContentThemeDictionary(configuration.ThemeMode);
 		var logger = host.Services.GetRequiredService<ILogger<App>>();
 		logger.LogApplicationLaunched(args.Length == 0 ? "(none)" : string.Join(" ", args));
+#if !DEBUG && BROWSERPICKER_PORTABLE
+		var registrationResult = UserDefaultBrowserRegistration.RegisterForCurrentUserIfPortableRelease(
+			out var registrationDetail
+		);
+		logger.LogInformation(
+			"Portable browser registration check completed with {Result}. {Detail}",
+			registrationResult,
+			registrationDetail ?? string.Empty
+		);
+#endif
 
 		app.Run();
 	}

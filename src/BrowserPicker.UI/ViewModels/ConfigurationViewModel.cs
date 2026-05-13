@@ -222,6 +222,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			Defaults.Add(setting);
 		}
 		settings.PropertyChanged += Configuration_PropertyChanged;
+		RefreshBrowserRegistrationState();
 	}
 
 	/// <summary>
@@ -525,6 +526,12 @@ public sealed class ConfigurationViewModel : ModelBase
 	public ICommand AddShortener => add_shortener ??= new DelegateCommand<string>(AddUrlShortener, CanAddShortener);
 
 	/// <summary>
+	/// Command to register or unregister Browser Picker as a browser for the current Windows user.
+	/// </summary>
+	public ICommand RegisterBrowserForCurrentUser =>
+		register_browser_for_current_user ??= new DelegateCommand(ToggleCurrentUserBrowserRegistration);
+
+	/// <summary>
 	/// Command to remove a URL shortener domain; parameter is the domain string.
 	/// </summary>
 	public ICommand RemoveShortener =>
@@ -561,6 +568,47 @@ public sealed class ConfigurationViewModel : ModelBase
 			apply_security_profile?.RaiseCanExecuteChanged();
 		}
 	}
+
+	/// <summary>
+	/// Status text for the current-user Windows browser registration action.
+	/// </summary>
+	public string BrowserRegistrationStatus
+	{
+		get => browser_registration_status;
+		private set => SetProperty(ref browser_registration_status, value);
+	}
+
+	/// <summary>
+	/// True after Browser Picker has been registered as a browser for the current Windows user.
+	/// </summary>
+	public bool BrowserRegisteredForCurrentUser
+	{
+		get => browser_registered_for_current_user;
+		private set
+		{
+			if (!SetProperty(ref browser_registered_for_current_user, value))
+			{
+				return;
+			}
+
+			OnPropertyChanged(nameof(BrowserRegistrationActionText));
+			OnPropertyChanged(nameof(BrowserRegistrationDescription));
+		}
+	}
+
+	public bool ShowCurrentUserBrowserRegistration
+	{
+		get => show_current_user_browser_registration;
+		private set => SetProperty(ref show_current_user_browser_registration, value);
+	}
+
+	public string BrowserRegistrationActionText =>
+		BrowserRegisteredForCurrentUser ? "Unregister for current user" : "Register for current user";
+
+	public string BrowserRegistrationDescription =>
+		BrowserRegisteredForCurrentUser
+			? "Browser Picker (Portable) is registered for this Windows user."
+			: "Register Browser Picker for this Windows user without requiring administrator privileges.";
 
 	/// <summary>
 	/// Prompts the user to select a backup file location and saves the current settings.
@@ -630,6 +678,47 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 
 		jsonSettings.TryImportSettingsJson(text!, "the clipboard");
+	}
+
+	private void ToggleCurrentUserBrowserRegistration()
+	{
+#if BROWSERPICKER_PORTABLE
+		try
+		{
+			if (BrowserRegisteredForCurrentUser)
+			{
+				UserDefaultBrowserRegistration.UnregisterForCurrentUser();
+				BrowserRegistrationStatus = "Unregistered Browser Picker (Portable) for this Windows user.";
+			}
+			else
+			{
+				UserDefaultBrowserRegistration.RegisterForCurrentUser();
+				BrowserRegistrationStatus =
+					"Registered Browser Picker (Portable) for this Windows user. If it is not selected yet, choose it in Windows Default apps.";
+			}
+
+			RefreshBrowserRegistrationState();
+		}
+		catch (Exception ex)
+		{
+			BrowserRegistrationStatus = $"Unable to update Browser Picker registration: {ex.Message}";
+			RefreshBrowserRegistrationState();
+		}
+#else
+		BrowserRegistrationStatus = "Current-user browser registration is only available in portable builds.";
+		RefreshBrowserRegistrationState();
+#endif
+	}
+
+	private void RefreshBrowserRegistrationState()
+	{
+#if BROWSERPICKER_PORTABLE
+		ShowCurrentUserBrowserRegistration = !UserDefaultBrowserRegistration.IsCurrentExecutableMachineRegistered();
+		BrowserRegisteredForCurrentUser = UserDefaultBrowserRegistration.IsRegisteredForCurrentUser();
+#else
+		ShowCurrentUserBrowserRegistration = false;
+		BrowserRegisteredForCurrentUser = false;
+#endif
 	}
 
 	internal void ShowFeedbackTab()
@@ -1027,9 +1116,13 @@ public sealed class ConfigurationViewModel : ModelBase
 	private DelegateCommand? restore;
 	private DelegateCommand? copy_settings;
 	private DelegateCommand? paste_settings;
+	private DelegateCommand? register_browser_for_current_user;
 	private DelegateCommand<string>? add_shortener;
 	private DelegateCommand<string>? remove_shortener;
 	private DelegateCommand<ISecurityProfile>? apply_security_profile;
+	private string browser_registration_status = string.Empty;
+	private bool browser_registered_for_current_user;
+	private bool show_current_user_browser_registration;
 
 	private string? test_defaults_url;
 

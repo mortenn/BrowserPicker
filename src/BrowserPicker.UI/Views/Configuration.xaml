@@ -465,6 +465,28 @@
 								</StackPanel>
 							</StackPanel>
 
+							<StackPanel>
+								<StackPanel.Style>
+									<Style TargetType="StackPanel">
+										<Setter Property="Visibility" Value="Visible" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding ShowCurrentUserBrowserRegistration}" Value="False">
+												<Setter Property="Visibility" Value="Collapsed" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</StackPanel.Style>
+								<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="Windows integration" />
+								<TextBlock Margin="0,0,0,6" Text="{Binding BrowserRegistrationDescription}" TextWrapping="Wrap" />
+								<Button
+									Margin="0,0,0,6"
+									Padding="10,4"
+									HorizontalAlignment="Left"
+									Command="{Binding RegisterBrowserForCurrentUser}"
+									Content="{Binding BrowserRegistrationActionText}" />
+								<TextBlock FontSize="11" Text="{Binding BrowserRegistrationStatus}" TextWrapping="Wrap" />
+							</StackPanel>
+
 						</StackPanel>
 					</Grid>
 				</ScrollViewer>
