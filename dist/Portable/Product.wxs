@@ -40,7 +40,7 @@
 				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="EditFlags" Value="2" Type="integer" />
 				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="FriendlyTypeName" Value="Web URL" Type="string" />
 				<RegistryValue Root="HKCR" Key="BrowserPicker" Name="URL Protocol" Value="" Type="string" />
-				<RegistryValue Root="HKCR" Key="BrowserPicker\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
+				<RegistryValue Root="HKCR" Key="BrowserPicker\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,0" Type="string" />
 				<RegistryValue Root="HKCR" Key="BrowserPicker\shell" Type="string" Value="open" />
 				<RegistryValue Root="HKCR" Key="BrowserPicker\shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]BrowserPicker.exe&quot; &quot;%1&quot;" />
 
@@ -48,7 +48,7 @@
 				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationDescription" Value="Shows a prompt to let you use different browsers on the fly." Type="string" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,0" Type="string" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities" Name="ApplicationName" Value="Browser Picker" Type="string" />
-				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,1" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\DefaultIcon" Value="[INSTALLFOLDER]BrowserPicker.exe,0" Type="string" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".html" Value="BrowserPicker" Type="string" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\FileAssociations" Name=".htm" Value="BrowserPicker" Type="string" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\BrowserPicker\Capabilities\StartMenu" Name="StartMenuInternet" Value="BrowserPicker" Type="string" />
