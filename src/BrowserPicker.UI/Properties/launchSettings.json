@@ -41,6 +41,13 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
+    },
+    "punyCode": {
+      "commandName": "Project",
+      "commandLineArgs": "https://xn--exmple-cua.local/login",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
     }
   }
 }
