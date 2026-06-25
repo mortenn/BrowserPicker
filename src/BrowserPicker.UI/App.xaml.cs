@@ -37,6 +37,9 @@ public partial class App
 	public const string UrlBarForegroundBrushKey = "UrlBarForegroundBrush";
 	public const string UrlBarBorderBrushKey = "UrlBarBorderBrush";
 
+	/// <summary>Highlight color for injected values in application log messages; needs contrast on both themes.</summary>
+	public const string LogValueHighlightBrushKey = "LogValueHighlightBrush";
+
 	private class InvalidUTF8Patch : EncodingProvider
 	{
 		public override Encoding? GetEncoding(int codepage)
@@ -185,6 +188,8 @@ public partial class App
 			d[UrlBarBackgroundBrushKey] = new SolidColorBrush(Colors.White);
 			d[UrlBarForegroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x1A));
 			d[UrlBarBorderBrushKey] = new SolidColorBrush(Color.FromRgb(0xC8, 0xC8, 0xC8));
+			// Darker amber so injected log values stay readable on the light gray panel.
+			d[LogValueHighlightBrushKey] = new SolidColorBrush(Color.FromRgb(0xB4, 0x53, 0x09));
 		}
 		else
 		{
@@ -196,6 +201,8 @@ public partial class App
 			d[UrlBarBackgroundBrushKey] = new SolidColorBrush(Colors.White);
 			d[UrlBarForegroundBrushKey] = new SolidColorBrush(Color.FromRgb(0x1A, 0x1A, 0x1A));
 			d[UrlBarBorderBrushKey] = new SolidColorBrush(Color.FromRgb(0xB0, 0xB0, 0xB0));
+			// Soft gold reads well on the dark gray panel.
+			d[LogValueHighlightBrushKey] = new SolidColorBrush(Color.FromRgb(0xF5, 0xD0, 0x7A));
 		}
 		return d;
 	}
