@@ -33,6 +33,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	public UrlHandler(ILogger<UrlHandler> logger, string? requestedUrl, IApplicationSettings settings)
 	{
 		this.logger = logger;
+		requestedUrl = NormalizeRequestedUrl(requestedUrl);
 		logger.LogRequestedUrl(requestedUrl);
 		var canProbe = requestedUrl != null;
 		probe_redirects = canProbe && settings.ProbeRedirects;
@@ -380,6 +381,33 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			"favicons"
 		);
 		return Path.Combine(root, $"{host}.bin");
+	}
+
+	/// <summary>
+	/// Some callers (e.g. CLI tools such as the Claude CLI that launch via the BROWSER environment variable)
+	/// pass the URL wrapped in quotes, e.g. <c>"https://example.com"</c>. Those literal quote characters make
+	/// the value fail to parse as a <see cref="Uri"/>, leaving the host blank and skipping rule evaluation.
+	/// Strip a single matched pair of surrounding double or single quotes (and surrounding whitespace).
+	/// </summary>
+	private static string? NormalizeRequestedUrl(string? requestedUrl)
+	{
+		if (requestedUrl == null)
+		{
+			return null;
+		}
+
+		var trimmed = requestedUrl.Trim();
+		if (trimmed.Length >= 2)
+		{
+			var first = trimmed[0];
+			var last = trimmed[^1];
+			if ((first == '"' && last == '"') || (first == '\'' && last == '\''))
+			{
+				trimmed = trimmed[1..^1].Trim();
+			}
+		}
+
+		return trimmed;
 	}
 
 	private static string? ResolveJumpPage(Uri uri)

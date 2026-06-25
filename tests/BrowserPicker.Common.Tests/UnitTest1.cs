@@ -4,8 +4,50 @@ using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using AwesomeAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace BrowserPicker.Common.Tests;
+
+public class UrlHandlerTests
+{
+	[Theory]
+	[InlineData("\"https://www.github.com/mortenn/BrowserPicker\"")]
+	[InlineData("'https://www.github.com/mortenn/BrowserPicker'")]
+	[InlineData("  \"https://www.github.com/mortenn/BrowserPicker\"  ")]
+	public void StripsSurroundingQuotesFromRequestedUrl(string requestedUrl)
+	{
+		var settings = NoNetworkSettings();
+
+		var handler = new UrlHandler(NullLogger<UrlHandler>.Instance, requestedUrl, settings);
+
+		handler.TargetURL.Should().Be("https://www.github.com/mortenn/BrowserPicker");
+		handler.HostName.Should().Be("www.github.com");
+		handler.CanRememberChoice.Should().BeTrue();
+	}
+
+	[Fact]
+	public void KeepsUnquotedRequestedUrlIntact()
+	{
+		var settings = NoNetworkSettings();
+
+		var handler = new UrlHandler(
+			NullLogger<UrlHandler>.Instance,
+			"https://www.github.com/mortenn/BrowserPicker",
+			settings
+		);
+
+		handler.TargetURL.Should().Be("https://www.github.com/mortenn/BrowserPicker");
+		handler.HostName.Should().Be("www.github.com");
+	}
+
+	private static SerializableSettings NoNetworkSettings() =>
+		new()
+		{
+			DisableNetworkAccess = true,
+			ProbeRedirects = false,
+			ProbeFavicons = false,
+		};
+}
 
 public class UrlSecurityPresentationTests
 {
