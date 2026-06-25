@@ -14,6 +14,13 @@ internal static class Program
 	[STAThread]
 	private static void Main(string[] args)
 	{
+		// WPF's font subsystem (MS.Internal.FontCache.Util) builds the Windows Fonts path from the
+		// "windir" environment variable. Some hosts (e.g. the Codex desktop app launching the Azure
+		// DevOps MCP auth flow) start BrowserPicker with a stripped environment where "windir" is
+		// missing, which makes WPF throw UriFormatException during startup before any window loads.
+		// Restore it from SystemRoot / the Windows special folder so WPF can initialize. See issue #299.
+		WindowsEnvironment.EnsureWindowsDirectory();
+
 		var runtimeLogBuffer = new InMemoryLogBuffer();
 
 		var builder = Host.CreateDefaultBuilder()
