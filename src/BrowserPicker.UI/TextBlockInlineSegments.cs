@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Media;
 using BrowserPicker.Common;
 
 namespace BrowserPicker.UI;
@@ -45,7 +44,7 @@ public static class TextBlockInlineSegments
 			var run = new Run(segment.Text);
 			if (segment.IsValue)
 			{
-				run.Foreground = new SolidColorBrush(Color.FromRgb(0xF5, 0xD0, 0x7A));
+				run.SetResourceReference(TextElement.ForegroundProperty, App.LogValueHighlightBrushKey);
 				run.FontWeight = FontWeights.SemiBold;
 			}
 
