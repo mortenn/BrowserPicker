@@ -156,6 +156,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public double FontSize { get; set; } = 14;
 		public Common.ThemeMode ThemeMode { get; set; } = Common.ThemeMode.System;
 		public ProfileDisplayMode ProfileDisplayMode { get; set; }
+		public bool PersistProfileExpansion { get; set; } = true;
 
 		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
 

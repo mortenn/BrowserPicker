@@ -129,4 +129,10 @@ public interface IApplicationSettings : ISecuritySettings
 	/// How browser profiles are displayed in the picker UI: grouped under their browser or as flat top-level entries.
 	/// </summary>
 	ProfileDisplayMode ProfileDisplayMode { get; set; }
+
+	/// <summary>
+	/// When true (default), a browser's profile sub-list keeps its expanded/collapsed state between picker launches.
+	/// When false, profile groups always start collapsed. Only applies to grouped profile display.
+	/// </summary>
+	bool PersistProfileExpansion { get; set; }
 }

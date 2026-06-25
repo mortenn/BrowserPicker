@@ -111,6 +111,9 @@
     "ProfileDisplayMode": {
       "$ref": "#/definitions/ProfileDisplayMode"
     },
+    "PersistProfileExpansion": {
+      "type": "boolean"
+    },
     "SortBy": {
       "$ref": "#/definitions/SortOrder"
     }
@@ -186,6 +189,9 @@
               "items": {
                 "$ref": "#/definitions/BrowserProfile"
               }
+            },
+            "ProfilesExpanded": {
+              "type": "boolean"
             }
           }
         }

@@ -74,6 +74,38 @@ public sealed class BrowserProfileViewModel : ViewModelBase<BrowserProfile>
 	/// </summary>
 	public bool AltPressed => ParentBrowser.AltPressed;
 
+	/// <summary>
+	/// Whether this profile is hidden from the picker. Toggled by the user in configuration to filter
+	/// out unwanted profiles; setting it refreshes the parent browser's picker profile list.
+	/// </summary>
+	public bool Hidden
+	{
+		get => Model.Disabled;
+		set
+		{
+			if (Model.Disabled == value)
+			{
+				return;
+			}
+
+			Model.Disabled = value;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(VisibilityActionText));
+			ParentBrowser.OnProfileVisibilityChanged();
+		}
+	}
+
+	/// <summary>
+	/// Label for the show/hide toggle in configuration, reflecting the action that will be taken.
+	/// </summary>
+	public string VisibilityActionText => Model.Disabled ? "Hidden" : "Visible";
+
+	/// <summary>
+	/// Toggles whether this profile is shown in the picker.
+	/// </summary>
+	public DelegateCommand ToggleVisibility => toggle_visibility ??= new DelegateCommand(() => Hidden = !Hidden);
+
 	private DelegateCommand? select;
 	private DelegateCommand? select_privacy;
+	private DelegateCommand? toggle_visibility;
 }

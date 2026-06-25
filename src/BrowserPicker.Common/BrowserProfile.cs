@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using BrowserPicker.Common.Framework;
 using JetBrains.Annotations;
 
@@ -18,6 +19,11 @@ public sealed class BrowserProfile(string id, string name, string? commandArgs, 
 	/// <summary>
 	/// Stable identifier for this profile (e.g. "Default", "Profile 1", "container:Work").
 	/// </summary>
+	/// <remarks>
+	/// <see cref="JsonIncludeAttribute"/> lets System.Text.Json restore the id via the private setter
+	/// when deserializing persisted profiles (the parameterless constructor leaves it empty otherwise).
+	/// </remarks>
+	[JsonInclude]
 	public string Id
 	{
 		get => id;
@@ -64,12 +70,13 @@ public sealed class BrowserProfile(string id, string name, string? commandArgs, 
 	}
 
 	/// <summary>
-	/// When true, this profile is hidden from the picker UI.
+	/// When true, this profile is hidden from the picker UI. Toggled by the user in configuration
+	/// to filter out unwanted profiles; persisted so the choice survives across launches.
 	/// </summary>
 	public bool Disabled
 	{
 		get => disabled;
-		private set => _ = SetProperty(ref disabled, value);
+		set => SetProperty(ref disabled, value);
 	}
 
 	/// <summary>

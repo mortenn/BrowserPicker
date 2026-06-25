@@ -140,6 +140,11 @@ public sealed class ApplicationViewModel : ModelBase
 	/// <returns><see langword="true"/> when the main window should be shown; otherwise <see langword="false"/>.</returns>
 	public bool Initialize()
 	{
+		// Profile discovery runs as a background task that completes before the picker is shown.
+		// Rebuild the picker entries here so profiles discovered after construction appear, notably in
+		// flat display mode where the entry list is a flattened snapshot rather than a live binding.
+		RefreshDiscoveredProfiles();
+
 		if (Configuration.Settings.FirstTime)
 		{
 			Configuration.Welcome = true;
@@ -583,6 +588,21 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			Choices.Add(choice);
 		}
+		RebuildPickerChoices();
+	}
+
+	/// <summary>
+	/// Discards cached profile view models on every choice and rebuilds the picker entries, so profiles
+	/// found by asynchronous discovery after construction are reflected (important for flat display mode,
+	/// whose entry list is a one-time snapshot rather than a live binding).
+	/// </summary>
+	internal void RefreshDiscoveredProfiles()
+	{
+		foreach (var choice in Choices)
+		{
+			choice.InvalidateProfileCache();
+		}
+
 		RebuildPickerChoices();
 	}
 

@@ -251,94 +251,148 @@
 								</ItemsControl.ItemsPanel>
 								<ItemsControl.ItemTemplate>
 									<DataTemplate DataType="viewModels:BrowserViewModel">
-										<Grid>
-											<Grid.Style>
-												<Style>
-													<Setter Property="UIElement.Visibility" Value="Visible" />
+										<StackPanel>
+											<StackPanel.Style>
+												<Style TargetType="StackPanel">
+													<Setter Property="Visibility" Value="Visible" />
 													<Style.Triggers>
 														<DataTrigger Binding="{Binding Model.Removed}" Value="True">
-															<Setter Property="UIElement.Visibility" Value="Collapsed" />
+															<Setter Property="Visibility" Value="Collapsed" />
 														</DataTrigger>
 													</Style.Triggers>
 												</Style>
-											</Grid.Style>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="*" />
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-											</Grid.ColumnDefinitions>
-											<ContentPresenter
-												Width="40"
-												Height="40"
-												Margin="20,0,0,0"
-												Content="{Binding}"
-												ContentTemplate="{StaticResource BrowserIcon}" />
-											<TextBlock Grid.Column="1" Margin="10" FontSize="18" Text="{Binding Model.Name}" />
-											<Grid Grid.Column="2" VerticalAlignment="Center">
-												<Grid.Style>
-													<Style TargetType="Grid">
+											</StackPanel.Style>
+											<Grid>
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="*" />
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="Auto" />
+												</Grid.ColumnDefinitions>
+												<ContentPresenter
+													Width="40"
+													Height="40"
+													Margin="20,0,0,0"
+													Content="{Binding}"
+													ContentTemplate="{StaticResource BrowserIcon}" />
+												<TextBlock Grid.Column="1" Margin="10" FontSize="18" Text="{Binding Model.Name}" />
+												<Grid Grid.Column="2" VerticalAlignment="Center">
+													<Grid.Style>
+														<Style TargetType="Grid">
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
+																	<Setter Property="Visibility" Value="Collapsed" />
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</Grid.Style>
+													<Grid.RowDefinitions>
+														<RowDefinition Height="Auto" />
+														<RowDefinition Height="Auto" />
+													</Grid.RowDefinitions>
+													<TextBlock FontSize="10"><Hyperlink Command="{Binding MoveUp}" TextDecorations="None">🔼</Hyperlink></TextBlock>
+													<TextBlock Grid.Row="1" FontSize="10"><Hyperlink Command="{Binding MoveDown}" TextDecorations="None">🔽</Hyperlink></TextBlock>
+												</Grid>
+												<TextBlock Grid.Column="3" Margin="10" FontSize="16">
+													<Hyperlink Command="{Binding Disable}">
+														<TextBlock>
+															<TextBlock.Style>
+																<Style>
+																	<Setter Property="TextBlock.Foreground" Value="Green" />
+																	<Setter Property="TextBlock.Text" Value="Enabled" />
+																	<Setter Property="FrameworkElement.ToolTip" Value="Toggle whether this browser appears in the picker" />
+																	<Style.Triggers>
+																		<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
+																			<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
+																			<Setter Property="TextBlock.Text" Value="Disabled" />
+																		</DataTrigger>
+																	</Style.Triggers>
+																</Style>
+															</TextBlock.Style>
+														</TextBlock>
+													</Hyperlink>
+												</TextBlock>
+												<TextBlock Grid.Column="4" Margin="10" FontSize="16">
+													<Hyperlink Command="{Binding Edit}">
+														<TextBlock Foreground="CadetBlue" Text="Edit" ToolTip="Edit browser definition" />
+													</Hyperlink>
+												</TextBlock>
+												<TextBlock Grid.Column="5" Margin="10" FontSize="16">
+													<Hyperlink Command="{Binding Duplicate}">
+														<TextBlock Foreground="LightGreen" Text="+" ToolTip="Duplicate browser: create a new browser using this browser as a starting point" />
+													</Hyperlink>
+												</TextBlock>
+												<TextBlock Grid.Column="6" Margin="10" FontSize="16">
+													<TextBlock.Style>
+														<Style TargetType="TextBlock">
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding CanRemove}" Value="False">
+																	<Setter Property="Visibility" Value="Hidden" />
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</TextBlock.Style>
+													<Hyperlink Command="{Binding Remove}">
+														<TextBlock Foreground="Red" Text="X" ToolTip="Remove custom browser from list" />
+													</Hyperlink>
+												</TextBlock>
+											</Grid>
+											<ItemsControl Margin="70,0,20,10" d:ItemsSource="{Binding ConfigProfileViewModels}" ItemsSource="{Binding ConfigProfileViewModels}">
+												<ItemsControl.Style>
+													<Style TargetType="ItemsControl">
+														<Setter Property="Visibility" Value="Visible" />
 														<Style.Triggers>
-															<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
+															<DataTrigger Binding="{Binding HasAnyProfiles}" Value="False">
 																<Setter Property="Visibility" Value="Collapsed" />
 															</DataTrigger>
 														</Style.Triggers>
 													</Style>
-												</Grid.Style>
-												<Grid.RowDefinitions>
-													<RowDefinition Height="Auto" />
-													<RowDefinition Height="Auto" />
-												</Grid.RowDefinitions>
-												<TextBlock FontSize="10"><Hyperlink Command="{Binding MoveUp}" TextDecorations="None">🔼</Hyperlink></TextBlock>
-												<TextBlock Grid.Row="1" FontSize="10"><Hyperlink Command="{Binding MoveDown}" TextDecorations="None">🔽</Hyperlink></TextBlock>
-											</Grid>
-											<TextBlock Grid.Column="3" Margin="10" FontSize="16">
-												<Hyperlink Command="{Binding Disable}">
-													<TextBlock>
-														<TextBlock.Style>
-															<Style>
-																<Setter Property="TextBlock.Foreground" Value="Green" />
-																<Setter Property="TextBlock.Text" Value="Enabled" />
-																<Setter Property="FrameworkElement.ToolTip" Value="Toggle whether this browser appears in the picker" />
-																<Style.Triggers>
-																	<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
-																		<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
-																		<Setter Property="TextBlock.Text" Value="Disabled" />
-																	</DataTrigger>
-																</Style.Triggers>
-															</Style>
-														</TextBlock.Style>
-													</TextBlock>
-												</Hyperlink>
-											</TextBlock>
-											<TextBlock Grid.Column="4" Margin="10" FontSize="16">
-												<Hyperlink Command="{Binding Edit}">
-													<TextBlock Foreground="CadetBlue" Text="Edit" ToolTip="Edit browser definition" />
-												</Hyperlink>
-											</TextBlock>
-											<TextBlock Grid.Column="5" Margin="10" FontSize="16">
-												<Hyperlink Command="{Binding Duplicate}">
-													<TextBlock Foreground="LightGreen" Text="+" ToolTip="Duplicate browser: create a new browser using this browser as a starting point" />
-												</Hyperlink>
-											</TextBlock>
-											<TextBlock Grid.Column="6" Margin="10" FontSize="16">
-												<TextBlock.Style>
-													<Style TargetType="TextBlock">
-														<Style.Triggers>
-															<DataTrigger Binding="{Binding CanRemove}" Value="False">
-																<Setter Property="Visibility" Value="Hidden" />
-															</DataTrigger>
-														</Style.Triggers>
-													</Style>
-												</TextBlock.Style>
-												<Hyperlink Command="{Binding Remove}">
-													<TextBlock Foreground="Red" Text="X" ToolTip="Remove custom browser from list" />
-												</Hyperlink>
-											</TextBlock>
-										</Grid>
+												</ItemsControl.Style>
+												<ItemsControl.ItemTemplate>
+													<DataTemplate DataType="viewModels:BrowserProfileViewModel">
+														<Grid Margin="0,2">
+															<Grid.ColumnDefinitions>
+																<ColumnDefinition Width="*" />
+																<ColumnDefinition Width="Auto" />
+															</Grid.ColumnDefinitions>
+															<TextBlock VerticalAlignment="Center" Text="{Binding Model.Name}">
+																<TextBlock.Style>
+																	<Style TargetType="TextBlock">
+																		<Setter Property="Opacity" Value="1" />
+																		<Style.Triggers>
+																			<DataTrigger Binding="{Binding Hidden}" Value="True">
+																				<Setter Property="Opacity" Value="0.5" />
+																			</DataTrigger>
+																		</Style.Triggers>
+																	</Style>
+																</TextBlock.Style>
+															</TextBlock>
+															<TextBlock Grid.Column="1" Margin="10,0" VerticalAlignment="Center" FontSize="14">
+																<Hyperlink Command="{Binding ToggleVisibility}" TextDecorations="None">
+																	<TextBlock ToolTip="Toggle whether this profile appears in the picker">
+																		<TextBlock.Style>
+																			<Style TargetType="TextBlock">
+																				<Setter Property="Foreground" Value="Green" />
+																				<Setter Property="Text" Value="Visible" />
+																				<Style.Triggers>
+																					<DataTrigger Binding="{Binding Hidden}" Value="True">
+																						<Setter Property="Foreground" Value="OrangeRed" />
+																						<Setter Property="Text" Value="Hidden" />
+																					</DataTrigger>
+																				</Style.Triggers>
+																			</Style>
+																		</TextBlock.Style>
+																	</TextBlock>
+																</Hyperlink>
+															</TextBlock>
+														</Grid>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</StackPanel>
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>
 							</ItemsControl>
@@ -410,6 +464,9 @@
 							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="Profile display" />
 							<RadioButton Margin="0,2" Content="Group profiles under browser" GroupName="ProfileDisplay" IsChecked="{Binding UseGroupedProfiles}" />
 							<RadioButton Margin="0,2,0,6" Content="Show profiles as separate entries" GroupName="ProfileDisplay" IsChecked="{Binding UseFlatProfiles}" />
+							<CheckBox Margin="0,2,0,6" IsChecked="{Binding Settings.PersistProfileExpansion}" IsEnabled="{Binding UseGroupedProfiles}" ToolTip="When checked, a browser's expanded/collapsed profile list is remembered. When unchecked, profile groups always start collapsed.">
+								<TextBlock Text="Remember expanded profile groups between launches" TextWrapping="Wrap" />
+							</CheckBox>
 						</StackPanel>
 
 						<!--  Right: Selection & defaults  -->

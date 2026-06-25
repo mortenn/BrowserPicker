@@ -75,6 +75,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 				OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
 				OnPropertyChanged(nameof(ShowNestedProfileSubtree));
 				break;
+			case nameof(IApplicationSettings.PersistProfileExpansion):
+				OnPropertyChanged(nameof(IsExpanded));
+				OnPropertyChanged(nameof(ShowNestedProfileSubtree));
+				break;
 		}
 	}
 
@@ -121,12 +125,42 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	private void RefreshProfiles()
 	{
 		profile_view_models = null;
+		config_profile_view_models = null;
 		IsExpanded = false;
+		OnPropertyChanged(nameof(ProfileViewModels));
+		OnPropertyChanged(nameof(ConfigProfileViewModels));
+		OnPropertyChanged(nameof(HasProfiles));
+		OnPropertyChanged(nameof(HasAnyProfiles));
+		OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
+		OnPropertyChanged(nameof(ShowNestedProfileSubtree));
+		parent_view_model.RebuildPickerChoices();
+	}
+
+	/// <summary>
+	/// Re-evaluates profile visibility after the user toggles a profile's hidden state in configuration,
+	/// keeping the picker's filtered profile list and choices in sync without discarding cached view models.
+	/// </summary>
+	internal void OnProfileVisibilityChanged()
+	{
+		profile_view_models = null;
 		OnPropertyChanged(nameof(ProfileViewModels));
 		OnPropertyChanged(nameof(HasProfiles));
 		OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
 		OnPropertyChanged(nameof(ShowNestedProfileSubtree));
 		parent_view_model.RebuildPickerChoices();
+	}
+
+	/// <summary>
+	/// Discards the cached picker profile view models so they are rebuilt from the current model on next access.
+	/// Used after asynchronous discovery so newly found profiles appear (notably in flat display mode).
+	/// </summary>
+	internal void InvalidateProfileCache()
+	{
+		profile_view_models = null;
+		OnPropertyChanged(nameof(ProfileViewModels));
+		OnPropertyChanged(nameof(HasProfiles));
+		OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
+		OnPropertyChanged(nameof(ShowNestedProfileSubtree));
 	}
 
 	/// <summary>
@@ -441,18 +475,34 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	}
 
 	/// <summary>
-	/// Whether the profile sub-list is expanded in the picker UI (grouped mode).
+	/// Whether the profile sub-list is expanded in the picker UI (grouped mode). When
+	/// <see cref="IApplicationSettings.PersistProfileExpansion"/> is enabled the state is backed by
+	/// <see cref="BrowserModel.ProfilesExpanded"/> and persists across launches; otherwise it is held in
+	/// memory only, so profile groups always start collapsed.
 	/// </summary>
 	public bool IsExpanded
 	{
-		get => is_expanded;
+		get =>
+			parent_view_model.Configuration.Settings.PersistProfileExpansion
+				? Model.ProfilesExpanded
+				: is_expanded_transient;
 		set
 		{
-			if (!SetProperty(ref is_expanded, value))
+			if (IsExpanded == value)
 			{
 				return;
 			}
 
+			if (parent_view_model.Configuration.Settings.PersistProfileExpansion)
+			{
+				Model.ProfilesExpanded = value;
+			}
+			else
+			{
+				is_expanded_transient = value;
+			}
+
+			OnPropertyChanged();
 			OnPropertyChanged(nameof(ShowNestedProfileSubtree));
 		}
 	}
@@ -463,7 +513,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	public DelegateCommand ExpandToggle => expand_toggle ??= new DelegateCommand(() => IsExpanded = !IsExpanded);
 
 	/// <summary>
-	/// Observable collection of profile view models for the picker UI.
+	/// Observable collection of profile view models for the picker UI (hidden profiles excluded).
 	/// Lazily populated on first access.
 	/// </summary>
 	public ObservableCollection<BrowserProfileViewModel> ProfileViewModels
@@ -477,10 +527,32 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		}
 	}
 
-	private bool is_expanded;
+	/// <summary>
+	/// True when this browser has any discovered profiles, including ones the user has hidden.
+	/// Drives whether the per-profile visibility controls are shown in configuration.
+	/// </summary>
+	public bool HasAnyProfiles => Model.Profiles.Count > 0;
+
+	/// <summary>
+	/// Observable collection of profile view models for the configuration UI, including hidden profiles
+	/// so the user can toggle their visibility. Lazily populated on first access.
+	/// </summary>
+	public ObservableCollection<BrowserProfileViewModel> ConfigProfileViewModels
+	{
+		get
+		{
+			config_profile_view_models ??= new ObservableCollection<BrowserProfileViewModel>(
+				Model.Profiles.Select(p => new BrowserProfileViewModel(p, this))
+			);
+			return config_profile_view_models;
+		}
+	}
+
+	private bool is_expanded_transient;
 	private DelegateCommand? expand_toggle;
 	private DelegateCommand? open_extension_link;
 	private ObservableCollection<BrowserProfileViewModel>? profile_view_models;
+	private ObservableCollection<BrowserProfileViewModel>? config_profile_view_models;
 
 	/// <summary>
 	/// Determines if the browser can be launched with the specified privacy setting.
