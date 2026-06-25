@@ -48,6 +48,13 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
+    },
+    "quoted URL (issue 296)": {
+      "commandName": "Project",
+      "commandLineArgs": "\\\"https://github.com/mortenn/BrowserPicker\\\"",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
     }
   }
 }
