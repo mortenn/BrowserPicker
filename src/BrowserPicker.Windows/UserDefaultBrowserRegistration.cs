@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reflection;
 using Microsoft.Win32;
 
 namespace BrowserPicker.Windows;
@@ -262,10 +261,7 @@ public static class UserDefaultBrowserRegistration
 		[NotNullWhen(false)] out string? error
 	)
 	{
-		executablePath =
-			Environment.ProcessPath
-			?? Assembly.GetEntryAssembly()?.Location
-			?? Process.GetCurrentProcess().MainModule?.FileName;
+		executablePath = Environment.ProcessPath ?? Process.GetCurrentProcess().MainModule?.FileName;
 
 		if (string.IsNullOrWhiteSpace(executablePath))
 		{
