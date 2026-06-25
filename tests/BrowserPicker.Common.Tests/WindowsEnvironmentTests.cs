@@ -31,19 +31,20 @@ public sealed class WindowsEnvironmentTests
 	[Fact]
 	public void EnsureWindowsDirectoryRestoresAValidValueWhenMissing()
 	{
-		WithWindir(string.Empty, () =>
-		{
-			var resolved = WindowsEnvironment.EnsureWindowsDirectory();
+		WithWindir(
+			string.Empty,
+			() =>
+			{
+				var resolved = WindowsEnvironment.EnsureWindowsDirectory();
 
-			resolved.Should().NotBeNullOrWhiteSpace();
-			Environment.GetEnvironmentVariable(WindowsEnvironment.WindowsDirectoryVariable)
-				.Should()
-				.Be(resolved);
+				resolved.Should().NotBeNullOrWhiteSpace();
+				Environment.GetEnvironmentVariable(WindowsEnvironment.WindowsDirectoryVariable).Should().Be(resolved);
 
-			// The whole point of the fix: WPF can now build the fonts URI without throwing.
-			var buildFontsUri = () => new Uri(resolved + FontsSuffix, UriKind.Absolute);
-			buildFontsUri.Should().NotThrow();
-		});
+				// The whole point of the fix: WPF can now build the fonts URI without throwing.
+				var buildFontsUri = () => new Uri(resolved + FontsSuffix, UriKind.Absolute);
+				buildFontsUri.Should().NotThrow();
+			}
+		);
 	}
 
 	[Fact]
@@ -51,15 +52,16 @@ public sealed class WindowsEnvironmentTests
 	{
 		const string existing = @"C:\Windows";
 
-		WithWindir(existing, () =>
-		{
-			var resolved = WindowsEnvironment.EnsureWindowsDirectory();
+		WithWindir(
+			existing,
+			() =>
+			{
+				var resolved = WindowsEnvironment.EnsureWindowsDirectory();
 
-			resolved.Should().Be(existing);
-			Environment.GetEnvironmentVariable(WindowsEnvironment.WindowsDirectoryVariable)
-				.Should()
-				.Be(existing);
-		});
+				resolved.Should().Be(existing);
+				Environment.GetEnvironmentVariable(WindowsEnvironment.WindowsDirectoryVariable).Should().Be(existing);
+			}
+		);
 	}
 
 	/// <summary>
@@ -69,14 +71,17 @@ public sealed class WindowsEnvironmentTests
 	[Fact]
 	public void WpfFontSubsystemInitializesAfterWindirIsRestored()
 	{
-		WithWindir(string.Empty, () =>
-		{
-			WindowsEnvironment.EnsureWindowsDirectory();
+		WithWindir(
+			string.Empty,
+			() =>
+			{
+				WindowsEnvironment.EnsureWindowsDirectory();
 
-			var failure = TouchWpfFontSubsystem();
+				var failure = TouchWpfFontSubsystem();
 
-			failure.Should().BeNull("WPF font initialization must not crash once windir is restored");
-		});
+				failure.Should().BeNull("WPF font initialization must not crash once windir is restored");
+			}
+		);
 	}
 
 	/// <summary>
