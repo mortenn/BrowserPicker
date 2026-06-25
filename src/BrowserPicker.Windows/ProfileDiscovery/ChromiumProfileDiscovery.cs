@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using BrowserPicker.Common;
 using Microsoft.Extensions.Logging;
 
@@ -14,6 +13,13 @@ namespace BrowserPicker.Windows.ProfileDiscovery;
 /// </summary>
 public static class ChromiumProfileDiscovery
 {
+	/// <summary>
+	/// Upper bound on the size of a Preferences file we will attempt to read.
+	/// Real Chromium Preferences files are well under this; anything larger is
+	/// assumed corrupt and is skipped to avoid excessive allocation / OutOfMemoryException.
+	/// </summary>
+	private const long MaxPreferencesFileSize = 32 * 1024 * 1024;
+
 	/// <summary>
 	/// Discovers all profiles for a Chromium-based browser.
 	/// </summary>
@@ -72,15 +78,93 @@ public static class ChromiumProfileDiscovery
 	{
 		try
 		{
-			using var stream = File.OpenRead(preferencesPath);
-			var root = JsonNode.Parse(stream);
-			var name = root?["profile"]?["name"]?.GetValue<string>();
+			var size = new FileInfo(preferencesPath).Length;
+			if (size > MaxPreferencesFileSize)
+			{
+				logger?.LogDebug(
+					"Skipping Preferences file larger than {Limit} bytes ({Size} bytes): {Path}",
+					MaxPreferencesFileSize,
+					size,
+					preferencesPath
+				);
+				return null;
+			}
+
+			var bytes = File.ReadAllBytes(preferencesPath);
+			var name = ExtractProfileName(bytes);
 			return string.IsNullOrWhiteSpace(name) ? null : name;
 		}
-		catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
+		catch (Exception ex)
+			when (ex is JsonException or IOException or UnauthorizedAccessException or OutOfMemoryException)
 		{
 			logger?.LogDebug(ex, "Could not read profile name from {Path}", preferencesPath);
 			return null;
 		}
+	}
+
+	/// <summary>
+	/// Streams the JSON to read only <c>profile.name</c> without materializing the whole document,
+	/// keeping allocations bounded for large Preferences files.
+	/// </summary>
+	private static string? ExtractProfileName(ReadOnlySpan<byte> utf8Json)
+	{
+		var reader = new Utf8JsonReader(utf8Json);
+
+		// Find the top-level "profile" object.
+		if (!reader.Read() || reader.TokenType != JsonTokenType.StartObject)
+		{
+			return null;
+		}
+
+		var depth = reader.CurrentDepth;
+		while (reader.Read())
+		{
+			if (reader.TokenType != JsonTokenType.PropertyName || reader.CurrentDepth != depth + 1)
+			{
+				continue;
+			}
+
+			if (!reader.ValueTextEquals("profile"))
+			{
+				reader.Read();
+				reader.Skip();
+				continue;
+			}
+
+			reader.Read();
+			return reader.TokenType == JsonTokenType.StartObject ? ReadNameProperty(ref reader) : null;
+		}
+
+		return null;
+	}
+
+	/// <summary>
+	/// Reads the <c>name</c> string from the current object the reader is positioned on.
+	/// </summary>
+	private static string? ReadNameProperty(ref Utf8JsonReader reader)
+	{
+		var depth = reader.CurrentDepth;
+		while (reader.Read())
+		{
+			if (reader.TokenType == JsonTokenType.EndObject && reader.CurrentDepth == depth)
+			{
+				break;
+			}
+
+			if (reader.TokenType != JsonTokenType.PropertyName || reader.CurrentDepth != depth + 1)
+			{
+				continue;
+			}
+
+			if (reader.ValueTextEquals("name"))
+			{
+				return reader.Read() && reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
+			}
+
+			reader.Read();
+			reader.Skip();
+		}
+
+		return null;
 	}
 }
