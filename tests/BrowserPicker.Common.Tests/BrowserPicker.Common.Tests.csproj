@@ -7,6 +7,8 @@
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <Platforms>x64</Platforms>
+    <!-- Required so the issue #299 regression test can touch the WPF font subsystem directly. -->
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
