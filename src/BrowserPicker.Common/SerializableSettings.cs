@@ -51,6 +51,7 @@ public sealed class SerializableSettings : IApplicationSettings
 		FontSize = applicationSettings.FontSize;
 		ThemeMode = applicationSettings.ThemeMode;
 		ProfileDisplayMode = applicationSettings.ProfileDisplayMode;
+		PersistProfileExpansion = applicationSettings.PersistProfileExpansion;
 	}
 
 	/// <summary>
@@ -149,6 +150,9 @@ public sealed class SerializableSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public ProfileDisplayMode ProfileDisplayMode { get; set; }
+
+	/// <inheritdoc />
+	public bool PersistProfileExpansion { get; set; } = true;
 
 	/// <summary>
 	/// How to sort the browser list: automatic (by usage), manual, or alphabetical.

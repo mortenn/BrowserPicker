@@ -643,6 +643,7 @@ public sealed class FeedbackViewModel : ModelBase
 		public double FontSize { get; set; } = 14;
 		public Common.ThemeMode ThemeMode { get; set; } = Common.ThemeMode.Dark;
 		public ProfileDisplayMode ProfileDisplayMode { get; set; }
+		public bool PersistProfileExpansion { get; set; } = true;
 		public bool UseFallbackDefault { get; set; } = true;
 		public string? DefaultBrowser { get; set; } = Firefox.Instance.Name;
 		public string BackupLog => "Copied configuration JSON to the clipboard.";

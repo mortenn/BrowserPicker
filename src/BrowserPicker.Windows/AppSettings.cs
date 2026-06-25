@@ -177,6 +177,9 @@ public sealed class AppSettings : IApplicationSettings
 	/// <inheritdoc />
 	public ProfileDisplayMode ProfileDisplayMode { get; set; }
 
+	/// <inheritdoc />
+	public bool PersistProfileExpansion { get; set; } = true;
+
 	private List<DefaultSetting> GetDefaults()
 	{
 		if (Reg == null)

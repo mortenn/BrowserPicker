@@ -55,6 +55,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private double font_size = 14;
 	private ThemeMode theme_mode = ThemeMode.System;
 	private ProfileDisplayMode profile_display_mode;
+	private bool persist_profile_expansion = true;
 
 	private static readonly JsonSerializerOptions JsonOptions = new()
 	{
@@ -433,6 +434,16 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	public bool PersistProfileExpansion
+	{
+		get => persist_profile_expansion;
+		set
+		{
+			if (SetProperty(ref persist_profile_expansion, value))
+				SaveToFile();
+		}
+	}
+
 	public List<BrowserModel> BrowserList { get; }
 
 	public List<DefaultSetting> Defaults { get; }
@@ -736,6 +747,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		font_size = s.FontSize > 0 ? s.FontSize : 14;
 		theme_mode = s.ThemeMode;
 		profile_display_mode = s.ProfileDisplayMode;
+		persist_profile_expansion = s.PersistProfileExpansion;
 		OnPropertyChanged(nameof(SortBy));
 		OnPropertyChanged(nameof(UseAutomaticOrdering));
 		OnPropertyChanged(nameof(UseManualOrdering));

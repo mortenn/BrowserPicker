@@ -203,7 +203,22 @@ public sealed class BrowserModel : ModelBase
 	/// <summary>
 	/// Profiles available for this browser (e.g. Chrome profiles, Firefox profiles/containers).
 	/// </summary>
-	public List<BrowserProfile> Profiles { get; } = [];
+	/// <remarks>
+	/// <see cref="JsonIncludeAttribute"/> is required so System.Text.Json populates this collection on load;
+	/// without it the get-only property is ignored and persisted profiles are lost between launches.
+	/// </remarks>
+	[JsonInclude]
+	public List<BrowserProfile> Profiles { get; private set; } = [];
+
+	/// <summary>
+	/// Whether the profile sub-list is expanded in the grouped picker view. Persisted so the user's
+	/// choice survives across picker launches (each link opens a fresh process).
+	/// </summary>
+	public bool ProfilesExpanded
+	{
+		get => profiles_expanded;
+		set => SetProperty(ref profiles_expanded, value);
+	}
 
 	private int usage;
 	private bool disabled;
@@ -220,4 +235,5 @@ public sealed class BrowserModel : ModelBase
 	private bool manual_override;
 	private string custom_key = string.Empty;
 	private bool containers_enabled;
+	private bool profiles_expanded;
 }
