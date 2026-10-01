@@ -294,7 +294,11 @@ public partial class App
 				loadingWindow = ShowLoadingWindow(urlLookup.Token);
 
 				// Wait for long-running processes in case they finish quickly
-				await Task.Run(() => long_running_processes.Wait(ApplicationCancellationToken.Token), urlLookup.Token);
+				await BackgroundTaskWaiter.WaitWithTimeout(
+					long_running_processes,
+					urlLookup.Token,
+					ApplicationCancellationToken.Token
+				);
 
 				// cancel the token to prevent showing LoadingWindow if it is not needed and has not been shown already
 				await urlLookup.CancelAsync();
