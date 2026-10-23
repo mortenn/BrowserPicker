@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using BrowserPicker.Windows;
 using AwesomeAssertions;
+using BrowserPicker.Windows;
 
 namespace BrowserPicker.Common.Tests;
 
