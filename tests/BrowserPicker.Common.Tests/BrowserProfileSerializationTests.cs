@@ -58,6 +58,80 @@ public class BrowserProfileSerializationTests
 		restored!.ProfilesExpanded.Should().BeTrue();
 	}
 
+#if BROWSERPICKER_PORTABLE
+	[Fact]
+	public void PortableSettingsFallbackCopiesExistingAppDataSettingsWhenPortableJsonIsMissing()
+	{
+		var portablePath = Path.Combine(AppContext.BaseDirectory, "settings.json");
+		var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+		var appDataSettingsPath = Path.Combine(localAppData, "BrowserPicker", "settings.json");
+		var portableBackup = File.Exists(portablePath) ? portablePath + ".bak" : null;
+		var appDataBackup = File.Exists(appDataSettingsPath) ? appDataSettingsPath + ".bak" : null;
+
+		try
+		{
+			if (portableBackup != null)
+			{
+				File.Move(portablePath, portableBackup);
+			}
+			else if (File.Exists(portablePath))
+			{
+				File.Delete(portablePath);
+			}
+
+			if (appDataBackup != null)
+			{
+				File.Move(appDataSettingsPath, appDataBackup);
+			}
+			else if (File.Exists(appDataSettingsPath))
+			{
+				File.Delete(appDataSettingsPath);
+			}
+
+			Directory.CreateDirectory(Path.GetDirectoryName(appDataSettingsPath)!);
+			var legacySettings = """
+				{
+				  "$schema": "https://raw.githubusercontent.com/mortenn/BrowserPicker/main/schemas/browserpicker-settings.schema.json",
+				  "BrowserList": [
+				    {
+				      "Name": "Firefox",
+				      "Id": "firefox",
+				      "Executable": "firefox.exe",
+				      "Profiles": []
+				    }
+				  ],
+				  "Defaults": [
+				    {
+				      "Type": "Default",
+				      "Pattern": "",
+				      "Browser": "firefox"
+				    }
+				  ]
+				}
+				""";
+			File.WriteAllText(appDataSettingsPath, legacySettings);
+
+			JsonAppSettings.SettingsFileExists().Should().BeTrue();
+			var logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<JsonAppSettings>();
+			var settings = new JsonAppSettings(logger);
+			settings.Should().NotBeNull();
+			File.Exists(portablePath).Should().BeTrue();
+			File.ReadAllText(portablePath).Should().Contain("firefox");
+		}
+		finally
+		{
+			if (File.Exists(portablePath))
+				File.Delete(portablePath);
+			if (portableBackup != null && File.Exists(portableBackup))
+				File.Move(portableBackup, portablePath);
+			if (File.Exists(appDataSettingsPath))
+				File.Delete(appDataSettingsPath);
+			if (appDataBackup != null && File.Exists(appDataBackup))
+				File.Move(appDataBackup, appDataSettingsPath);
+		}
+	}
+#endif
+
 	[Fact]
 	public void FailedSettingsLoadDoesNotWriteEmptyDefaultsBackToDisk()
 	{
