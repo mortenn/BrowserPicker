@@ -17,6 +17,7 @@ using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
 using BrowserPicker.Windows;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 #if DEBUG
 using JetBrains.Annotations;
 // ReSharper disable StringLiteralTypo
@@ -201,6 +202,11 @@ public sealed class FeedbackViewModel : ModelBase
 		);
 		builder.AppendLine($"- Default rules: `{settings.Defaults.Count(d => !d.Deleted)}`");
 		builder.AppendLine();
+		builder.AppendLine("## Windows URL Association Diagnostics");
+		builder.AppendLine("```text");
+		builder.AppendLine(BuildWindowsUrlAssociationDiagnostics());
+		builder.AppendLine("```");
+		builder.AppendLine();
 		builder.AppendLine("## Settings Dump");
 		builder.AppendLine("```json");
 		builder.AppendLine(settingsDump);
@@ -234,6 +240,108 @@ public sealed class FeedbackViewModel : ModelBase
 		}
 
 		return CompactJsonForLength(node, maxCharacters, JsonWriteIndented).ToJsonString(JsonWriteIndented);
+	}
+
+	private string BuildWindowsUrlAssociationDiagnostics()
+	{
+		var values = new[]
+		{
+			(
+				"http UserChoice ProgId",
+				ReadRegistryValue(
+					@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice",
+					"ProgId"
+				)
+			),
+			(
+				"https UserChoice ProgId",
+				ReadRegistryValue(
+					@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice",
+					"ProgId"
+				)
+			),
+			(
+				"http UserChoice Hash",
+				ReadRegistryValue(
+					@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice",
+					"Hash"
+				)
+			),
+			(
+				"https UserChoice Hash",
+				ReadRegistryValue(
+					@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice",
+					"Hash"
+				)
+			),
+			("BrowserPicker registration", ReadRegistryValue(@"Software\RegisteredApplications", "BrowserPicker")),
+			(
+				"BrowserPickerPortable registration",
+				ReadRegistryValue(@"Software\RegisteredApplications", "BrowserPickerPortable")
+			),
+			(
+				"BrowserPicker http association",
+				ReadRegistryValue(@"Software\BrowserPicker\Capabilities\URLAssociations", "http")
+			),
+			(
+				"BrowserPicker https association",
+				ReadRegistryValue(@"Software\BrowserPicker\Capabilities\URLAssociations", "https")
+			),
+			(
+				"BrowserPickerPortable http association",
+				ReadRegistryValue(@"Software\BrowserPickerPortable\Capabilities\URLAssociations", "http")
+			),
+			(
+				"BrowserPickerPortable https association",
+				ReadRegistryValue(@"Software\BrowserPickerPortable\Capabilities\URLAssociations", "https")
+			),
+			(
+				"BrowserPicker open command",
+				ReadRegistryValue(@"Software\Classes\BrowserPicker\shell\open\command", null)
+			),
+			(
+				"BrowserPickerPortable open command",
+				ReadRegistryValue(@"Software\Classes\BrowserPickerPortable\shell\open\command", null)
+			),
+			(
+				"Machine BrowserPicker command",
+				ReadRegistryValue(
+					@"SOFTWARE\BrowserPicker\Capabilities\shell\open\command",
+					null,
+					RegistryHive.LocalMachine
+				)
+			),
+		};
+
+		var builder = new StringBuilder();
+		foreach (var (label, value) in values)
+		{
+			builder.AppendLine($"{label}: {value ?? "(not set)"}");
+		}
+
+		return builder.ToString().TrimEnd();
+	}
+
+	private static string? ReadRegistryValue(
+		string subKeyPath,
+		string? valueName,
+		RegistryHive hive = RegistryHive.CurrentUser
+	)
+	{
+		try
+		{
+			using var root = RegistryKey.OpenBaseKey(hive, RegistryView.Registry64);
+			using var key = root.OpenSubKey(subKeyPath, false);
+			return key?.GetValue(valueName) switch
+			{
+				string s => s,
+				_ => null,
+			};
+		}
+		catch
+		{
+			return null;
+		}
 	}
 
 	private string BuildApplicationLogMarkdown(int maxCharacters)
