@@ -11,6 +11,6 @@ jobs:
   validate:
     permissions:
       contents: read
-    uses: mortenn/BrowserPicker.Actions/.github/workflows/pr-validation.yml@9f28b113d176de8180bef4b552277dec9b1dd211
+    uses: mortenn/BrowserPicker.Actions/.github/workflows/pr-validation.yml@141c5741e1f932ee61aa6bdefe9828118d895b90
     with:
       dotnet_version: 10.x
