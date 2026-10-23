@@ -27,6 +27,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private readonly ILogger<JsonAppSettings> logger;
 	private readonly string settings_path;
 	private readonly BrowserSorter sorter;
+	private bool persist_to_file = true;
 	private bool first_time = true;
 	private bool always_prompt;
 	private bool always_use_defaults = true;
@@ -63,6 +64,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		AllowTrailingCommas = true,
 		ReadCommentHandling = JsonCommentHandling.Skip,
 	};
+	private static readonly TimeSpan SettingsLockTimeout = TimeSpan.FromSeconds(2);
+	private static readonly TimeSpan SettingsReadRetryDelay = TimeSpan.FromMilliseconds(100);
+	private static readonly Mutex SettingsFileLock = new(false, "Global\\BrowserPicker.SettingsLock");
 
 	/// <summary>
 	/// Full path to the JSON settings file (%LocalAppData%\BrowserPicker\settings.json).
@@ -100,9 +104,11 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			try
 			{
 				LoadFromFile();
+				persist_to_file = true;
 			}
 			catch (Exception ex)
 			{
+				persist_to_file = false;
 				this.logger.LogWarning(ex, "Failed to load settings from {Path}; using defaults", settings_path);
 			}
 		}
@@ -886,30 +892,102 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	private void LoadFromFile()
 	{
-		var text = File.ReadAllText(settings_path);
-		var settings = DeserializeSettings(text, settings_path, out var upgradedLegacySecurity);
-		if (settings != null)
+		if (!SettingsFileLock.WaitOne(SettingsLockTimeout))
 		{
+			throw new TimeoutException($"Timed out waiting to read settings file {settings_path}");
+		}
+
+		try
+		{
+			var text = ReadSettingsTextWithRetry();
+			var settings = DeserializeSettings(text, settings_path, out var upgradedLegacySecurity);
+			if (settings == null)
+			{
+				persist_to_file = false;
+				logger.LogWarning(
+					"Failed to parse settings from {Path}; keeping in-memory defaults without persisting",
+					settings_path
+				);
+				return;
+			}
+
 			ApplyImportedSettings(settings);
+			persist_to_file = true;
 			if (upgradedLegacySecurity)
 			{
-				SaveToFile();
+				WriteSettingsToFileLocked();
 			}
+		}
+		finally
+		{
+			SettingsFileLock.ReleaseMutex();
 		}
 	}
 
 	private void SaveToFile()
 	{
+		if (!persist_to_file)
+		{
+			logger.LogDebug("Skipping settings save for {Path} because the initial load failed", settings_path);
+			return;
+		}
+
+		if (!SettingsFileLock.WaitOne(SettingsLockTimeout))
+		{
+			logger.LogWarning("Timed out waiting to save settings to {Path}", settings_path);
+			return;
+		}
+
 		try
 		{
-			var dir = Path.GetDirectoryName(settings_path);
-			if (!string.IsNullOrEmpty(dir))
-				Directory.CreateDirectory(dir);
-			File.WriteAllText(settings_path, ExportSettingsJson());
+			WriteSettingsToFileLocked();
 		}
 		catch (Exception ex)
 		{
 			logger.LogWarning(ex, "Failed to save settings to {Path}", settings_path);
+		}
+		finally
+		{
+			SettingsFileLock.ReleaseMutex();
+		}
+	}
+
+	private string ReadSettingsTextWithRetry()
+	{
+		for (var attempt = 1; ; attempt++)
+		{
+			try
+			{
+				return File.ReadAllText(settings_path);
+			}
+			catch (IOException) when (attempt < 3)
+			{
+				Thread.Sleep(SettingsReadRetryDelay);
+			}
+			catch (UnauthorizedAccessException) when (attempt < 3)
+			{
+				Thread.Sleep(SettingsReadRetryDelay);
+			}
+		}
+	}
+
+	private void WriteSettingsToFileLocked()
+	{
+		var dir = Path.GetDirectoryName(settings_path);
+		if (!string.IsNullOrEmpty(dir))
+			Directory.CreateDirectory(dir);
+
+		var tempPath = settings_path + ".tmp";
+		var json = ExportSettingsJson();
+		File.WriteAllText(tempPath, json);
+
+		if (File.Exists(settings_path))
+		{
+			File.Replace(tempPath, settings_path, null);
+		}
+		else
+		{
+			File.Move(tempPath, settings_path);
 		}
 	}
 
