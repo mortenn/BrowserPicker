@@ -13,13 +13,12 @@
 
   <ItemGroup>
     <PackageReference Include="AwesomeAssertions" Version="9.5.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-    <PackageReference Include="xunit.v3" Version="3.2.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="xunit.v3" Version="4.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BrowserPicker.Common\BrowserPicker.Common.csproj" />
+    <ProjectReference Include="..\..\src\BrowserPicker.Windows\BrowserPicker.Windows.csproj" />
   </ItemGroup>
 
   <ItemGroup>
