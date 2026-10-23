@@ -81,17 +81,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	}
 
 	/// <summary>
-	/// Full path to the portable JSON settings file alongside the executable.
-	/// </summary>
-	private static string GetPortableSettingsFilePath() => Path.Combine(AppContext.BaseDirectory, "settings.json");
-
-	/// <summary>
 	/// Full path to the active JSON settings file.
 	/// </summary>
 	private static string GetSettingsFilePath()
 	{
 #if BROWSERPICKER_PORTABLE
-		return GetPortableSettingsFilePath();
+		return Path.Combine(AppContext.BaseDirectory, "settings.json");
 #else
 		return GetAppDataSettingsFilePath();
 #endif
@@ -116,11 +111,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 #endif
 	}
 
+#if BROWSERPICKER_PORTABLE
 	private bool TryCopyAppDataSettingsToPortableLocation()
 	{
-#if !BROWSERPICKER_PORTABLE
-		return false;
-#else
 		if (File.Exists(settings_path))
 		{
 			return false;
@@ -145,8 +138,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			settings_path
 		);
 		return true;
-#endif
 	}
+#endif
 
 	/// <summary>
 	/// Initializes JSON-backed settings. If the JSON file does not exist and <paramref name="migrateFrom"/> is provided,
@@ -162,10 +155,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		BrowserList = [];
 		Defaults = [];
 
-		if (TryCopyAppDataSettingsToPortableLocation())
-		{
-			// Keep the portable app self-contained and preserve any existing AppData config.
-		}
+#if BROWSERPICKER_PORTABLE
+		TryCopyAppDataSettingsToPortableLocation();
+#endif
 
 		if (File.Exists(settings_path))
 		{

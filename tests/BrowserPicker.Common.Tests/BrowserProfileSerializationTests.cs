@@ -58,6 +58,7 @@ public class BrowserProfileSerializationTests
 		restored!.ProfilesExpanded.Should().BeTrue();
 	}
 
+#if BROWSERPICKER_PORTABLE
 	[Fact]
 	public void PortableSettingsFallbackCopiesExistingAppDataSettingsWhenPortableJsonIsMissing()
 	{
@@ -129,6 +130,7 @@ public class BrowserProfileSerializationTests
 				File.Move(appDataBackup, appDataSettingsPath);
 		}
 	}
+#endif
 
 	[Fact]
 	public void FailedSettingsLoadDoesNotWriteEmptyDefaultsBackToDisk()
