@@ -1,4 +1,7 @@
+using System;
+using System.IO;
 using System.Text.Json;
+using BrowserPicker.Windows;
 using AwesomeAssertions;
 
 namespace BrowserPicker.Common.Tests;
@@ -53,5 +56,48 @@ public class BrowserProfileSerializationTests
 		var restored = JsonSerializer.Deserialize<BrowserModel>(json);
 
 		restored!.ProfilesExpanded.Should().BeTrue();
+	}
+
+	[Fact]
+	public void FailedSettingsLoadDoesNotWriteEmptyDefaultsBackToDisk()
+	{
+		var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+		var browserPickerDir = Path.Combine(localAppData, "BrowserPicker");
+		Directory.CreateDirectory(browserPickerDir);
+		var settingsPath = Path.Combine(browserPickerDir, "settings.json");
+
+		var originalJson = """
+			{
+			  "$schema": "https://raw.githubusercontent.com/mortenn/BrowserPicker/main/schemas/browserpicker-settings.schema.json",
+			  "BrowserList": [
+			    {
+			      "Name": "Firefox",
+			      "Id": "firefox",
+			      "Executable": "firefox.exe",
+			      "Profiles": []
+			    }
+			  ],
+			  "Defaults": [
+			    {
+			      "Type": "Default",
+			      "Pattern": "",
+			      "Browser": "firefox"
+			    }
+			  ]
+			}
+			""";
+		File.WriteAllText(settingsPath, originalJson);
+
+		using var lockedFile = new FileStream(settingsPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+		var logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<JsonAppSettings>();
+		var settings = new JsonAppSettings(logger);
+
+		lockedFile.Dispose();
+		settings.AlwaysPrompt = true;
+
+		var currentJson = File.ReadAllText(settingsPath);
+		currentJson.Should().Contain("firefox");
+		currentJson.Should().NotContain("\"Defaults\": []");
+		settings.Should().NotBeNull();
 	}
 }
