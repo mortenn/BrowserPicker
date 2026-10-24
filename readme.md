@@ -143,6 +143,12 @@ Please note that arguments with spaces do require "" around them to be properly 
 
 Similar configuration should be possible for Firefox.
 
+##### Zen Browser containers
+
+Zen Browser uses the existing Firefox container discovery and launch support. Browser Picker reads containers from the matching profile under `%AppData%\zen`.
+
+Edit the Zen Browser entry and enable **Enable container support (Firefox / Zen)**, then refresh the browser list. Install [Open external links in a container](https://addons.mozilla.org/en-US/firefox/addon/open-url-in-container/) in the Zen profile you use. This extension handles the `ext+container:` links used by Browser Picker; the link format is not a built-in Zen command.
+
 ### Behaviour
 This tab contains various settings that govern how Browser Picker operates.
 

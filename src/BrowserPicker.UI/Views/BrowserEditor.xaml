@@ -271,7 +271,7 @@
 					</Style>
 				</StackPanel.Style>
 				<CheckBox Margin="0,2" IsChecked="{Binding Model.ContainersEnabled}">
-					<TextBlock TextWrapping="Wrap">Enable Firefox container support</TextBlock>
+					<TextBlock TextWrapping="Wrap">Enable container support (Firefox / Zen)</TextBlock>
 				</CheckBox>
 				<TextBlock Margin="20,4,0,0" FontSize="11" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextWrapping="Wrap">
 					<Run Text="Requires" />
