@@ -30,6 +30,7 @@ public static class WellKnownBrowsers
 	[
 		FirefoxDevEdition.Instance,
 		Firefox.Instance,
+		Zen.Instance,
 		ChromeDevEdition.Instance,
 		Chrome.Instance,
 		MicrosoftEdge.Instance,
@@ -106,6 +107,25 @@ public sealed class FirefoxDevEdition : IWellKnownBrowser
 	public ProfileType ProfileType => ProfileType.Firefox;
 
 	public string UserDataPath => @"Mozilla\Firefox";
+}
+
+public sealed class Zen : IWellKnownBrowser
+{
+	public static readonly Zen Instance = new();
+
+	public string Name => "Zen Browser";
+
+	public string Executable => "zen.exe";
+
+	public string? RealExecutable => null;
+
+	public string PrivacyArgs => "-private-window ";
+
+	public string PrivacyMode => "Open with private browsing";
+
+	public ProfileType ProfileType => ProfileType.Firefox;
+
+	public string UserDataPath => "zen";
 }
 
 public sealed class Chrome : IWellKnownBrowser
