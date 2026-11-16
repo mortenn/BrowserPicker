@@ -254,15 +254,33 @@ public sealed class ConfigurationViewModel : ModelBase
 
 	/// <summary>
 	/// Handles property change events for individual <see cref="DefaultSetting"/> items.
-	/// Removes items from the Defaults collection if they are marked as deleted.
+	/// Removes items from the Defaults collection if they are marked as deleted, and clears the profile
+	/// when the rule is moved to a browser that does not have it.
 	/// </summary>
 	/// <param name="sender">The default setting item triggering the event.</param>
 	/// <param name="e">Details of the property that was changed.</param>
 	private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(DefaultSetting.Deleted) && sender is DefaultSetting { Deleted: true } item)
+		if (sender is not DefaultSetting item)
 		{
-			Defaults.Remove(item);
+			return;
+		}
+
+		switch (e.PropertyName)
+		{
+			case nameof(DefaultSetting.Deleted) when item.Deleted:
+				Defaults.Remove(item);
+				break;
+
+			case nameof(DefaultSetting.Browser) when item.Profile != null:
+				var browser = ParentViewModel.Choices.FirstOrDefault(c =>
+					c.Model.Id == item.Browser || c.Model.Name == item.Browser
+				);
+				if (browser != null && browser.Model.Profiles.All(p => p.Id != item.Profile))
+				{
+					item.Profile = null;
+				}
+				break;
 		}
 	}
 

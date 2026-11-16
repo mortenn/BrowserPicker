@@ -101,6 +101,7 @@
 			</Style>
 			<converters:ComboBoxBrowserItemFlagConverter x:Key="ComboBoxBrowserItemFlagConverter" />
 			<converters:SecurityProfileSelectionConverter x:Key="SecurityProfileSelectionConverter" />
+			<converters:DefaultSettingProfileChoicesConverter x:Key="DefaultSettingProfileChoicesConverter" />
 			<Style x:Key="VisibleBrowserComboItemStyle" BasedOn="{StaticResource {x:Type ComboBoxItem}}" TargetType="ComboBoxItem">
 				<Style.Triggers>
 					<DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource ComboBoxBrowserItemFlagConverter}, ConverterParameter=Disabled}" Value="True">
@@ -677,7 +678,7 @@
 											MinWidth="130"
 											IsSynchronizedWithCurrentItem="False"
 											ItemsSource="{x:Static viewModels:ConfigurationViewModel.MatchTypesForRules}"
-											SelectedItem="{Binding Type}"
+											SelectedItem="{Binding Type, UpdateSourceTrigger=PropertyChanged}"
 											Style="{StaticResource DefaultsGridComboBoxStyle}" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
@@ -701,9 +702,30 @@
 											ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
 											ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 											ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
-											SelectedValue="{Binding Browser}"
+											SelectedValue="{Binding Browser, UpdateSourceTrigger=Explicit}"
+										ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
 											SelectedValuePath="Model.Id"
 											Style="{StaticResource DefaultsGridComboBoxStyle}" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTemplateColumn Width="*" MinWidth="180" Header="Profile">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate DataType="common:DefaultSetting">
+										<ComboBox
+											DisplayMemberPath="Name"
+											IsSynchronizedWithCurrentItem="False"
+											SelectedValue="{Binding Profile, TargetNullValue={x:Static system:String.Empty}, UpdateSourceTrigger=Explicit}"
+										ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
+											SelectedValuePath="Id"
+											Style="{StaticResource DefaultsGridComboBoxStyle}">
+											<ComboBox.ItemsSource>
+												<MultiBinding Converter="{StaticResource DefaultSettingProfileChoicesConverter}">
+													<Binding Path="Browser" />
+													<Binding Path="DataContext.ParentViewModel.Choices" RelativeSource="{RelativeSource AncestorType=DataGrid}" />
+												</MultiBinding>
+											</ComboBox.ItemsSource>
+										</ComboBox>
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
