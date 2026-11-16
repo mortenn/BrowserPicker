@@ -12,15 +12,29 @@ using Microsoft.Extensions.Logging;
 namespace BrowserPicker.Windows.ProfileDiscovery;
 
 /// <summary>
-/// Discovers containers for Firefox-based browsers.
-/// The active profile directory is determined by matching the browser's executable path
+/// Discovers profiles and containers for Firefox-based browsers.
+/// The profiles that belong to an installation are found by matching the browser's executable path
 /// against <c>compatibility.ini</c> in each profile listed in <c>profiles.ini</c>.
-/// Containers are read from <c>containers.json</c> in the matched profile.
+/// Containers are read from <c>containers.json</c> in each of those profiles.
 /// </summary>
+/// <remarks>
+/// <para>
+/// With one profile, only its containers are returned (<c>container:Name</c>), as before.
+/// </para>
+/// <para>
+/// With several profiles, each profile is returned (<c>profile:Name</c>, launched with <c>-P "Name"</c>)
+/// followed by its containers, named <c>Profile › Container</c>. Containers of the installation's default
+/// profile keep their <c>container:Name</c> id and launch without <c>-P</c>, so existing rules keep working;
+/// containers of the other profiles use <c>profile:Profile/container:Name</c> and launch with <c>-P</c>.
+/// </para>
+/// </remarks>
 public static class FirefoxProfileDiscovery
 {
+	/// <summary>Separates the profile name from the container name in display names.</summary>
+	public const string ProfileContainerSeparator = " › ";
+
 	/// <summary>
-	/// Discovers Firefox containers for the given browser installation.
+	/// Discovers Firefox profiles and containers for the given browser installation.
 	/// </summary>
 	/// <param name="userDataPath">
 	/// Relative path under <c>%AppData%</c> to the Firefox data directory
@@ -31,7 +45,7 @@ public static class FirefoxProfileDiscovery
 	/// via <c>compatibility.ini</c>.
 	/// </param>
 	/// <param name="logger">Optional logger for diagnostic output.</param>
-	/// <returns>List of discovered containers; empty if none found.</returns>
+	/// <returns>List of discovered profiles and containers; empty if none found.</returns>
 	public static List<BrowserProfile> Discover(string userDataPath, string? browserExePath, ILogger? logger = null)
 	{
 		var root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), userDataPath);
@@ -49,23 +63,42 @@ public static class FirefoxProfileDiscovery
 			return [];
 		}
 
-		var profileEntries = ParseProfileEntries(iniPath, logger);
-		var activeProfilePath = FindActiveProfilePath(root, profileEntries, browserExePath, logger);
+		var ini = ParseProfilesIni(iniPath, logger);
+		var installed = FindInstallationProfiles(root, ini.Profiles, browserExePath, logger);
+		if (installed.Count > 1)
+		{
+			return DiscoverProfilesAndContainers(root, ini, installed, logger);
+		}
+
+		var activeProfilePath =
+			installed.Count == 1
+				? FullPath(root, installed[0])
+				: FindFallbackProfilePath(root, ini.Profiles, browserExePath, logger);
 
 		if (activeProfilePath != null)
 		{
-			return DiscoverContainers(activeProfilePath, logger);
+			return [.. ReadContainers(activeProfilePath, logger).Select(c => CreateContainer(c, null, true))];
 		}
 
 		logger?.LogDebug("Could not determine active Firefox profile for {Exe}", browserExePath);
 		return [];
 	}
 
-	private record ProfileEntry(string Name, string Path, bool IsRelative);
+	private record ProfileEntry(string Name, string Path, bool IsRelative, bool IsDefault);
 
-	private static List<ProfileEntry> ParseProfileEntries(string iniPath, ILogger? logger)
+	private record ProfilesIni(List<ProfileEntry> Profiles, HashSet<string> InstallDefaults);
+
+	private record ContainerIdentity(string Name, string? Color, string? Icon);
+
+	private static string FullPath(string root, ProfileEntry entry) =>
+		entry.IsRelative ? Path.Combine(root, entry.Path) : entry.Path;
+
+	private static string NormalizeIniPath(string path) => path.Replace('\\', '/').TrimEnd('/');
+
+	private static ProfilesIni ParseProfilesIni(string iniPath, ILogger? logger)
 	{
 		var entries = new List<ProfileEntry>();
+		var installDefaults = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
 			var lines = File.ReadAllLines(iniPath);
@@ -73,6 +106,7 @@ public static class FirefoxProfileDiscovery
 			string? currentName = null;
 			string? currentPath = null;
 			var isRelative = true;
+			var isDefault = false;
 
 			foreach (var rawLine in lines)
 			{
@@ -80,11 +114,12 @@ public static class FirefoxProfileDiscovery
 
 				if (line.StartsWith('['))
 				{
-					FlushEntry(entries, currentSection, currentName, currentPath, isRelative);
+					FlushEntry(entries, currentSection, currentName, currentPath, isRelative, isDefault);
 					currentSection = line.TrimStart('[').TrimEnd(']');
 					currentName = null;
 					currentPath = null;
 					isRelative = true;
+					isDefault = false;
 					continue;
 				}
 
@@ -105,17 +140,30 @@ public static class FirefoxProfileDiscovery
 					case "IsRelative" when value == "0":
 						isRelative = false;
 						break;
+					// [ProfileN] Default=1 marks the legacy default profile.
+					case "Default" when value == "1":
+						isDefault = true;
+						break;
+				}
+
+				// [Install<hash>] Default=<path> is the profile an installation opens without -P.
+				if (
+					key == "Default"
+					&& currentSection?.StartsWith("Install", StringComparison.OrdinalIgnoreCase) == true
+				)
+				{
+					installDefaults.Add(NormalizeIniPath(value));
 				}
 			}
 
-			FlushEntry(entries, currentSection, currentName, currentPath, isRelative);
+			FlushEntry(entries, currentSection, currentName, currentPath, isRelative, isDefault);
 		}
 		catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
 		{
 			logger?.LogDebug(ex, "Could not read profiles.ini at {Path}", iniPath);
 		}
 
-		return entries;
+		return new ProfilesIni(entries, installDefaults);
 	}
 
 	private static void FlushEntry(
@@ -123,7 +171,8 @@ public static class FirefoxProfileDiscovery
 		string? section,
 		string? name,
 		string? path,
-		bool isRelative
+		bool isRelative,
+		bool isDefault
 	)
 	{
 		if (
@@ -133,7 +182,7 @@ public static class FirefoxProfileDiscovery
 			&& path != null
 		)
 		{
-			entries.Add(new ProfileEntry(name, path, isRelative));
+			entries.Add(new ProfileEntry(name, path, isRelative, isDefault));
 		}
 	}
 
@@ -162,27 +211,24 @@ public static class FirefoxProfileDiscovery
 	}
 
 	/// <summary>
-	/// Finds the profile directory for this Firefox installation by checking
+	/// Finds the profiles last used by this Firefox installation by checking
 	/// <c>compatibility.ini</c> in each profile for a matching <c>LastPlatformDir</c>.
-	/// Falls back to the first existing profile directory if no match is found.
 	/// </summary>
-	private static string? FindActiveProfilePath(
+	private static List<ProfileEntry> FindInstallationProfiles(
 		string root,
 		List<ProfileEntry> entries,
 		string? browserExePath,
 		ILogger? logger
 	)
 	{
-		if (entries.Count == 0)
-			return null;
-
+		var matches = new List<ProfileEntry>();
 		var installDir = ExtractInstallDirectory(browserExePath);
 
 		if (installDir != null)
 		{
 			foreach (var entry in entries)
 			{
-				var fullPath = entry.IsRelative ? Path.Combine(root, entry.Path) : entry.Path;
+				var fullPath = FullPath(root, entry);
 				if (!Directory.Exists(fullPath))
 					continue;
 
@@ -202,7 +248,7 @@ public static class FirefoxProfileDiscovery
 						continue;
 
 					logger?.LogDebug("Matched Firefox profile {Name} to installation {Dir}", entry.Name, installDir);
-					return fullPath;
+					matches.Add(entry);
 				}
 				catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
 				{
@@ -211,10 +257,20 @@ public static class FirefoxProfileDiscovery
 			}
 		}
 
-		// Fallback: use first profile directory that exists
-		var fallback = entries
-			.Select(e => e.IsRelative ? Path.Combine(root, e.Path) : e.Path)
-			.FirstOrDefault(Directory.Exists);
+		return matches;
+	}
+
+	/// <summary>
+	/// Falls back to the first existing profile directory when no profile matches the installation.
+	/// </summary>
+	private static string? FindFallbackProfilePath(
+		string root,
+		List<ProfileEntry> entries,
+		string? browserExePath,
+		ILogger? logger
+	)
+	{
+		var fallback = entries.Select(e => FullPath(root, e)).FirstOrDefault(Directory.Exists);
 
 		if (fallback != null)
 			logger?.LogDebug("No compatibility.ini match for {Exe}, falling back to {Path}", browserExePath, fallback);
@@ -254,9 +310,75 @@ public static class FirefoxProfileDiscovery
 		return null;
 	}
 
-	private static List<BrowserProfile> DiscoverContainers(string profilePath, ILogger? logger)
+	/// <summary>
+	/// Returns every profile of the installation, the default one first, each followed by its containers.
+	/// </summary>
+	private static List<BrowserProfile> DiscoverProfilesAndContainers(
+		string root,
+		ProfilesIni ini,
+		List<ProfileEntry> installed,
+		ILogger? logger
+	)
 	{
-		var containers = new List<BrowserProfile>();
+		var defaultProfile =
+			installed.FirstOrDefault(p => ini.InstallDefaults.Contains(NormalizeIniPath(p.Path)))
+			?? installed.FirstOrDefault(p => p.IsDefault)
+			?? installed[0];
+
+		var result = new List<BrowserProfile>();
+		foreach (var profile in installed.OrderBy(p => p == defaultProfile ? 0 : 1))
+		{
+			if (profile.Name.Contains('"'))
+			{
+				logger?.LogDebug(
+					"Skipping Firefox profile {Name}: quotes in profile names are not supported",
+					profile.Name
+				);
+				continue;
+			}
+
+			var isDefault = profile == defaultProfile;
+			result.Add(new BrowserProfile($"profile:{profile.Name}", profile.Name, ProfileArgs(profile)));
+			result.AddRange(
+				ReadContainers(FullPath(root, profile), logger).Select(c => CreateContainer(c, profile, isDefault))
+			);
+			logger?.LogDebug("Discovered Firefox profile: {Name} (default={IsDefault})", profile.Name, isDefault);
+		}
+		return result;
+	}
+
+	private static string ProfileArgs(ProfileEntry profile) => $"-P \"{profile.Name}\"";
+
+	/// <summary>
+	/// Creates the entry for a container. <paramref name="owner"/> is null when the installation has a single profile.
+	/// </summary>
+	private static BrowserProfile CreateContainer(
+		ContainerIdentity container,
+		ProfileEntry? owner,
+		bool isDefaultProfile
+	)
+	{
+		var inDefaultProfile = owner == null || isDefaultProfile;
+		var id = inDefaultProfile ? $"container:{container.Name}" : $"profile:{owner!.Name}/container:{container.Name}";
+		var name = owner == null ? container.Name : owner.Name + ProfileContainerSeparator + container.Name;
+
+		// The container extension splits the link on '&' and creates any container it cannot find, so the
+		// name is escaped like the URL: "R&D" must not turn into a new container called "R".
+		return new BrowserProfile(
+			id: id,
+			name: name,
+			commandArgs: inDefaultProfile ? null : ProfileArgs(owner!),
+			urlTemplate: $"ext+container:name={Uri.EscapeDataString(container.Name)}&url={{url}}"
+		)
+		{
+			IconColor = container.Color,
+			ContainerIcon = container.Icon,
+		};
+	}
+
+	private static List<ContainerIdentity> ReadContainers(string profilePath, ILogger? logger)
+	{
+		var containers = new List<ContainerIdentity>();
 		var containersFile = Path.Combine(profilePath, "containers.json");
 
 		if (!File.Exists(containersFile))
@@ -297,18 +419,13 @@ public static class FirefoxProfileDiscovery
 				var color = identity["color"]?.GetValue<string>();
 				var icon = identity["icon"]?.GetValue<string>();
 
-				var id = $"container:{name}";
-				var profile = new BrowserProfile(
-					id: id,
-					name: name,
-					commandArgs: null,
-					urlTemplate: $"ext+container:name={name}&url={{url}}"
-				)
-				{
-					IconColor = string.IsNullOrEmpty(color) ? null : color,
-					ContainerIcon = string.IsNullOrEmpty(icon) ? null : icon,
-				};
-				containers.Add(profile);
+				containers.Add(
+					new ContainerIdentity(
+						name,
+						string.IsNullOrEmpty(color) ? null : color,
+						string.IsNullOrEmpty(icon) ? null : icon
+					)
+				);
 
 				logger?.LogDebug(
 					"Discovered Firefox container: {Name} (color={Color}, icon={Icon})",
