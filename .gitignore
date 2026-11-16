@@ -3,6 +3,7 @@
 bin/
 obj/
 packages/
+/publish/
 
 # JetBrains InspectCode CLI (jb inspectcode)
 inspectcode-report.*
