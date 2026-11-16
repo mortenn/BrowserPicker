@@ -622,6 +622,7 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	private static readonly List<(string url, string parameter)> JumpPages =
 	[
 		("safelinks.protection.outlook.com", "url"),
+		("https://statics.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),
 		("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/", "url"),
 		("https://l.facebook.com/l.php", "u"),
 	];
