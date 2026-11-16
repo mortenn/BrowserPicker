@@ -57,6 +57,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private ThemeMode theme_mode = ThemeMode.System;
 	private ProfileDisplayMode profile_display_mode;
 	private bool persist_profile_expansion = true;
+	private bool diagnostic_file_logging;
+	private bool diagnostic_log_full_urls;
+	private int diagnostic_log_retention_days = DiagnosticFileLog.MinRetentionDays;
 
 	private static readonly JsonSerializerOptions JsonOptions = new()
 	{
@@ -510,6 +513,36 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 	}
 
+	public bool DiagnosticFileLogging
+	{
+		get => diagnostic_file_logging;
+		set
+		{
+			if (SetProperty(ref diagnostic_file_logging, value))
+				SaveToFile();
+		}
+	}
+
+	public bool DiagnosticLogFullUrls
+	{
+		get => diagnostic_log_full_urls;
+		set
+		{
+			if (SetProperty(ref diagnostic_log_full_urls, value))
+				SaveToFile();
+		}
+	}
+
+	public int DiagnosticLogRetentionDays
+	{
+		get => diagnostic_log_retention_days;
+		set
+		{
+			if (SetProperty(ref diagnostic_log_retention_days, DiagnosticFileLog.ClampRetentionDays(value)))
+				SaveToFile();
+		}
+	}
+
 	public List<BrowserModel> BrowserList { get; }
 
 	public List<DefaultSetting> Defaults { get; }
@@ -814,6 +847,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		theme_mode = s.ThemeMode;
 		profile_display_mode = s.ProfileDisplayMode;
 		persist_profile_expansion = s.PersistProfileExpansion;
+		diagnostic_file_logging = s.DiagnosticFileLogging;
+		diagnostic_log_full_urls = s.DiagnosticLogFullUrls;
+		diagnostic_log_retention_days = DiagnosticFileLog.ClampRetentionDays(s.DiagnosticLogRetentionDays);
 		OnPropertyChanged(nameof(SortBy));
 		OnPropertyChanged(nameof(UseAutomaticOrdering));
 		OnPropertyChanged(nameof(UseManualOrdering));
@@ -835,6 +871,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(ConfigWindowHeight));
 		OnPropertyChanged(nameof(FontSize));
 		OnPropertyChanged(nameof(ThemeMode));
+		OnPropertyChanged(nameof(DiagnosticFileLogging));
+		OnPropertyChanged(nameof(DiagnosticLogFullUrls));
+		OnPropertyChanged(nameof(DiagnosticLogRetentionDays));
 	}
 
 	private void UpdateBrowsers(List<BrowserModel> browserList)

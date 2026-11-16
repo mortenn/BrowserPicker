@@ -166,6 +166,13 @@ public sealed class ApplicationViewModel : ModelBase
 
 		var (start, profile) = GetBrowserToLaunch(Url.UnderlyingTargetURL ?? Url.TargetURL);
 		Logger.LogAutomationChoice(start?.Model.Name);
+		Logger.LogUrlDecision(
+			Url.TargetURL,
+			Url.UnderlyingTargetURL ?? Url.TargetURL,
+			last_match_description,
+			start?.Model.Name ?? "(none, picker shown)",
+			profile?.Name ?? "(none)"
+		);
 
 #if DEBUG
 		if (Debugger.IsAttached && start != null)
@@ -275,6 +282,7 @@ public sealed class ApplicationViewModel : ModelBase
 	/// </summary>
 	internal (string? BrowserKey, string? ProfileId) GetMatchedBrowserKeyForUrl(string? targetUrl)
 	{
+		last_match_description = "no rule";
 		if (Configuration.Settings.Defaults.Count <= 0 || string.IsNullOrWhiteSpace(targetUrl))
 		{
 			Logger.LogAutomationNoDefaultsConfigured();
@@ -316,6 +324,7 @@ public sealed class ApplicationViewModel : ModelBase
 			matchedKey = best.Browser;
 			matchedProfile = best.Profile;
 			matchedSource = "rule";
+			last_match_description = $"rule {best.Type} '{best.Pattern}'";
 		}
 		else if (
 			Configuration.Settings.UseFallbackDefault
@@ -324,6 +333,7 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			matchedKey = Configuration.Settings.DefaultBrowser;
 			matchedSource = "fallback";
+			last_match_description = "fallback default browser";
 		}
 
 		Logger.LogAutomationMatchedKey(matchedKey, matchedSource ?? "none");
@@ -767,6 +777,7 @@ public sealed class ApplicationViewModel : ModelBase
 	}
 
 	private bool configuration_mode;
+	private string last_match_description = "not evaluated";
 	private bool alt_pressed;
 	private readonly bool force_choice;
 	private bool pinned;

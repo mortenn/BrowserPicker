@@ -114,6 +114,16 @@
     "PersistProfileExpansion": {
       "type": "boolean"
     },
+    "DiagnosticFileLogging": {
+      "type": "boolean"
+    },
+    "DiagnosticLogFullUrls": {
+      "type": "boolean"
+    },
+    "DiagnosticLogRetentionDays": {
+      "type": "integer",
+      "format": "int32"
+    },
     "SortBy": {
       "$ref": "#/definitions/SortOrder"
     }
