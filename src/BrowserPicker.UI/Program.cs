@@ -63,27 +63,8 @@ internal static class Program
 		App.Settings = configuration;
 		var app = host.Services.GetRequiredService<App>();
 
-		// Fluent theme (Windows 10/11) first, then app resources
-		app.Resources.MergedDictionaries.Add(
-			new ResourceDictionary
-			{
-				Source = new Uri(
-					"pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml",
-					UriKind.Absolute
-				),
-			}
-		);
-		app.Resources.MergedDictionaries.Add(
-			new ResourceDictionary
-			{
-				Source = new Uri(
-					"pack://application:,,,/BrowserPicker;component/Resources/ResourceDictionary.xaml",
-					UriKind.Absolute
-				),
-			}
-		);
-		// Content theme brushes before Run() so DynamicResource resolves when windows load.
-		app.AddContentThemeDictionary(configuration.ThemeMode);
+		// Theme and app resources are loaded by App.EnsureThemeResources when the first window opens,
+		// so a rule that launches a browser straight away does not pay for them.
 		var logger = host.Services.GetRequiredService<ILogger<App>>();
 		logger.LogApplicationLaunched(args.Length == 0 ? "(none)" : string.Join(" ", args));
 #if !DEBUG && BROWSERPICKER_PORTABLE

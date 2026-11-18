@@ -88,7 +88,46 @@ public partial class App
 		ViewModel = viewModel;
 	}
 
-	/// <summary>Add content theme brushes to app resources. Call from Program before Run() so they exist when windows load.</summary>
+	private static bool theme_resources_loaded;
+
+	/// <summary>
+	/// Loads the Fluent theme, app resources and content theme brushes the first time a window is about to open.
+	/// Deferred so an automatic launch (a rule picks the browser, no window is shown) skips the cost.
+	/// </summary>
+	private static void EnsureThemeResources()
+	{
+		if (theme_resources_loaded || Current is not App app)
+			return;
+		theme_resources_loaded = true;
+
+		// Fluent theme (Windows 10/11) first, then app resources
+		app.Resources.MergedDictionaries.Add(
+			new ResourceDictionary
+			{
+				Source = new Uri(
+					"pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml",
+					UriKind.Absolute
+				),
+			}
+		);
+		app.Resources.MergedDictionaries.Add(
+			new ResourceDictionary
+			{
+				Source = new Uri(
+					"pack://application:,,,/BrowserPicker;component/Resources/ResourceDictionary.xaml",
+					UriKind.Absolute
+				),
+			}
+		);
+		if (Settings == null)
+			return;
+		// Content theme brushes before the window loads so DynamicResource resolves.
+		app.AddContentThemeDictionary(Settings.ThemeMode);
+		ApplyThemeMode(Settings.ThemeMode);
+		Settings.PropertyChanged += app.Settings_PropertyChanged;
+	}
+
+	/// <summary>Add content theme brushes to app resources.</summary>
 	internal void AddContentThemeDictionary(Common.ThemeMode mode)
 	{
 		var useLight = mode switch
@@ -102,11 +141,6 @@ public partial class App
 
 	protected override void OnStartup(StartupEventArgs e)
 	{
-		if (Settings != null)
-		{
-			ApplyThemeMode(Settings.ThemeMode);
-			Settings.PropertyChanged += Settings_PropertyChanged;
-		}
 		var worker = StartupBackgroundTasks();
 		worker.ContinueWith(CheckBackgroundTasks);
 	}
@@ -367,6 +401,7 @@ public partial class App
 		{
 			return;
 		}
+		EnsureThemeResources();
 		MainWindow = new MainWindow { DataContext = ViewModel };
 		MainWindow.Show();
 		MainWindow.Focus();
@@ -387,6 +422,7 @@ public partial class App
 		{
 			return null;
 		}
+		EnsureThemeResources();
 		var window = new LoadingWindow();
 		window.Show();
 		return window;
@@ -394,6 +430,7 @@ public partial class App
 
 	private static void ShowExceptionReport(Exception exception)
 	{
+		EnsureThemeResources();
 		var viewModel = new ExceptionViewModel(exception);
 		var window = new ExceptionReport();
 		viewModel.OnWindowClosed += (_, _) => window.Close();
