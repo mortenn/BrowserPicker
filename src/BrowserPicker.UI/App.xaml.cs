@@ -426,9 +426,7 @@ public partial class App
 	private static void ExitApplication(object? sender, EventArgs args)
 	{
 		ApplicationCancellationToken.Cancel();
-
-		// Safety net: never leave a BrowserPicker.exe behind after shutdown was requested.
-		_ = Task.Delay(ShutdownWatchdogTimeout).ContinueWith(_ => Environment.Exit(0), TaskScheduler.Default);
+		StartShutdownWatchdog();
 
 		try
 		{
@@ -443,6 +441,16 @@ public partial class App
 		{
 			Current.Shutdown();
 		}
+	}
+
+	/// <summary>
+	/// Safety net: never leave a BrowserPicker.exe behind after shutdown was requested.
+	/// </summary>
+	private static async void StartShutdownWatchdog()
+	{
+		// ConfigureAwait(false): the dispatcher is shut down by then, so resuming on it would never run.
+		await Task.Delay(ShutdownWatchdogTimeout).ConfigureAwait(false);
+		Environment.Exit(0);
 	}
 
 	public ApplicationViewModel? ViewModel { get; }
