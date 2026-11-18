@@ -584,18 +584,27 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 
 	public void PersistBrowser(BrowserModel _) => SaveToFile();
 
-	public void FindBrowsers()
+	public void FindBrowsers() => FindBrowsers(CancellationToken.None);
+
+	private void FindBrowsers(CancellationToken cancellationToken)
 	{
 		foreach (var model in BrowserDiscovery.FindBrowsers())
+		{
+			if (cancellationToken.IsCancellationRequested)
+				return;
 			AddOrUpdateBrowserModel(model);
-		DiscoverProfiles();
+		}
+		DiscoverProfiles(cancellationToken);
 	}
 
-	private void DiscoverProfiles()
+	private void DiscoverProfiles(CancellationToken cancellationToken = default)
 	{
 		var changed = false;
 		foreach (var browser in BrowserList)
 		{
+			// Stop early on shutdown, but still save what was merged so far
+			if (cancellationToken.IsCancellationRequested)
+				break;
 			var discovered = BrowserDiscovery.FindProfiles(browser, logger);
 			if (discovered == null)
 				continue;
@@ -729,7 +738,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		SaveToFile();
 	}
 
-	public Task Start(CancellationToken cancellationToken) => Task.Run(FindBrowsers, cancellationToken);
+	public Task Start(CancellationToken cancellationToken) =>
+		Task.Run(() => FindBrowsers(cancellationToken), cancellationToken);
 
 	public string BackupLog
 	{
