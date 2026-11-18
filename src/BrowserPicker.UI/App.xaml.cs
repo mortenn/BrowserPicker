@@ -88,7 +88,46 @@ public partial class App
 		ViewModel = viewModel;
 	}
 
-	/// <summary>Add content theme brushes to app resources. Call from Program before Run() so they exist when windows load.</summary>
+	private static bool theme_resources_loaded;
+
+	/// <summary>
+	/// Loads the Fluent theme, app resources and content theme brushes the first time a window is about to open.
+	/// Deferred so an automatic launch (a rule picks the browser, no window is shown) skips the cost.
+	/// </summary>
+	private static void EnsureThemeResources()
+	{
+		if (theme_resources_loaded || Current is not App app)
+			return;
+		theme_resources_loaded = true;
+
+		// Fluent theme (Windows 10/11) first, then app resources
+		app.Resources.MergedDictionaries.Add(
+			new ResourceDictionary
+			{
+				Source = new Uri(
+					"pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml",
+					UriKind.Absolute
+				),
+			}
+		);
+		app.Resources.MergedDictionaries.Add(
+			new ResourceDictionary
+			{
+				Source = new Uri(
+					"pack://application:,,,/BrowserPicker;component/Resources/ResourceDictionary.xaml",
+					UriKind.Absolute
+				),
+			}
+		);
+		if (Settings == null)
+			return;
+		// Content theme brushes before the window loads so DynamicResource resolves.
+		app.AddContentThemeDictionary(Settings.ThemeMode);
+		ApplyThemeMode(Settings.ThemeMode);
+		Settings.PropertyChanged += app.Settings_PropertyChanged;
+	}
+
+	/// <summary>Add content theme brushes to app resources.</summary>
 	internal void AddContentThemeDictionary(Common.ThemeMode mode)
 	{
 		var useLight = mode switch
@@ -102,11 +141,6 @@ public partial class App
 
 	protected override void OnStartup(StartupEventArgs e)
 	{
-		if (Settings != null)
-		{
-			ApplyThemeMode(Settings.ThemeMode);
-			Settings.PropertyChanged += Settings_PropertyChanged;
-		}
 		var worker = StartupBackgroundTasks();
 		worker.ContinueWith(CheckBackgroundTasks);
 	}
@@ -363,13 +397,33 @@ public partial class App
 	/// </summary>
 	private void ShowMainWindow()
 	{
-		if (ViewModel?.Initialize() == false)
+		if (ViewModel == null || !ViewModel.Initialize())
 		{
 			return;
 		}
-		MainWindow = new MainWindow { DataContext = ViewModel };
-		MainWindow.Show();
-		MainWindow.Focus();
+		EnsureThemeResources();
+		ViewModel.PropertyChanged += (_, e) =>
+		{
+			if (e.PropertyName == nameof(ApplicationViewModel.ConfigurationMode))
+				ShowWindowForMode(ViewModel);
+		};
+		ShowWindowForMode(ViewModel);
+	}
+
+	/// <summary>
+	/// Shows the configuration window in configuration mode and the picker otherwise, then closes the window
+	/// that was shown before. The new window opens first, so closing the old one does not end the application.
+	/// </summary>
+	private void ShowWindowForMode(ApplicationViewModel viewModel)
+	{
+		var previous = shown_window;
+		shown_window = viewModel.ConfigurationMode
+			? new ConfigurationWindow { DataContext = viewModel.Configuration }
+			: new MainWindow { DataContext = viewModel };
+		MainWindow = shown_window;
+		shown_window.Show();
+		shown_window.Focus();
+		previous?.Close();
 	}
 
 	/// <summary>
@@ -387,6 +441,7 @@ public partial class App
 		{
 			return null;
 		}
+		EnsureThemeResources();
 		var window = new LoadingWindow();
 		window.Show();
 		return window;
@@ -394,6 +449,7 @@ public partial class App
 
 	private static void ShowExceptionReport(Exception exception)
 	{
+		EnsureThemeResources();
 		var viewModel = new ExceptionViewModel(exception);
 		var window = new ExceptionReport();
 		viewModel.OnWindowClosed += (_, _) => window.Close();
@@ -434,6 +490,9 @@ public partial class App
 	}
 
 	public ApplicationViewModel? ViewModel { get; }
+
+	/// <summary>The picker or configuration window currently shown by <see cref="ShowWindowForMode"/>.</summary>
+	private Window? shown_window;
 	public static IServiceProvider Services { get; set; } = null!;
 
 	private static readonly List<ILongRunningProcess> BackgroundTasks = [];

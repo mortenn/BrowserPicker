@@ -36,20 +36,13 @@ public partial class MainWindow
 			return;
 		DataContext = ((App)Application.Current).ViewModel;
 		if (App.Settings is INotifyPropertyChanged monitored)
+		{
+			// The window closes when the user switches to the configuration window, so stop listening then.
 			monitored.PropertyChanged += Settings_PropertyChanged;
-		if (ViewModel is INotifyPropertyChanged monitoredVm)
-			monitoredVm.PropertyChanged += ViewModel_PropertyChanged;
+			Closed += (_, _) => monitored.PropertyChanged -= Settings_PropertyChanged;
+		}
 		if (App.Settings is not { } settings)
 			return;
-		// When starting directly in config mode, use the saved config size immediately instead of
-		// sizing to content, otherwise wide tabs like Defaults can blow out the window width.
-		if (ViewModel.ConfigurationMode)
-		{
-			SizeToContent = SizeToContent.Manual;
-			Width = Math.Max(MinWidth, settings.ConfigWindowWidth > 0 ? settings.ConfigWindowWidth : 600);
-			Height = Math.Max(MinHeight, settings.ConfigWindowHeight > 0 ? settings.ConfigWindowHeight : 450);
-			return;
-		}
 
 		// Apply saved picker size before window is shown so it isn't overridden by initial layout.
 		if (settings.AutoSizeWindow || !(settings.WindowWidth >= MinWidth) || !(settings.WindowHeight >= MinHeight))
@@ -62,45 +55,15 @@ public partial class MainWindow
 		Height = settings.WindowHeight;
 	}
 
-	private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		if (e.PropertyName != nameof(ApplicationViewModel.ConfigurationMode))
-			return;
-		if (App.Settings is not { } settings)
-			return;
-		suppress_size_change_save_count = 2;
-		// Config mode always uses fixed size (never auto); picker mode uses AutoSizeWindow + saved main size.
-		if (ViewModel.ConfigurationMode)
-		{
-			SizeToContent = SizeToContent.Manual;
-			var w = settings.ConfigWindowWidth > 0 ? settings.ConfigWindowWidth : 600;
-			var h = settings.ConfigWindowHeight > 0 ? settings.ConfigWindowHeight : 450;
-			Width = Math.Max(MinWidth, w);
-			Height = Math.Max(MinHeight, h);
-			UpdateLayout();
-		}
-		else
-		{
-			// Persist config size when leaving config so next time we enter we restore it.
-			if (ActualWidth > 0 && ActualHeight > 0)
-			{
-				settings.ConfigWindowWidth = Math.Max(MinWidth, ActualWidth);
-				settings.ConfigWindowHeight = Math.Max(MinHeight, ActualHeight);
-			}
-			ApplyWindowSizeMode();
-		}
-	}
-
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
-		if (e.PropertyName == nameof(IApplicationSettings.AutoSizeWindow) && !ViewModel.ConfigurationMode)
+		if (e.PropertyName == nameof(IApplicationSettings.AutoSizeWindow))
 			ApplyWindowSizeMode();
 	}
 
 	private void MainWindow_Loaded(object sender, RoutedEventArgs e)
 	{
-		if (!ViewModel.ConfigurationMode)
-			ApplyWindowSizeMode();
+		ApplyWindowSizeMode();
 	}
 
 	private void MainWindow_ContentRendered(object sender, EventArgs e)
@@ -108,12 +71,8 @@ public partial class MainWindow
 		if (content_rendered_handled)
 			return;
 		content_rendered_handled = true;
-		// Re-apply saved size so it sticks after first layout; then center. In config mode we use config size (already set when entering config).
-		if (
-			App.Settings is { } settings
-			&& !ViewModel.ConfigurationMode
-			&& settings is { AutoSizeWindow: false, WindowWidth: > 0, WindowHeight: > 0 }
-		)
+		// Re-apply saved size so it sticks after first layout; then center.
+		if (App.Settings is { AutoSizeWindow: false, WindowWidth: > 0, WindowHeight: > 0 } settings)
 		{
 			Width = Math.Max(MinWidth, settings.WindowWidth);
 			Height = Math.Max(MinHeight, settings.WindowHeight);
@@ -125,18 +84,6 @@ public partial class MainWindow
 	{
 		if (App.Settings is not { } settings)
 			return;
-		if (ViewModel.ConfigurationMode)
-		{
-			if (ActualWidth <= 0 || ActualHeight <= 0)
-			{
-				return;
-			}
-
-			settings.ConfigWindowWidth = Math.Max(MinWidth, ActualWidth);
-			settings.ConfigWindowHeight = Math.Max(MinHeight, ActualHeight);
-			return;
-		}
-
 		if (settings.AutoSizeWindow || ActualWidth <= 0 || ActualHeight <= 0)
 		{
 			return;
@@ -148,8 +95,6 @@ public partial class MainWindow
 
 	private void ApplyWindowSizeMode()
 	{
-		if (ViewModel.ConfigurationMode)
-			return;
 		if (App.Settings is not { } settings)
 			return;
 		suppress_size_change_save_count = 2;
@@ -181,19 +126,6 @@ public partial class MainWindow
 		try
 		{
 			ViewModel.AltPressed = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
-
-			// When in settings, only handle Escape; let digits/Enter go to focused control (e.g. window size TextBox).
-			if (ViewModel.ConfigurationMode)
-			{
-				if (e.Key != Key.Escape)
-				{
-					return;
-				}
-
-				e.Handled = true;
-				Close();
-				return;
-			}
 
 			if (e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl && e.Key != Key.LeftShift && e.Key != Key.RightShift)
 			{
@@ -323,7 +255,7 @@ public partial class MainWindow
 		if (e.PreviousSize == e.NewSize)
 			return;
 
-		// Ignore size changes caused by ApplyWindowSizeMode or content change (e.g. switching to config); only save on user resize.
+		// Ignore size changes caused by ApplyWindowSizeMode or content change; only save on user resize.
 		if (suppress_size_change_save_count > 0)
 		{
 			suppress_size_change_save_count--;
@@ -338,14 +270,7 @@ public partial class MainWindow
 			return;
 		if (App.Settings is not { } settings)
 			return;
-		if (ViewModel.ConfigurationMode)
-		{
-			// In config mode: persist config size on any resize (grip or window border).
-			settings.ConfigWindowWidth = Math.Max(MinWidth, e.NewSize.Width);
-			settings.ConfigWindowHeight = Math.Max(MinHeight, e.NewSize.Height);
-			return;
-		}
-		// In picker mode: only save main size when user resized via the grip (don't turn off auto on layout/startup).
+		// Only save main size when user resized via the grip (don't turn off auto on layout/startup).
 		if (!user_initiated_resize)
 			return;
 		user_initiated_resize = false;
@@ -408,7 +333,7 @@ public partial class MainWindow
 
 	private double GetResizeMinWidth()
 	{
-		if (ViewModel.ConfigurationMode || PickerHost is not { IsVisible: true })
+		if (PickerHost is not { IsVisible: true })
 		{
 			return MinWidth;
 		}

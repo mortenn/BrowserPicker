@@ -1,0 +1,25 @@
+﻿<Window
+	x:Class="BrowserPicker.UI.Views.ConfigurationWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:ui="clr-namespace:BrowserPicker.UI"
+	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
+	xmlns:views="clr-namespace:BrowserPicker.UI.Views"
+	Title="Browser Picker settings"
+	Width="600"
+	Height="450"
+	MinWidth="430"
+	MinHeight="200"
+	d:DataContext="{d:DesignInstance viewModels:ConfigurationViewModel,
+									 d:IsDesignTimeCreatable=True}"
+	Background="{DynamicResource {x:Static ui:App.ContentBackgroundBrushKey}}"
+	PreviewKeyUp="Window_PreviewKeyUp"
+	SizeChanged="Window_SizeChanged"
+	WindowStartupLocation="CenterScreen"
+	mc:Ignorable="d">
+	<Grid Margin="10" TextElement.FontSize="{Binding Settings.FontSize, FallbackValue=14}" TextElement.Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
+		<views:Configuration />
+	</Grid>
+</Window>
