@@ -246,6 +246,9 @@
   <data name="Config_WindowsIntegration" xml:space="preserve">
     <value>Windows integration</value>
   </data>
+  <data name="Config_WindowTitle" xml:space="preserve">
+    <value>Browser Picker settings</value>
+  </data>
   <data name="ConnectionCheck_BeforeYouStart" xml:space="preserve">
     <value>Before you start</value>
   </data>
