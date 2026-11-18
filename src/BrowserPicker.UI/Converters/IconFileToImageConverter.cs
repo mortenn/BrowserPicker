@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace BrowserPicker.UI.Converters;
@@ -59,22 +60,27 @@ public sealed class IconFileToImageConverter : IValueConverter
 			if (!File.Exists(realIconPath))
 				return GetDefaultIcon();
 
-			Stream icon;
+			ImageSource image;
 			if (realIconPath.EndsWith(".exe") || realIconPath.EndsWith(".dll"))
 			{
-				var iconData = Icon.ExtractAssociatedIcon(realIconPath)?.ToBitmap();
-				if (iconData == null)
+				// Read the icon handle straight into a WPF bitmap; no GDI+ bitmap or PNG round trip.
+				using var associated = Icon.ExtractAssociatedIcon(realIconPath);
+				if (associated == null)
 					return GetDefaultIcon();
-				icon = new MemoryStream();
-				iconData.Save(icon, ImageFormat.Png);
+				image = Imaging.CreateBitmapSourceFromHIcon(
+					associated.Handle,
+					Int32Rect.Empty,
+					BitmapSizeOptions.FromEmptyOptions()
+				);
+				image.Freeze();
 			}
 			else
 			{
-				icon = File.Open(realIconPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+				image = BitmapFrame.Create(File.Open(realIconPath, FileMode.Open, FileAccess.Read, FileShare.Read));
 			}
 
-			cache.Add(iconPath, BitmapFrame.Create(icon));
-			return cache[iconPath];
+			cache.Add(iconPath, image);
+			return image;
 		}
 		catch
 		{
@@ -94,5 +100,6 @@ public sealed class IconFileToImageConverter : IValueConverter
 		return Application.Current.TryFindResource("DefaultIcon");
 	}
 
-	private readonly Dictionary<string, BitmapFrame> cache = [];
+	// Shared by every converter instance (picker and configuration views); only used on the UI thread.
+	private static readonly Dictionary<string, ImageSource> cache = [];
 }
