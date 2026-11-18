@@ -33,8 +33,13 @@ public partial class MainWindow
 	{
 		InitializeComponent();
 		if (DesignerProperties.GetIsInDesignMode(this) || Application.Current is not App { ViewModel: not null })
+		{
+			EnsurePickerView();
+			EnsureConfigurationView();
 			return;
+		}
 		DataContext = ((App)Application.Current).ViewModel;
+		EnsureActiveView();
 		if (App.Settings is INotifyPropertyChanged monitored)
 			monitored.PropertyChanged += Settings_PropertyChanged;
 		if (ViewModel is INotifyPropertyChanged monitoredVm)
@@ -66,6 +71,7 @@ public partial class MainWindow
 	{
 		if (e.PropertyName != nameof(ApplicationViewModel.ConfigurationMode))
 			return;
+		EnsureActiveView();
 		if (App.Settings is not { } settings)
 			return;
 		suppress_size_change_save_count = 2;
@@ -404,6 +410,32 @@ public partial class MainWindow
 		var pt = PointToScreen(e.GetPosition(this));
 		Width = Math.Max(GetResizeMinWidth(), resize_start_size.Width + pt.X - resize_start_screen.X);
 		Height = Math.Max(MinHeight, resize_start_size.Height + pt.Y - resize_start_screen.Y);
+	}
+
+	/// <summary>
+	/// Builds only the view for the current mode. Constructing the hidden view as well (and evaluating all of its
+	/// bindings) was a large share of startup time. Once built, a view is kept so switching modes preserves its state.
+	/// </summary>
+	private void EnsureActiveView()
+	{
+		if (ViewModel.ConfigurationMode)
+			EnsureConfigurationView();
+		else
+			EnsurePickerView();
+	}
+
+	private void EnsurePickerView() => PickerHost.Child ??= new BrowserList();
+
+	private void EnsureConfigurationView()
+	{
+		if (ConfigHost.Child != null)
+			return;
+		var view = new Configuration();
+		view.SetBinding(
+			DataContextProperty,
+			new System.Windows.Data.Binding(nameof(ApplicationViewModel.Configuration))
+		);
+		ConfigHost.Child = view;
 	}
 
 	private double GetResizeMinWidth()

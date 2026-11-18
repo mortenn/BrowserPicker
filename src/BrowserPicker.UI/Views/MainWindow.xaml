@@ -63,6 +63,7 @@
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
+					<!--  Children are created on demand by MainWindow.EnsureActiveView so only the visible view is built.  -->
 					<Border x:Name="PickerHost" Grid.Row="0" Grid.Column="0">
 						<Border.Style>
 							<Style>
@@ -74,9 +75,8 @@
 								</Style.Triggers>
 							</Style>
 						</Border.Style>
-						<views:BrowserList />
 					</Border>
-					<Border Grid.Row="0" Grid.Column="0">
+					<Border x:Name="ConfigHost" Grid.Row="0" Grid.Column="0">
 						<Border.Style>
 							<Style>
 								<Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -87,7 +87,6 @@
 								</Style.Triggers>
 							</Style>
 						</Border.Style>
-						<views:Configuration DataContext="{Binding Configuration}" />
 					</Border>
 					<Canvas
 						Grid.Row="0"
