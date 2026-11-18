@@ -35,16 +35,18 @@ public sealed class DiagnosticFileLog
 	private const string FileSearchPattern = FilePrefix + "*.log";
 	private const int MaxPendingEntries = 500;
 
+	// Guards the settings and the entries held before configuration. File writes are serialized across
+	// processes by file_mutex instead, so logging threads never wait on this lock while another one writes.
 	private readonly Lock gate = new();
 	private readonly List<PendingEntry> pending = [];
 	private readonly Func<DateTimeOffset> clock;
 	private readonly string? user_profile_path;
 	private readonly int process_id = Environment.ProcessId;
-	private bool configured;
-	private bool enabled;
-	private bool include_full_urls;
+	private readonly Mutex file_mutex;
+	private volatile bool configured;
+	private volatile bool enabled;
+	private volatile bool include_full_urls;
 	private int retention_days = MinRetentionDays;
-	private bool size_limit_noted;
 
 	/// <summary>
 	/// Creates a log writing to <see cref="DefaultDirectory"/>.
@@ -63,6 +65,11 @@ public sealed class DiagnosticFileLog
 		Directory = directory;
 		this.clock = clock;
 		user_profile_path = userProfilePath ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+		// One mutex per log folder, named from a stable hash so every BrowserPicker process finds the same one.
+		var folderHash = Convert.ToHexString(
+			System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(directory.ToUpperInvariant()))
+		)[..16];
+		file_mutex = new Mutex(false, @"Local\BrowserPicker-DiagnosticLog-" + folderHash);
 	}
 
 	/// <summary>
@@ -81,16 +88,7 @@ public sealed class DiagnosticFileLog
 	/// <summary>
 	/// True while entries are accepted: before configuration (they are held in memory) or when enabled.
 	/// </summary>
-	public bool IsAccepting
-	{
-		get
-		{
-			lock (gate)
-			{
-				return !configured || enabled;
-			}
-		}
-	}
+	public bool IsAccepting => !configured || enabled;
 
 	/// <summary>
 	/// Applies the user's settings, deletes expired files and writes or discards entries held in memory.
@@ -126,9 +124,33 @@ public sealed class DiagnosticFileLog
 	/// <summary>
 	/// Records a log entry.
 	/// </summary>
-	public void Write(LogLevel level, string category, EventId eventId, string message, Exception? exception)
+	/// <param name="level">Entry level.</param>
+	/// <param name="category">Logger category.</param>
+	/// <param name="eventId">Event id; 0 when none.</param>
+	/// <param name="message">The formatted message.</param>
+	/// <param name="exception">Exception logged with the entry, if any.</param>
+	/// <param name="redactedMessage">
+	/// The message with its URL and path arguments already redacted (see <see cref="DiagnosticLogRedactor.FormatRedacted"/>);
+	/// used instead of <paramref name="message"/> unless full URLs are kept.
+	/// </param>
+	public void Write(
+		LogLevel level,
+		string category,
+		EventId eventId,
+		string message,
+		Exception? exception,
+		string? redactedMessage = null
+	)
 	{
-		var entry = new PendingEntry(clock(), level, category, eventId, message, exception?.ToString());
+		var entry = new PendingEntry(
+			clock(),
+			level,
+			category,
+			eventId,
+			message,
+			redactedMessage,
+			exception?.ToString()
+		);
 		lock (gate)
 		{
 			if (!configured)
@@ -173,11 +195,7 @@ public sealed class DiagnosticFileLog
 	/// <returns>The number of files that could not be deleted (for example because another process holds them).</returns>
 	public int DeleteAllFiles()
 	{
-		lock (gate)
-		{
-			size_limit_noted = false;
-			return GetLogFiles().Count(file => !TryDelete(file));
-		}
+		return GetLogFiles().Count(file => !TryDelete(file));
 	}
 
 	/// <summary>
@@ -199,11 +217,8 @@ public sealed class DiagnosticFileLog
 
 	private void WriteEntry(PendingEntry entry)
 	{
-		bool fullUrls;
-		lock (gate)
-		{
-			fullUrls = include_full_urls;
-		}
+		var fullUrls = include_full_urls;
+		var message = fullUrls ? entry.Message : entry.RedactedMessage ?? entry.Message;
 
 		var builder = new StringBuilder();
 		builder
@@ -218,7 +233,7 @@ public sealed class DiagnosticFileLog
 		{
 			builder.Append(" #").Append(entry.EventId.Id);
 		}
-		builder.Append(": ").Append(Sanitize(entry.Message.ReplaceLineEndings(" "), fullUrls));
+		builder.Append(": ").Append(Sanitize(message.ReplaceLineEndings(" "), fullUrls));
 		if (entry.Exception != null)
 		{
 			foreach (var line in Sanitize(entry.Exception, fullUrls).Split('\n'))
@@ -240,53 +255,60 @@ public sealed class DiagnosticFileLog
 			Directory,
 			FilePrefix + timestamp.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + ".log"
 		);
-		lock (gate)
+		// Several BrowserPicker processes may write to the same file at once. FileMode.Append alone does not
+		// make that safe (each stream writes at the end offset it saw when it opened), so writes from every
+		// process are serialized by a named mutex. If another process holds it too long, the entry is dropped.
+		if (!TryEnterFileMutex())
 		{
-			try
+			return;
+		}
+		try
+		{
+			System.IO.Directory.CreateDirectory(Directory);
+			var bytes = Encoding.UTF8.GetBytes(text);
+			var file = new FileInfo(path);
+			var length = file.Exists ? file.Length : 0;
+			if (length >= MaxFileBytes)
 			{
-				System.IO.Directory.CreateDirectory(Directory);
-				var file = new FileInfo(path);
-				if (file.Exists && file.Length >= MaxFileBytes)
-				{
-					if (size_limit_noted)
-					{
-						return;
-					}
-					size_limit_noted = true;
-					text =
-						$"{timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [WRN] pid={process_id} DiagnosticFileLog: size limit reached, further entries from this process are dropped{Environment.NewLine}";
-				}
+				return;
+			}
+			if (length + bytes.Length >= MaxFileBytes)
+			{
+				// The note itself takes the file past the limit, so it is written once per file by one process.
+				bytes = Encoding.UTF8.GetBytes(
+					$"{timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [WRN] pid={process_id} DiagnosticFileLog: size limit reached, further entries today are dropped{Environment.NewLine}"
+				);
+			}
 
-				AppendWithRetry(path, Encoding.UTF8.GetBytes(text));
-			}
-			catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-			{
-				// Diagnostics must never break the application.
-				Debug.WriteLine($"Diagnostic log write failed: {e.Message}");
-			}
+			using var stream = new FileStream(
+				path,
+				FileMode.Append,
+				FileAccess.Write,
+				FileShare.ReadWrite | FileShare.Delete
+			);
+			stream.Write(bytes);
+		}
+		catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+		{
+			// Diagnostics must never break the application.
+			Debug.WriteLine($"Diagnostic log write failed: {e.Message}");
+		}
+		finally
+		{
+			file_mutex.ReleaseMutex();
 		}
 	}
 
-	private static void AppendWithRetry(string path, byte[] bytes)
+	private bool TryEnterFileMutex()
 	{
-		// Several BrowserPicker processes may write to the same file at once.
-		for (var attempt = 1; ; attempt++)
+		try
 		{
-			try
-			{
-				using var stream = new FileStream(
-					path,
-					FileMode.Append,
-					FileAccess.Write,
-					FileShare.ReadWrite | FileShare.Delete
-				);
-				stream.Write(bytes);
-				return;
-			}
-			catch (IOException) when (attempt < 5)
-			{
-				Thread.Sleep(10 * attempt);
-			}
+			return file_mutex.WaitOne(TimeSpan.FromSeconds(1));
+		}
+		catch (AbandonedMutexException)
+		{
+			// A process ended while writing; the mutex is now ours and the file is still usable.
+			return true;
 		}
 	}
 
@@ -321,6 +343,7 @@ public sealed class DiagnosticFileLog
 		string Category,
 		EventId EventId,
 		string Message,
+		string? RedactedMessage,
 		string? Exception
 	);
 }
@@ -361,7 +384,7 @@ public sealed class DiagnosticFileLoggerProvider(DiagnosticFileLog log) : ILogge
 			{
 				return;
 			}
-			log.Write(logLevel, categoryName, eventId, message, exception);
+			log.Write(logLevel, categoryName, eventId, message, exception, DiagnosticLogRedactor.FormatRedacted(state));
 		}
 	}
 }

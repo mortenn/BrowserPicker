@@ -27,6 +27,11 @@ namespace BrowserPicker.Windows.ProfileDiscovery;
 /// profile keep their <c>container:Name</c> id and launch without <c>-P</c>, so existing rules keep working;
 /// containers of the other profiles use <c>profile:Profile/container:Name</c> and launch with <c>-P</c>.
 /// </para>
+/// <para>
+/// A profile last run before Firefox 67 does not count when the installation has a dedicated profile: it is
+/// the old <c>default</c> profile Firefox left behind. When the default profile is ambiguous (several profiles are
+/// some installation's default), every entry launches with <c>-P</c> so links never open in the wrong profile.
+/// </para>
 /// </remarks>
 public static class FirefoxProfileDiscovery
 {
@@ -64,7 +69,11 @@ public static class FirefoxProfileDiscovery
 		}
 
 		var ini = ParseProfilesIni(iniPath, logger);
-		var installed = FindInstallationProfiles(root, ini.Profiles, browserExePath, logger);
+		var installed = DropLegacyProfiles(
+			FindInstallationProfiles(root, ini.Profiles, browserExePath, logger),
+			ini,
+			logger
+		);
 		if (installed.Count > 1)
 		{
 			return DiscoverProfilesAndContainers(root, ini, installed, logger);
@@ -84,7 +93,14 @@ public static class FirefoxProfileDiscovery
 		return [];
 	}
 
-	private record ProfileEntry(string Name, string Path, bool IsRelative, bool IsDefault);
+	private record ProfileEntry(string Name, string Path, bool IsRelative, bool IsDefault)
+	{
+		/// <summary>Major Firefox version that last ran the profile, from <c>compatibility.ini</c>; null when unknown.</summary>
+		public int? LastMajorVersion { get; init; }
+	}
+
+	/// <summary>Firefox 67 gave each installation its own dedicated profile.</summary>
+	private const int DedicatedProfilesVersion = 67;
 
 	private record ProfilesIni(List<ProfileEntry> Profiles, HashSet<string> InstallDefaults);
 
@@ -248,7 +264,7 @@ public static class FirefoxProfileDiscovery
 						continue;
 
 					logger?.LogDebug("Matched Firefox profile {Name} to installation {Dir}", entry.Name, installDir);
-					matches.Add(entry);
+					matches.Add(entry with { LastMajorVersion = ReadLastMajorVersion(compatPath) });
 				}
 				catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
 				{
@@ -259,6 +275,51 @@ public static class FirefoxProfileDiscovery
 
 		return matches;
 	}
+
+	/// <summary>
+	/// Reads the major version from <c>LastVersion=66.0.5_20190513100000/20190513100000</c>.
+	/// </summary>
+	private static int? ReadLastMajorVersion(string compatPath)
+	{
+		var version = File.ReadLines(compatPath)
+			.Where(line => line.StartsWith("LastVersion=", StringComparison.OrdinalIgnoreCase))
+			.Select(line => line["LastVersion=".Length..].Trim())
+			.FirstOrDefault();
+		if (version == null)
+			return null;
+		var end = version.IndexOfAny(['.', '_']);
+		return int.TryParse(end < 0 ? version : version[..end], out var major) ? major : null;
+	}
+
+	/// <summary>
+	/// Drops profiles last run before Firefox 67 when the installation has a dedicated profile.
+	/// Firefox 67 created a new dedicated profile (usually <c>default-release</c>) and left the old
+	/// <c>default</c> profile behind, still pointing at the same installation in <c>compatibility.ini</c>.
+	/// Counting that leftover would switch single-profile users to the multi-profile list.
+	/// </summary>
+	private static List<ProfileEntry> DropLegacyProfiles(List<ProfileEntry> installed, ProfilesIni ini, ILogger? logger)
+	{
+		if (installed.Count < 2 || !installed.Any(p => IsInstallDefault(ini, p)))
+			return installed;
+
+		return
+		[
+			.. installed.Where(p =>
+			{
+				var legacy = !IsInstallDefault(ini, p) && p.LastMajorVersion < DedicatedProfilesVersion;
+				if (legacy)
+					logger?.LogDebug(
+						"Ignoring Firefox profile {Name}: last used by Firefox {Version}, before dedicated profiles",
+						p.Name,
+						p.LastMajorVersion
+					);
+				return !legacy;
+			}),
+		];
+	}
+
+	private static bool IsInstallDefault(ProfilesIni ini, ProfileEntry profile) =>
+		ini.InstallDefaults.Contains(NormalizeIniPath(profile.Path));
 
 	/// <summary>
 	/// Falls back to the first existing profile directory when no profile matches the installation.
@@ -320,23 +381,22 @@ public static class FirefoxProfileDiscovery
 		ILogger? logger
 	)
 	{
-		var defaultProfile =
-			installed.FirstOrDefault(p => ini.InstallDefaults.Contains(NormalizeIniPath(p.Path)))
-			?? installed.FirstOrDefault(p => p.IsDefault)
-			?? installed[0];
+		// profiles.ini has one [Install<hash>] section per installation, and the hash cannot be mapped back to a
+		// folder. When several of this installation's profiles are some installation's default, the one this
+		// installation opens without -P is unknown, so every profile is launched with -P instead of guessing.
+		var installDefaults = installed.Where(p => IsInstallDefault(ini, p)).ToList();
+		var defaultProfile = installDefaults.Count switch
+		{
+			1 => installDefaults[0],
+			0 => installed.FirstOrDefault(p => p.IsDefault) ?? installed[0],
+			_ => null,
+		};
+		if (defaultProfile == null)
+			logger?.LogDebug("Several Firefox profiles are installation defaults; launching each with -P");
 
 		var result = new List<BrowserProfile>();
 		foreach (var profile in installed.OrderBy(p => p == defaultProfile ? 0 : 1))
 		{
-			if (profile.Name.Contains('"'))
-			{
-				logger?.LogDebug(
-					"Skipping Firefox profile {Name}: quotes in profile names are not supported",
-					profile.Name
-				);
-				continue;
-			}
-
 			var isDefault = profile == defaultProfile;
 			result.Add(new BrowserProfile($"profile:{profile.Name}", profile.Name, ProfileArgs(profile)));
 			result.AddRange(
@@ -347,7 +407,29 @@ public static class FirefoxProfileDiscovery
 		return result;
 	}
 
-	private static string ProfileArgs(ProfileEntry profile) => $"-P \"{profile.Name}\"";
+	private static string ProfileArgs(ProfileEntry profile) => "-P " + QuoteArgument(profile.Name);
+
+	/// <summary>
+	/// Quotes a command-line argument following the Windows argument parsing rules: backslashes before a quote
+	/// are doubled and quotes are escaped, so a name such as <c>Work\</c> or <c>My "main"</c> stays one argument.
+	/// </summary>
+	public static string QuoteArgument(string value)
+	{
+		var builder = new System.Text.StringBuilder("\"");
+		var backslashes = 0;
+		foreach (var c in value)
+		{
+			if (c == '\\')
+			{
+				backslashes++;
+				continue;
+			}
+			builder.Append('\\', c == '"' ? backslashes * 2 + 1 : backslashes);
+			backslashes = 0;
+			builder.Append(c);
+		}
+		return builder.Append('\\', backslashes * 2).Append('"').ToString();
+	}
 
 	/// <summary>
 	/// Creates the entry for a container. <paramref name="owner"/> is null when the installation has a single profile.

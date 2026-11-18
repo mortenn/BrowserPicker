@@ -25,9 +25,7 @@ namespace BrowserPicker.UI.ViewModels;
 public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 {
 	private static ILogger<BrowserViewModel> Logger =>
-		ReferenceEquals(App.Services, null)
-			? NullLogger<BrowserViewModel>.Instance
-			: App.Services.GetService<ILogger<BrowserViewModel>>() ?? NullLogger<BrowserViewModel>.Instance;
+		App.Services?.GetService<ILogger<BrowserViewModel>>() ?? NullLogger<BrowserViewModel>.Instance;
 
 	private const string MozillaContainerExtensionLaunchArgs =
 		"\"https://addons.mozilla.org/en-US/firefox/addon/open-url-in-container/\"";

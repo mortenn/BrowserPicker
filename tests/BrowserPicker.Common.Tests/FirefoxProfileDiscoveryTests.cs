@@ -84,6 +84,57 @@ public sealed class FirefoxProfileDiscoveryTests : IDisposable
 		profiles.Select(p => p.Id).Should().Equal("profile:Personal", "profile:Work");
 	}
 
+	[Fact]
+	public void IgnoresTheProfileLeftBehindBeforeDedicatedProfiles()
+	{
+		WriteProfilesIni(
+			"[Install0123456789ABCDEF]\nDefault=Profiles/release\nLocked=1\n\n"
+				+ "[Profile0]\nName=default-release\nIsRelative=1\nPath=Profiles/release\n\n"
+				+ "[Profile1]\nName=default\nIsRelative=1\nPath=Profiles/legacy\nDefault=1\n"
+		);
+		AddProfile("release", InstallDir, "Personal", "Work");
+		AddProfile("legacy", InstallDir, "Personal", "Work");
+		SetLastVersion("release", "128.0_20240704121409/20240704121409");
+		SetLastVersion("legacy", "66.0.5_20190513100000/20190513100000");
+
+		var profiles = FirefoxProfileDiscovery.Discover(root, Firefox);
+
+		profiles.Select(p => (p.Id, p.Name)).Should().Equal(("container:Personal", "Personal"), ("container:Work", "Work"));
+	}
+
+	[Fact]
+	public void LaunchesEveryProfileWithItsNameWhenTheDefaultIsAmbiguous()
+	{
+		// Two installations (hashes cannot be mapped back to folders) whose defaults both last ran this one.
+		WriteProfilesIni(
+			"[InstallAAAA]\nDefault=Profiles/dev\n\n[InstallBBBB]\nDefault=Profiles/rel\n\n"
+				+ "[Profile0]\nName=Dev\nIsRelative=1\nPath=Profiles/dev\n\n"
+				+ "[Profile1]\nName=Rel\nIsRelative=1\nPath=Profiles/rel\n"
+		);
+		AddProfile("dev", InstallDir, "Bank");
+		AddProfile("rel", InstallDir);
+
+		var profiles = FirefoxProfileDiscovery.Discover(root, Firefox);
+
+		profiles
+			.Select(p => (p.Id, p.CommandArgs))
+			.Should()
+			.Equal(("profile:Dev", "-P \"Dev\""), ("profile:Dev/container:Bank", "-P \"Dev\""), ("profile:Rel", "-P \"Rel\""));
+	}
+
+	[Theory]
+	[InlineData("Work", "\"Work\"")]
+	[InlineData("Work\\", "\"Work\\\\\"")]
+	[InlineData("My \"main\"", "\"My \\\"main\\\"\"")]
+	[InlineData("a\\b", "\"a\\b\"")]
+	public void QuotesProfileNamesAsOneArgument(string name, string expected)
+	{
+		FirefoxProfileDiscovery.QuoteArgument(name).Should().Be(expected);
+	}
+
+	private void SetLastVersion(string folder, string version) =>
+		File.AppendAllText(Path.Combine(root, "Profiles", folder, "compatibility.ini"), $"LastVersion={version}\n");
+
 	private void WriteProfilesIni(string content)
 	{
 		Directory.CreateDirectory(root);

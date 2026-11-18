@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BrowserPicker.Common;
@@ -18,12 +22,25 @@ public static partial class DiagnosticLogRedactor
 	private const string TrailingPunctuation = ".,;:!?)]}";
 	private const string ContainerScheme = "ext+container:";
 
+	// A URL or path right after a quote runs to the closing quote, so spaces inside it are covered.
+	// Otherwise a URL runs to the next whitespace. Unquoted paths are left alone because they cannot be
+	// delimited; the link being handled is redacted as a whole argument by FormatRedacted instead.
 	[GeneratedRegex(
-		@"(?:[a-zA-Z][a-zA-Z0-9+.\-]*://|\b(?:mailto|tel|sms|data|javascript|ext\+container):)[^\s""'<>]+",
+		@"(?<="")(?:[a-zA-Z][a-zA-Z0-9+.\-]*://|\b(?:mailto|tel|sms|data|javascript|ext\+container):|[a-zA-Z]:\\|\\\\)[^""]+"
+			+ @"|(?:[a-zA-Z][a-zA-Z0-9+.\-]*://|\b(?:mailto|tel|sms|data|javascript|ext\+container):)[^\s""'<>]+",
 		RegexOptions.IgnoreCase,
 		100
 	)]
 	private static partial Regex UrlToken();
+
+	[GeneratedRegex(
+		@"^(?:[a-zA-Z][a-zA-Z0-9+.\-]*://|(?:mailto|tel|sms|data|javascript|ext\+container):)",
+		RegexOptions.IgnoreCase
+	)]
+	private static partial Regex UrlStart();
+
+	[GeneratedRegex(@"^(?:[a-zA-Z]:\\|\\\\|%USERPROFILE%\\)", RegexOptions.IgnoreCase)]
+	private static partial Regex PathStart();
 
 	/// <summary>
 	/// Redacts <paramref name="text"/> using the current user's profile folder.
@@ -102,6 +119,82 @@ public static partial class DiagnosticLogRedactor
 		return $"{uri.Scheme}://{uri.Host}{port}{(hasMore ? "/" + RedactedMarker : string.Empty)}";
 	}
 
+	/// <summary>
+	/// Formats a structured log message with each argument that is a URL or a file path redacted as a whole,
+	/// so values with spaces (a file name, or a URL that <see cref="Uri.ToString"/> unescaped) are fully covered.
+	/// Returns null when <paramref name="state"/> is not a structured message.
+	/// </summary>
+	public static string? FormatRedacted(object? state)
+	{
+		if (state is not IReadOnlyList<KeyValuePair<string, object?>> values)
+		{
+			return null;
+		}
+		if (values.FirstOrDefault(v => v.Key == "{OriginalFormat}").Value is not string template)
+		{
+			return null;
+		}
+
+		var builder = new StringBuilder(template.Length);
+		for (var i = 0; i < template.Length; i++)
+		{
+			var c = template[i];
+			if (c is '{' or '}' && i + 1 < template.Length && template[i + 1] == c)
+			{
+				builder.Append(c);
+				i++;
+				continue;
+			}
+			var close = c == '{' ? template.IndexOf('}', i) : -1;
+			if (close < 0)
+			{
+				builder.Append(c);
+				continue;
+			}
+			var hole = template[(i + 1)..close];
+			var nameEnd = hole.IndexOfAny([':', ',']);
+			var name = nameEnd < 0 ? hole : hole[..nameEnd];
+			builder.Append(RedactValue(values.FirstOrDefault(v => v.Key == name).Value));
+			i = close;
+		}
+		return builder.ToString();
+	}
+
+	/// <summary>
+	/// Redacts one log argument: a URL keeps its scheme and host, and a file path keeps its root and extension.
+	/// Executable paths are kept, because browser paths help diagnose launches and are not private.
+	/// </summary>
+	public static string RedactValue(object? value)
+	{
+		switch (value)
+		{
+			case null:
+				return "(null)";
+			case Uri { IsAbsoluteUri: true } uri:
+				return RedactUrl(uri.OriginalString);
+			case Uri:
+				return RedactedMarker;
+		}
+		var text = Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty;
+		var trimmed = text.Trim().Trim('"');
+		if (UrlStart().IsMatch(trimmed))
+		{
+			return RedactUrl(trimmed);
+		}
+		return PathStart().IsMatch(trimmed) ? RedactPath(trimmed) : text;
+	}
+
+	private static string RedactPath(string path)
+	{
+		var extension = Path.GetExtension(path);
+		if (extension.Equals(".exe", StringComparison.OrdinalIgnoreCase))
+		{
+			return path;
+		}
+		var root = path.StartsWith(@"\\", StringComparison.Ordinal) ? @"\\" : path[..(path.IndexOf('\\') + 1)];
+		return root + RedactedMarker + extension;
+	}
+
 	private static string RedactToken(string token)
 	{
 		var trimmedLength = token.Length;
@@ -109,7 +202,9 @@ public static partial class DiagnosticLogRedactor
 		{
 			trimmedLength--;
 		}
-		return RedactUrl(token[..trimmedLength]) + token[trimmedLength..];
+		var value = token[..trimmedLength];
+		var redacted = PathStart().IsMatch(value) ? RedactPath(value) : RedactUrl(value);
+		return redacted + token[trimmedLength..];
 	}
 
 	private static string RedactContainerUrl(string query)

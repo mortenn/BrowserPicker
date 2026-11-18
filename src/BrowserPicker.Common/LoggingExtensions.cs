@@ -178,7 +178,7 @@ public static partial class LoggingExtensions
 
 	[LoggerMessage(
 		EventId = 1030,
-		Level = LogLevel.Information,
+		Level = LogLevel.Debug,
 		Message = "URL decision: received {ReceivedUrl}, evaluated {EvaluatedUrl}, matched {Match}, browser {Browser}, profile {Profile}"
 	)]
 	public static partial void LogUrlDecision(
@@ -192,7 +192,7 @@ public static partial class LoggingExtensions
 
 	[LoggerMessage(
 		EventId = 1031,
-		Level = LogLevel.Information,
+		Level = LogLevel.Debug,
 		Message = "Launching {Browser} (profile {Profile}): {Command} {Arguments}"
 	)]
 	public static partial void LogBrowserLaunching(

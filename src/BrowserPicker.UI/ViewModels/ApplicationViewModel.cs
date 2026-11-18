@@ -27,9 +27,7 @@ namespace BrowserPicker.UI.ViewModels;
 public sealed class ApplicationViewModel : ModelBase
 {
 	private static ILogger<ApplicationViewModel> Logger =>
-		ReferenceEquals(App.Services, null)
-			? NullLogger<ApplicationViewModel>.Instance
-			: App.Services.GetService<ILogger<ApplicationViewModel>>() ?? NullLogger<ApplicationViewModel>.Instance;
+		App.Services?.GetService<ILogger<ApplicationViewModel>>() ?? NullLogger<ApplicationViewModel>.Instance;
 
 #if DEBUG
 	/// <summary>
