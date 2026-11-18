@@ -873,7 +873,13 @@ public sealed class ConfigurationViewModel : ModelBase
 				break;
 
 			case nameof(Settings.BrowserList):
-				UpdateSettings();
+				// Browser discovery raises this from a background thread, but Choices is bound to the UI.
+				// Changing it off the UI thread throws NotSupportedException, which aborted discovery
+				// and left BrowserPicker.exe stuck behind an error box on exit.
+				if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())
+					dispatcher.BeginInvoke(UpdateSettings);
+				else
+					UpdateSettings();
 				break;
 
 			case nameof(JsonAppSettings.AutoCloseOnFocusLost):
