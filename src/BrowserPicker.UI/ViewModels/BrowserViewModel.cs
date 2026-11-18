@@ -44,6 +44,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		)
 	{
 		parent_view_model = new ApplicationViewModel();
+		is_running = new Lazy<bool>(FindIsRunning);
 	}
 #endif
 
@@ -55,6 +56,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	public BrowserViewModel(BrowserModel model, ApplicationViewModel viewModel)
 		: base(model)
 	{
+		is_running = new Lazy<bool>(FindIsRunning);
 		model.PropertyChanged += Model_PropertyChanged;
 		parent_view_model = viewModel;
 		parent_view_model.PropertyChanged += OnParentViewModelChanged;
@@ -378,42 +380,40 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	/// <summary>
 	/// True when a process for this browser is running in the current session with a main window.
 	/// </summary>
-	public bool IsRunning
+	/// <remarks>
+	/// Found once per row: the picker binds to this several times per browser, and nothing refreshes it later.
+	/// </remarks>
+	public bool IsRunning => is_running.Value;
+
+	private bool FindIsRunning()
 	{
-		get
+		try
 		{
-			try
+			if (Model.Command == "microsoft-edge:" || Model.Command.Contains("MicrosoftEdge"))
+				return RunningProcesses.AnyInSession("MicrosoftEdge");
+
+			string target;
+			switch (Model.Executable)
 			{
-				var session = Process.GetCurrentProcess().SessionId;
+				case null:
+					var cmd = Model.Command;
+					if (cmd[0] == '"')
+						cmd = cmd.Split('"')[1];
 
-				if (Model.Command == "microsoft-edge:" || Model.Command.Contains("MicrosoftEdge"))
-					return Process.GetProcessesByName("MicrosoftEdge").Any(p => p.SessionId == session);
+					target = cmd;
+					break;
 
-				string target;
-				switch (Model.Executable)
-				{
-					case null:
-						var cmd = Model.Command;
-						if (cmd[0] == '"')
-							cmd = cmd.Split('"')[1];
-
-						target = cmd;
-						break;
-
-					default:
-						target = Model.Executable;
-						break;
-				}
-
-				return Process
-					.GetProcessesByName(Path.GetFileNameWithoutExtension(target))
-					.Any(p => p.SessionId == session && p.MainWindowHandle != 0 && p.MainModule?.FileName == target);
+				default:
+					target = Model.Executable;
+					break;
 			}
-			catch
-			{
-				// Design time exceptions
-				return false;
-			}
+
+			return RunningProcesses.HasMainWindow(target);
+		}
+		catch
+		{
+			// Design time exceptions
+			return false;
 		}
 	}
 
@@ -629,4 +629,5 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	}
 
 	private readonly ApplicationViewModel parent_view_model;
+	private readonly Lazy<bool> is_running;
 }
