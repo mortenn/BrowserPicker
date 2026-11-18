@@ -3,6 +3,7 @@ using System.Windows;
 using BrowserPicker.Common;
 using BrowserPicker.UI.Views;
 using BrowserPicker.Windows;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,10 @@ internal static class Program
 		var runtimeLogBuffer = new InMemoryLogBuffer();
 
 		var builder = Host.CreateDefaultBuilder()
+			// appsettings.json is only read at startup; skip the file watcher the default host sets up.
+			.ConfigureHostConfiguration(config =>
+				config.AddInMemoryCollection([new("hostBuilder:reloadConfigOnChange", "false")])
+			)
 			.ConfigureServices(services =>
 			{
 				services.AddSingleton(runtimeLogBuffer);
@@ -42,6 +47,12 @@ internal static class Program
 			})
 			.ConfigureLogging(logging =>
 			{
+				// Drop the default Console, Debug, EventSource and EventLog providers. A WinExe has no console,
+				// and EventLog is added below with our own source name. Each provider costs startup time.
+				logging.ClearProviders();
+#if DEBUG
+				logging.AddDebug();
+#endif
 				logging.AddProvider(new InMemoryLoggerProvider(runtimeLogBuffer));
 				logging.AddEventLog(settings => settings.SourceName = "BrowserPicker");
 			});
