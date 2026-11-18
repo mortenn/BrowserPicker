@@ -45,6 +45,9 @@ public static partial class LoggingExtensions
 	[LoggerMessage(EventId = 1009, Level = LogLevel.Debug, Message = "Failed to load favicon: {StatusCode}")]
 	public static partial void LogFaviconFailed(this ILogger logger, HttpStatusCode statusCode);
 
+	[LoggerMessage(EventId = 1030, Level = LogLevel.Debug, Message = "Background favicon lookup failed")]
+	public static partial void LogFaviconBackgroundFailed(this ILogger logger, Exception exception);
+
 	[LoggerMessage(EventId = 1010, Level = LogLevel.Debug, Message = "Trying default favicon")]
 	public static partial void LogDefaultFavicon(this ILogger logger);
 
