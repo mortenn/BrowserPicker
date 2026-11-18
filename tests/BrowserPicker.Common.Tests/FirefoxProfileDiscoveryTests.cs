@@ -99,7 +99,10 @@ public sealed class FirefoxProfileDiscoveryTests : IDisposable
 
 		var profiles = FirefoxProfileDiscovery.Discover(root, Firefox);
 
-		profiles.Select(p => (p.Id, p.Name)).Should().Equal(("container:Personal", "Personal"), ("container:Work", "Work"));
+		profiles
+			.Select(p => (p.Id, p.Name))
+			.Should()
+			.Equal(("container:Personal", "Personal"), ("container:Work", "Work"));
 	}
 
 	[Fact]
@@ -119,7 +122,11 @@ public sealed class FirefoxProfileDiscoveryTests : IDisposable
 		profiles
 			.Select(p => (p.Id, p.CommandArgs))
 			.Should()
-			.Equal(("profile:Dev", "-P \"Dev\""), ("profile:Dev/container:Bank", "-P \"Dev\""), ("profile:Rel", "-P \"Rel\""));
+			.Equal(
+				("profile:Dev", "-P \"Dev\""),
+				("profile:Dev/container:Bank", "-P \"Dev\""),
+				("profile:Rel", "-P \"Rel\"")
+			);
 	}
 
 	[Theory]

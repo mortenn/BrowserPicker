@@ -7,7 +7,10 @@ namespace BrowserPicker.Common.Tests;
 public class DiagnosticLogRedactorTests
 {
 	[Theory]
-	[InlineData("https://contoso-my.sharepoint.com/personal/doc?x=1&y=2", "https://contoso-my.sharepoint.com/[redacted]")]
+	[InlineData(
+		"https://contoso-my.sharepoint.com/personal/doc?x=1&y=2",
+		"https://contoso-my.sharepoint.com/[redacted]"
+	)]
 	[InlineData("https://example.com", "https://example.com")]
 	[InlineData("https://example.com/", "https://example.com")]
 	[InlineData("https://user:secret@example.com:8443/a#frag", "https://example.com:8443/[redacted]")]

@@ -698,12 +698,12 @@
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="common:DefaultSetting">
 										<ComboBox
+											ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
 											IsSynchronizedWithCurrentItem="False"
 											ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
 											ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 											ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
 											SelectedValue="{Binding Browser, UpdateSourceTrigger=Explicit}"
-										ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
 											SelectedValuePath="Model.Id"
 											Style="{StaticResource DefaultsGridComboBoxStyle}" />
 									</DataTemplate>
@@ -713,10 +713,10 @@
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="common:DefaultSetting">
 										<ComboBox
+											ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
 											DisplayMemberPath="Name"
 											IsSynchronizedWithCurrentItem="False"
 											SelectedValue="{Binding Profile, TargetNullValue={x:Static system:String.Empty}, UpdateSourceTrigger=Explicit}"
-										ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
 											SelectedValuePath="Id"
 											Style="{StaticResource DefaultsGridComboBoxStyle}">
 											<ComboBox.ItemsSource>
@@ -906,22 +906,12 @@
 								<Button Margin="0,0,0,8" Padding="12,4" Command="{Binding CopyApplicationLog}" Content="Copy raw application log" />
 							</WrapPanel>
 							<StackPanel Grid.Row="2" Margin="0,4,0,0">
-								<CheckBox
-									Content="Write diagnostic log to file"
-									IsChecked="{Binding Settings.DiagnosticFileLogging}"
-									ToolTip="Each link opens a new Browser Picker process, so the live log below only shows this window. When checked, every process appends to a daily file so you can see how earlier links were handled. Off by default." />
+								<CheckBox Content="Write diagnostic log to file" IsChecked="{Binding Settings.DiagnosticFileLogging}" ToolTip="Each link opens a new Browser Picker process, so the live log below only shows this window. When checked, every process appends to a daily file so you can see how earlier links were handled. Off by default." />
 								<StackPanel Margin="24,4,0,0" IsEnabled="{Binding Settings.DiagnosticFileLogging}">
-									<CheckBox
-										Content="Include full URLs (path and query)"
-										IsChecked="{Binding Settings.DiagnosticLogFullUrls}"
-										ToolTip="When unchecked, URLs are reduced to scheme and host (for example https://example.com/[redacted]). Full URLs can contain private data: only enable while diagnosing, then delete the logs." />
+									<CheckBox Content="Include full URLs (path and query)" IsChecked="{Binding Settings.DiagnosticLogFullUrls}" ToolTip="When unchecked, URLs are reduced to scheme and host (for example https://example.com/[redacted]). Full URLs can contain private data: only enable while diagnosing, then delete the logs." />
 									<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
 										<TextBlock VerticalAlignment="Center" Text="Delete log files after" />
-										<ComboBox
-											MinWidth="60"
-											Margin="6,0"
-											ItemsSource="{x:Static viewModels:FeedbackViewModel.DiagnosticLogRetentionChoices}"
-											SelectedItem="{Binding Settings.DiagnosticLogRetentionDays}" />
+										<ComboBox MinWidth="60" Margin="6,0" ItemsSource="{x:Static viewModels:FeedbackViewModel.DiagnosticLogRetentionChoices}" SelectedItem="{Binding Settings.DiagnosticLogRetentionDays}" />
 										<TextBlock VerticalAlignment="Center" Text="day(s)" />
 									</StackPanel>
 								</StackPanel>
