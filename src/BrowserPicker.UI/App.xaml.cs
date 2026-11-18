@@ -397,14 +397,33 @@ public partial class App
 	/// </summary>
 	private void ShowMainWindow()
 	{
-		if (ViewModel?.Initialize() == false)
+		if (ViewModel == null || !ViewModel.Initialize())
 		{
 			return;
 		}
 		EnsureThemeResources();
-		MainWindow = new MainWindow { DataContext = ViewModel };
-		MainWindow.Show();
-		MainWindow.Focus();
+		ViewModel.PropertyChanged += (_, e) =>
+		{
+			if (e.PropertyName == nameof(ApplicationViewModel.ConfigurationMode))
+				ShowWindowForMode(ViewModel);
+		};
+		ShowWindowForMode(ViewModel);
+	}
+
+	/// <summary>
+	/// Shows the configuration window in configuration mode and the picker otherwise, then closes the window
+	/// that was shown before. The new window opens first, so closing the old one does not end the application.
+	/// </summary>
+	private void ShowWindowForMode(ApplicationViewModel viewModel)
+	{
+		var previous = shown_window;
+		shown_window = viewModel.ConfigurationMode
+			? new ConfigurationWindow { DataContext = viewModel.Configuration }
+			: new MainWindow { DataContext = viewModel };
+		MainWindow = shown_window;
+		shown_window.Show();
+		shown_window.Focus();
+		previous?.Close();
 	}
 
 	/// <summary>
@@ -471,6 +490,9 @@ public partial class App
 	}
 
 	public ApplicationViewModel? ViewModel { get; }
+
+	/// <summary>The picker or configuration window currently shown by <see cref="ShowWindowForMode"/>.</summary>
+	private Window? shown_window;
 	public static IServiceProvider Services { get; set; } = null!;
 
 	private static readonly List<ILongRunningProcess> BackgroundTasks = [];
