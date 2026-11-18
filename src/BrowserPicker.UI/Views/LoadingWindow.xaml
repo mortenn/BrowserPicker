@@ -15,7 +15,7 @@
 	ShowInTaskbar="False"
 	SizeChanged="Window_SizeChanged"
 	SizeToContent="WidthAndHeight"
-	WindowStartupLocation="CenterScreen"
+	WindowStartupLocation="Manual"
 	WindowStyle="None"
 	mc:Ignorable="d">
 	<Border Background="{DynamicResource {x:Static ui:App.ContentBackgroundBrushKey}}" BorderBrush="#22FFFFFF" BorderThickness="2" CornerRadius="5">
