@@ -32,6 +32,7 @@ public partial class MainWindow
 	public MainWindow()
 	{
 		InitializeComponent();
+		WindowPlacement.Attach(this);
 		if (DesignerProperties.GetIsInDesignMode(this) || Application.Current is not App { ViewModel: not null })
 			return;
 		DataContext = ((App)Application.Current).ViewModel;
@@ -356,13 +357,7 @@ public partial class MainWindow
 		// Don't re-center on user resize or the window jumps while dragging the grip.
 	}
 
-	private void CenterWindow(Size size)
-	{
-		var w = SystemParameters.PrimaryScreenWidth;
-		var h = SystemParameters.PrimaryScreenHeight;
-		Left = (w - size.Width) / 2;
-		Top = (h - size.Height) / 2;
-	}
+	private void CenterWindow(Size size) => WindowPlacement.Center(this, size);
 
 	private void DragWindow(object sender, MouseButtonEventArgs args)
 	{

@@ -24,7 +24,7 @@
 	SizeChanged="Window_SizeChanged"
 	SizeToContent="WidthAndHeight"
 	Topmost="True"
-	WindowStartupLocation="CenterScreen"
+	WindowStartupLocation="Manual"
 	WindowState="Normal"
 	WindowStyle="None"
 	mc:Ignorable="d">

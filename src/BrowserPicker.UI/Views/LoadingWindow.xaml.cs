@@ -14,6 +14,7 @@ public partial class LoadingWindow
 		if (DesignerProperties.GetIsInDesignMode(this) || Application.Current is not App { ViewModel: not null })
 			return;
 		DataContext = ((App)Application.Current).ViewModel;
+		WindowPlacement.Attach(this);
 	}
 
 	private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -21,10 +22,6 @@ public partial class LoadingWindow
 		if (e.PreviousSize == e.NewSize)
 			return;
 
-		var w = SystemParameters.PrimaryScreenWidth;
-		var h = SystemParameters.PrimaryScreenHeight;
-
-		Left = (w - e.NewSize.Width) / 2;
-		Top = (h - e.NewSize.Height) / 2;
+		WindowPlacement.Center(this, e.NewSize);
 	}
 }

@@ -433,6 +433,7 @@
 								<TextBlock Margin="2,0,0,0" VerticalAlignment="Center" Text=" px" />
 							</StackPanel>
 							<CheckBox Content="Auto size window" IsChecked="{Binding Settings.AutoSizeWindow}" ToolTip="When checked, the window fits its content. When unchecked, the window uses the last size you set by resizing. Resize the window to fix a size; that turns this off and saves the size." />
+							<CheckBox Content="Always open on primary monitor" IsChecked="{Binding Settings.CenterOnPrimaryMonitor}" ToolTip="When checked, the picker opens centered on the primary monitor. When unchecked, it opens on the monitor under the mouse cursor." />
 							<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" />
 							<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
 								<StackPanel.Style>
