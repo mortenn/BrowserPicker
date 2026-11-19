@@ -101,6 +101,7 @@
 			</Style>
 			<converters:ComboBoxBrowserItemFlagConverter x:Key="ComboBoxBrowserItemFlagConverter" />
 			<converters:SecurityProfileSelectionConverter x:Key="SecurityProfileSelectionConverter" />
+			<converters:DefaultSettingProfileChoicesConverter x:Key="DefaultSettingProfileChoicesConverter" />
 			<Style x:Key="VisibleBrowserComboItemStyle" BasedOn="{StaticResource {x:Type ComboBoxItem}}" TargetType="ComboBoxItem">
 				<Style.Triggers>
 					<DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource ComboBoxBrowserItemFlagConverter}, ConverterParameter=Disabled}" Value="True">
@@ -242,161 +243,159 @@
 			<TabItem Header="Browsers">
 				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 					<Grid>
-						<ScrollViewer VerticalScrollBarVisibility="Auto">
-							<ItemsControl d:ItemsSource="{Binding ParentViewModel.Choices}" ItemsSource="{Binding ParentViewModel.Choices}">
-								<ItemsControl.ItemsPanel>
-									<ItemsPanelTemplate>
-										<StackPanel CanVerticallyScroll="True" Orientation="Vertical" />
-									</ItemsPanelTemplate>
-								</ItemsControl.ItemsPanel>
-								<ItemsControl.ItemTemplate>
-									<DataTemplate DataType="viewModels:BrowserViewModel">
-										<StackPanel>
-											<StackPanel.Style>
-												<Style TargetType="StackPanel">
+						<ItemsControl d:ItemsSource="{Binding ParentViewModel.Choices}" ItemsSource="{Binding ParentViewModel.Choices}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel CanVerticallyScroll="True" Orientation="Vertical" />
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate DataType="viewModels:BrowserViewModel">
+									<StackPanel>
+										<StackPanel.Style>
+											<Style TargetType="StackPanel">
+												<Setter Property="Visibility" Value="Visible" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding Model.Removed}" Value="True">
+														<Setter Property="Visibility" Value="Collapsed" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</StackPanel.Style>
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="Auto" />
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="Auto" />
+												<ColumnDefinition Width="Auto" />
+												<ColumnDefinition Width="Auto" />
+												<ColumnDefinition Width="Auto" />
+												<ColumnDefinition Width="Auto" />
+											</Grid.ColumnDefinitions>
+											<ContentPresenter
+												Width="40"
+												Height="40"
+												Margin="20,0,0,0"
+												Content="{Binding}"
+												ContentTemplate="{StaticResource BrowserIcon}" />
+											<TextBlock Grid.Column="1" Margin="10" FontSize="18" Text="{Binding Model.Name}" />
+											<Grid Grid.Column="2" VerticalAlignment="Center">
+												<Grid.Style>
+													<Style TargetType="Grid">
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
+																<Setter Property="Visibility" Value="Collapsed" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Grid.Style>
+												<Grid.RowDefinitions>
+													<RowDefinition Height="Auto" />
+													<RowDefinition Height="Auto" />
+												</Grid.RowDefinitions>
+												<TextBlock FontSize="10"><Hyperlink Command="{Binding MoveUp}" TextDecorations="None">🔼</Hyperlink></TextBlock>
+												<TextBlock Grid.Row="1" FontSize="10"><Hyperlink Command="{Binding MoveDown}" TextDecorations="None">🔽</Hyperlink></TextBlock>
+											</Grid>
+											<TextBlock Grid.Column="3" Margin="10" FontSize="16">
+												<Hyperlink Command="{Binding Disable}">
+													<TextBlock>
+														<TextBlock.Style>
+															<Style>
+																<Setter Property="TextBlock.Foreground" Value="Green" />
+																<Setter Property="TextBlock.Text" Value="Enabled" />
+																<Setter Property="FrameworkElement.ToolTip" Value="Toggle whether this browser appears in the picker" />
+																<Style.Triggers>
+																	<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
+																		<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
+																		<Setter Property="TextBlock.Text" Value="Disabled" />
+																	</DataTrigger>
+																</Style.Triggers>
+															</Style>
+														</TextBlock.Style>
+													</TextBlock>
+												</Hyperlink>
+											</TextBlock>
+											<TextBlock Grid.Column="4" Margin="10" FontSize="16">
+												<Hyperlink Command="{Binding Edit}">
+													<TextBlock Foreground="CadetBlue" Text="Edit" ToolTip="Edit browser definition" />
+												</Hyperlink>
+											</TextBlock>
+											<TextBlock Grid.Column="5" Margin="10" FontSize="16">
+												<Hyperlink Command="{Binding Duplicate}">
+													<TextBlock Foreground="LightGreen" Text="+" ToolTip="Duplicate browser: create a new browser using this browser as a starting point" />
+												</Hyperlink>
+											</TextBlock>
+											<TextBlock Grid.Column="6" Margin="10" FontSize="16">
+												<TextBlock.Style>
+													<Style TargetType="TextBlock">
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding CanRemove}" Value="False">
+																<Setter Property="Visibility" Value="Hidden" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</TextBlock.Style>
+												<Hyperlink Command="{Binding Remove}">
+													<TextBlock Foreground="Red" Text="X" ToolTip="Remove custom browser from list" />
+												</Hyperlink>
+											</TextBlock>
+										</Grid>
+										<ItemsControl Margin="70,0,20,10" d:ItemsSource="{Binding ConfigProfileViewModels}" ItemsSource="{Binding ConfigProfileViewModels}">
+											<ItemsControl.Style>
+												<Style TargetType="ItemsControl">
 													<Setter Property="Visibility" Value="Visible" />
 													<Style.Triggers>
-														<DataTrigger Binding="{Binding Model.Removed}" Value="True">
+														<DataTrigger Binding="{Binding HasAnyProfiles}" Value="False">
 															<Setter Property="Visibility" Value="Collapsed" />
 														</DataTrigger>
 													</Style.Triggers>
 												</Style>
-											</StackPanel.Style>
-											<Grid>
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="Auto" />
-													<ColumnDefinition Width="*" />
-													<ColumnDefinition Width="Auto" />
-													<ColumnDefinition Width="Auto" />
-													<ColumnDefinition Width="Auto" />
-													<ColumnDefinition Width="Auto" />
-													<ColumnDefinition Width="Auto" />
-												</Grid.ColumnDefinitions>
-												<ContentPresenter
-													Width="40"
-													Height="40"
-													Margin="20,0,0,0"
-													Content="{Binding}"
-													ContentTemplate="{StaticResource BrowserIcon}" />
-												<TextBlock Grid.Column="1" Margin="10" FontSize="18" Text="{Binding Model.Name}" />
-												<Grid Grid.Column="2" VerticalAlignment="Center">
-													<Grid.Style>
-														<Style TargetType="Grid">
-															<Style.Triggers>
-																<DataTrigger Binding="{Binding IsManuallyOrdered}" Value="False">
-																	<Setter Property="Visibility" Value="Collapsed" />
-																</DataTrigger>
-															</Style.Triggers>
-														</Style>
-													</Grid.Style>
-													<Grid.RowDefinitions>
-														<RowDefinition Height="Auto" />
-														<RowDefinition Height="Auto" />
-													</Grid.RowDefinitions>
-													<TextBlock FontSize="10"><Hyperlink Command="{Binding MoveUp}" TextDecorations="None">🔼</Hyperlink></TextBlock>
-													<TextBlock Grid.Row="1" FontSize="10"><Hyperlink Command="{Binding MoveDown}" TextDecorations="None">🔽</Hyperlink></TextBlock>
-												</Grid>
-												<TextBlock Grid.Column="3" Margin="10" FontSize="16">
-													<Hyperlink Command="{Binding Disable}">
-														<TextBlock>
+											</ItemsControl.Style>
+											<ItemsControl.ItemTemplate>
+												<DataTemplate DataType="viewModels:BrowserProfileViewModel">
+													<Grid Margin="0,2">
+														<Grid.ColumnDefinitions>
+															<ColumnDefinition Width="*" />
+															<ColumnDefinition Width="Auto" />
+														</Grid.ColumnDefinitions>
+														<TextBlock VerticalAlignment="Center" Text="{Binding Model.Name}">
 															<TextBlock.Style>
-																<Style>
-																	<Setter Property="TextBlock.Foreground" Value="Green" />
-																	<Setter Property="TextBlock.Text" Value="Enabled" />
-																	<Setter Property="FrameworkElement.ToolTip" Value="Toggle whether this browser appears in the picker" />
+																<Style TargetType="TextBlock">
+																	<Setter Property="Opacity" Value="1" />
 																	<Style.Triggers>
-																		<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
-																			<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
-																			<Setter Property="TextBlock.Text" Value="Disabled" />
+																		<DataTrigger Binding="{Binding Hidden}" Value="True">
+																			<Setter Property="Opacity" Value="0.5" />
 																		</DataTrigger>
 																	</Style.Triggers>
 																</Style>
 															</TextBlock.Style>
 														</TextBlock>
-													</Hyperlink>
-												</TextBlock>
-												<TextBlock Grid.Column="4" Margin="10" FontSize="16">
-													<Hyperlink Command="{Binding Edit}">
-														<TextBlock Foreground="CadetBlue" Text="Edit" ToolTip="Edit browser definition" />
-													</Hyperlink>
-												</TextBlock>
-												<TextBlock Grid.Column="5" Margin="10" FontSize="16">
-													<Hyperlink Command="{Binding Duplicate}">
-														<TextBlock Foreground="LightGreen" Text="+" ToolTip="Duplicate browser: create a new browser using this browser as a starting point" />
-													</Hyperlink>
-												</TextBlock>
-												<TextBlock Grid.Column="6" Margin="10" FontSize="16">
-													<TextBlock.Style>
-														<Style TargetType="TextBlock">
-															<Style.Triggers>
-																<DataTrigger Binding="{Binding CanRemove}" Value="False">
-																	<Setter Property="Visibility" Value="Hidden" />
-																</DataTrigger>
-															</Style.Triggers>
-														</Style>
-													</TextBlock.Style>
-													<Hyperlink Command="{Binding Remove}">
-														<TextBlock Foreground="Red" Text="X" ToolTip="Remove custom browser from list" />
-													</Hyperlink>
-												</TextBlock>
-											</Grid>
-											<ItemsControl Margin="70,0,20,10" d:ItemsSource="{Binding ConfigProfileViewModels}" ItemsSource="{Binding ConfigProfileViewModels}">
-												<ItemsControl.Style>
-													<Style TargetType="ItemsControl">
-														<Setter Property="Visibility" Value="Visible" />
-														<Style.Triggers>
-															<DataTrigger Binding="{Binding HasAnyProfiles}" Value="False">
-																<Setter Property="Visibility" Value="Collapsed" />
-															</DataTrigger>
-														</Style.Triggers>
-													</Style>
-												</ItemsControl.Style>
-												<ItemsControl.ItemTemplate>
-													<DataTemplate DataType="viewModels:BrowserProfileViewModel">
-														<Grid Margin="0,2">
-															<Grid.ColumnDefinitions>
-																<ColumnDefinition Width="*" />
-																<ColumnDefinition Width="Auto" />
-															</Grid.ColumnDefinitions>
-															<TextBlock VerticalAlignment="Center" Text="{Binding Model.Name}">
-																<TextBlock.Style>
-																	<Style TargetType="TextBlock">
-																		<Setter Property="Opacity" Value="1" />
-																		<Style.Triggers>
-																			<DataTrigger Binding="{Binding Hidden}" Value="True">
-																				<Setter Property="Opacity" Value="0.5" />
-																			</DataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Grid.Column="1" Margin="10,0" VerticalAlignment="Center" FontSize="14">
-																<Hyperlink Command="{Binding ToggleVisibility}" TextDecorations="None">
-																	<TextBlock ToolTip="Toggle whether this profile appears in the picker">
-																		<TextBlock.Style>
-																			<Style TargetType="TextBlock">
-																				<Setter Property="Foreground" Value="Green" />
-																				<Setter Property="Text" Value="Visible" />
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Hidden}" Value="True">
-																						<Setter Property="Foreground" Value="OrangeRed" />
-																						<Setter Property="Text" Value="Hidden" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																</Hyperlink>
-															</TextBlock>
-														</Grid>
-													</DataTemplate>
-												</ItemsControl.ItemTemplate>
-											</ItemsControl>
-										</StackPanel>
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
-							</ItemsControl>
-						</ScrollViewer>
+														<TextBlock Grid.Column="1" Margin="10,0" VerticalAlignment="Center" FontSize="14">
+															<Hyperlink Command="{Binding ToggleVisibility}" TextDecorations="None">
+																<TextBlock ToolTip="Toggle whether this profile appears in the picker">
+																	<TextBlock.Style>
+																		<Style TargetType="TextBlock">
+																			<Setter Property="Foreground" Value="Green" />
+																			<Setter Property="Text" Value="Visible" />
+																			<Style.Triggers>
+																				<DataTrigger Binding="{Binding Hidden}" Value="True">
+																					<Setter Property="Foreground" Value="OrangeRed" />
+																					<Setter Property="Text" Value="Hidden" />
+																				</DataTrigger>
+																			</Style.Triggers>
+																		</Style>
+																	</TextBlock.Style>
+																</TextBlock>
+															</Hyperlink>
+														</TextBlock>
+													</Grid>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</StackPanel>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
 					</Grid>
 				</ScrollViewer>
 			</TabItem>
@@ -677,7 +676,7 @@
 											MinWidth="130"
 											IsSynchronizedWithCurrentItem="False"
 											ItemsSource="{x:Static viewModels:ConfigurationViewModel.MatchTypesForRules}"
-											SelectedItem="{Binding Type}"
+											SelectedItem="{Binding Type, UpdateSourceTrigger=PropertyChanged}"
 											Style="{StaticResource DefaultsGridComboBoxStyle}" />
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
@@ -697,13 +696,34 @@
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="common:DefaultSetting">
 										<ComboBox
+											ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
 											IsSynchronizedWithCurrentItem="False"
 											ItemContainerStyle="{StaticResource VisibleBrowserComboItemStyle}"
 											ItemTemplate="{StaticResource BrowserIconAndNameCombo}"
 											ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ParentViewModel.Choices}"
-											SelectedValue="{Binding Browser}"
+											SelectedValue="{Binding Browser, UpdateSourceTrigger=Explicit}"
 											SelectedValuePath="Model.Id"
 											Style="{StaticResource DefaultsGridComboBoxStyle}" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTemplateColumn Width="*" MinWidth="180" Header="Profile">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate DataType="common:DefaultSetting">
+										<ComboBox
+											ui:ComboBoxUserSelectionBehavior.IsEnabled="True"
+											DisplayMemberPath="Name"
+											IsSynchronizedWithCurrentItem="False"
+											SelectedValue="{Binding Profile, TargetNullValue={x:Static system:String.Empty}, UpdateSourceTrigger=Explicit}"
+											SelectedValuePath="Id"
+											Style="{StaticResource DefaultsGridComboBoxStyle}">
+											<ComboBox.ItemsSource>
+												<MultiBinding Converter="{StaticResource DefaultSettingProfileChoicesConverter}">
+													<Binding Path="Browser" />
+													<Binding Path="DataContext.ParentViewModel.Choices" RelativeSource="{RelativeSource AncestorType=DataGrid}" />
+												</MultiBinding>
+											</ComboBox.ItemsSource>
+										</ComboBox>
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
@@ -870,6 +890,7 @@
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
 							<StackPanel>
 								<TextBlock FontSize="18" FontWeight="SemiBold" Text="Feedback and diagnostics" />
@@ -882,6 +903,23 @@
 								<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding ReportBug}" Content="Report bug on GitHub" />
 								<Button Margin="0,0,0,8" Padding="12,4" Command="{Binding CopyApplicationLog}" Content="Copy raw application log" />
 							</WrapPanel>
+							<StackPanel Grid.Row="2" Margin="0,4,0,0">
+								<CheckBox Content="Write diagnostic log to file" IsChecked="{Binding Settings.DiagnosticFileLogging}" ToolTip="Each link opens a new Browser Picker process, so the live log below only shows this window. When checked, every process appends to a daily file so you can see how earlier links were handled. Off by default." />
+								<StackPanel Margin="24,4,0,0" IsEnabled="{Binding Settings.DiagnosticFileLogging}">
+									<CheckBox Content="Include full URLs (path and query)" IsChecked="{Binding Settings.DiagnosticLogFullUrls}" ToolTip="When unchecked, URLs are reduced to scheme and host (for example https://example.com/[redacted]). Full URLs can contain private data: only enable while diagnosing, then delete the logs." />
+									<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+										<TextBlock VerticalAlignment="Center" Text="Delete log files after" />
+										<ComboBox MinWidth="60" Margin="6,0" ItemsSource="{x:Static viewModels:FeedbackViewModel.DiagnosticLogRetentionChoices}" SelectedItem="{Binding Settings.DiagnosticLogRetentionDays}" />
+										<TextBlock VerticalAlignment="Center" Text="day(s)" />
+									</StackPanel>
+								</StackPanel>
+								<WrapPanel Margin="0,8,0,0">
+									<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding OpenLatestDiagnosticLog}" Content="Open latest log" />
+									<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding OpenDiagnosticLogFolder}" Content="Open log folder" />
+									<Button Margin="0,0,0,8" Padding="12,4" Command="{Binding DeleteDiagnosticLogs}" Content="Delete log files" />
+								</WrapPanel>
+								<TextBlock FontSize="11" Opacity="0.6" Text="{Binding DiagnosticLogStatus}" TextWrapping="Wrap" />
+							</StackPanel>
 						</Grid>
 					</Border>
 					<Border Grid.Row="1" Background="{DynamicResource {x:Static ui:App.ContentBackgroundBrushKey}}" SnapsToDevicePixels="True">

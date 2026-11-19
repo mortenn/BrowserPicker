@@ -65,7 +65,8 @@ public partial class Configuration
 
 		FeedbackContentRoot.DataContext = new FeedbackViewModel(
 			viewModel.Settings,
-			App.Services.GetService<InMemoryLogBuffer>()
+			App.Services.GetService<InMemoryLogBuffer>(),
+			App.Services.GetService<DiagnosticFileLog>()
 		);
 	}
 }

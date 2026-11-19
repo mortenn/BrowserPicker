@@ -135,4 +135,21 @@ public interface IApplicationSettings : ISecuritySettings
 	/// When false, profile groups always start collapsed. Only applies to grouped profile display.
 	/// </summary>
 	bool PersistProfileExpansion { get; set; }
+
+	/// <summary>
+	/// When true, diagnostic log entries from every BrowserPicker process are written to daily files
+	/// (see <see cref="DiagnosticFileLog"/>). Off by default.
+	/// </summary>
+	bool DiagnosticFileLogging { get; set; }
+
+	/// <summary>
+	/// When true, the diagnostic log keeps full URLs (path and query). When false (default), URLs are reduced to
+	/// scheme and host.
+	/// </summary>
+	bool DiagnosticLogFullUrls { get; set; }
+
+	/// <summary>
+	/// Days to keep diagnostic log files before they are deleted automatically.
+	/// </summary>
+	int DiagnosticLogRetentionDays { get; set; }
 }

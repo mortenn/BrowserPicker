@@ -8,6 +8,9 @@ using System.Windows;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
 using BrowserPicker.UI.Views;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 #if DEBUG
 using JetBrains.Annotations;
 #endif
@@ -21,6 +24,9 @@ namespace BrowserPicker.UI.ViewModels;
 [DebuggerDisplay("{" + nameof(Model) + "." + nameof(BrowserModel.Name) + "}")]
 public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 {
+	private static ILogger<BrowserViewModel> Logger =>
+		App.Services?.GetService<ILogger<BrowserViewModel>>() ?? NullLogger<BrowserViewModel>.Instance;
+
 	private const string MozillaContainerExtensionLaunchArgs =
 		"\"https://addons.mozilla.org/en-US/firefox/addon/open-url-in-container/\"";
 
@@ -151,14 +157,18 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	}
 
 	/// <summary>
-	/// Discards the cached picker profile view models so they are rebuilt from the current model on next access.
-	/// Used after asynchronous discovery so newly found profiles appear (notably in flat display mode).
+	/// Discards the cached picker and configuration profile view models so they are rebuilt from the current
+	/// model on next access. Used after asynchronous discovery so newly found profiles appear (notably in flat
+	/// display mode), and after a settings import replaces the profile list.
 	/// </summary>
 	internal void InvalidateProfileCache()
 	{
 		profile_view_models = null;
+		config_profile_view_models = null;
 		OnPropertyChanged(nameof(ProfileViewModels));
+		OnPropertyChanged(nameof(ConfigProfileViewModels));
 		OnPropertyChanged(nameof(HasProfiles));
+		OnPropertyChanged(nameof(HasAnyProfiles));
 		OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
 		OnPropertyChanged(nameof(ShowNestedProfileSubtree));
 	}
@@ -602,11 +612,12 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			var url = profile != null ? profile.TransformUrl(rawUrl) : rawUrl;
 			var args = CombineArgs(Model.CommandArgs, CombineArgs(profileArgs, $"{newArgs}\"{url}\""));
 			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
+			Logger.LogBrowserLaunching(Model.Name, profile?.Name ?? "(none)", Model.Command, args);
 			_ = Process.Start(process);
 		}
-		catch
+		catch (Exception e)
 		{
-			// ignored
+			Logger.LogBrowserLaunchFailed(e, Model.Name, Model.Command);
 		}
 		if (parent_view_model.OnShutdown != null)
 		{

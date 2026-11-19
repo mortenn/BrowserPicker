@@ -175,4 +175,39 @@ public static partial class LoggingExtensions
 
 	[LoggerMessage(EventId = 1029, Level = LogLevel.Debug, Message = "Target URL is not a valid absolute Uri: {Url}")]
 	public static partial void LogAutomationInvalidUrl(this ILogger logger, string? url);
+
+	[LoggerMessage(
+		EventId = 1030,
+		Level = LogLevel.Debug,
+		Message = "URL decision: received {ReceivedUrl}, evaluated {EvaluatedUrl}, matched {Match}, browser {Browser}, profile {Profile}"
+	)]
+	public static partial void LogUrlDecision(
+		this ILogger logger,
+		string? receivedUrl,
+		string? evaluatedUrl,
+		string match,
+		string browser,
+		string profile
+	);
+
+	[LoggerMessage(
+		EventId = 1031,
+		Level = LogLevel.Debug,
+		Message = "Launching {Browser} (profile {Profile}): {Command} {Arguments}"
+	)]
+	public static partial void LogBrowserLaunching(
+		this ILogger logger,
+		string browser,
+		string profile,
+		string command,
+		string arguments
+	);
+
+	[LoggerMessage(EventId = 1032, Level = LogLevel.Error, Message = "Failed to launch {Browser}: {Command}")]
+	public static partial void LogBrowserLaunchFailed(
+		this ILogger logger,
+		Exception exception,
+		string browser,
+		string command
+	);
 }

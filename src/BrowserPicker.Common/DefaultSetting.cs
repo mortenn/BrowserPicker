@@ -144,7 +144,7 @@ public sealed class DefaultSetting(
 	public string? Profile
 	{
 		get => profile;
-		set => SetProperty(ref profile, value);
+		set => SetProperty(ref profile, string.IsNullOrEmpty(value) ? null : value);
 	}
 
 	/// <summary>

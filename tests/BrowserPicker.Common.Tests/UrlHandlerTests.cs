@@ -40,6 +40,21 @@ public class UrlHandlerTests
 		handler.HostName.Should().Be("www.github.com");
 	}
 
+	[Theory]
+	[InlineData("https://statics.teams.cdn.office.net/evergreen-assets/safelinks/2/atp-safelinks.html")]
+	[InlineData("https://staticsint.teams.cdn.office.net/evergreen-assets/safelinks/2/atp-safelinks.html")]
+	public async Task UnwrapsTeamsSafeLinks(string safeLinksPage)
+	{
+		const string target = "https://contoso-my.sharepoint.com/personal/doc?x=1&y=2";
+		var requested = $"{safeLinksPage}?url={Uri.EscapeDataString(target)}&locale=pt-br";
+		var handler = new UrlHandler(NullLogger<UrlHandler>.Instance, requested, NoNetworkSettings());
+
+		await handler.Start(CancellationToken.None);
+
+		handler.UnderlyingTargetURL.Should().Be(target);
+		handler.HostName.Should().Be("contoso-my.sharepoint.com");
+	}
+
 	private static SerializableSettings NoNetworkSettings() =>
 		new()
 		{
