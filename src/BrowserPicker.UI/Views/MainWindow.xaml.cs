@@ -32,10 +32,10 @@ public partial class MainWindow
 	public MainWindow()
 	{
 		InitializeComponent();
+		WindowPlacement.Attach(this);
 		if (DesignerProperties.GetIsInDesignMode(this) || Application.Current is not App { ViewModel: not null })
 			return;
 		DataContext = ((App)Application.Current).ViewModel;
-		WindowPlacement.Attach(this);
 		if (App.Settings is INotifyPropertyChanged monitored)
 			monitored.PropertyChanged += Settings_PropertyChanged;
 		if (ViewModel is INotifyPropertyChanged monitoredVm)
