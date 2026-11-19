@@ -654,7 +654,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// <summary>
 	/// Prompts the user to select a backup file and restores settings from it.
 	/// </summary>
-	private void PerformRestore()
+	private async void PerformRestore()
 	{
 		var browser = new OpenFileDialog
 		{
@@ -667,7 +667,8 @@ public sealed class ConfigurationViewModel : ModelBase
 		var result = browser.ShowDialog();
 		if (result != true)
 			return;
-		Settings.LoadAsync(browser.FileName);
+		await Settings.LoadAsync(browser.FileName);
+		ParentViewModel.RefreshDiscoveredProfiles();
 	}
 
 	private void CopySettingsToClipboard()
@@ -700,6 +701,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		}
 
 		jsonSettings.TryImportSettingsJson(text!, "the clipboard");
+		ParentViewModel.RefreshDiscoveredProfiles();
 	}
 
 	private void ToggleCurrentUserBrowserRegistration()

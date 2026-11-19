@@ -157,14 +157,18 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 	}
 
 	/// <summary>
-	/// Discards the cached picker profile view models so they are rebuilt from the current model on next access.
-	/// Used after asynchronous discovery so newly found profiles appear (notably in flat display mode).
+	/// Discards the cached picker and configuration profile view models so they are rebuilt from the current
+	/// model on next access. Used after asynchronous discovery so newly found profiles appear (notably in flat
+	/// display mode), and after a settings import replaces the profile list.
 	/// </summary>
 	internal void InvalidateProfileCache()
 	{
 		profile_view_models = null;
+		config_profile_view_models = null;
 		OnPropertyChanged(nameof(ProfileViewModels));
+		OnPropertyChanged(nameof(ConfigProfileViewModels));
 		OnPropertyChanged(nameof(HasProfiles));
+		OnPropertyChanged(nameof(HasAnyProfiles));
 		OnPropertyChanged(nameof(ShowNestedProfilesInPicker));
 		OnPropertyChanged(nameof(ShowNestedProfileSubtree));
 	}

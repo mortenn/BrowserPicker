@@ -903,6 +903,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			existing.CustomKeyBind = browser.CustomKeyBind;
 			existing.ContainersEnabled = browser.ContainersEnabled;
 			MergeProfiles(existing, browser.Profiles);
+			ApplyProfilePreferences(existing, browser.Profiles);
 		}
 		foreach (var b in BrowserList.Where(b => browserList.All(s => s.Id != b.Id && s.Name != b.Name)).ToArray())
 		{
@@ -911,6 +912,24 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			BrowserList.Remove(b);
 		}
 		OnPropertyChanged(nameof(BrowserList));
+	}
+
+	/// <summary>
+	/// Copies the choices the user made per profile (hidden state and usage) from imported profiles
+	/// onto the matching profiles. <see cref="MergeProfiles"/> keeps the existing profile objects and leaves these alone.
+	/// </summary>
+	private static void ApplyProfilePreferences(BrowserModel browser, List<BrowserProfile> imported)
+	{
+		foreach (var source in imported)
+		{
+			var target = browser.Profiles.FirstOrDefault(p =>
+				string.Equals(p.Id, source.Id, StringComparison.OrdinalIgnoreCase)
+			);
+			if (target == null)
+				continue;
+			target.Disabled = source.Disabled;
+			target.Usage = source.Usage;
+		}
 	}
 
 	private void UpdateDefaults(List<DefaultSetting> defaults)
@@ -1099,6 +1118,9 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 
 		ApplyImportedSettings(settings);
+		// The imported profiles and containers are the ones from the machine that exported the file.
+		// Discover this machine's again so they replace them. Hidden state and usage carry over where the ids match.
+		DiscoverProfiles();
 		AppendBackupLog($"Imported configuration from {sourceDescription}");
 		SaveToFile();
 	}
