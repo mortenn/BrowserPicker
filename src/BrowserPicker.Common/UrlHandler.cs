@@ -136,7 +136,8 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 
 				if (ShouldProbeFavicon(pageUri, probe_favicons, favicons_for_defaults, defaults))
 				{
-					await FindIcon(pageUri, cancellationToken);
+					// Do not hold up the picker (or an automatic launch) for the icon; it appears when it arrives.
+					FindIconInBackground(pageUri, cancellationToken);
 				}
 				break;
 			}
@@ -210,6 +211,23 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	private bool TryGetCurrentPageUri(out Uri pageUri)
 	{
 		return TryGetCurrentPageUri(underlying_target_url ?? TargetURL, out pageUri);
+	}
+
+	// async void is safe here: the whole body is inside a try/catch, so no exception can escape.
+	private async void FindIconInBackground(Uri pageUri, CancellationToken cancellationToken)
+	{
+		try
+		{
+			await FindIcon(pageUri, cancellationToken);
+		}
+		catch (OperationCanceledException)
+		{
+			// Application is shutting down.
+		}
+		catch (Exception exception)
+		{
+			logger.LogFaviconBackgroundFailed(exception);
+		}
 	}
 
 	private async Task FindIcon(Uri pageUri, CancellationToken cancellationToken)
