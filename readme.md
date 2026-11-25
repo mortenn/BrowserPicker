@@ -6,6 +6,8 @@ A default browser replacement for Windows to let you pick your preferred browser
 You can easily configure it to use Firefox for `github.com` and `slashdot.org`, but leave Edge to handle `microsoft.com`  
 and even let Internet Explorer handle that old internal LOB app you'd rather not use but must.
 
+For step-by-step help, see the [user guide](docs/README.md). It also covers [corporate networks, proxies and DNS filters](docs/enterprise-networks.md).
+
 ## Installation
 You can find the latest release on [GitHub](https://github.com/mortenn/BrowserPicker/releases).
 
