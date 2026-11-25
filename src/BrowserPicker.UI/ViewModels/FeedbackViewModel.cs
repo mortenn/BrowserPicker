@@ -258,8 +258,32 @@ public sealed class FeedbackViewModel : ModelBase
 
 	private string BuildWindowsUrlAssociationDiagnostics()
 	{
+		var status = DefaultBrowserStatus.Read();
 		var values = new[]
 		{
+			("Browser Picker is the default browser", status.IsDefault ? "yes" : "no"),
+			(
+				"http UserChoiceLatest ProgId",
+				ReadRegistryValue(
+					@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoiceLatest\ProgId",
+					"ProgId"
+				)
+			),
+			(
+				"https UserChoiceLatest ProgId",
+				ReadRegistryValue(
+					@"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoiceLatest\ProgId",
+					"ProgId"
+				)
+			),
+			(
+				"Default associations policy",
+				ReadRegistryValue(
+					@"SOFTWARE\Policies\Microsoft\Windows\System",
+					"DefaultAssociationsConfiguration",
+					RegistryHive.LocalMachine
+				)
+			),
 			(
 				"http UserChoice ProgId",
 				ReadRegistryValue(
