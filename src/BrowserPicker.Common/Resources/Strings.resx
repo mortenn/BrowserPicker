@@ -489,6 +489,9 @@
   <data name="Privacy_OpenIncognito" xml:space="preserve">
     <value>Open incognito</value>
   </data>
+  <data name="Privacy_OpenInPrivateWindow" xml:space="preserve">
+    <value>Open in private window</value>
+  </data>
   <data name="Privacy_OpenWithPrivateBrowsing" xml:space="preserve">
     <value>Open with private browsing</value>
   </data>

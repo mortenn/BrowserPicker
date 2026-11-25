@@ -489,6 +489,9 @@
   <data name="Privacy_OpenIncognito" xml:space="preserve">
     <value>以无痕模式打开</value>
   </data>
+  <data name="Privacy_OpenInPrivateWindow" xml:space="preserve">
+    <value>在隐私窗口中打开</value>
+  </data>
   <data name="Privacy_OpenWithPrivateBrowsing" xml:space="preserve">
     <value>以隐私浏览模式打开</value>
   </data>
