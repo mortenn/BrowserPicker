@@ -640,6 +640,7 @@
 
 							<TextBlock Margin="0,8,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Security_ManualProbes}" />
 							<CheckBox Content="{x:Static res:Strings.Security_IncludeCertificateRecords}" IsChecked="{Binding Settings.CheckCertificateRecords}" ToolTip="{x:Static res:Strings.Security_IncludeCertificateRecordsToolTip}" />
+							<CheckBox Content="{x:Static res:Strings.Security_LookupDomainRegistration}" IsChecked="{Binding Settings.LookupDomainRegistration}" ToolTip="{x:Static res:Strings.Security_LookupDomainRegistrationToolTip}" />
 							<CheckBox Content="{x:Static res:Strings.Security_HideConnectionCheck}" IsChecked="{Binding Settings.HideManualConnectionCheck}" ToolTip="{x:Static res:Strings.Security_HideConnectionCheckToolTip}" />
 							<CheckBox Content="{x:Static res:Strings.Security_SkipConfirmation}" IsChecked="{Binding Settings.SkipConnectionCheckConfirmation}" ToolTip="{x:Static res:Strings.Security_SkipConfirmationToolTip}" />
 						</StackPanel>
