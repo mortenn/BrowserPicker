@@ -19,4 +19,7 @@ public enum MatchType
 
 	/// <summary>URL string contains the pattern.</summary>
 	Contains,
+
+	/// <summary>URL is a local or network file inside the folder in the pattern, or one of its subfolders.</summary>
+	Folder,
 }

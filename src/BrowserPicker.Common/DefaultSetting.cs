@@ -56,7 +56,7 @@ public sealed class DefaultSetting(
 	}
 
 	/// <summary>
-	/// Gets or sets how the URL is matched: hostname suffix, prefix, regex, contains, or default (fallback).
+	/// Gets or sets how the URL is matched: hostname suffix, prefix, regex, contains, file folder, or default (fallback).
 	/// </summary>
 	public MatchType Type
 	{
@@ -184,6 +184,7 @@ public sealed class DefaultSetting(
 			MatchType.Prefix when pattern is not null => url.OriginalString.StartsWith(pattern) ? pattern.Length : 0,
 			MatchType.Regex when pattern is not null => Regex.Match(url.OriginalString, pattern).Length,
 			MatchType.Contains when pattern is not null => url.OriginalString.Contains(pattern) ? pattern.Length : 0,
+			MatchType.Folder when pattern is not null => FileFolder.MatchLength(url, pattern),
 			_ => 0,
 		};
 	}

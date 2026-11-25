@@ -685,6 +685,31 @@
 					</CheckBox>
 				</StackPanel>
 			</StackPanel>
+			<!--  Local and network files have no host name, so their folder is offered instead of the panel above.  -->
+			<StackPanel
+				Grid.Row="1"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Width="350"
+				Margin="0,4,0,0"
+				HorizontalAlignment="Left">
+				<StackPanel.Style>
+					<Style TargetType="StackPanel">
+						<Setter Property="Visibility" Value="Visible" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Url.CanRememberFolder}" Value="False">
+								<Setter Property="Visibility" Value="Collapsed" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</StackPanel.Style>
+				<CheckBox IsChecked="{Binding Configuration.AutoAddFolderDefault}" ToolTip="{x:Static res:Strings.Picker_RememberFolderToolTip}">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="{x:Static res:Strings.Picker_RememberFolder}" />
+						<TextBlock Style="{StaticResource RememberValueTextBlockStyle}" Text="{Binding Url.FolderPath, Mode=OneWay}" ToolTip="{Binding Url.FolderPath}" />
+					</StackPanel>
+				</CheckBox>
+			</StackPanel>
 		</Grid>
 	</Grid>
 </UserControl>

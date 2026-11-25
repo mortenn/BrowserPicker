@@ -594,6 +594,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			parent_view_model.Configuration.UrlOpened(
 				parent_view_model.Url.HostName,
 				parent_view_model.Url.RegistrableDomain,
+				parent_view_model.Url.FolderPath,
 				Model.Id
 			);
 

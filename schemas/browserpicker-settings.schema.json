@@ -294,14 +294,16 @@
         "Prefix",
         "Regex",
         "Default",
-        "Contains"
+        "Contains",
+        "Folder"
       ],
       "enum": [
         0,
         1,
         2,
         3,
-        4
+        4,
+        5
       ]
     },
     "KeyBinding": {

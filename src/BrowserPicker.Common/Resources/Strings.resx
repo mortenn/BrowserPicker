@@ -477,6 +477,12 @@
   <data name="Picker_Remember" xml:space="preserve">
     <value>Remember </value>
   </data>
+  <data name="Picker_RememberFolder" xml:space="preserve">
+    <value>Remember folder </value>
+  </data>
+  <data name="Picker_RememberFolderToolTip" xml:space="preserve">
+    <value>Open files from this folder and its subfolders with the browser you pick now.</value>
+  </data>
   <data name="Picker_ShowProfiles" xml:space="preserve">
     <value>Show profiles</value>
   </data>
