@@ -82,7 +82,7 @@ If you keep `[alt]` pressed while hitting one of these, the browser will be open
 If you click outside the window such that it loses focus, it will close without opening the URL in any browser.
 
 Each browser that supports it, has a blue shield button on the right side.
-Browsers currently supporting privacy mode are Firefox, Internet Explorer, Chrome, Edge, and Vivaldi.
+Browsers currently supporting privacy mode are Firefox, Internet Explorer, Chrome, Edge, Vivaldi, Opera, Zen and Brave.
 
 Currently running browsers will have their name in bold, whilst browsers not currently running will have their names in cursive.
 
@@ -92,7 +92,8 @@ At the bottom of the window, there is a checkbox to enable "always ask" and a hy
 
 ## Settings
 By simply launching Browser Picker from the start menu or double clicking the `BrowserPicker.exe` file, you will be presented with a GUI to configure the behaviour.
-The configuration is saved in the Windows registry: `HKEY_CURRENT_USER\Software\BrowserPicker`, if you ever need to manually edit it or make a backup.
+The configuration is saved in `%LOCALAPPDATA%\BrowserPicker\settings.json`, or in `settings.json` next to `BrowserPicker.exe` for the portable version, if you ever need to manually edit it or make a backup.
+Older versions saved it in the Windows registry (`HKEY_CURRENT_USER\Software\BrowserPicker`); that configuration is copied to the JSON file the first time a newer version starts.
 
 ![Screenshot of the browser configuration interface with three browsers](docs/config_list.png)
 
@@ -112,7 +113,8 @@ Do note that if it was automatically detected, it will return to the list the ne
 
 #### Automatic configuration
 The `Refresh browser list` function gets automatically executed in the background when you use Browser Picker.
-This helps it discovering newly installed browsers, in case a new browser has been installed,
+This helps it discovering newly installed browsers, and keeps the command and icon of detected browsers up to date when a browser moves or updates.
+Arguments you entered yourself are kept. If you also want to keep your own command or icon for a detected browser, edit it and check `Disable automatic updates`.
 
 #### Manually adding browser
 You may click the hyperlink `Add browser` to open a popup where you may manually add a browser that has not been detected - or some other tool that isn't a browser.
