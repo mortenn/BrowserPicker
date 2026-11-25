@@ -620,6 +620,10 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			lookups.Add(RdapDomainLookup.Shared);
 		}
+		if (Configuration.Settings.LookupCertificateHistory)
+		{
+			lookups.Add(CertificateHistoryLookup.Shared);
+		}
 		return lookups;
 	}
 

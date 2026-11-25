@@ -45,4 +45,10 @@ public interface ISecuritySettings
 	/// Sends the registrable domain (not the URL) to the registry's RDAP service.
 	/// </summary>
 	bool LookupDomainRegistration { get; set; }
+
+	/// <summary>
+	/// When true, manual connection checks also look up the host's public certificate transparency history.
+	/// Sends the host name (not the URL) to crt.sh.
+	/// </summary>
+	bool LookupCertificateHistory { get; set; }
 }

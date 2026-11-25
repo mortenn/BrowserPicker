@@ -58,6 +58,9 @@
     "LookupDomainRegistration": {
       "type": "boolean"
     },
+    "LookupCertificateHistory": {
+      "type": "boolean"
+    },
     "AutoCloseOnFocusLost": {
       "type": "boolean"
     },

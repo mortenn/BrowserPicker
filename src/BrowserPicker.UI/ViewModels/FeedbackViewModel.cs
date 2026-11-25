@@ -745,6 +745,7 @@ public sealed class FeedbackViewModel : ModelBase
 		public bool HideManualConnectionCheck { get; set; }
 		public bool SkipConnectionCheckConfirmation { get; set; }
 		public bool LookupDomainRegistration { get; set; }
+		public bool LookupCertificateHistory { get; set; }
 		public string[] UrlShorteners { get; set; } = [.. UrlHandler.DefaultUrlShorteners, "example.com"];
 		public List<BrowserModel> BrowserList { get; } =
 		[

@@ -489,6 +489,9 @@
   <data name="LogLevel_WarningAndAbove" xml:space="preserve">
     <value>Warning 及以上</value>
   </data>
+  <data name="Lookup_CertificateHistoryDisclosure" xml:space="preserve">
+    <value>证书历史查询会把主机名 "{0}" 发送到 crt.sh（由 Sectigo 运营的公开证书透明度搜索服务）。</value>
+  </data>
   <data name="Lookup_RdapDisclosure" xml:space="preserve">
     <value>域名注册查询会把域名 "{0}" 发送给其注册局的 RDAP 服务（通过 data.iana.org 上的 IANA 列表找到）。该服务可能会看到这次查询。</value>
   </data>
@@ -581,6 +584,12 @@
   </data>
   <data name="Security_IncludeCertificateRecordsToolTip" xml:space="preserve">
     <value>仅在单击“检查连接”时使用。CAA 需要进行 DNS 查询；CT 会检查证书中嵌入的证书透明度证据。</value>
+  </data>
+  <data name="Security_LookupCertificateHistory" xml:space="preserve">
+    <value>查询证书历史 (crt.sh)</value>
+  </data>
+  <data name="Security_LookupCertificateHistoryToolTip" xml:space="preserve">
+    <value>仅在你点击“检查连接”时使用。会把主机名（例如 www.example.com）而不是完整 URL 发送到 crt.sh（由 Sectigo 运营的公开证书透明度搜索服务）。</value>
   </data>
   <data name="Security_LookupDomainRegistration" xml:space="preserve">
     <value>查询域名注册信息 (RDAP)</value>

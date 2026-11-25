@@ -11,6 +11,7 @@ Most of what Browser Picker does happens on your computer. A few features contac
 | Connection check | Only when you click the padlock and confirm | The website receives a TLS connection (no page request) | No, it connects directly |
 | CAA records (part of the connection check) | Only with the connection check, when enabled | Your DNS resolver receives the host name and its parent domains | Not applicable (DNS) |
 | Domain registration (RDAP) | Only with the connection check, when enabled | The domain's registry receives the domain, for example `example.com`; `data.iana.org` serves the list of registries | Yes |
+| Certificate history (crt.sh) | Only with the connection check, when enabled | crt.sh, run by Sectigo, receives the host name, for example `www.example.com` | Yes |
 
 Wrapped links from Outlook Safe Links, Teams and Facebook are unwrapped locally, with no network request.
 
@@ -38,6 +39,7 @@ A good result means the connection looked normal at that moment. It doesn't mean
 These are off by default and only run with the connection check, never when the picker opens. The check window names each service and what it receives before you start. Their results are extra information, not a verdict: a lookup that fails, is rate limited or finds nothing shows as **Not available** and doesn't change the padlock.
 
 - **Look up domain registration (RDAP)** shows when the domain was registered and how long ago, when it last changed and expires, its registrar and status. A domain registered only days ago is a common sign of a phishing site. Only the domain is sent, never the full URL.
+- **Look up certificate history (crt.sh)** shows how many certificates public certificate transparency logs hold for the host, when the first and latest were issued, and by whom. A host whose first certificate is days old deserves a closer look. Only the host name is sent. crt.sh is often busy, and a host covered only by a wildcard certificate has no history under its own name.
 
 ## Security profiles
 
@@ -51,6 +53,7 @@ These are off by default and only run with the connection check, never when the 
 | Only for URLs matching defaults | On | On | Off |
 | Include DNS CAA and certificate transparency evidence | On | Off | On |
 | Look up domain registration (RDAP) | Off | Off | On |
+| Look up certificate history (crt.sh) | Off | Off | On |
 | Hide connection check button | Off | On | Off |
 | Skip confirmation prompt | Off | Off | On |
 

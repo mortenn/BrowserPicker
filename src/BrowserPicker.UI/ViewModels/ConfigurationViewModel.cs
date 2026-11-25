@@ -149,6 +149,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool HideManualConnectionCheck { get; set; }
 		public bool SkipConnectionCheckConfirmation { get; set; }
 		public bool LookupDomainRegistration { get; set; }
+		public bool LookupCertificateHistory { get; set; }
 
 		public bool AutoSizeWindow { get; set; } = true;
 		public double WindowWidth { get; set; }
@@ -952,6 +953,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			case nameof(IApplicationSettings.HideManualConnectionCheck):
 			case nameof(IApplicationSettings.SkipConnectionCheckConfirmation):
 			case nameof(IApplicationSettings.LookupDomainRegistration):
+			case nameof(IApplicationSettings.LookupCertificateHistory):
 				OnPropertyChanged(nameof(SelectedSecurityProfile));
 				apply_security_profile?.RaiseCanExecuteChanged();
 				break;

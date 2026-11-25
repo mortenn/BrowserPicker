@@ -489,6 +489,9 @@
   <data name="LogLevel_WarningAndAbove" xml:space="preserve">
     <value>Warning and above</value>
   </data>
+  <data name="Lookup_CertificateHistoryDisclosure" xml:space="preserve">
+    <value>Certificate history lookup sends the host name "{0}" to crt.sh, a public certificate transparency search run by Sectigo.</value>
+  </data>
   <data name="Lookup_RdapDisclosure" xml:space="preserve">
     <value>Domain registration lookup sends the domain "{0}" to its registry's RDAP service, found through IANA's list at data.iana.org. That service may see the lookup.</value>
   </data>
@@ -581,6 +584,12 @@
   </data>
   <data name="Security_IncludeCertificateRecordsToolTip" xml:space="preserve">
     <value>Used only when you click Check connection. CAA requires a DNS lookup; CT checks embedded certificate transparency evidence.</value>
+  </data>
+  <data name="Security_LookupCertificateHistory" xml:space="preserve">
+    <value>Look up certificate history (crt.sh)</value>
+  </data>
+  <data name="Security_LookupCertificateHistoryToolTip" xml:space="preserve">
+    <value>Used only when you click Check connection. Sends the host name (for example www.example.com), not the full URL, to crt.sh, a public certificate transparency search run by Sectigo.</value>
   </data>
   <data name="Security_LookupDomainRegistration" xml:space="preserve">
     <value>Look up domain registration (RDAP)</value>

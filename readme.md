@@ -214,6 +214,14 @@ Off by default. When enabled, the manual connection check (the padlock in the pi
 
 Only the registrable domain is sent (for example `example.com` for `https://www.example.com/account`), never the full URL. Browser Picker downloads IANA's list of RDAP services from `data.iana.org` and asks the registry listed for the domain's top-level domain; that registry may see the lookup. Nothing is looked up when the picker opens, even for URLs that match your Defaults. A lookup that fails, is rate limited, or covers a top-level domain without RDAP shows as "Not available" and isn't treated as a warning.
 
+> [ ] Look up certificate history (crt.sh)
+
+Off by default. When enabled, the manual connection check also shows the host's public certificate transparency history from [crt.sh](https://crt.sh), a search run by Sectigo: how many certificates have been issued, when the first and latest were issued, and by which certificate authorities. A host whose first certificate is only days old deserves a closer look.
+
+Only the host name is sent (for example `www.example.com`), never the full URL. crt.sh is often busy; a failed or rate-limited lookup shows as "Not available" and isn't treated as a warning. A host covered only by a wildcard certificate (such as `*.example.com`) has no history under its own name.
+
+This is separate from **Include DNS CAA and certificate transparency evidence**, which reads the proofs embedded in the certificate itself and sends nothing extra.
+
 ### Defaults
 The defaults tab lets you configure rules to map certain URLs to certain browsers.
 
