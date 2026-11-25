@@ -624,6 +624,10 @@ public sealed class ApplicationViewModel : ModelBase
 		{
 			lookups.Add(CertificateHistoryLookup.Shared);
 		}
+		if (Configuration.Settings.LookupUrlReputation)
+		{
+			lookups.Add(new UrlhausLookup(Windows.UrlhausAuthKey.Read));
+		}
 		return lookups;
 	}
 

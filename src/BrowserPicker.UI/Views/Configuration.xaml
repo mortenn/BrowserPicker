@@ -642,6 +642,19 @@
 							<CheckBox Content="{x:Static res:Strings.Security_IncludeCertificateRecords}" IsChecked="{Binding Settings.CheckCertificateRecords}" ToolTip="{x:Static res:Strings.Security_IncludeCertificateRecordsToolTip}" />
 							<CheckBox Content="{x:Static res:Strings.Security_LookupDomainRegistration}" IsChecked="{Binding Settings.LookupDomainRegistration}" ToolTip="{x:Static res:Strings.Security_LookupDomainRegistrationToolTip}" />
 							<CheckBox Content="{x:Static res:Strings.Security_LookupCertificateHistory}" IsChecked="{Binding Settings.LookupCertificateHistory}" ToolTip="{x:Static res:Strings.Security_LookupCertificateHistoryToolTip}" />
+							<CheckBox Content="{x:Static res:Strings.Security_LookupUrlReputation}" IsChecked="{Binding Settings.LookupUrlReputation}" ToolTip="{x:Static res:Strings.Security_LookupUrlReputationToolTip}" />
+							<StackPanel Margin="20,0,0,8">
+								<StackPanel Orientation="Horizontal">
+									<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Security_UrlhausAuthKey}" />
+									<TextBox Width="220" Text="{Binding UrlhausKeyInput, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static res:Strings.Security_UrlhausAuthKeyToolTip}" />
+									<Button Margin="4,0,0,0" Command="{Binding SaveUrlhausKey}" Content="{x:Static res:Strings.Common_Save}" />
+									<Button Margin="4,0,0,0" Command="{Binding RemoveUrlhausKey}" Content="{x:Static res:Strings.Common_Remove}" />
+								</StackPanel>
+								<TextBlock Margin="0,4,0,0" TextWrapping="Wrap">
+									<Run Text="{Binding UrlhausKeyStatus, Mode=OneWay}" />
+									<Hyperlink NavigateUri="https://auth.abuse.ch/" RequestNavigate="OnRequestNavigate">auth.abuse.ch</Hyperlink>
+								</TextBlock>
+							</StackPanel>
 							<CheckBox Content="{x:Static res:Strings.Security_HideConnectionCheck}" IsChecked="{Binding Settings.HideManualConnectionCheck}" ToolTip="{x:Static res:Strings.Security_HideConnectionCheckToolTip}" />
 							<CheckBox Content="{x:Static res:Strings.Security_SkipConfirmation}" IsChecked="{Binding Settings.SkipConnectionCheckConfirmation}" ToolTip="{x:Static res:Strings.Security_SkipConfirmationToolTip}" />
 						</StackPanel>

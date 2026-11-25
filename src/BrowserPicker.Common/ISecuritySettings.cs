@@ -51,4 +51,10 @@ public interface ISecuritySettings
 	/// Sends the host name (not the URL) to crt.sh.
 	/// </summary>
 	bool LookupCertificateHistory { get; set; }
+
+	/// <summary>
+	/// When true, manual connection checks also look up the host on URLhaus (abuse.ch), using the user's own
+	/// Auth-Key. The key is kept in Windows Credential Manager, not in the settings file.
+	/// </summary>
+	bool LookupUrlReputation { get; set; }
 }

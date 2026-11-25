@@ -11,6 +11,7 @@ public sealed record SecurityOptions
 	public bool SkipConnectionCheckConfirmation { get; set; }
 	public bool LookupDomainRegistration { get; set; }
 	public bool LookupCertificateHistory { get; set; }
+	public bool LookupUrlReputation { get; set; }
 
 	public static SecurityOptions Default =>
 		new()
@@ -24,6 +25,7 @@ public sealed record SecurityOptions
 			SkipConnectionCheckConfirmation = false,
 			LookupDomainRegistration = false,
 			LookupCertificateHistory = false,
+			LookupUrlReputation = false,
 		};
 
 	public static SecurityOptions MaxPrivacy =>
@@ -38,6 +40,7 @@ public sealed record SecurityOptions
 			SkipConnectionCheckConfirmation = false,
 			LookupDomainRegistration = false,
 			LookupCertificateHistory = false,
+			LookupUrlReputation = false,
 		};
 
 	public static SecurityOptions EnableAll =>
@@ -52,6 +55,7 @@ public sealed record SecurityOptions
 			SkipConnectionCheckConfirmation = true,
 			LookupDomainRegistration = true,
 			LookupCertificateHistory = true,
+			LookupUrlReputation = true,
 		};
 }
 
@@ -70,6 +74,7 @@ public static class SecuritySettingsExtensions
 			SkipConnectionCheckConfirmation = settings.SkipConnectionCheckConfirmation,
 			LookupDomainRegistration = settings.LookupDomainRegistration,
 			LookupCertificateHistory = settings.LookupCertificateHistory,
+			LookupUrlReputation = settings.LookupUrlReputation,
 		};
 	}
 
@@ -84,5 +89,6 @@ public static class SecuritySettingsExtensions
 		settings.SkipConnectionCheckConfirmation = options.SkipConnectionCheckConfirmation;
 		settings.LookupDomainRegistration = options.LookupDomainRegistration;
 		settings.LookupCertificateHistory = options.LookupCertificateHistory;
+		settings.LookupUrlReputation = options.LookupUrlReputation;
 	}
 }

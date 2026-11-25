@@ -150,6 +150,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool SkipConnectionCheckConfirmation { get; set; }
 		public bool LookupDomainRegistration { get; set; }
 		public bool LookupCertificateHistory { get; set; }
+		public bool LookupUrlReputation { get; set; }
 
 		public bool AutoSizeWindow { get; set; } = true;
 		public double WindowWidth { get; set; }
@@ -528,6 +529,56 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// Command to copy the current settings JSON to the clipboard.
 	/// </summary>
 	public ICommand CopySettings => copy_settings ??= new DelegateCommand(CopySettingsToClipboard);
+
+	/// <summary>
+	/// The abuse.ch Auth-Key being typed in the Security tab. Cleared once it is saved.
+	/// </summary>
+	public string UrlhausKeyInput
+	{
+		get => urlhaus_key_input;
+		set
+		{
+			if (SetProperty(ref urlhaus_key_input, value))
+			{
+				save_urlhaus_key?.RaiseCanExecuteChanged();
+			}
+		}
+	}
+
+	/// <summary>
+	/// Whether an abuse.ch Auth-Key is saved in Windows Credential Manager.
+	/// </summary>
+	public bool HasUrlhausKey => has_urlhaus_key ??= UrlhausAuthKey.Exists;
+
+	public string UrlhausKeyStatus =>
+		HasUrlhausKey ? Strings.Security_UrlhausKeySaved : Strings.Security_UrlhausKeyMissing;
+
+	/// <summary>
+	/// Saves the typed Auth-Key in Windows Credential Manager, never in the settings file.
+	/// </summary>
+	public ICommand SaveUrlhausKey =>
+		save_urlhaus_key ??= new DelegateCommand(
+			() => UpdateUrlhausKey(UrlhausAuthKey.Save(UrlhausKeyInput)),
+			() => !string.IsNullOrWhiteSpace(UrlhausKeyInput)
+		);
+
+	public ICommand RemoveUrlhausKey =>
+		remove_urlhaus_key ??= new DelegateCommand(
+			() => UpdateUrlhausKey(UrlhausAuthKey.Delete()),
+			() => HasUrlhausKey
+		);
+
+	private void UpdateUrlhausKey(bool succeeded)
+	{
+		if (succeeded)
+		{
+			UrlhausKeyInput = string.Empty;
+		}
+		has_urlhaus_key = null;
+		OnPropertyChanged(nameof(HasUrlhausKey));
+		OnPropertyChanged(nameof(UrlhausKeyStatus));
+		remove_urlhaus_key?.RaiseCanExecuteChanged();
+	}
 
 	/// <summary>
 	/// Command to import settings JSON from the clipboard.
@@ -954,6 +1005,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			case nameof(IApplicationSettings.SkipConnectionCheckConfirmation):
 			case nameof(IApplicationSettings.LookupDomainRegistration):
 			case nameof(IApplicationSettings.LookupCertificateHistory):
+			case nameof(IApplicationSettings.LookupUrlReputation):
 				OnPropertyChanged(nameof(SelectedSecurityProfile));
 				apply_security_profile?.RaiseCanExecuteChanged();
 				break;
@@ -1176,6 +1228,10 @@ public sealed class ConfigurationViewModel : ModelBase
 	private bool welcome;
 	private int selected_tab_index = BrowsersTabIndex;
 	private DelegateCommand? add_default;
+	private DelegateCommand? save_urlhaus_key;
+	private DelegateCommand? remove_urlhaus_key;
+	private string urlhaus_key_input = string.Empty;
+	private bool? has_urlhaus_key;
 	private DelegateCommand? refresh_browsers;
 	private DelegateCommand? add_browser;
 	private DelegateCommand? backup;

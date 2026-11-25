@@ -108,6 +108,9 @@
   <data name="Common_Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
   <data name="Common_Visible" xml:space="preserve">
     <value>Visible</value>
   </data>
@@ -495,6 +498,9 @@
   <data name="Lookup_RdapDisclosure" xml:space="preserve">
     <value>Domain registration lookup sends the domain "{0}" to its registry's RDAP service, found through IANA's list at data.iana.org. That service may see the lookup.</value>
   </data>
+  <data name="Lookup_UrlhausDisclosure" xml:space="preserve">
+    <value>URLhaus lookup sends the host name "{0}" and your abuse.ch Auth-Key to URLhaus (abuse.ch).</value>
+  </data>
   <data name="Picker_AlwaysAsk" xml:space="preserve">
     <value>Always ask</value>
   </data>
@@ -597,6 +603,12 @@
   <data name="Security_LookupDomainRegistrationToolTip" xml:space="preserve">
     <value>Used only when you click Check connection. Sends the domain (for example example.com), not the full URL, to the registry's RDAP service listed by IANA.</value>
   </data>
+  <data name="Security_LookupUrlReputation" xml:space="preserve">
+    <value>Look up the host on URLhaus (abuse.ch)</value>
+  </data>
+  <data name="Security_LookupUrlReputationToolTip" xml:space="preserve">
+    <value>Used only when you click Check connection. Sends the host name (for example www.example.com) and your own abuse.ch Auth-Key to URLhaus, which tracks sites that distribute malware.</value>
+  </data>
   <data name="Security_ManualProbes" xml:space="preserve">
     <value>Manual probes</value>
   </data>
@@ -626,6 +638,18 @@
   </data>
   <data name="Security_SkipConfirmationToolTip" xml:space="preserve">
     <value>Starts the connection check immediately when you click the padlock.</value>
+  </data>
+  <data name="Security_UrlhausAuthKey" xml:space="preserve">
+    <value>Auth-Key: </value>
+  </data>
+  <data name="Security_UrlhausAuthKeyToolTip" xml:space="preserve">
+    <value>Paste your abuse.ch Auth-Key. It is stored in Windows Credential Manager, not in the settings file.</value>
+  </data>
+  <data name="Security_UrlhausKeyMissing" xml:space="preserve">
+    <value>No Auth-Key saved. Get a free one from the abuse.ch Authentication Portal.</value>
+  </data>
+  <data name="Security_UrlhausKeySaved" xml:space="preserve">
+    <value>An Auth-Key is saved in Windows Credential Manager.</value>
   </data>
   <data name="Shorteners_Additional" xml:space="preserve">
     <value>Additional shorteners</value>

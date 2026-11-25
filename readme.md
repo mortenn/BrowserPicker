@@ -222,6 +222,15 @@ Only the host name is sent (for example `www.example.com`), never the full URL. 
 
 This is separate from **Include DNS CAA and certificate transparency evidence**, which reads the proofs embedded in the certificate itself and sends nothing extra.
 
+> [ ] Look up the host on URLhaus (abuse.ch)
+>> Auth-Key: [________] Save / Remove
+
+Off by default. When enabled, the manual connection check also asks [URLhaus](https://urlhaus.abuse.ch/), abuse.ch's database of sites that distribute malware, whether it has seen malware on the host: how many malware URLs, whether any are online now, when they were added, their tags, and the host's Spamhaus DBL and SURBL status.
+
+URLhaus requires your own Auth-Key, which you can get for free from the [abuse.ch Authentication Portal](https://auth.abuse.ch/). Browser Picker doesn't ship a key. The key is stored in Windows Credential Manager for your user, not in `settings.json`, so it isn't included when you export, copy or back up your settings. abuse.ch's terms allow free use under fair-use principles; commercial use may require their commercial API.
+
+Only the host name is sent (for example `www.example.com`), together with your key, never the full URL. URLhaus tracks malware downloads, not phishing, so "Not listed" doesn't mean a site is safe. A failed, rejected or rate-limited lookup shows as "Not available" and isn't treated as a warning.
+
 ### Defaults
 The defaults tab lets you configure rules to map certain URLs to certain browsers.
 

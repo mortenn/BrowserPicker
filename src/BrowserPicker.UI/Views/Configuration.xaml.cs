@@ -57,6 +57,14 @@ public partial class Configuration
 		ApplyContentTheme();
 	}
 
+	private void OnRequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+	{
+		_ = System.Diagnostics.Process.Start(
+			new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true }
+		);
+		e.Handled = true;
+	}
+
 	private void ApplyContentTheme()
 	{
 		App.GetContentThemeBrushes(out var background, out var foreground);

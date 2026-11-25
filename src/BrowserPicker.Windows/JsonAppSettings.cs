@@ -47,6 +47,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool skip_connection_check_confirmation;
 	private bool lookup_domain_registration;
 	private bool lookup_certificate_history;
+	private bool lookup_url_reputation;
 	private bool auto_close_on_focus_lost = true;
 	private string[] url_shorteners = [];
 	private bool use_fallback_default;
@@ -423,6 +424,15 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		set
 		{
 			if (SetProperty(ref lookup_certificate_history, value))
+				SaveToFile();
+		}
+	}
+	public bool LookupUrlReputation
+	{
+		get => lookup_url_reputation;
+		set
+		{
+			if (SetProperty(ref lookup_url_reputation, value))
 				SaveToFile();
 		}
 	}
@@ -814,6 +824,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		skip_connection_check_confirmation = s.SkipConnectionCheckConfirmation;
 		lookup_domain_registration = s.LookupDomainRegistration;
 		lookup_certificate_history = s.LookupCertificateHistory;
+		lookup_url_reputation = s.LookupUrlReputation;
 		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
 		url_shorteners = s.UrlShorteners;
 		window_width = NormalizeMainWindowDimension(s.WindowWidth, MinWindowWidth);
@@ -848,6 +859,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(SkipConnectionCheckConfirmation));
 		OnPropertyChanged(nameof(LookupDomainRegistration));
 		OnPropertyChanged(nameof(LookupCertificateHistory));
+		OnPropertyChanged(nameof(LookupUrlReputation));
 		OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 		OnPropertyChanged(nameof(WindowWidth));
 		OnPropertyChanged(nameof(WindowHeight));
