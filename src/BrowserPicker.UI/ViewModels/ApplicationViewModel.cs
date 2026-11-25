@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
+using BrowserPicker.Common.Resources;
 using BrowserPicker.UI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -402,12 +403,11 @@ public sealed class ApplicationViewModel : ModelBase
 	public string ConnectionCheckToolTip =>
 		ConnectionCheckState switch
 		{
-			ConnectionCheckIndicatorState.Good => "Connection check passed",
-			ConnectionCheckIndicatorState.Warning => "Connection check found warnings",
-			ConnectionCheckIndicatorState.Error => "Connection check found problems",
-			ConnectionCheckIndicatorState.Unresolved => "Connection check could not resolve the host",
-			_ =>
-				"Check the TLS certificate. This contacts the target host and may be visible to the website or proxies.",
+			ConnectionCheckIndicatorState.Good => Strings.ConnectionCheck_ToolTipPassed,
+			ConnectionCheckIndicatorState.Warning => Strings.ConnectionCheck_ToolTipWarnings,
+			ConnectionCheckIndicatorState.Error => Strings.ConnectionCheck_ToolTipProblems,
+			ConnectionCheckIndicatorState.Unresolved => Strings.ConnectionCheck_ToolTipUnresolved,
+			_ => Strings.ConnectionCheck_ToolTipDefault,
 		};
 
 	/// <summary>
@@ -548,7 +548,7 @@ public sealed class ApplicationViewModel : ModelBase
 		ConnectionCheckViewModel viewModel;
 		if (Configuration.Settings.DisableNetworkAccess)
 		{
-			viewModel = new ConnectionCheckViewModel("Network checks are disabled in settings.");
+			viewModel = new ConnectionCheckViewModel(Strings.ConnectionCheck_NetworkDisabled);
 		}
 		else if (
 			!TlsCertificateSummary.TryCreateTarget(

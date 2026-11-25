@@ -15,6 +15,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
+using BrowserPicker.Common.Resources;
 using BrowserPicker.Windows;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -117,10 +118,23 @@ public sealed class FeedbackViewModel : ModelBase
 	public int VisibleApplicationLogEntryCount => application_log_entries.Count(FilterApplicationLogEntry);
 
 	public string ApplicationLogStatus =>
-		runtime_log_buffer == null ? "Runtime logging is unavailable."
+		runtime_log_buffer == null ? Strings.Feedback_LogUnavailable
 		: string.IsNullOrWhiteSpace(ApplicationLogFilter) && VisibleApplicationLogEntryCount == ApplicationLogEntryCount
-			? $"Live capture · {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} retained · capacity {runtime_log_buffer.Capacity}"
-		: $"Live capture · showing {VisibleApplicationLogEntryCount} of {ApplicationLogEntryCount} entr{(ApplicationLogEntryCount == 1 ? "y" : "ies")} · {SelectedApplicationLogLevelOption.Label} · capacity {runtime_log_buffer.Capacity}";
+			? string.Format(
+				Strings.Feedback_LogStatusAll,
+				FormatLogEntryCount(ApplicationLogEntryCount),
+				runtime_log_buffer.Capacity
+			)
+		: string.Format(
+			Strings.Feedback_LogStatusFiltered,
+			VisibleApplicationLogEntryCount,
+			FormatLogEntryCount(ApplicationLogEntryCount),
+			SelectedApplicationLogLevelOption.Label,
+			runtime_log_buffer.Capacity
+		);
+
+	private static string FormatLogEntryCount(int count) =>
+		string.Format(count == 1 ? Strings.Feedback_LogEntryCountOne : Strings.Feedback_LogEntryCountMany, count);
 
 	private void CopyFeedbackMarkdownToClipboard()
 	{

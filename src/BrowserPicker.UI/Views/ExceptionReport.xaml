@@ -4,9 +4,10 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:res="clr-namespace:BrowserPicker.Common.Resources;assembly=BrowserPicker.Common"
 	xmlns:system="clr-namespace:System;assembly=mscorlib"
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
-	Title="An unhandled exception has occurred"
+	Title="{x:Static res:Strings.Crash_Title}"
 	d:DataContext="{d:DesignInstance viewModels:ExceptionViewModel,
 									 d:IsDesignTimeCreatable=True}"
 	SizeToContent="WidthAndHeight"
@@ -83,16 +84,16 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical">
-			<TextBlock Text="Unfortunately, BrowserPicker has crashed." />
-			<TextBlock Text="Please submit a bug report on https://github.com/mortenn/BrowserPicker." />
-			<TextBlock Margin="0,4,0,0" Text="Exception details:" />
+			<TextBlock Text="{x:Static res:Strings.Crash_Message}" />
+			<TextBlock Text="{x:Static res:Strings.Crash_ReportBug}" />
+			<TextBlock Margin="0,4,0,0" Text="{x:Static res:Strings.Crash_Details}" />
 		</StackPanel>
 		<Border Grid.Row="1" Margin="5">
 			<ContentPresenter Content="{Binding Model.Exception}" />
 		</Border>
 		<StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
-			<Button Margin="4" Padding="10,0" Command="{Binding CopyToClipboard}" Content="Copy to clipboard" />
-			<Button Margin="4" Padding="10,0" Command="{Binding Ok}" Content="Ok" />
+			<Button Margin="4" Padding="10,0" Command="{Binding CopyToClipboard}" Content="{x:Static res:Strings.Common_CopyToClipboard}" />
+			<Button Margin="4" Padding="10,0" Command="{Binding Ok}" Content="{x:Static res:Strings.Common_Ok}" />
 		</StackPanel>
 	</Grid>
 </Window>

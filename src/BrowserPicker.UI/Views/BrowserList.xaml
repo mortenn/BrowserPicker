@@ -5,6 +5,7 @@
 	xmlns:converters="clr-namespace:BrowserPicker.UI.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:res="clr-namespace:BrowserPicker.Common.Resources;assembly=BrowserPicker.Common"
 	xmlns:ui="clr-namespace:BrowserPicker.UI"
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
 	d:DataContext="{d:DesignInstance viewModels:ApplicationViewModel,
@@ -44,7 +45,7 @@
 							</Style.Triggers>
 						</Style>
 					</TextBlock.Style>
-					<Hyperlink Command="{Binding PinWindow}" TextDecorations="None" ToolTip="Toggle whether this picker window stays open when it loses focus">
+					<Hyperlink Command="{Binding PinWindow}" TextDecorations="None" ToolTip="{x:Static res:Strings.Picker_PinToolTip}">
 						<Hyperlink.Style>
 							<Style TargetType="{x:Type Hyperlink}">
 								<Setter Property="Foreground" Value="Silver" />
@@ -59,7 +60,7 @@
 					</Hyperlink>
 				</TextBlock>
 				<TextBlock Margin="0,5">
-					<Hyperlink Command="{Binding CopyUrl}" TextDecorations="None" ToolTip="Copy the URL to the clipboard">
+					<Hyperlink Command="{Binding CopyUrl}" TextDecorations="None" ToolTip="{x:Static res:Strings.Picker_CopyUrlToolTip}">
 						<Hyperlink.Style>
 							<Style TargetType="{x:Type Hyperlink}">
 								<Setter Property="Foreground" Value="Silver" />
@@ -72,7 +73,7 @@
 						</Hyperlink.Style>
 						📋
 					</Hyperlink>
-					<Hyperlink Command="{Binding Edit}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextDecorations="None" ToolTip="Edit the URL before opening it">
+					<Hyperlink Command="{Binding Edit}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextDecorations="None" ToolTip="{x:Static res:Strings.Picker_EditUrlToolTip}">
 						✏
 					</Hyperlink>
 					<Hyperlink Command="{Binding CheckConnection}" TextDecorations="None" ToolTip="{Binding ConnectionCheckToolTip}">
@@ -108,7 +109,7 @@
 						</InlineUIContainer>
 					</Hyperlink>
 				</TextBlock>
-				<TextBlock Margin="5,5,0,0" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Text="Redirected URL">
+				<TextBlock Margin="5,5,0,0" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Text="{x:Static res:Strings.Picker_RedirectedUrl}">
 					<TextBlock.Style>
 						<Style>
 							<Style.Triggers>
@@ -436,7 +437,7 @@
 										</Button.Template>
 									</Button>
 									<!--  Expand/collapse toggle for browsers with profiles  -->
-									<Button Grid.Column="1" VerticalAlignment="Stretch" Command="{Binding ExpandToggle}" ToolTip="Show profiles">
+									<Button Grid.Column="1" VerticalAlignment="Stretch" Command="{Binding ExpandToggle}" ToolTip="{x:Static res:Strings.Picker_ShowProfiles}">
 										<Button.Style>
 											<Style TargetType="Button">
 												<Setter Property="Visibility" Value="Collapsed" />
@@ -623,13 +624,13 @@
 			<StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal">
 				<TextBlock VerticalAlignment="Center">
 					<Hyperlink Command="{Binding Configure}" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
-						<TextBlock Text="Configure browser list" />
+						<TextBlock Text="{x:Static res:Strings.Picker_ConfigureBrowserList}" />
 					</Hyperlink>
 				</TextBlock>
 				<TextBlock VerticalAlignment="Center" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Opacity="0.6" Text="  ·  " />
 				<TextBlock VerticalAlignment="Center">
 					<Hyperlink Command="{Binding Feedback}" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
-						<TextBlock Text="Feedback" />
+						<TextBlock Text="{x:Static res:Strings.Common_Feedback}" />
 					</Hyperlink>
 				</TextBlock>
 			</StackPanel>
@@ -639,7 +640,7 @@
 				Margin="12,0,0,0"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				Content="Always ask"
+				Content="{x:Static res:Strings.Picker_AlwaysAsk}"
 				Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}"
 				IsChecked="{Binding Configuration.Settings.AlwaysPrompt, UpdateSourceTrigger=PropertyChanged}" />
 			<StackPanel
@@ -661,7 +662,7 @@
 				</StackPanel.Style>
 				<CheckBox IsChecked="{Binding Configuration.AutoAddDefault}">
 					<StackPanel Orientation="Horizontal">
-						<TextBlock Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="Remember " />
+						<TextBlock Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="{x:Static res:Strings.Picker_Remember}" />
 						<TextBlock Style="{StaticResource RememberValueTextBlockStyle}" Text="{Binding Url.HostName}" ToolTip="{Binding Url.HostName}" />
 					</StackPanel>
 				</CheckBox>
@@ -678,7 +679,7 @@
 					</StackPanel.Style>
 					<CheckBox IsChecked="{Binding Configuration.AutoAddRegistrableDefault}">
 						<StackPanel Orientation="Horizontal">
-							<TextBlock Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="Remember " />
+							<TextBlock Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="{x:Static res:Strings.Picker_Remember}" />
 							<TextBlock Style="{StaticResource RememberValueTextBlockStyle}" Text="{Binding Url.RegistrableDomain, Mode=OneWay}" ToolTip="{Binding Url.RegistrableDomain}" />
 						</StackPanel>
 					</CheckBox>

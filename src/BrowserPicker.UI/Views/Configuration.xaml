@@ -7,6 +7,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:logging="clr-namespace:Microsoft.Extensions.Logging;assembly=Microsoft.Extensions.Logging.Abstractions"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:res="clr-namespace:BrowserPicker.Common.Resources;assembly=BrowserPicker.Common"
 	xmlns:securityProfiles="clr-namespace:BrowserPicker.UI.SecurityProfiles"
 	xmlns:system="clr-namespace:System;assembly=mscorlib"
 	xmlns:ui="clr-namespace:BrowserPicker.UI"
@@ -203,7 +204,7 @@
 			SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
 			SelectionChanged="TabControl_SelectionChanged">
 
-			<TabItem Header="Welcome">
+			<TabItem Header="{x:Static res:Strings.Config_TabWelcome}">
 				<TabItem.Style>
 					<Style BasedOn="{StaticResource {x:Type TabItem}}" TargetType="TabItem">
 						<Setter Property="Visibility" Value="Collapsed" />
@@ -222,24 +223,26 @@
 						FontSize="16"
 						FontWeight="Light"
 						TextWrapping="Wrap">
-						Welcome to Browser Picker, hope you enjoy my little app!<LineBreak />
-						I've gone ahead and opened up the settings window,<LineBreak />
-						so you can have a look around before you get started :)<LineBreak />
+						<Run Text="{x:Static res:Strings.Welcome_Intro}" />
 						<LineBreak />
-						Please give it a ⭐ on GitHub, so you will get notified when a new release is made.<LineBreak />
 						<LineBreak />
-						Should you run into any kind of trouble or get an idea,<LineBreak />
-						please visit<Hyperlink>github.com/mortenn/BrowserPicker</Hyperlink>
-						and file an issue!<LineBreak />
+						<Run Text="{x:Static res:Strings.Welcome_Star}" />
 						<LineBreak />
-						Be seeing you!<LineBreak />
 						<LineBreak />
-						<Run FontSize="8">This message will self-destruct in 10 seconds</Run>
+						<Run Text="{x:Static res:Strings.Welcome_IssuesPrefix}" />
+						<Hyperlink>github.com/mortenn/BrowserPicker</Hyperlink>
+						<Run Text="{x:Static res:Strings.Welcome_IssuesSuffix}" />
+						<LineBreak />
+						<LineBreak />
+						<Run Text="{x:Static res:Strings.Welcome_Farewell}" />
+						<LineBreak />
+						<LineBreak />
+						<Run FontSize="8" Text="{x:Static res:Strings.Welcome_SelfDestruct}" />
 					</TextBlock>
 				</ScrollViewer>
 			</TabItem>
 
-			<TabItem Header="Browsers">
+			<TabItem Header="{x:Static res:Strings.Config_TabBrowsers}">
 				<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 					<Grid>
 						<ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -302,12 +305,12 @@
 															<TextBlock.Style>
 																<Style>
 																	<Setter Property="TextBlock.Foreground" Value="Green" />
-																	<Setter Property="TextBlock.Text" Value="Enabled" />
-																	<Setter Property="FrameworkElement.ToolTip" Value="Toggle whether this browser appears in the picker" />
+																	<Setter Property="TextBlock.Text" Value="{x:Static res:Strings.Common_Enabled}" />
+																	<Setter Property="FrameworkElement.ToolTip" Value="{x:Static res:Strings.Config_ToggleBrowserToolTip}" />
 																	<Style.Triggers>
 																		<DataTrigger Binding="{Binding Model.Disabled}" Value="True">
 																			<Setter Property="TextBlock.Foreground" Value="OrangeRed" />
-																			<Setter Property="TextBlock.Text" Value="Disabled" />
+																			<Setter Property="TextBlock.Text" Value="{x:Static res:Strings.Common_Disabled}" />
 																		</DataTrigger>
 																	</Style.Triggers>
 																</Style>
@@ -317,12 +320,12 @@
 												</TextBlock>
 												<TextBlock Grid.Column="4" Margin="10" FontSize="16">
 													<Hyperlink Command="{Binding Edit}">
-														<TextBlock Foreground="CadetBlue" Text="Edit" ToolTip="Edit browser definition" />
+														<TextBlock Foreground="CadetBlue" Text="{x:Static res:Strings.Common_Edit}" ToolTip="{x:Static res:Strings.Config_EditBrowserToolTip}" />
 													</Hyperlink>
 												</TextBlock>
 												<TextBlock Grid.Column="5" Margin="10" FontSize="16">
 													<Hyperlink Command="{Binding Duplicate}">
-														<TextBlock Foreground="LightGreen" Text="+" ToolTip="Duplicate browser: create a new browser using this browser as a starting point" />
+														<TextBlock Foreground="LightGreen" Text="+" ToolTip="{x:Static res:Strings.Config_DuplicateBrowserToolTip}" />
 													</Hyperlink>
 												</TextBlock>
 												<TextBlock Grid.Column="6" Margin="10" FontSize="16">
@@ -336,7 +339,7 @@
 														</Style>
 													</TextBlock.Style>
 													<Hyperlink Command="{Binding Remove}">
-														<TextBlock Foreground="Red" Text="X" ToolTip="Remove custom browser from list" />
+														<TextBlock Foreground="Red" Text="X" ToolTip="{x:Static res:Strings.Config_RemoveBrowserToolTip}" />
 													</Hyperlink>
 												</TextBlock>
 											</Grid>
@@ -372,15 +375,15 @@
 															</TextBlock>
 															<TextBlock Grid.Column="1" Margin="10,0" VerticalAlignment="Center" FontSize="14">
 																<Hyperlink Command="{Binding ToggleVisibility}" TextDecorations="None">
-																	<TextBlock ToolTip="Toggle whether this profile appears in the picker">
+																	<TextBlock ToolTip="{x:Static res:Strings.Config_ToggleProfileToolTip}">
 																		<TextBlock.Style>
 																			<Style TargetType="TextBlock">
 																				<Setter Property="Foreground" Value="Green" />
-																				<Setter Property="Text" Value="Visible" />
+																				<Setter Property="Text" Value="{x:Static res:Strings.Common_Visible}" />
 																				<Style.Triggers>
 																					<DataTrigger Binding="{Binding Hidden}" Value="True">
 																						<Setter Property="Foreground" Value="OrangeRed" />
-																						<Setter Property="Text" Value="Hidden" />
+																						<Setter Property="Text" Value="{x:Static res:Strings.Common_Hidden}" />
 																					</DataTrigger>
 																				</Style.Triggers>
 																			</Style>
@@ -401,7 +404,7 @@
 				</ScrollViewer>
 			</TabItem>
 
-			<TabItem Header="Behaviour">
+			<TabItem Header="{x:Static res:Strings.Config_TabBehaviour}">
 				<ScrollViewer Padding="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 					<Grid>
 						<Grid.Resources>
@@ -416,13 +419,13 @@
 
 						<!--  Left: Appearance & list order  -->
 						<StackPanel Grid.Column="0" Margin="0,0,16,0">
-							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="Appearance" />
+							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_Appearance}" />
 							<StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-								<TextBlock VerticalAlignment="Center" Text="Theme: " />
+								<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Config_Theme}" />
 								<ComboBox Width="120" VerticalAlignment="Center" ItemsSource="{Binding Source={StaticResource ThemeModes}}" SelectedItem="{Binding Settings.ThemeMode}" />
 							</StackPanel>
 							<StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-								<TextBlock VerticalAlignment="Center" Text="Font size: " />
+								<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Config_FontSize}" />
 								<TextBox
 									MinWidth="50"
 									MinHeight="28"
@@ -432,8 +435,8 @@
 									Text="{Binding Settings.FontSize, UpdateSourceTrigger=PropertyChanged}" />
 								<TextBlock Margin="2,0,0,0" VerticalAlignment="Center" Text=" px" />
 							</StackPanel>
-							<CheckBox Content="Auto size window" IsChecked="{Binding Settings.AutoSizeWindow}" ToolTip="When checked, the window fits its content. When unchecked, the window uses the last size you set by resizing. Resize the window to fix a size; that turns this off and saves the size." />
-							<CheckBox Content="Turn off transparency" IsChecked="{Binding Settings.DisableTransparency}" />
+							<CheckBox Content="{x:Static res:Strings.Config_AutoSizeWindow}" IsChecked="{Binding Settings.AutoSizeWindow}" ToolTip="{x:Static res:Strings.Config_AutoSizeWindowToolTip}" />
+							<CheckBox Content="{x:Static res:Strings.Config_DisableTransparency}" IsChecked="{Binding Settings.DisableTransparency}" />
 							<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
 								<StackPanel.Style>
 									<Style>
@@ -445,7 +448,7 @@
 										</Style.Triggers>
 									</Style>
 								</StackPanel.Style>
-								<TextBlock VerticalAlignment="Center" Text="Window opacity: " />
+								<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Config_WindowOpacity}" />
 								<Slider
 									Width="120"
 									Margin="4,0"
@@ -456,31 +459,31 @@
 								<TextBlock MinWidth="32" VerticalAlignment="Center" Text="{Binding Settings.WindowOpacity, StringFormat=P0}" />
 							</StackPanel>
 
-							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="List order" />
-							<RadioButton Margin="0,2" Content="Sort list manually" GroupName="OrderBy" IsChecked="{Binding Settings.UseManualOrdering}" />
-							<RadioButton Margin="0,2" Content="Sort list based on usage" GroupName="OrderBy" IsChecked="{Binding Settings.UseAutomaticOrdering}" />
-							<RadioButton Margin="0,2,0,6" Content="Sort list alphabetically" GroupName="OrderBy" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" />
+							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_ListOrder}" />
+							<RadioButton Margin="0,2" Content="{x:Static res:Strings.Config_SortManual}" GroupName="OrderBy" IsChecked="{Binding Settings.UseManualOrdering}" />
+							<RadioButton Margin="0,2" Content="{x:Static res:Strings.Config_SortUsage}" GroupName="OrderBy" IsChecked="{Binding Settings.UseAutomaticOrdering}" />
+							<RadioButton Margin="0,2,0,6" Content="{x:Static res:Strings.Config_SortAlphabetical}" GroupName="OrderBy" IsChecked="{Binding Settings.UseAlphabeticalOrdering}" />
 
-							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="Profile display" />
-							<RadioButton Margin="0,2" Content="Group profiles under browser" GroupName="ProfileDisplay" IsChecked="{Binding UseGroupedProfiles}" />
-							<RadioButton Margin="0,2,0,6" Content="Show profiles as separate entries" GroupName="ProfileDisplay" IsChecked="{Binding UseFlatProfiles}" />
-							<CheckBox Margin="0,2,0,6" IsChecked="{Binding Settings.PersistProfileExpansion}" IsEnabled="{Binding UseGroupedProfiles}" ToolTip="When checked, a browser's expanded/collapsed profile list is remembered. When unchecked, profile groups always start collapsed.">
-								<TextBlock Text="Remember expanded profile groups between launches" TextWrapping="Wrap" />
+							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_ProfileDisplay}" />
+							<RadioButton Margin="0,2" Content="{x:Static res:Strings.Config_GroupProfiles}" GroupName="ProfileDisplay" IsChecked="{Binding UseGroupedProfiles}" />
+							<RadioButton Margin="0,2,0,6" Content="{x:Static res:Strings.Config_ProfilesAsEntries}" GroupName="ProfileDisplay" IsChecked="{Binding UseFlatProfiles}" />
+							<CheckBox Margin="0,2,0,6" IsChecked="{Binding Settings.PersistProfileExpansion}" IsEnabled="{Binding UseGroupedProfiles}" ToolTip="{x:Static res:Strings.Config_RememberExpandedToolTip}">
+								<TextBlock Text="{x:Static res:Strings.Config_RememberExpanded}" TextWrapping="Wrap" />
 							</CheckBox>
 						</StackPanel>
 
 						<!--  Right: Selection & defaults  -->
 						<StackPanel Grid.Column="1">
-							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="When to show the picker" />
-							<CheckBox Content="Always show browser selection window" IsChecked="{Binding Settings.AlwaysPrompt}" />
-							<CheckBox Content="Auto close on focus lost" IsChecked="{Binding AutoCloseOnFocusLost}" ToolTip="When checked, the picker closes itself if you switch to another window. Turn this off to keep picker windows pinned until you close or use them." />
-							<CheckBox Content="Always ask when no default is matching URL" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" />
-							<CheckBox Content="Use defaults even when browser is not running" IsChecked="{Binding Settings.AlwaysUseDefaults}" ToolTip="When unchecked, the selection window appears if your default browser is not running. Check this to always open links in your default (or fallback) browser without showing the selection window." />
+							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_WhenToShowPicker}" />
+							<CheckBox Content="{x:Static res:Strings.Config_AlwaysShowPicker}" IsChecked="{Binding Settings.AlwaysPrompt}" />
+							<CheckBox Content="{x:Static res:Strings.Config_AutoCloseOnFocusLost}" IsChecked="{Binding AutoCloseOnFocusLost}" ToolTip="{x:Static res:Strings.Config_AutoCloseOnFocusLostToolTip}" />
+							<CheckBox Content="{x:Static res:Strings.Config_AlwaysAskWithoutDefault}" IsChecked="{Binding Settings.AlwaysAskWithoutDefault}" />
+							<CheckBox Content="{x:Static res:Strings.Config_UseDefaultsWhenNotRunning}" IsChecked="{Binding Settings.AlwaysUseDefaults}" ToolTip="{x:Static res:Strings.Config_UseDefaultsWhenNotRunningToolTip}" />
 
-							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="Lookup timeout" />
+							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_LookupTimeout}" />
 							<StackPanel Margin="20,0,0,0">
 								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center" Text="URL resolution timeout: " />
+									<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Config_UrlResolutionTimeout}" />
 									<TextBox
 										MinWidth="70"
 										MinHeight="28"
@@ -493,8 +496,8 @@
 								</StackPanel>
 							</StackPanel>
 
-							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="When no URL rule matches" />
-							<CheckBox Content="Use a fallback default browser" IsChecked="{Binding Settings.UseFallbackDefault}" ToolTip="When checked, links that match no rule open in the browser you select below. When unchecked, the picker is shown (or you are asked) depending on other settings." />
+							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_WhenNoRuleMatches}" />
+							<CheckBox Content="{x:Static res:Strings.Config_UseFallbackBrowser}" IsChecked="{Binding Settings.UseFallbackDefault}" ToolTip="{x:Static res:Strings.Config_UseFallbackBrowserToolTip}" />
 							<StackPanel Margin="20,4,0,0">
 								<StackPanel.Style>
 									<Style>
@@ -507,7 +510,7 @@
 									</Style>
 								</StackPanel.Style>
 								<StackPanel Orientation="Horizontal">
-									<TextBlock VerticalAlignment="Center" Text="Fallback browser: " />
+									<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Config_FallbackBrowser}" />
 									<ComboBox
 										MinWidth="180"
 										VerticalAlignment="Center"
@@ -533,7 +536,7 @@
 										</Style.Triggers>
 									</Style>
 								</StackPanel.Style>
-								<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="Windows integration" />
+								<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_WindowsIntegration}" />
 								<TextBlock Margin="0,0,0,6" Text="{Binding BrowserRegistrationDescription}" TextWrapping="Wrap" />
 								<Button
 									Margin="0,0,0,6"
@@ -549,7 +552,7 @@
 				</ScrollViewer>
 			</TabItem>
 
-			<TabItem Header="Security">
+			<TabItem Header="{x:Static res:Strings.Config_TabSecurity}">
 				<ScrollViewer Padding="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 					<Grid>
 						<Grid.Resources>
@@ -559,7 +562,7 @@
 						</Grid.Resources>
 						<StackPanel>
 							<Menu Margin="0,4,0,10" Background="Transparent" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}">
-								<MenuItem Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Header="Apply profile" ItemsSource="{x:Static securityProfiles:PredefinedSecurityProfiles.All}">
+								<MenuItem Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Header="{x:Static res:Strings.Security_ApplyProfile}" ItemsSource="{x:Static securityProfiles:PredefinedSecurityProfiles.All}">
 									<MenuItem.ItemContainerStyle>
 										<Style TargetType="{x:Type MenuItem}">
 											<Setter Property="Header" Value="{Binding DisplayName}" />
@@ -580,8 +583,8 @@
 								</MenuItem>
 							</Menu>
 
-							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="Automatic probes" />
-							<CheckBox Content="Probe URL shorteners / redirects" IsChecked="{Binding Settings.ProbeRedirects}" />
+							<TextBlock Margin="0,4,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Security_AutomaticProbes}" />
+							<CheckBox Content="{x:Static res:Strings.Security_ProbeShorteners}" IsChecked="{Binding Settings.ProbeRedirects}" />
 							<StackPanel Margin="20,0,0,8">
 								<StackPanel.Style>
 									<Style TargetType="StackPanel">
@@ -593,10 +596,10 @@
 										</Style.Triggers>
 									</Style>
 								</StackPanel.Style>
-								<CheckBox Content="Only for known URL shorteners" IsChecked="{Binding Settings.RedirectsKnownOnly}" />
+								<CheckBox Content="{x:Static res:Strings.Security_OnlyKnownShorteners}" IsChecked="{Binding Settings.RedirectsKnownOnly}" />
 							</StackPanel>
 
-							<CheckBox Content="Probe favicon" IsChecked="{Binding Settings.ProbeFavicons}" />
+							<CheckBox Content="{x:Static res:Strings.Security_ProbeFavicon}" IsChecked="{Binding Settings.ProbeFavicons}" />
 							<StackPanel Margin="20,0,0,8">
 								<StackPanel.Style>
 									<Style TargetType="StackPanel">
@@ -608,26 +611,26 @@
 										</Style.Triggers>
 									</Style>
 								</StackPanel.Style>
-								<CheckBox Content="Only for URLs matching defaults" IsChecked="{Binding Settings.FaviconsForDefaults}" />
+								<CheckBox Content="{x:Static res:Strings.Security_OnlyMatchingDefaults}" IsChecked="{Binding Settings.FaviconsForDefaults}" />
 							</StackPanel>
 
-							<TextBlock Margin="0,8,0,6" FontWeight="Bold" Text="Manual probes" />
-							<CheckBox Content="Include DNS CAA and certificate transparency evidence" IsChecked="{Binding Settings.CheckCertificateRecords}" ToolTip="Used only when you click Check connection. CAA requires a DNS lookup; CT checks embedded certificate transparency evidence." />
-							<CheckBox Content="Hide connection check button" IsChecked="{Binding Settings.HideManualConnectionCheck}" ToolTip="Removes the padlock connection check action from the picker." />
-							<CheckBox Content="Skip confirmation prompt" IsChecked="{Binding Settings.SkipConnectionCheckConfirmation}" ToolTip="Starts the connection check immediately when you click the padlock." />
+							<TextBlock Margin="0,8,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Security_ManualProbes}" />
+							<CheckBox Content="{x:Static res:Strings.Security_IncludeCertificateRecords}" IsChecked="{Binding Settings.CheckCertificateRecords}" ToolTip="{x:Static res:Strings.Security_IncludeCertificateRecordsToolTip}" />
+							<CheckBox Content="{x:Static res:Strings.Security_HideConnectionCheck}" IsChecked="{Binding Settings.HideManualConnectionCheck}" ToolTip="{x:Static res:Strings.Security_HideConnectionCheckToolTip}" />
+							<CheckBox Content="{x:Static res:Strings.Security_SkipConfirmation}" IsChecked="{Binding Settings.SkipConnectionCheckConfirmation}" ToolTip="{x:Static res:Strings.Security_SkipConfirmationToolTip}" />
 						</StackPanel>
 					</Grid>
 				</ScrollViewer>
 			</TabItem>
 
-			<TabItem Header="Defaults">
+			<TabItem Header="{x:Static res:Strings.Config_TabDefaults}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="*" />
 						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
-					<TextBlock Margin="5" Text="Set default browser per domain" />
+					<TextBlock Margin="5" Text="{x:Static res:Strings.Defaults_Heading}" />
 					<DataGrid
 						Grid.Row="1"
 						Margin="4,0,4,0"
@@ -670,7 +673,7 @@
 							</Style>
 						</DataGrid.CellStyle>
 						<DataGrid.Columns>
-							<DataGridTemplateColumn Width="150" Header="Match by">
+							<DataGridTemplateColumn Width="150" Header="{x:Static res:Strings.Defaults_MatchBy}">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="common:DefaultSetting">
 										<ComboBox
@@ -682,7 +685,7 @@
 									</DataTemplate>
 								</DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
-							<DataGridTextColumn Width="*" Binding="{Binding Pattern}" Header="Pattern">
+							<DataGridTextColumn Width="*" Binding="{Binding Pattern}" Header="{x:Static res:Strings.Defaults_Pattern}">
 								<DataGridTextColumn.ElementStyle>
 									<Style TargetType="TextBlock">
 										<Setter Property="VerticalAlignment" Value="Center" />
@@ -693,7 +696,7 @@
 									<Style BasedOn="{StaticResource DefaultsGridEditorTextBoxStyle}" TargetType="TextBox" />
 								</DataGridTextColumn.EditingElementStyle>
 							</DataGridTextColumn>
-							<DataGridTemplateColumn Width="*" MinWidth="140" Header="Browser" SortMemberPath="Model.Name">
+							<DataGridTemplateColumn Width="*" MinWidth="140" Header="{x:Static res:Strings.Defaults_Browser}" SortMemberPath="Model.Name">
 								<DataGridTemplateColumn.CellTemplate>
 									<DataTemplate DataType="common:DefaultSetting">
 										<ComboBox
@@ -786,12 +789,12 @@
 							Padding="12,0"
 							VerticalAlignment="Stretch"
 							Command="{Binding AddDefault}"
-							Content="Add" />
+							Content="{x:Static res:Strings.Common_Add}" />
 					</Grid>
 				</Grid>
 			</TabItem>
 
-			<TabItem Header="Test defaults">
+			<TabItem Header="{x:Static res:Strings.Config_TabTestDefaults}">
 				<ScrollViewer Padding="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 					<Grid>
 						<Grid.RowDefinitions>
@@ -804,20 +807,20 @@
 							<ColumnDefinition Width="Auto" />
 							<ColumnDefinition Width="*" />
 						</Grid.ColumnDefinitions>
-						<TextBlock Text="URL:" />
+						<TextBlock Text="{x:Static res:Strings.TestDefaults_Url}" />
 
 						<TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding TestDefaultsURL, UpdateSourceTrigger=PropertyChanged}" />
 
-						<TextBlock Grid.Row="2" Grid.Column="0" Text="Default browser matched:" />
+						<TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Strings.TestDefaults_Matched}" />
 						<TextBlock Grid.Row="2" Grid.Column="1" Foreground="LightGreen" Text="{Binding TestDefaultsResult}" />
 
-						<TextBlock Grid.Row="3" Grid.Column="0" Text="Actual browser choice:" />
+						<TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Strings.TestDefaults_Actual}" />
 						<TextBlock Grid.Row="3" Grid.Column="1" Foreground="LightGreen" Text="{Binding TestActualResult}" />
 					</Grid>
 				</ScrollViewer>
 			</TabItem>
 
-			<TabItem Header="Backup">
+			<TabItem Header="{x:Static res:Strings.Config_TabBackup}">
 				<ScrollViewer Padding="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
 					<Grid Margin="10" VerticalAlignment="Top">
 						<Grid.RowDefinitions>
@@ -825,30 +828,30 @@
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
 						</Grid.RowDefinitions>
-						<TextBlock Margin="5" Text="Back up or restore your BrowserPicker configuration:" />
+						<TextBlock Margin="5" Text="{x:Static res:Strings.Backup_Heading}" />
 						<WrapPanel Grid.Row="1" Margin="5,5,5,0">
 							<Button Margin="0,0,8,8" Padding="10,6" Command="{Binding Backup}">
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Text="&#xE105;" />
-									<TextBlock VerticalAlignment="Center" Text="Export Browser Picker settings" />
+									<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Backup_Export}" />
 								</StackPanel>
 							</Button>
 							<Button Margin="0,0,8,8" Padding="10,6" Command="{Binding Restore}">
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Text="&#xE8E5;" />
-									<TextBlock VerticalAlignment="Center" Text="Import Browser Picker settings" />
+									<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Backup_Import}" />
 								</StackPanel>
 							</Button>
 							<Button Margin="0,0,8,8" Padding="10,6" Command="{Binding CopySettings}">
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Text="&#xE8C8;" />
-									<TextBlock VerticalAlignment="Center" Text="Copy settings" />
+									<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Backup_Copy}" />
 								</StackPanel>
 							</Button>
 							<Button Margin="0,0,0,8" Padding="10,6" Command="{Binding PasteSettings}">
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Margin="0,0,8,0" VerticalAlignment="Center" FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets" Text="&#xE77F;" />
-									<TextBlock VerticalAlignment="Center" Text="Paste settings" />
+									<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Backup_Paste}" />
 								</StackPanel>
 							</Button>
 						</WrapPanel>
@@ -859,7 +862,7 @@
 				</ScrollViewer>
 			</TabItem>
 
-			<TabItem x:Name="FeedbackTab" Header="Feedback">
+			<TabItem x:Name="FeedbackTab" Header="{x:Static res:Strings.Common_Feedback}">
 				<Grid x:Name="FeedbackContentRoot" d:DataContext="{d:DesignInstance viewModels:FeedbackViewModel, d:IsDesignTimeCreatable=True}">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -872,15 +875,13 @@
 								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
 							<StackPanel>
-								<TextBlock FontSize="18" FontWeight="SemiBold" Text="Feedback and diagnostics" />
-								<TextBlock Margin="0,6,0,0" TextWrapping="Wrap">
-									When something feels off, copy a ready-made report for GitHub or open a new issue with the important context already filled in.
-								</TextBlock>
+								<TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Static res:Strings.Feedback_Heading}" />
+								<TextBlock Margin="0,6,0,0" Text="{x:Static res:Strings.Feedback_Description}" TextWrapping="Wrap" />
 							</StackPanel>
 							<WrapPanel Grid.Row="1" Margin="0,12,0,0">
-								<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding CopyFeedbackMarkdown}" Content="Copy feedback report as Markdown" />
-								<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding ReportBug}" Content="Report bug on GitHub" />
-								<Button Margin="0,0,0,8" Padding="12,4" Command="{Binding CopyApplicationLog}" Content="Copy raw application log" />
+								<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding CopyFeedbackMarkdown}" Content="{x:Static res:Strings.Feedback_CopyMarkdown}" />
+								<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding ReportBug}" Content="{x:Static res:Strings.Feedback_ReportBug}" />
+								<Button Margin="0,0,0,8" Padding="12,4" Command="{Binding CopyApplicationLog}" Content="{x:Static res:Strings.Feedback_CopyRawLog}" />
 							</WrapPanel>
 						</Grid>
 					</Border>
@@ -898,7 +899,7 @@
 										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
 									<StackPanel Margin="12,10" VerticalAlignment="Center" Orientation="Horizontal">
-										<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="Application log" />
+										<TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="{x:Static res:Strings.Feedback_ApplicationLog}" />
 										<TextBlock Text="  " />
 										<TextBlock
 											VerticalAlignment="Center"
@@ -914,7 +915,7 @@
 										VerticalAlignment="Center"
 										Background="#33808080"
 										CornerRadius="999">
-										<TextBlock FontSize="11" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="{Binding ApplicationLogEntryCount, StringFormat={}{0} lines}" />
+										<TextBlock FontSize="11" Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}" Text="{Binding ApplicationLogEntryCount, StringFormat={x:Static res:Strings.Feedback_LogLineCount}}" />
 									</Border>
 								</Grid>
 							</Border>
@@ -932,7 +933,7 @@
 										FontSize="11"
 										Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}"
 										Opacity="0.6"
-										Text="Level" />
+										Text="{x:Static res:Strings.Feedback_Level}" />
 									<ComboBox
 										Grid.Column="1"
 										MinWidth="150"
@@ -950,7 +951,7 @@
 										FontSize="11"
 										Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}"
 										Opacity="0.6"
-										Text="Filter" />
+										Text="{x:Static res:Strings.Feedback_Filter}" />
 									<Grid Grid.Column="3" Margin="0,8,12,8">
 										<TextBox
 											Padding="8,4,26,4"
@@ -959,13 +960,13 @@
 											CaretBrush="#F59E0B"
 											Foreground="{DynamicResource {x:Static ui:App.UrlBarForegroundBrushKey}}"
 											Text="{Binding ApplicationLogFilter, UpdateSourceTrigger=PropertyChanged}"
-											ToolTip="Filter on timestamp, level, context, event, and message." />
+											ToolTip="{x:Static res:Strings.Feedback_FilterToolTip}" />
 										<TextBlock
 											Margin="10,0,28,0"
 											VerticalAlignment="Center"
 											Foreground="#64748B"
 											IsHitTestVisible="False"
-											Text="Filter timestamp, level, context, event, or message">
+											Text="{x:Static res:Strings.Feedback_FilterPlaceholder}">
 											<TextBlock.Style>
 												<Style TargetType="TextBlock">
 													<Setter Property="Visibility" Value="Collapsed" />
@@ -1130,7 +1131,7 @@
 									FontStyle="Italic"
 									Foreground="{DynamicResource {x:Static ui:App.ContentForegroundBrushKey}}"
 									Opacity="0.6"
-									Text="Logs will appear here as Browser Picker runs.">
+									Text="{x:Static res:Strings.Feedback_LogEmpty}">
 									<TextBlock.Style>
 										<Style TargetType="TextBlock">
 											<Setter Property="Visibility" Value="Collapsed" />
@@ -1148,7 +1149,7 @@
 				</Grid>
 			</TabItem>
 
-			<TabItem Header="URL shorteners">
+			<TabItem Header="{x:Static res:Strings.Config_TabShorteners}">
 				<Grid Margin="4">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -1160,9 +1161,9 @@
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
-					<TextBlock Grid.ColumnSpan="2" Margin="0,0,0,8" Text="These domains are known URL shorteners and get probed on launch unless disallowed by settings." TextWrapping="Wrap" />
-					<TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,0,4" Text="Default shorteners" />
-					<TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,4" Text="Additional shorteners" />
+					<TextBlock Grid.ColumnSpan="2" Margin="0,0,0,8" Text="{x:Static res:Strings.Shorteners_Description}" TextWrapping="Wrap" />
+					<TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,0,4" Text="{x:Static res:Strings.Shorteners_Default}" />
+					<TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,4" Text="{x:Static res:Strings.Shorteners_Additional}" />
 					<Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,8">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*" MinWidth="120" />
@@ -1188,12 +1189,9 @@
 						Grid.Column="0"
 						Margin="0,0,8,0"
 						VerticalAlignment="Center"
-						FontSize="10">
-						<TextBlock.Text>ℹ️ Some additional jump pages not shown above</TextBlock.Text>
-						<TextBlock.ToolTip>
-							<ToolTip>Some pages, such as outlook safelinks, have special handling where the target url is in the query string; these are not listed here as they require additional information in code.</ToolTip>
-						</TextBlock.ToolTip>
-					</TextBlock>
+						FontSize="10"
+						Text="{x:Static res:Strings.Shorteners_JumpPagesNote}"
+						ToolTip="{x:Static res:Strings.Shorteners_JumpPagesToolTip}" />
 					<Grid Grid.Row="3" Grid.Column="1">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="*" />
@@ -1206,13 +1204,13 @@
 							Padding="10,0"
 							Command="{Binding AddShortener}"
 							CommandParameter="{Binding Text, ElementName=NewShortener}"
-							Content="Add" />
+							Content="{x:Static res:Strings.Common_Add}" />
 						<Button
 							Grid.Column="2"
 							Padding="10,0"
 							Command="{Binding RemoveShortener}"
 							CommandParameter="{Binding SelectedItem, ElementName=UrlShorteners}"
-							Content="Remove" />
+							Content="{x:Static res:Strings.Common_Remove}" />
 					</Grid>
 				</Grid>
 			</TabItem>
@@ -1238,12 +1236,12 @@
 				</StackPanel.Style>
 				<TextBlock Padding="4">
 					<Hyperlink Command="{Binding AddBrowser}">
-						<TextBlock Text="Add browser" />
+						<TextBlock Text="{x:Static res:Strings.Config_AddBrowser}" />
 					</Hyperlink>
 				</TextBlock>
 				<TextBlock Margin="10,0,0,0" Padding="4">
 					<Hyperlink Command="{Binding RefreshBrowsers}">
-						<TextBlock Text="Refresh browser list" />
+						<TextBlock Text="{x:Static res:Strings.Config_RefreshBrowsers}" />
 					</Hyperlink>
 				</TextBlock>
 			</StackPanel>
@@ -1260,7 +1258,7 @@
 						</Style>
 					</TextBlock.Style>
 					<Hyperlink Command="{Binding ParentViewModel.Configure}">
-						<TextBlock Text="Done" />
+						<TextBlock Text="{x:Static res:Strings.Common_Done}" />
 					</Hyperlink>
 				</TextBlock>
 
@@ -1276,7 +1274,7 @@
 						</Style>
 					</TextBlock.Style>
 					<Hyperlink Command="{Binding ParentViewModel.Exit}">
-						<TextBlock Text="Done" />
+						<TextBlock Text="{x:Static res:Strings.Common_Done}" />
 					</Hyperlink>
 				</TextBlock>
 			</StackPanel>

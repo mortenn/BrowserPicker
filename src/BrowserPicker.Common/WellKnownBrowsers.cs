@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BrowserPicker.Common.Resources;
 
 namespace BrowserPicker.Common;
 
@@ -83,7 +84,7 @@ public sealed class Firefox : IWellKnownBrowser
 
 	public string PrivacyArgs => "-private-window ";
 
-	public string PrivacyMode => "Open with private browsing";
+	public string PrivacyMode => Strings.Privacy_OpenWithPrivateBrowsing;
 
 	public ProfileType ProfileType => ProfileType.Firefox;
 
@@ -102,7 +103,7 @@ public sealed class FirefoxDevEdition : IWellKnownBrowser
 
 	public string PrivacyArgs => "-private-window ";
 
-	public string PrivacyMode => "Open with private browsing";
+	public string PrivacyMode => Strings.Privacy_OpenWithPrivateBrowsing;
 
 	public ProfileType ProfileType => ProfileType.Firefox;
 
@@ -121,7 +122,7 @@ public sealed class Zen : IWellKnownBrowser
 
 	public string PrivacyArgs => "-private-window ";
 
-	public string PrivacyMode => "Open with private browsing";
+	public string PrivacyMode => Strings.Privacy_OpenWithPrivateBrowsing;
 
 	public ProfileType ProfileType => ProfileType.Firefox;
 
@@ -140,7 +141,7 @@ public sealed class Chrome : IWellKnownBrowser
 
 	public string PrivacyArgs => "--incognito ";
 
-	public string PrivacyMode => "Open incognito";
+	public string PrivacyMode => Strings.Privacy_OpenIncognito;
 
 	public ProfileType ProfileType => ProfileType.Chromium;
 
@@ -159,7 +160,7 @@ public sealed class ChromeDevEdition : IWellKnownBrowser
 
 	public string PrivacyArgs => "--incognito ";
 
-	public string PrivacyMode => "Open incognito";
+	public string PrivacyMode => Strings.Privacy_OpenIncognito;
 
 	public ProfileType ProfileType => ProfileType.Chromium;
 
@@ -178,7 +179,7 @@ public sealed class MicrosoftEdge : IWellKnownBrowser
 
 	public string PrivacyArgs => "-inprivate ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => Strings.Privacy_OpenInPrivateMode;
 
 	public ProfileType ProfileType => ProfileType.Chromium;
 
@@ -197,7 +198,7 @@ public sealed class Edge : IWellKnownBrowser
 
 	public string PrivacyArgs => "-private ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => Strings.Privacy_OpenInPrivateMode;
 
 	public ProfileType ProfileType => ProfileType.None;
 
@@ -216,7 +217,7 @@ public sealed class InternetExplorer : IWellKnownBrowser
 
 	public string PrivacyArgs => "-private ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => Strings.Privacy_OpenInPrivateMode;
 
 	public ProfileType ProfileType => ProfileType.None;
 
@@ -235,7 +236,7 @@ public sealed class OperaStable : IWellKnownBrowser
 
 	public string PrivacyArgs => "--private ";
 
-	public string PrivacyMode => "Open in private mode";
+	public string PrivacyMode => Strings.Privacy_OpenInPrivateMode;
 
 	public ProfileType ProfileType => ProfileType.None;
 
@@ -254,7 +255,7 @@ public sealed class Vivaldi : IWellKnownBrowser
 
 	public string PrivacyArgs => "--incognito ";
 
-	public string PrivacyMode => "Open incognito";
+	public string PrivacyMode => Strings.Privacy_OpenIncognito;
 
 	public ProfileType ProfileType => ProfileType.Chromium;
 

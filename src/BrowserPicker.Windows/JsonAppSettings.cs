@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
+using BrowserPicker.Common.Resources;
 using Microsoft.Extensions.Logging;
 
 namespace BrowserPicker.Windows;
@@ -750,11 +751,11 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		try
 		{
 			await File.WriteAllTextAsync(fileName, ExportSettingsJson());
-			AppendBackupLog($"Exported configuration to {fileName}");
+			AppendBackupLog(string.Format(Strings.Backup_Exported, fileName));
 		}
 		catch (Exception e)
 		{
-			AppendBackupLog($"Unable to export configuration to {fileName}: {e.Message}");
+			AppendBackupLog(string.Format(Strings.Backup_ExportFailed, fileName, e.Message));
 		}
 	}
 
@@ -767,7 +768,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 		catch (Exception ex)
 		{
-			AppendBackupLog($"Unable to read configuration from {fileName}: {ex.Message}");
+			AppendBackupLog(string.Format(Strings.Backup_ReadFailed, fileName, ex.Message));
 		}
 	}
 
@@ -1060,7 +1061,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		}
 
 		ApplyImportedSettings(settings);
-		AppendBackupLog($"Imported configuration from {sourceDescription}");
+		AppendBackupLog(string.Format(Strings.Backup_Imported, sourceDescription));
 		SaveToFile();
 	}
 
@@ -1085,15 +1086,13 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 			var rootNode = JsonNode.Parse(UnwrapJsonDocument(json));
 			if (rootNode is not JsonObject root)
 			{
-				AppendBackupLog($"Unable to import configuration from {sourceDescription}: expected a JSON object.");
+				AppendBackupLog(string.Format(Strings.Backup_ImportNotObject, sourceDescription));
 				return null;
 			}
 
 			if (!LooksLikeSettingsDocument(root))
 			{
-				AppendBackupLog(
-					$"Unable to import configuration from {sourceDescription}: contents are not Browser Picker settings JSON."
-				);
+				AppendBackupLog(string.Format(Strings.Backup_ImportNotSettings, sourceDescription));
 				return null;
 			}
 
@@ -1104,14 +1103,12 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 				return settings;
 			}
 
-			AppendBackupLog(
-				$"Unable to import configuration from {sourceDescription}: document could not be deserialized."
-			);
+			AppendBackupLog(string.Format(Strings.Backup_ImportNotDeserialized, sourceDescription));
 			return null;
 		}
 		catch (JsonException ex)
 		{
-			AppendBackupLog($"Unable to import configuration from {sourceDescription}: {ex.Message}");
+			AppendBackupLog(string.Format(Strings.Backup_ImportFailed, sourceDescription, ex.Message));
 			return null;
 		}
 	}

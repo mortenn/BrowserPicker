@@ -280,3 +280,13 @@ you will need to run this powershell command before logs will appear:
 ```powershell
 New-EventLog -LogName Application -Source BrowserPicker
 ```
+
+## Languages
+
+Browser Picker uses the Windows display language. English and Simplified Chinese are included; other languages fall back to English.
+
+To add a translation:
+
+1. Copy `src/BrowserPicker.Common/Resources/Strings.resx` to `Strings.<culture>.resx` in the same folder, for example `Strings.de.resx`.
+2. Translate each `<value>`. Keep placeholders such as `{0}` in place.
+3. Add the culture to `StringsTests.Translations` in `tests/BrowserPicker.Common.Tests/StringsTests.cs`. The tests then check that every string has a translation and that the placeholders match.

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
+using BrowserPicker.Common.Resources;
 using BrowserPicker.UI.Views;
 #if DEBUG
 using JetBrains.Annotations;
@@ -373,7 +374,7 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		get
 		{
 			var known = WellKnownBrowsers.Lookup(Model.Name, null);
-			return known?.PrivacyMode ?? "Open in privacy mode";
+			return known?.PrivacyMode ?? Strings.Privacy_OpenInPrivacyMode;
 		}
 	}
 

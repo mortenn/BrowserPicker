@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
+using BrowserPicker.Common.Resources;
 
 namespace BrowserPicker.UI.ViewModels;
 
@@ -52,14 +53,14 @@ public sealed class ConnectionCheckViewModel : ModelBase
 		skip_confirmation = skipConfirmation;
 		can_start = true;
 		ConfirmText = includeCertificateRecords
-			? $"Checking the TLS certificate will contact the target host ({uri.Host}) and may query DNS for CAA records. The website, DNS resolver, and network proxies may see this activity."
-			: $"Checking the TLS certificate will contact only the target host ({uri.Host}). The website and network proxies may see this connection.";
+			? string.Format(Strings.ConnectionCheck_ConfirmWithRecords, uri.Host)
+			: string.Format(Strings.ConnectionCheck_Confirm, uri.Host);
 	}
 
 	public ConnectionCheckViewModel(string unavailableReason)
 	{
 		ConfirmText = unavailableReason;
-		Status = "Cannot check this connection";
+		Status = Strings.ConnectionCheck_StatusUnavailable;
 		ReportText = unavailableReason;
 		HasStarted = true;
 		can_start = false;
@@ -169,7 +170,7 @@ public sealed class ConnectionCheckViewModel : ModelBase
 
 		HasStarted = true;
 		IsRunning = true;
-		Status = "Checking connection...";
+		Status = Strings.ConnectionCheck_StatusRunning;
 		ReportText = null;
 		HasSummary = false;
 		Details.Clear();
@@ -183,27 +184,27 @@ public sealed class ConnectionCheckViewModel : ModelBase
 				include_certificate_records,
 				cancellation.Token
 			);
-			Status = "Connection check complete";
+			Status = Strings.ConnectionCheck_StatusComplete;
 			SetSummary(summary);
 		}
 		catch (OperationCanceledException)
 		{
-			Status = "Connection check canceled";
-			ReportText = "The connection check was canceled or timed out.";
+			Status = Strings.ConnectionCheck_StatusCanceled;
+			ReportText = Strings.ConnectionCheck_ReportCanceled;
 			ResultState = ConnectionCheckIndicatorState.NotScanned;
 		}
 		catch (SocketException ex)
 		{
-			Status = "Connection check failed";
-			ReportText = $"The connection check failed: {ex.Message}";
+			Status = Strings.ConnectionCheck_StatusFailed;
+			ReportText = string.Format(Strings.ConnectionCheck_ReportFailed, ex.Message);
 			ResultState = IsDnsResolutionFailure(ex)
 				? ConnectionCheckIndicatorState.Unresolved
 				: ConnectionCheckIndicatorState.Error;
 		}
 		catch (Exception ex) when (ex is AuthenticationException or IOException or InvalidOperationException)
 		{
-			Status = "Connection check failed";
-			ReportText = $"The connection check failed: {ex.Message}";
+			Status = Strings.ConnectionCheck_StatusFailed;
+			ReportText = string.Format(Strings.ConnectionCheck_ReportFailed, ex.Message);
 			ResultState = ConnectionCheckIndicatorState.Error;
 		}
 		finally

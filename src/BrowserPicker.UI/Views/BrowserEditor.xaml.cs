@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BrowserPicker.Common.Resources;
 using BrowserPicker.UI.ViewModels;
 using Microsoft.Win32;
 #if DEBUG
@@ -51,11 +52,7 @@ public partial class BrowserEditor
 
 	private void Command_Browse(object sender, RoutedEventArgs e)
 	{
-		var browser = new OpenFileDialog
-		{
-			DefaultExt = ".exe",
-			Filter = "Executable Files (*.exe)|*.exe|All Files|*.*",
-		};
+		var browser = new OpenFileDialog { DefaultExt = ".exe", Filter = Strings.FileFilter_Executable };
 		var result = browser.ShowDialog(this);
 		if (result != true)
 			return;
@@ -80,12 +77,7 @@ public partial class BrowserEditor
 
 	private void Icon_Browse(object sender, RoutedEventArgs e)
 	{
-		var browser = new OpenFileDialog
-		{
-			DefaultExt = ".exe",
-			Filter =
-				"Executable Files (*.exe)|*.exe|Icon Files (*.ico)|*.ico|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif|All Files|*.*",
-		};
+		var browser = new OpenFileDialog { DefaultExt = ".exe", Filter = Strings.FileFilter_Icon };
 		if (browser.ShowDialog(this) == true)
 			Browser.Model.IconPath = browser.FileName;
 	}

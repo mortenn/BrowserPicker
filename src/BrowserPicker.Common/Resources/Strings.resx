@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Backup_ClipboardEmpty" xml:space="preserve">
+    <value>clipboard text is empty</value>
+  </data>
+  <data name="Backup_ClipboardNoText" xml:space="preserve">
+    <value>clipboard does not contain text</value>
+  </data>
+  <data name="Backup_CopiedToClipboard" xml:space="preserve">
+    <value>Copied configuration JSON to the clipboard.</value>
+  </data>
+  <data name="Backup_Copy" xml:space="preserve">
+    <value>Copy settings</value>
+  </data>
+  <data name="Backup_CopyFailed" xml:space="preserve">
+    <value>Unable to copy configuration JSON to the clipboard: {0}</value>
+  </data>
+  <data name="Backup_Export" xml:space="preserve">
+    <value>Export Browser Picker settings</value>
+  </data>
+  <data name="Backup_ExportFailed" xml:space="preserve">
+    <value>Unable to export configuration to {0}: {1}</value>
+  </data>
+  <data name="Backup_Exported" xml:space="preserve">
+    <value>Exported configuration to {0}</value>
+  </data>
+  <data name="Backup_Heading" xml:space="preserve">
+    <value>Back up or restore your BrowserPicker configuration:</value>
+  </data>
+  <data name="Backup_Import" xml:space="preserve">
+    <value>Import Browser Picker settings</value>
+  </data>
+  <data name="Backup_ImportFailed" xml:space="preserve">
+    <value>Unable to import configuration from {0}: {1}</value>
+  </data>
+  <data name="Backup_ImportNotDeserialized" xml:space="preserve">
+    <value>Unable to import configuration from {0}: document could not be deserialized.</value>
+  </data>
+  <data name="Backup_ImportNotObject" xml:space="preserve">
+    <value>Unable to import configuration from {0}: expected a JSON object.</value>
+  </data>
+  <data name="Backup_ImportNotSettings" xml:space="preserve">
+    <value>Unable to import configuration from {0}: contents are not Browser Picker settings JSON.</value>
+  </data>
+  <data name="Backup_Imported" xml:space="preserve">
+    <value>Imported configuration from {0}</value>
+  </data>
+  <data name="Backup_Paste" xml:space="preserve">
+    <value>Paste settings</value>
+  </data>
+  <data name="Backup_PasteFailed" xml:space="preserve">
+    <value>Unable to paste configuration from the clipboard: {0}</value>
+  </data>
+  <data name="Backup_ReadFailed" xml:space="preserve">
+    <value>Unable to read configuration from {0}: {1}</value>
+  </data>
+  <data name="Backup_SourceClipboard" xml:space="preserve">
+    <value>the clipboard</value>
+  </data>
+  <data name="Common_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Common_Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Common_CopyToClipboard" xml:space="preserve">
+    <value>Copy to clipboard</value>
+  </data>
+  <data name="Common_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="Common_Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Common_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Common_Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Common_Feedback" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="Common_Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="Common_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Common_Visible" xml:space="preserve">
+    <value>Visible</value>
+  </data>
+  <data name="Config_AddBrowser" xml:space="preserve">
+    <value>Add browser</value>
+  </data>
+  <data name="Config_AlwaysAskWithoutDefault" xml:space="preserve">
+    <value>Always ask when no default is matching URL</value>
+  </data>
+  <data name="Config_AlwaysShowPicker" xml:space="preserve">
+    <value>Always show browser selection window</value>
+  </data>
+  <data name="Config_Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Config_AutoCloseOnFocusLost" xml:space="preserve">
+    <value>Auto close on focus lost</value>
+  </data>
+  <data name="Config_AutoCloseOnFocusLostToolTip" xml:space="preserve">
+    <value>When checked, the picker closes itself if you switch to another window. Turn this off to keep picker windows pinned until you close or use them.</value>
+  </data>
+  <data name="Config_AutoSizeWindow" xml:space="preserve">
+    <value>Auto size window</value>
+  </data>
+  <data name="Config_AutoSizeWindowToolTip" xml:space="preserve">
+    <value>When checked, the window fits its content. When unchecked, the window uses the last size you set by resizing. Resize the window to fix a size; that turns this off and saves the size.</value>
+  </data>
+  <data name="Config_DisableTransparency" xml:space="preserve">
+    <value>Turn off transparency</value>
+  </data>
+  <data name="Config_DuplicateBrowserToolTip" xml:space="preserve">
+    <value>Duplicate browser: create a new browser using this browser as a starting point</value>
+  </data>
+  <data name="Config_EditBrowserToolTip" xml:space="preserve">
+    <value>Edit browser definition</value>
+  </data>
+  <data name="Config_FallbackBrowser" xml:space="preserve">
+    <value>Fallback browser: </value>
+  </data>
+  <data name="Config_FontSize" xml:space="preserve">
+    <value>Font size: </value>
+  </data>
+  <data name="Config_GroupProfiles" xml:space="preserve">
+    <value>Group profiles under browser</value>
+  </data>
+  <data name="Config_ListOrder" xml:space="preserve">
+    <value>List order</value>
+  </data>
+  <data name="Config_LookupTimeout" xml:space="preserve">
+    <value>Lookup timeout</value>
+  </data>
+  <data name="Config_ProfileDisplay" xml:space="preserve">
+    <value>Profile display</value>
+  </data>
+  <data name="Config_ProfilesAsEntries" xml:space="preserve">
+    <value>Show profiles as separate entries</value>
+  </data>
+  <data name="Config_RefreshBrowsers" xml:space="preserve">
+    <value>Refresh browser list</value>
+  </data>
+  <data name="Config_RememberExpanded" xml:space="preserve">
+    <value>Remember expanded profile groups between launches</value>
+  </data>
+  <data name="Config_RememberExpandedToolTip" xml:space="preserve">
+    <value>When checked, a browser's expanded/collapsed profile list is remembered. When unchecked, profile groups always start collapsed.</value>
+  </data>
+  <data name="Config_RemoveBrowserToolTip" xml:space="preserve">
+    <value>Remove custom browser from list</value>
+  </data>
+  <data name="Config_SortAlphabetical" xml:space="preserve">
+    <value>Sort list alphabetically</value>
+  </data>
+  <data name="Config_SortManual" xml:space="preserve">
+    <value>Sort list manually</value>
+  </data>
+  <data name="Config_SortUsage" xml:space="preserve">
+    <value>Sort list based on usage</value>
+  </data>
+  <data name="Config_TabBackup" xml:space="preserve">
+    <value>Backup</value>
+  </data>
+  <data name="Config_TabBehaviour" xml:space="preserve">
+    <value>Behaviour</value>
+  </data>
+  <data name="Config_TabBrowsers" xml:space="preserve">
+    <value>Browsers</value>
+  </data>
+  <data name="Config_TabDefaults" xml:space="preserve">
+    <value>Defaults</value>
+  </data>
+  <data name="Config_TabSecurity" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Config_TabShorteners" xml:space="preserve">
+    <value>URL shorteners</value>
+  </data>
+  <data name="Config_TabTestDefaults" xml:space="preserve">
+    <value>Test defaults</value>
+  </data>
+  <data name="Config_TabWelcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="Config_Theme" xml:space="preserve">
+    <value>Theme: </value>
+  </data>
+  <data name="Config_ToggleBrowserToolTip" xml:space="preserve">
+    <value>Toggle whether this browser appears in the picker</value>
+  </data>
+  <data name="Config_ToggleProfileToolTip" xml:space="preserve">
+    <value>Toggle whether this profile appears in the picker</value>
+  </data>
+  <data name="Config_UrlResolutionTimeout" xml:space="preserve">
+    <value>URL resolution timeout: </value>
+  </data>
+  <data name="Config_UseDefaultsWhenNotRunning" xml:space="preserve">
+    <value>Use defaults even when browser is not running</value>
+  </data>
+  <data name="Config_UseDefaultsWhenNotRunningToolTip" xml:space="preserve">
+    <value>When unchecked, the selection window appears if your default browser is not running. Check this to always open links in your default (or fallback) browser without showing the selection window.</value>
+  </data>
+  <data name="Config_UseFallbackBrowser" xml:space="preserve">
+    <value>Use a fallback default browser</value>
+  </data>
+  <data name="Config_UseFallbackBrowserToolTip" xml:space="preserve">
+    <value>When checked, links that match no rule open in the browser you select below. When unchecked, the picker is shown (or you are asked) depending on other settings.</value>
+  </data>
+  <data name="Config_WhenNoRuleMatches" xml:space="preserve">
+    <value>When no URL rule matches</value>
+  </data>
+  <data name="Config_WhenToShowPicker" xml:space="preserve">
+    <value>When to show the picker</value>
+  </data>
+  <data name="Config_WindowOpacity" xml:space="preserve">
+    <value>Window opacity: </value>
+  </data>
+  <data name="Config_WindowsIntegration" xml:space="preserve">
+    <value>Windows integration</value>
+  </data>
+  <data name="ConnectionCheck_BeforeYouStart" xml:space="preserve">
+    <value>Before you start</value>
+  </data>
+  <data name="ConnectionCheck_CancelCheck" xml:space="preserve">
+    <value>Cancel check</value>
+  </data>
+  <data name="ConnectionCheck_Check" xml:space="preserve">
+    <value>Check connection</value>
+  </data>
+  <data name="ConnectionCheck_Confirm" xml:space="preserve">
+    <value>Checking the TLS certificate will contact only the target host ({0}). The website and network proxies may see this connection.</value>
+  </data>
+  <data name="ConnectionCheck_ConfirmWithRecords" xml:space="preserve">
+    <value>Checking the TLS certificate will contact the target host ({0}) and may query DNS for CAA records. The website, DNS resolver, and network proxies may see this activity.</value>
+  </data>
+  <data name="ConnectionCheck_NetworkDisabled" xml:space="preserve">
+    <value>Network checks are disabled in settings.</value>
+  </data>
+  <data name="ConnectionCheck_ReportCanceled" xml:space="preserve">
+    <value>The connection check was canceled or timed out.</value>
+  </data>
+  <data name="ConnectionCheck_ReportFailed" xml:space="preserve">
+    <value>The connection check failed: {0}</value>
+  </data>
+  <data name="ConnectionCheck_ReviewNote" xml:space="preserve">
+    <value>Review the privacy note, then start the check when you are ready.</value>
+  </data>
+  <data name="ConnectionCheck_StatusCanceled" xml:space="preserve">
+    <value>Connection check canceled</value>
+  </data>
+  <data name="ConnectionCheck_StatusComplete" xml:space="preserve">
+    <value>Connection check complete</value>
+  </data>
+  <data name="ConnectionCheck_StatusFailed" xml:space="preserve">
+    <value>Connection check failed</value>
+  </data>
+  <data name="ConnectionCheck_StatusRunning" xml:space="preserve">
+    <value>Checking connection...</value>
+  </data>
+  <data name="ConnectionCheck_StatusUnavailable" xml:space="preserve">
+    <value>Cannot check this connection</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipDefault" xml:space="preserve">
+    <value>Check the TLS certificate. This contacts the target host and may be visible to the website or proxies.</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipPassed" xml:space="preserve">
+    <value>Connection check passed</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipProblems" xml:space="preserve">
+    <value>Connection check found problems</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipUnresolved" xml:space="preserve">
+    <value>Connection check could not resolve the host</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipWarnings" xml:space="preserve">
+    <value>Connection check found warnings</value>
+  </data>
+  <data name="Crash_Details" xml:space="preserve">
+    <value>Exception details:</value>
+  </data>
+  <data name="Crash_Message" xml:space="preserve">
+    <value>Unfortunately, BrowserPicker has crashed.</value>
+  </data>
+  <data name="Crash_ReportBug" xml:space="preserve">
+    <value>Please submit a bug report on https://github.com/mortenn/BrowserPicker.</value>
+  </data>
+  <data name="Crash_Title" xml:space="preserve">
+    <value>An unhandled exception has occurred</value>
+  </data>
+  <data name="Defaults_Browser" xml:space="preserve">
+    <value>Browser</value>
+  </data>
+  <data name="Defaults_Heading" xml:space="preserve">
+    <value>Set default browser per domain</value>
+  </data>
+  <data name="Defaults_MatchBy" xml:space="preserve">
+    <value>Match by</value>
+  </data>
+  <data name="Defaults_Pattern" xml:space="preserve">
+    <value>Pattern</value>
+  </data>
+  <data name="Defaults_UserChoice" xml:space="preserve">
+    <value>User choice</value>
+  </data>
+  <data name="Editor_Command" xml:space="preserve">
+    <value>Command: </value>
+  </data>
+  <data name="Editor_CommandArgs" xml:space="preserve">
+    <value>Command Args: </value>
+  </data>
+  <data name="Editor_ContainersRequiresPrefix" xml:space="preserve">
+    <value>Requires</value>
+  </data>
+  <data name="Editor_ContainersRequiresSuffix" xml:space="preserve">
+    <value>extension.</value>
+  </data>
+  <data name="Editor_DisableAutoUpdates" xml:space="preserve">
+    <value>Disable automatic updates</value>
+  </data>
+  <data name="Editor_EnableContainers" xml:space="preserve">
+    <value>Enable container support (Firefox / Zen)</value>
+  </data>
+  <data name="Editor_ExpandFileUrls" xml:space="preserve">
+    <value>Expand file:// URLs</value>
+  </data>
+  <data name="Editor_Heading" xml:space="preserve">
+    <value>Add a browser</value>
+  </data>
+  <data name="Editor_Hotkey" xml:space="preserve">
+    <value>Hotkey:</value>
+  </data>
+  <data name="Editor_HotkeyAutomatic" xml:space="preserve">
+    <value>(Automatic)</value>
+  </data>
+  <data name="Editor_Icon" xml:space="preserve">
+    <value>Icon: </value>
+  </data>
+  <data name="Editor_Name" xml:space="preserve">
+    <value>Name: </value>
+  </data>
+  <data name="Editor_PrivacyArgs" xml:space="preserve">
+    <value>Privacy Args: </value>
+  </data>
+  <data name="Editor_Profiles" xml:space="preserve">
+    <value>Profiles</value>
+  </data>
+  <data name="Feedback_ApplicationLog" xml:space="preserve">
+    <value>Application log</value>
+  </data>
+  <data name="Feedback_CopyMarkdown" xml:space="preserve">
+    <value>Copy feedback report as Markdown</value>
+  </data>
+  <data name="Feedback_CopyRawLog" xml:space="preserve">
+    <value>Copy raw application log</value>
+  </data>
+  <data name="Feedback_Description" xml:space="preserve">
+    <value>When something feels off, copy a ready-made report for GitHub or open a new issue with the important context already filled in.</value>
+  </data>
+  <data name="Feedback_Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="Feedback_FilterPlaceholder" xml:space="preserve">
+    <value>Filter timestamp, level, context, event, or message</value>
+  </data>
+  <data name="Feedback_FilterToolTip" xml:space="preserve">
+    <value>Filter on timestamp, level, context, event, and message.</value>
+  </data>
+  <data name="Feedback_Heading" xml:space="preserve">
+    <value>Feedback and diagnostics</value>
+  </data>
+  <data name="Feedback_Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Feedback_LogEmpty" xml:space="preserve">
+    <value>Logs will appear here as Browser Picker runs.</value>
+  </data>
+  <data name="Feedback_LogEntryCountMany" xml:space="preserve">
+    <value>{0} entries</value>
+  </data>
+  <data name="Feedback_LogEntryCountOne" xml:space="preserve">
+    <value>{0} entry</value>
+  </data>
+  <data name="Feedback_LogLineCount" xml:space="preserve">
+    <value>{0} lines</value>
+  </data>
+  <data name="Feedback_LogStatusAll" xml:space="preserve">
+    <value>Live capture · {0} retained · capacity {1}</value>
+  </data>
+  <data name="Feedback_LogStatusFiltered" xml:space="preserve">
+    <value>Live capture · showing {0} of {1} · {2} · capacity {3}</value>
+  </data>
+  <data name="Feedback_LogUnavailable" xml:space="preserve">
+    <value>Runtime logging is unavailable.</value>
+  </data>
+  <data name="Feedback_ReportBug" xml:space="preserve">
+    <value>Report bug on GitHub</value>
+  </data>
+  <data name="FileFilter_Executable" xml:space="preserve">
+    <value>Executable Files (*.exe)|*.exe|All Files|*.*</value>
+  </data>
+  <data name="FileFilter_Icon" xml:space="preserve">
+    <value>Executable Files (*.exe)|*.exe|Icon Files (*.ico)|*.ico|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif|All Files|*.*</value>
+  </data>
+  <data name="FileFilter_Json" xml:space="preserve">
+    <value>JSON Files (*.json)|*.json|All Files|*.*</value>
+  </data>
+  <data name="Loading_ScanningUrl" xml:space="preserve">
+    <value>Scanning URL...</value>
+  </data>
+  <data name="LogLevel_CriticalOnly" xml:space="preserve">
+    <value>Critical only</value>
+  </data>
+  <data name="LogLevel_DebugAndAbove" xml:space="preserve">
+    <value>Debug and above</value>
+  </data>
+  <data name="LogLevel_ErrorAndAbove" xml:space="preserve">
+    <value>Error and above</value>
+  </data>
+  <data name="LogLevel_Everything" xml:space="preserve">
+    <value>Everything</value>
+  </data>
+  <data name="LogLevel_InformationAndAbove" xml:space="preserve">
+    <value>Information and above</value>
+  </data>
+  <data name="LogLevel_WarningAndAbove" xml:space="preserve">
+    <value>Warning and above</value>
+  </data>
+  <data name="Picker_AlwaysAsk" xml:space="preserve">
+    <value>Always ask</value>
+  </data>
+  <data name="Picker_CloseToolTip" xml:space="preserve">
+    <value>Close Browser Picker</value>
+  </data>
+  <data name="Picker_ConfigureBrowserList" xml:space="preserve">
+    <value>Configure browser list</value>
+  </data>
+  <data name="Picker_CopyUrlToolTip" xml:space="preserve">
+    <value>Copy the URL to the clipboard</value>
+  </data>
+  <data name="Picker_EditUrlToolTip" xml:space="preserve">
+    <value>Edit the URL before opening it</value>
+  </data>
+  <data name="Picker_PinToolTip" xml:space="preserve">
+    <value>Toggle whether this picker window stays open when it loses focus</value>
+  </data>
+  <data name="Picker_RedirectedUrl" xml:space="preserve">
+    <value>Redirected URL</value>
+  </data>
+  <data name="Picker_Remember" xml:space="preserve">
+    <value>Remember </value>
+  </data>
+  <data name="Picker_ShowProfiles" xml:space="preserve">
+    <value>Show profiles</value>
+  </data>
+  <data name="Privacy_OpenInPrivacyMode" xml:space="preserve">
+    <value>Open in privacy mode</value>
+  </data>
+  <data name="Privacy_OpenInPrivateMode" xml:space="preserve">
+    <value>Open in private mode</value>
+  </data>
+  <data name="Privacy_OpenIncognito" xml:space="preserve">
+    <value>Open incognito</value>
+  </data>
+  <data name="Privacy_OpenWithPrivateBrowsing" xml:space="preserve">
+    <value>Open with private browsing</value>
+  </data>
+  <data name="Registration_Description" xml:space="preserve">
+    <value>Register Browser Picker for this Windows user without requiring administrator privileges.</value>
+  </data>
+  <data name="Registration_DescriptionRegistered" xml:space="preserve">
+    <value>Browser Picker (Portable) is registered for this Windows user.</value>
+  </data>
+  <data name="Registration_Register" xml:space="preserve">
+    <value>Register for current user</value>
+  </data>
+  <data name="Registration_StatusFailed" xml:space="preserve">
+    <value>Unable to update Browser Picker registration: {0}</value>
+  </data>
+  <data name="Registration_StatusPortableOnly" xml:space="preserve">
+    <value>Current-user browser registration is only available in portable builds.</value>
+  </data>
+  <data name="Registration_StatusRegistered" xml:space="preserve">
+    <value>Registered Browser Picker (Portable) for this Windows user. If it is not selected yet, choose it in Windows Default apps.</value>
+  </data>
+  <data name="Registration_StatusUnregistered" xml:space="preserve">
+    <value>Unregistered Browser Picker (Portable) for this Windows user.</value>
+  </data>
+  <data name="Registration_Unregister" xml:space="preserve">
+    <value>Unregister for current user</value>
+  </data>
+  <data name="Security_ApplyProfile" xml:space="preserve">
+    <value>Apply profile</value>
+  </data>
+  <data name="Security_AutomaticProbes" xml:space="preserve">
+    <value>Automatic probes</value>
+  </data>
+  <data name="Security_HideConnectionCheck" xml:space="preserve">
+    <value>Hide connection check button</value>
+  </data>
+  <data name="Security_HideConnectionCheckToolTip" xml:space="preserve">
+    <value>Removes the padlock connection check action from the picker.</value>
+  </data>
+  <data name="Security_IncludeCertificateRecords" xml:space="preserve">
+    <value>Include DNS CAA and certificate transparency evidence</value>
+  </data>
+  <data name="Security_IncludeCertificateRecordsToolTip" xml:space="preserve">
+    <value>Used only when you click Check connection. CAA requires a DNS lookup; CT checks embedded certificate transparency evidence.</value>
+  </data>
+  <data name="Security_ManualProbes" xml:space="preserve">
+    <value>Manual probes</value>
+  </data>
+  <data name="Security_OnlyKnownShorteners" xml:space="preserve">
+    <value>Only for known URL shorteners</value>
+  </data>
+  <data name="Security_OnlyMatchingDefaults" xml:space="preserve">
+    <value>Only for URLs matching defaults</value>
+  </data>
+  <data name="Security_ProbeFavicon" xml:space="preserve">
+    <value>Probe favicon</value>
+  </data>
+  <data name="Security_ProbeShorteners" xml:space="preserve">
+    <value>Probe URL shorteners / redirects</value>
+  </data>
+  <data name="Security_ProfileDefault" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Security_ProfileEnableAll" xml:space="preserve">
+    <value>Enable all</value>
+  </data>
+  <data name="Security_ProfileMaxPrivacy" xml:space="preserve">
+    <value>Max privacy</value>
+  </data>
+  <data name="Security_SkipConfirmation" xml:space="preserve">
+    <value>Skip confirmation prompt</value>
+  </data>
+  <data name="Security_SkipConfirmationToolTip" xml:space="preserve">
+    <value>Starts the connection check immediately when you click the padlock.</value>
+  </data>
+  <data name="Shorteners_Additional" xml:space="preserve">
+    <value>Additional shorteners</value>
+  </data>
+  <data name="Shorteners_Default" xml:space="preserve">
+    <value>Default shorteners</value>
+  </data>
+  <data name="Shorteners_Description" xml:space="preserve">
+    <value>These domains are known URL shorteners and get probed on launch unless disallowed by settings.</value>
+  </data>
+  <data name="Shorteners_JumpPagesNote" xml:space="preserve">
+    <value>ℹ️ Some additional jump pages not shown above</value>
+  </data>
+  <data name="Shorteners_JumpPagesToolTip" xml:space="preserve">
+    <value>Some pages, such as outlook safelinks, have special handling where the target url is in the query string; these are not listed here as they require additional information in code.</value>
+  </data>
+  <data name="TestDefaults_Actual" xml:space="preserve">
+    <value>Actual browser choice:</value>
+  </data>
+  <data name="TestDefaults_Matched" xml:space="preserve">
+    <value>Default browser matched:</value>
+  </data>
+  <data name="TestDefaults_Url" xml:space="preserve">
+    <value>URL:</value>
+  </data>
+  <data name="UrlEditor_Heading" xml:space="preserve">
+    <value>Edit target URL</value>
+  </data>
+  <data name="UrlEditor_SaveToolTip" xml:space="preserve">
+    <value>Save changes (Ctrl+Enter)</value>
+  </data>
+  <data name="UrlEditor_Title" xml:space="preserve">
+    <value>Edit URL</value>
+  </data>
+  <data name="Welcome_Farewell" xml:space="preserve">
+    <value>Be seeing you!</value>
+  </data>
+  <data name="Welcome_Intro" xml:space="preserve">
+    <value>Welcome to Browser Picker, hope you enjoy my little app!
+I've gone ahead and opened up the settings window,
+so you can have a look around before you get started :)</value>
+  </data>
+  <data name="Welcome_IssuesPrefix" xml:space="preserve">
+    <value>Should you run into any kind of trouble or get an idea,
+please visit</value>
+  </data>
+  <data name="Welcome_IssuesSuffix" xml:space="preserve">
+    <value>and file an issue!</value>
+  </data>
+  <data name="Welcome_SelfDestruct" xml:space="preserve">
+    <value>This message will self-destruct in 10 seconds</value>
+  </data>
+  <data name="Welcome_Star" xml:space="preserve">
+    <value>Please give it a ⭐ on GitHub, so you will get notified when a new release is made.</value>
+  </data>
+</root>

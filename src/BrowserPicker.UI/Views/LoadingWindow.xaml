@@ -4,6 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:res="clr-namespace:BrowserPicker.Common.Resources;assembly=BrowserPicker.Common"
 	xmlns:ui="clr-namespace:BrowserPicker.UI"
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
 	Title="Browser Picker"
@@ -34,7 +35,7 @@
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
-			<TextBlock Margin="20" FontSize="18">Scanning URL...</TextBlock>
+			<TextBlock Margin="20" FontSize="18" Text="{x:Static res:Strings.Loading_ScanningUrl}" />
 			<TextBlock
 				Grid.Row="1"
 				MaxWidth="380"
