@@ -598,10 +598,10 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 			);
 
 			var profileArgs = profile?.CommandArgs ?? string.Empty;
-			var newArgs = privacy ? Model.PrivacyArgs : string.Empty;
+			var privacyArgs = privacy ? Model.PrivacyArgs : null;
 			var rawUrl = parent_view_model.Url.GetTargetUrl(Model.ExpandFileUrls) ?? parent_view_model.Url.TargetURL!;
 			var url = profile != null ? profile.TransformUrl(rawUrl) : rawUrl;
-			var args = CombineArgs(Model.CommandArgs, CombineArgs(profileArgs, $"{newArgs}\"{url}\""));
+			var args = LaunchArguments.Build(Model.CommandArgs, profileArgs, privacyArgs, url);
 			var process = new ProcessStartInfo(Model.Command, args) { UseShellExecute = false };
 			_ = Process.Start(process);
 		}
@@ -616,16 +616,6 @@ public sealed class BrowserViewModel : ViewModelBase<BrowserModel>
 		else
 		{
 			Application.Current?.Shutdown();
-		}
-		return;
-
-		static string CombineArgs(string? args1, string args2)
-		{
-			if (string.IsNullOrEmpty(args1))
-			{
-				return args2;
-			}
-			return args1 + " " + args2;
 		}
 	}
 
