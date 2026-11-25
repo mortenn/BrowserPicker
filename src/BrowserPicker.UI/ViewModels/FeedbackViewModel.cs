@@ -127,7 +127,7 @@ public sealed class FeedbackViewModel : ModelBase
 	public ICommand CopyApplicationLog => copy_application_log ??= new DelegateCommand(CopyApplicationLogToClipboard);
 
 	public ICommand ClearApplicationLogFilter =>
-		clear_application_log_filter ??= new DelegateCommand(() => ApplicationLogFilter = string.Empty);
+		clear_application_log_filter ??= new DelegateCommand(ResetApplicationLogFilter);
 
 	public ICollectionView FilteredApplicationLogEntries { get; }
 
@@ -197,6 +197,11 @@ public sealed class FeedbackViewModel : ModelBase
 	private void CopyApplicationLogToClipboard()
 	{
 		TrySetClipboardText(BuildApplicationLogPlainText(markdownCompatible: true));
+	}
+
+	private void ResetApplicationLogFilter()
+	{
+		ApplicationLogFilter = string.Empty;
 	}
 
 	private void OpenBugReport()
