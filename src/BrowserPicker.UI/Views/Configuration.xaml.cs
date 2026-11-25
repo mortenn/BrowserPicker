@@ -16,6 +16,7 @@ public partial class Configuration
 	{
 		InitializeComponent();
 		Loaded += Configuration_Loaded;
+		Unloaded += Configuration_Unloaded;
 		if (App.Settings is INotifyPropertyChanged setting)
 			setting.PropertyChanged += Settings_PropertyChanged;
 	}
@@ -24,7 +25,30 @@ public partial class Configuration
 	{
 		ApplyContentTheme();
 		EnsureFeedbackViewModelLoaded();
+		RefreshDefaultBrowserStatus();
+
+		// The user changes the default browser in Windows Settings, then comes back to this window.
+		host_window = Window.GetWindow(this);
+		if (host_window != null)
+			host_window.Activated += HostWindow_Activated;
 	}
+
+	private void Configuration_Unloaded(object sender, RoutedEventArgs e)
+	{
+		if (host_window != null)
+			host_window.Activated -= HostWindow_Activated;
+		host_window = null;
+	}
+
+	private void HostWindow_Activated(object? sender, System.EventArgs e) => RefreshDefaultBrowserStatus();
+
+	private void RefreshDefaultBrowserStatus()
+	{
+		if (DataContext is ConfigurationViewModel viewModel)
+			viewModel.RefreshDefaultBrowserStatus();
+	}
+
+	private Window? host_window;
 
 	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{

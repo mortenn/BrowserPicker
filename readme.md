@@ -10,7 +10,8 @@ and even let Internet Explorer handle that old internal LOB app you'd rather not
 You can find the latest release on [GitHub](https://github.com/mortenn/BrowserPicker/releases).
 
 ### Default browser
-To enable the browser picker window, you need to set Browser Picker as your default browser. 
+To enable the browser picker window, you need to set Browser Picker as your default browser.
+Windows does not let apps do this themselves, but Browser Picker can take you to the right page: see [Manual steps](#manual-steps).
 
 ### .NET Runtime dependent binary
 BrowserPicker.msi and Dependent.zip are JIT compiled and require you have the [.NET 10.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed.
@@ -38,7 +39,10 @@ You can manage this from `Behaviour` -> `Windows integration`. The button regist
 To avoid warnings about unknown publisher, you may [import](https://stackoverflow.com/questions/49039136/powershell-script-to-install-trusted-publisher-certificates) the provided certificate into your certificate store first.
 
 ### Manual steps
-You need to open the settings app from the start menu, navigate into Apps, select Default apps, then change the Web browser to Browser Picker.  
+Open Browser Picker from the start menu, go to `Behaviour` -> `Windows integration` and click `Open Windows Default apps` (the welcome page shows the same button on first start).
+This opens Browser Picker's page in Windows Settings, where you choose it for HTTP and HTTPS. `Windows integration` then shows whether Browser Picker opens web links.
+
+On older Windows versions the button opens the Default apps list; select Browser Picker there, or change the Web browser to Browser Picker.  
 Please ensure Browser Picker can be started before you do this.
 
 ## Usage

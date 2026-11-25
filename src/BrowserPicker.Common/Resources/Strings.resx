@@ -159,6 +159,12 @@
   <data name="Config_LookupTimeout" xml:space="preserve">
     <value>Lookup timeout</value>
   </data>
+  <data name="Config_OpenDefaultApps" xml:space="preserve">
+    <value>Open Windows Default apps</value>
+  </data>
+  <data name="Config_OpenDefaultAppsToolTip" xml:space="preserve">
+    <value>Windows does not let apps make themselves the default browser. This opens Browser Picker's page in Windows Settings, where you can choose it for web links.</value>
+  </data>
   <data name="Config_ProfileDisplay" xml:space="preserve">
     <value>Profile display</value>
   </data>
@@ -329,6 +335,27 @@
   </data>
   <data name="Defaults_UserChoice" xml:space="preserve">
     <value>User choice</value>
+  </data>
+  <data name="DefaultStatus_AnotherApp" xml:space="preserve">
+    <value>another app ({0})</value>
+  </data>
+  <data name="DefaultStatus_NoApp" xml:space="preserve">
+    <value>no app</value>
+  </data>
+  <data name="DefaultStatus_NoDefault" xml:space="preserve">
+    <value>Windows has no default app for web links. Choose Browser Picker in Windows Default apps.</value>
+  </data>
+  <data name="DefaultStatus_OpenFailed" xml:space="preserve">
+    <value>Unable to open Windows Default apps: {0}</value>
+  </data>
+  <data name="DefaultStatus_OpensWebLinks" xml:space="preserve">
+    <value>Browser Picker opens web links.</value>
+  </data>
+  <data name="DefaultStatus_OtherApp" xml:space="preserve">
+    <value>Web links open with {0}, not Browser Picker. Choose Browser Picker in Windows Default apps.</value>
+  </data>
+  <data name="DefaultStatus_PartialScheme" xml:space="preserve">
+    <value>Browser Picker opens {0} links, but {1} links open with {2}. Choose Browser Picker for both HTTP and HTTPS in Windows Default apps.</value>
   </data>
   <data name="Editor_Command" xml:space="preserve">
     <value>Command: </value>
@@ -611,6 +638,9 @@ please visit</value>
   </data>
   <data name="Welcome_IssuesSuffix" xml:space="preserve">
     <value>and file an issue!</value>
+  </data>
+  <data name="Welcome_MakeDefaultBrowser" xml:space="preserve">
+    <value>Make Browser Picker your default browser</value>
   </data>
   <data name="Welcome_SelfDestruct" xml:space="preserve">
     <value>This message will self-destruct in 10 seconds</value>
