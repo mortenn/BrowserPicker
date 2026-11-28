@@ -8,7 +8,9 @@ Open Browser Picker from the Start menu to open the settings window. The **Brows
 
 Browser Picker finds installed browsers from the Windows registry, the same list Windows uses for **Default apps**. It refreshes this list in the background each time it runs, so new browsers appear on their own. **Refresh browser list** runs it immediately.
 
-Browsers Browser Picker knows well get private-mode arguments and profile support automatically: Firefox, Firefox Developer Edition, Zen Browser, Chrome, Chrome Dev, Edge, Internet Explorer, Opera and Vivaldi.
+Browsers Browser Picker knows well get private-mode arguments and profile support automatically: Firefox, Firefox Developer Edition, Zen Browser, Chrome, Chrome Dev, Edge, Internet Explorer, Opera, Vivaldi, and Brave (including Beta and Nightly).
+
+When the list refreshes, detection updates each detected browser's command and icon. It replaces arguments only where it has its own, such as the private-mode arguments of the browsers above, so **Command Args** you typed are kept.
 
 - Click **Enabled** to hide a browser from the picker without removing it.
 - The **X** button removes a browser. A detected browser comes back the next time the list is refreshed; disable it instead to keep it out of the picker.
@@ -31,7 +33,7 @@ Select **Add browser**, or **Edit** on an existing entry. You can add any progra
 | **Icon** | The icon shown in the picker. Filled in from the executable when you browse for the command. |
 | **Expand file:// URLs** | Converts `file://` links to normal local or network paths before launching. |
 | **Privacy Args** | Arguments used when you open the browser in private mode. |
-| **Disable automatic updates** | Stops Browser Picker from overwriting this entry when it refreshes the detected browser list. |
+| **Disable automatic updates** | Keeps this browser exactly as you set it: detection no longer updates its command, privacy arguments or icon. |
 | **Hotkey** | A key that opens this browser from the picker. Press the key you want; press `Esc` to clear it. |
 
 ![The list with Notepad added](config_list_with_notepad.png)
@@ -41,7 +43,7 @@ Select **Add browser**, or **Edit** on an existing entry. You can add any progra
 Browser Picker reads the profiles of Chromium-based browsers (Chrome, Edge, Vivaldi and others) and Firefox-based browsers, and shows them in the picker.
 
 - Chromium profiles and their names come from the browser's `Local State` file.
-- Firefox profiles come from `profiles.ini`.
+- Firefox and Zen profiles come from `profiles.ini`. When an installation has several profiles, each one is listed, followed by its containers as **Profile › Container**. An installation with one profile is listed as a single entry.
 - In the Browsers tab, use the toggle next to each profile to choose whether it appears in the picker.
 - In [Behaviour](behaviour.md) > **Profile display**, choose whether profiles are grouped under their browser or shown as separate entries.
 

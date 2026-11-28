@@ -4,7 +4,7 @@ Rules send matching URLs straight to a browser, without showing the picker. Mana
 
 ![An empty rule list](config_defaults_empty.png)
 
-Each rule has a match type, a pattern and a browser. When several rules match a URL, the one with the longest match wins.
+Each rule has a match type, a pattern, a browser and, optionally, a profile or container of that browser. When several rules match a URL, the one with the longest match wins.
 
 ## Match types
 
@@ -16,6 +16,10 @@ Each rule has a match type, a pattern and a browser. When several rules match a 
 | **Prefix** | The start of the URL | `https://github.com/mortenn` | `https://github.com/mortenn/BrowserPicker` | `https://www.github.com/mortenn` |
 | **Regex** | A [.NET regular expression](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions) run against the URL | `^https://[a-z]+\.example\.com/` | `https://dev.example.com/app` | `https://example.com/` |
 
+| **Folder** | Local or network files in a folder and its subfolders | `C:\Reports` | `C:\Reports\2026\q1.html` or `file:///C:/Reports/q1.html` | `C:\Reports2\q1.html` |
+
+Folder rules ignore case, match whole folder names only, and work for network shares such as `\\server\share\reports`. They match a file whether an app passes it as a path or as a `file:///` link.
+
 **Default** is reserved for the fallback browser and becomes **Hostname** if you select it.
 
 A Hostname pattern matches any host name that ends with it, so `hub.com` also matches `github.com`. Start the pattern with a dot (`.example.com`) to match only subdomains, or use a Regex rule to match one exact host.
@@ -24,7 +28,7 @@ A Hostname pattern matches any host name that ends with it, so `hub.com` also ma
 
 ![The browser list for a rule](config_defaults_browsers.png)
 
-The rule opens the selected browser. By default the rule only applies when that browser is already running; see **Use defaults even when browser is not running** in [Behaviour](behaviour.md).
+The rule opens the selected browser. The **Profile** column picks one of its profiles or containers, or **(none)** to open the browser without choosing one. Changing the browser clears a profile the new browser doesn't have. By default the rule only applies when that browser is already running; see **Use defaults even when browser is not running** in [Behaviour](behaviour.md).
 
 ## Test your rules
 
