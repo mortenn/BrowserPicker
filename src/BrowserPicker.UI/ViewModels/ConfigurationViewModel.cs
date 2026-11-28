@@ -150,6 +150,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		public bool SkipConnectionCheckConfirmation { get; set; }
 
 		public bool AutoSizeWindow { get; set; } = true;
+		public bool CenterOnPrimaryMonitor { get; set; }
 		public double WindowWidth { get; set; }
 		public double WindowHeight { get; set; }
 		public double ConfigWindowWidth { get; set; }

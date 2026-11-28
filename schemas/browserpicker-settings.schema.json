@@ -85,6 +85,9 @@
     "AutoSizeWindow": {
       "type": "boolean"
     },
+    "CenterOnPrimaryMonitor": {
+      "type": "boolean"
+    },
     "WindowWidth": {
       "type": "number",
       "format": "double"

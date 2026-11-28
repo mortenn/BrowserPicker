@@ -782,6 +782,7 @@ public sealed class FeedbackViewModel : ModelBase
 		];
 		public List<Common.KeyBinding> KeyBindings { get; } = [];
 		public bool AutoSizeWindow { get; set; } = true;
+		public bool CenterOnPrimaryMonitor { get; set; }
 		public double WindowWidth { get; set; }
 		public double WindowHeight { get; set; }
 		public double ConfigWindowWidth { get; set; } = 900;

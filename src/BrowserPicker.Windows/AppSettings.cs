@@ -157,6 +157,9 @@ public sealed class AppSettings : IApplicationSettings
 	public bool AutoSizeWindow { get; set; } = true;
 
 	/// <inheritdoc />
+	public bool CenterOnPrimaryMonitor { get; set; }
+
+	/// <inheritdoc />
 	public double WindowWidth { get; set; }
 
 	/// <inheritdoc />
