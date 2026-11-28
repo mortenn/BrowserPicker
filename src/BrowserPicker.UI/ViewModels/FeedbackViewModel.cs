@@ -35,6 +35,11 @@ public sealed class FeedbackViewModel : ModelBase
 
 	private readonly IBrowserPickerConfiguration settings;
 	private readonly InMemoryLogBuffer? runtime_log_buffer;
+	private readonly DiagnosticFileLog? diagnostic_file_log;
+	private DelegateCommand? open_diagnostic_log_folder;
+	private DelegateCommand? open_latest_diagnostic_log;
+	private DelegateCommand? delete_diagnostic_logs;
+	private string diagnostic_log_message = string.Empty;
 	private readonly ObservableCollection<InMemoryLogEntry> application_log_entries = [];
 	private string application_log_filter = string.Empty;
 	private ApplicationLogLevelOption selected_application_log_level_option;
@@ -49,10 +54,16 @@ public sealed class FeedbackViewModel : ModelBase
 		: this(new DesignTimeSettings(), CreateDesignTimeLogBuffer()) { }
 #endif
 
-	public FeedbackViewModel(IBrowserPickerConfiguration settings, InMemoryLogBuffer? runtimeLogBuffer = null)
+	public FeedbackViewModel(
+		IBrowserPickerConfiguration settings,
+		InMemoryLogBuffer? runtimeLogBuffer = null,
+		DiagnosticFileLog? diagnosticFileLog = null
+	)
 	{
 		this.settings = settings;
 		runtime_log_buffer = runtimeLogBuffer;
+		diagnostic_file_log = diagnosticFileLog;
+		settings.PropertyChanged += Settings_PropertyChanged;
 		selected_application_log_level_option = ApplicationLogLevelOptions.All.First(option =>
 			option.MinimumLevel == LogLevel.Information
 		);
@@ -66,6 +77,48 @@ public sealed class FeedbackViewModel : ModelBase
 		SyncApplicationLogEntries();
 	}
 
+	/// <summary>
+	/// Settings, exposed for the diagnostic log options.
+	/// </summary>
+	public IBrowserPickerConfiguration Settings => settings;
+
+	/// <summary>
+	/// Retention periods offered for the diagnostic log, in days.
+	/// </summary>
+	public static IReadOnlyList<int> DiagnosticLogRetentionChoices { get; } = [1, 3, 7, 30];
+
+	/// <summary>
+	/// Folder that holds the diagnostic log files.
+	/// </summary>
+	public string DiagnosticLogDirectory => diagnostic_file_log?.Directory ?? DiagnosticFileLog.DefaultDirectory;
+
+	/// <summary>
+	/// Summary of the diagnostic log files currently on disk, plus the result of the last action.
+	/// </summary>
+	public string DiagnosticLogStatus
+	{
+		get
+		{
+			var files = diagnostic_file_log?.GetLogFiles() ?? [];
+			var size = files.Sum(f => f.Length);
+			var summary = files.Count switch
+			{
+				0 => Strings.Feedback_DiagnosticNoFiles,
+				1 => string.Format(Strings.Feedback_DiagnosticOneFile, size / 1024.0),
+				_ => string.Format(Strings.Feedback_DiagnosticFiles, files.Count, size / 1024.0),
+			};
+			return string.IsNullOrEmpty(diagnostic_log_message) ? summary : $"{diagnostic_log_message} {summary}";
+		}
+	}
+
+	public ICommand OpenDiagnosticLogFolder =>
+		open_diagnostic_log_folder ??= new DelegateCommand(ShowDiagnosticLogFolder);
+
+	public ICommand OpenLatestDiagnosticLog =>
+		open_latest_diagnostic_log ??= new DelegateCommand(ShowLatestDiagnosticLog);
+
+	public ICommand DeleteDiagnosticLogs => delete_diagnostic_logs ??= new DelegateCommand(DeleteDiagnosticLogFiles);
+
 	public ICommand CopyFeedbackMarkdown =>
 		copy_feedback_markdown ??= new DelegateCommand(CopyFeedbackMarkdownToClipboard);
 
@@ -74,7 +127,7 @@ public sealed class FeedbackViewModel : ModelBase
 	public ICommand CopyApplicationLog => copy_application_log ??= new DelegateCommand(CopyApplicationLogToClipboard);
 
 	public ICommand ClearApplicationLogFilter =>
-		clear_application_log_filter ??= new DelegateCommand(() => ApplicationLogFilter = string.Empty);
+		clear_application_log_filter ??= new DelegateCommand(ResetApplicationLogFilter);
 
 	public ICollectionView FilteredApplicationLogEntries { get; }
 
@@ -144,6 +197,11 @@ public sealed class FeedbackViewModel : ModelBase
 	private void CopyApplicationLogToClipboard()
 	{
 		TrySetClipboardText(BuildApplicationLogPlainText(markdownCompatible: true));
+	}
+
+	private void ResetApplicationLogFilter()
+	{
+		ApplicationLogFilter = string.Empty;
 	}
 
 	private void OpenBugReport()
@@ -631,6 +689,67 @@ public sealed class FeedbackViewModel : ModelBase
 		}
 	}
 
+	private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(IApplicationSettings.DiagnosticFileLogging))
+		{
+			SetDiagnosticLogMessage(string.Empty);
+		}
+	}
+
+	private void ShowDiagnosticLogFolder()
+	{
+		try
+		{
+			System.IO.Directory.CreateDirectory(DiagnosticLogDirectory);
+		}
+		catch (Exception e) when (e is System.IO.IOException or UnauthorizedAccessException)
+		{
+			SetDiagnosticLogMessage(string.Format(Strings.Feedback_DiagnosticFolderFailed, e.Message));
+			return;
+		}
+		StartShell(DiagnosticLogDirectory);
+	}
+
+	private void ShowLatestDiagnosticLog()
+	{
+		var latest = diagnostic_file_log?.GetLogFiles().FirstOrDefault();
+		if (latest == null)
+		{
+			SetDiagnosticLogMessage(Strings.Feedback_DiagnosticNoLogYet);
+			return;
+		}
+		StartShell(latest.FullName);
+	}
+
+	private void DeleteDiagnosticLogFiles()
+	{
+		var failed = diagnostic_file_log?.DeleteAllFiles() ?? 0;
+		SetDiagnosticLogMessage(
+			failed == 0
+				? Strings.Feedback_DiagnosticDeleted
+				: string.Format(Strings.Feedback_DiagnosticDeleteFailed, failed)
+		);
+	}
+
+	private void SetDiagnosticLogMessage(string message)
+	{
+		diagnostic_log_message = message;
+		OnPropertyChanged(nameof(DiagnosticLogStatus));
+	}
+
+	private static void StartShell(string path)
+	{
+		try
+		{
+			_ = Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+		}
+		catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException)
+		{
+			// Nothing to open; the status line already shows what exists.
+		}
+	}
+
 #if DEBUG
 	private static InMemoryLogBuffer CreateDesignTimeLogBuffer()
 	{
@@ -791,6 +910,9 @@ public sealed class FeedbackViewModel : ModelBase
 		public Common.ThemeMode ThemeMode { get; set; } = Common.ThemeMode.Dark;
 		public ProfileDisplayMode ProfileDisplayMode { get; set; }
 		public bool PersistProfileExpansion { get; set; } = true;
+		public bool DiagnosticFileLogging { get; set; }
+		public bool DiagnosticLogFullUrls { get; set; }
+		public int DiagnosticLogRetentionDays { get; set; } = DiagnosticFileLog.MinRetentionDays;
 		public bool UseFallbackDefault { get; set; } = true;
 		public string? DefaultBrowser { get; set; } = Firefox.Instance.Name;
 		public string BackupLog => "Copied configuration JSON to the clipboard.";

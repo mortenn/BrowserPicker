@@ -17,7 +17,8 @@ public sealed class BrowserProfile(string id, string name, string? commandArgs, 
 		: this(string.Empty, string.Empty, null) { }
 
 	/// <summary>
-	/// Stable identifier for this profile (e.g. "Default", "Profile 1", "container:Work").
+	/// Stable identifier for this profile (e.g. "Default", "Profile 1", "container:Work", "profile:Work",
+	/// "profile:Work/container:Client").
 	/// </summary>
 	/// <remarks>
 	/// <see cref="JsonIncludeAttribute"/> lets System.Text.Json restore the id via the private setter

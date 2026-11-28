@@ -53,6 +53,9 @@ public sealed class SerializableSettings : IApplicationSettings
 		ThemeMode = applicationSettings.ThemeMode;
 		ProfileDisplayMode = applicationSettings.ProfileDisplayMode;
 		PersistProfileExpansion = applicationSettings.PersistProfileExpansion;
+		DiagnosticFileLogging = applicationSettings.DiagnosticFileLogging;
+		DiagnosticLogFullUrls = applicationSettings.DiagnosticLogFullUrls;
+		DiagnosticLogRetentionDays = applicationSettings.DiagnosticLogRetentionDays;
 	}
 
 	/// <summary>
@@ -157,6 +160,15 @@ public sealed class SerializableSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public bool PersistProfileExpansion { get; set; } = true;
+
+	/// <inheritdoc />
+	public bool DiagnosticFileLogging { get; set; }
+
+	/// <inheritdoc />
+	public bool DiagnosticLogFullUrls { get; set; }
+
+	/// <inheritdoc />
+	public int DiagnosticLogRetentionDays { get; set; } = DiagnosticFileLog.MinRetentionDays;
 
 	/// <summary>
 	/// How to sort the browser list: automatic (by usage), manual, or alphabetical.

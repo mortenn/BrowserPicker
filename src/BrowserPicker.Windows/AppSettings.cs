@@ -183,6 +183,12 @@ public sealed class AppSettings : IApplicationSettings
 	/// <inheritdoc />
 	public bool PersistProfileExpansion { get; set; } = true;
 
+	public bool DiagnosticFileLogging { get; set; }
+
+	public bool DiagnosticLogFullUrls { get; set; }
+
+	public int DiagnosticLogRetentionDays { get; set; } = DiagnosticFileLog.MinRetentionDays;
+
 	private List<DefaultSetting> GetDefaults()
 	{
 		if (Reg == null)

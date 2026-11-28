@@ -342,6 +342,9 @@
   <data name="Defaults_Pattern" xml:space="preserve">
     <value>Pattern</value>
   </data>
+  <data name="Defaults_Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
   <data name="Defaults_UserChoice" xml:space="preserve">
     <value>User choice</value>
   </data>
@@ -420,8 +423,50 @@
   <data name="Feedback_CopyRawLog" xml:space="preserve">
     <value>Copy raw application log</value>
   </data>
+  <data name="Feedback_DeleteLogs" xml:space="preserve">
+    <value>Delete log files</value>
+  </data>
   <data name="Feedback_Description" xml:space="preserve">
     <value>When something feels off, copy a ready-made report for GitHub or open a new issue with the important context already filled in.</value>
+  </data>
+  <data name="Feedback_DiagnosticDeleted" xml:space="preserve">
+    <value>Log files deleted.</value>
+  </data>
+  <data name="Feedback_DiagnosticDeleteFailed" xml:space="preserve">
+    <value>{0} file(s) are in use and could not be deleted.</value>
+  </data>
+  <data name="Feedback_DiagnosticFiles" xml:space="preserve">
+    <value>{0} files, {1:0.#} KB on disk.</value>
+  </data>
+  <data name="Feedback_DiagnosticFolderFailed" xml:space="preserve">
+    <value>Could not create the log folder: {0}</value>
+  </data>
+  <data name="Feedback_DiagnosticFullUrls" xml:space="preserve">
+    <value>Include full URLs (path and query)</value>
+  </data>
+  <data name="Feedback_DiagnosticFullUrlsToolTip" xml:space="preserve">
+    <value>When unchecked, URLs are reduced to scheme and host (for example https://example.com/[redacted]). Full URLs can contain private data: only enable while diagnosing, then delete the logs.</value>
+  </data>
+  <data name="Feedback_DiagnosticLogging" xml:space="preserve">
+    <value>Write diagnostic log to file</value>
+  </data>
+  <data name="Feedback_DiagnosticLoggingToolTip" xml:space="preserve">
+    <value>Each link opens a new Browser Picker process, so the live log below only shows this window. When checked, every process appends to a daily file so you can see how earlier links were handled. Off by default.</value>
+  </data>
+  <data name="Feedback_DiagnosticNoFiles" xml:space="preserve">
+    <value>No diagnostic log files on disk.</value>
+  </data>
+  <data name="Feedback_DiagnosticNoLogYet" xml:space="preserve">
+    <value>No log file yet.</value>
+  </data>
+  <data name="Feedback_DiagnosticOneFile" xml:space="preserve">
+    <value>1 file, {0:0.#} KB on disk.</value>
+  </data>
+  <data name="Feedback_DiagnosticRetentionPrefix" xml:space="preserve">
+    <value>Delete log files after</value>
+  </data>
+  <data name="Feedback_DiagnosticRetentionSuffix" xml:space="preserve">
+    <value>day(s)</value>
   </data>
   <data name="Feedback_Filter" xml:space="preserve">
     <value>Filter</value>
@@ -458,6 +503,12 @@
   </data>
   <data name="Feedback_LogUnavailable" xml:space="preserve">
     <value>Runtime logging is unavailable.</value>
+  </data>
+  <data name="Feedback_OpenLatestLog" xml:space="preserve">
+    <value>Open latest log</value>
+  </data>
+  <data name="Feedback_OpenLogFolder" xml:space="preserve">
+    <value>Open log folder</value>
   </data>
   <data name="Feedback_ReportBug" xml:space="preserve">
     <value>Report bug on GitHub</value>

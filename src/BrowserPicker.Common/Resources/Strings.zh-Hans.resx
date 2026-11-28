@@ -342,6 +342,9 @@
   <data name="Defaults_Pattern" xml:space="preserve">
     <value>模式</value>
   </data>
+  <data name="Defaults_Profile" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
   <data name="Defaults_UserChoice" xml:space="preserve">
     <value>由用户选择</value>
   </data>
@@ -420,8 +423,50 @@
   <data name="Feedback_CopyRawLog" xml:space="preserve">
     <value>复制原始应用程序日志</value>
   </data>
+  <data name="Feedback_DeleteLogs" xml:space="preserve">
+    <value>删除日志文件</value>
+  </data>
   <data name="Feedback_Description" xml:space="preserve">
     <value>遇到问题时，可以复制一份现成的 GitHub 报告，或新建一个已填好重要上下文的 issue。</value>
+  </data>
+  <data name="Feedback_DiagnosticDeleted" xml:space="preserve">
+    <value>日志文件已删除。</value>
+  </data>
+  <data name="Feedback_DiagnosticDeleteFailed" xml:space="preserve">
+    <value>{0} 个文件正在使用中，无法删除。</value>
+  </data>
+  <data name="Feedback_DiagnosticFiles" xml:space="preserve">
+    <value>磁盘上有 {0} 个文件，共 {1:0.#} KB。</value>
+  </data>
+  <data name="Feedback_DiagnosticFolderFailed" xml:space="preserve">
+    <value>无法创建日志文件夹：{0}</value>
+  </data>
+  <data name="Feedback_DiagnosticFullUrls" xml:space="preserve">
+    <value>包含完整 URL（路径和查询）</value>
+  </data>
+  <data name="Feedback_DiagnosticFullUrlsToolTip" xml:space="preserve">
+    <value>未选中时，URL 只保留协议和主机（例如 https://example.com/[redacted]）。完整 URL 可能包含隐私数据：仅在诊断时启用，之后请删除日志。</value>
+  </data>
+  <data name="Feedback_DiagnosticLogging" xml:space="preserve">
+    <value>将诊断日志写入文件</value>
+  </data>
+  <data name="Feedback_DiagnosticLoggingToolTip" xml:space="preserve">
+    <value>每个链接都会启动一个新的 Browser Picker 进程，因此下方的实时日志只显示此窗口的内容。选中后，每个进程都会追加写入当天的日志文件，方便你查看之前的链接是如何处理的。默认关闭。</value>
+  </data>
+  <data name="Feedback_DiagnosticNoFiles" xml:space="preserve">
+    <value>磁盘上没有诊断日志文件。</value>
+  </data>
+  <data name="Feedback_DiagnosticNoLogYet" xml:space="preserve">
+    <value>还没有日志文件。</value>
+  </data>
+  <data name="Feedback_DiagnosticOneFile" xml:space="preserve">
+    <value>磁盘上有 1 个文件，共 {0:0.#} KB。</value>
+  </data>
+  <data name="Feedback_DiagnosticRetentionPrefix" xml:space="preserve">
+    <value>日志文件保留</value>
+  </data>
+  <data name="Feedback_DiagnosticRetentionSuffix" xml:space="preserve">
+    <value>天后删除</value>
   </data>
   <data name="Feedback_Filter" xml:space="preserve">
     <value>筛选</value>
@@ -458,6 +503,12 @@
   </data>
   <data name="Feedback_LogUnavailable" xml:space="preserve">
     <value>运行时日志不可用。</value>
+  </data>
+  <data name="Feedback_OpenLatestLog" xml:space="preserve">
+    <value>打开最新日志</value>
+  </data>
+  <data name="Feedback_OpenLogFolder" xml:space="preserve">
+    <value>打开日志文件夹</value>
   </data>
   <data name="Feedback_ReportBug" xml:space="preserve">
     <value>在 GitHub 上报告错误</value>
