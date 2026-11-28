@@ -147,11 +147,11 @@ Please note that arguments with spaces do require "" around them to be properly 
 
 ##### Firefox profiles
 
-Similar configuration should be possible for Firefox.
+Browser Picker reads `profiles.ini` under `%AppData%\Mozilla\Firefox` and finds the profiles last used by each Firefox installation. When an installation has more than one profile, each profile is offered as a choice and launched with `-P "Profile name"`. With container support enabled, each profile is followed by its containers, shown as `Profile › Container`. Containers of the installation's default profile open without `-P`. A profile appears once it has been started with that installation, and the container extension must be installed in every profile whose containers you use.
 
 ##### Zen Browser containers
 
-Zen Browser uses the existing Firefox container discovery and launch support. Browser Picker reads containers from the matching profile under `%AppData%\zen`.
+Zen Browser uses the existing Firefox profile and container discovery and launch support. Browser Picker reads profiles and containers under `%AppData%\zen`.
 
 Edit the Zen Browser entry and enable **Enable container support (Firefox / Zen)**, then refresh the browser list. Install [Open external links in a container](https://addons.mozilla.org/en-US/firefox/addon/open-url-in-container/) in the Zen profile you use. This extension handles the `ext+container:` links used by Browser Picker; the link format is not a built-in Zen command.
 
