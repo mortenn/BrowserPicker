@@ -536,6 +536,8 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 			{
 				OnPropertyChanged(nameof(CanRememberChoice));
 				OnPropertyChanged(nameof(CanRememberRegistrableDomain));
+				OnPropertyChanged(nameof(FolderPath));
+				OnPropertyChanged(nameof(CanRememberFolder));
 			}
 		}
 	}
@@ -544,6 +546,16 @@ public sealed class UrlHandler : ModelBase, ILongRunningProcess
 	/// True when the current URL has a host that can be stored as a hostname default.
 	/// </summary>
 	public bool CanRememberChoice => !string.IsNullOrWhiteSpace(HostName);
+
+	/// <summary>
+	/// Folder of the current URL when it is a local or network file (for example <c>C:\Reports\</c>); otherwise null.
+	/// </summary>
+	public string? FolderPath => FileFolder.Of(uri);
+
+	/// <summary>
+	/// True when the current URL is a file whose folder can be stored as a <see cref="MatchType.Folder"/> default.
+	/// </summary>
+	public bool CanRememberFolder => FolderPath != null;
 
 	/// <summary>
 	/// Registrable domain derived from the current display URL, if it can be classified locally.

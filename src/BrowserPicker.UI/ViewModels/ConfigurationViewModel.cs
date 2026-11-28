@@ -352,6 +352,16 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether a <see cref="MatchType.Folder"/> default should be added
+	/// for the folder of an opened local or network file.
+	/// </summary>
+	public bool AutoAddFolderDefault
+	{
+		get => auto_add_folder_default;
+		set => SetProperty(ref auto_add_folder_default, value);
+	}
+
+	/// <summary>
 	/// Gets or sets whether the picker should close automatically when it loses focus.
 	/// JSON-backed settings persist this; legacy registry-backed migration defaults to being enabled.
 	/// </summary>
@@ -805,20 +815,26 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 
 	/// <summary>
-	/// Called when a URL was opened with a browser; may add a hostname default if <see cref="AutoAddDefault"/> is set.
+	/// Called when a URL was opened with a browser; adds the hostname, registrable domain or folder defaults the user asked the picker to remember.
 	/// </summary>
 	/// <param name="hostName">Host name of the opened URL.</param>
 	/// <param name="registrableDomain">Registrable domain of the opened URL, when it differs from the full host.</param>
+	/// <param name="folderPath">Folder of the opened file, when the URL is a local or network file.</param>
 	/// <param name="browserId">The browser id of the browser that was used.</param>
-	internal void UrlOpened(string? hostName, string? registrableDomain, string browserId)
+	internal void UrlOpened(string? hostName, string? registrableDomain, string? folderPath, string browserId)
 	{
-		if (!AutoAddDefault && !AutoAddRegistrableDefault)
+		if (!AutoAddDefault && !AutoAddRegistrableDefault && !AutoAddFolderDefault)
 		{
 			return;
 		}
 
 		try
 		{
+			if (AutoAddFolderDefault && !string.IsNullOrWhiteSpace(folderPath))
+			{
+				AddNewDefault(MatchType.Folder, folderPath, browserId);
+			}
+
 			if (AutoAddDefault && !string.IsNullOrWhiteSpace(hostName))
 			{
 				AddNewDefault(MatchType.Hostname, hostName, browserId);
@@ -1106,6 +1122,7 @@ public sealed class ConfigurationViewModel : ModelBase
 	private string? new_fragment_profile;
 	private bool auto_add_default;
 	private bool auto_add_registrable_default;
+	private bool auto_add_folder_default;
 	private bool welcome;
 	private int selected_tab_index = BrowsersTabIndex;
 	private DelegateCommand? add_default;

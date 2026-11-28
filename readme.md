@@ -220,6 +220,11 @@ The pattern will match the beginning of the URL, ie. `https://github.com/mortenn
 ###### Regex match
 The pattern is a .NET regular expression and will be executed against the URL, see [.NET regular expressions](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions) for details.
 
+###### Folder match
+For local and network files. The pattern is a folder, ie. `C:\Program Files\Palo Alto Networks\GlobalProtect` would match `C:\Program Files\Palo Alto Networks\GlobalProtect\welcome.html` and files in its subfolders, whether the app opens it as a path or as a `file:///` URL. Case does not matter, and `C:\Temp` does not match `C:\Temp2\page.html`.
+
+When the picker opens a local or network file, it offers `Remember folder` instead of `Remember` for the host name; checking it adds this rule for the browser you pick.
+
 ##### Browser
 The selected browser will be the one to launch for matched URLs.
 

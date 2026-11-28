@@ -477,6 +477,12 @@
   <data name="Picker_Remember" xml:space="preserve">
     <value>记住 </value>
   </data>
+  <data name="Picker_RememberFolder" xml:space="preserve">
+    <value>记住文件夹 </value>
+  </data>
+  <data name="Picker_RememberFolderToolTip" xml:space="preserve">
+    <value>用你现在选择的浏览器打开此文件夹及其子文件夹中的文件。</value>
+  </data>
   <data name="Picker_ShowProfiles" xml:space="preserve">
     <value>显示配置文件</value>
   </data>
