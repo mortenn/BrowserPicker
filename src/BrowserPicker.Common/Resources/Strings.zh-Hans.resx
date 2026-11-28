@@ -246,6 +246,9 @@
   <data name="Config_WindowsIntegration" xml:space="preserve">
     <value>Windows 集成</value>
   </data>
+  <data name="Config_WindowTitle" xml:space="preserve">
+    <value>Browser Picker 设置</value>
+  </data>
   <data name="ConnectionCheck_BeforeYouStart" xml:space="preserve">
     <value>开始之前</value>
   </data>
