@@ -39,6 +39,9 @@ public static class WellKnownBrowsers
 		InternetExplorer.Instance,
 		OperaStable.Instance,
 		Vivaldi.Instance,
+		Brave.Instance,
+		BraveBeta.Instance,
+		BraveNightly.Instance,
 	];
 }
 
@@ -260,4 +263,65 @@ public sealed class Vivaldi : IWellKnownBrowser
 	public ProfileType ProfileType => ProfileType.Chromium;
 
 	public string UserDataPath => @"Vivaldi\User Data";
+}
+
+/// <remarks>
+/// The Brave channels install side by side and share the executable name, so they are matched by
+/// install folder. Names and folders come from brave-core's <c>chromium_install_modes.h</c>.
+/// </remarks>
+public sealed class Brave : IWellKnownBrowser
+{
+	public static readonly Brave Instance = new();
+
+	public string Name => "Brave";
+
+	public string Executable => @"BraveSoftware\Brave-Browser\Application\brave.exe";
+
+	public string? RealExecutable => null;
+
+	public string PrivacyArgs => "--incognito ";
+
+	public string PrivacyMode => Strings.Privacy_OpenInPrivateWindow;
+
+	public ProfileType ProfileType => ProfileType.Chromium;
+
+	public string UserDataPath => @"BraveSoftware\Brave-Browser\User Data";
+}
+
+public sealed class BraveBeta : IWellKnownBrowser
+{
+	public static readonly BraveBeta Instance = new();
+
+	public string Name => "Brave Beta";
+
+	public string Executable => @"BraveSoftware\Brave-Browser-Beta\Application\brave.exe";
+
+	public string? RealExecutable => null;
+
+	public string PrivacyArgs => "--incognito ";
+
+	public string PrivacyMode => Strings.Privacy_OpenInPrivateWindow;
+
+	public ProfileType ProfileType => ProfileType.Chromium;
+
+	public string UserDataPath => @"BraveSoftware\Brave-Browser-Beta\User Data";
+}
+
+public sealed class BraveNightly : IWellKnownBrowser
+{
+	public static readonly BraveNightly Instance = new();
+
+	public string Name => "Brave Nightly";
+
+	public string Executable => @"BraveSoftware\Brave-Browser-Nightly\Application\brave.exe";
+
+	public string? RealExecutable => null;
+
+	public string PrivacyArgs => "--incognito ";
+
+	public string PrivacyMode => Strings.Privacy_OpenInPrivateWindow;
+
+	public ProfileType ProfileType => ProfileType.Chromium;
+
+	public string UserDataPath => @"BraveSoftware\Brave-Browser-Nightly\User Data";
 }

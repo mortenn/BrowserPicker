@@ -220,6 +220,35 @@ public sealed class BrowserModel : ModelBase
 		set => SetProperty(ref profiles_expanded, value);
 	}
 
+	/// <summary>
+	/// Copies what browser detection found onto this already configured browser.
+	/// </summary>
+	/// <remarks>
+	/// Detection never knows command arguments, and only knows privacy arguments for
+	/// <see cref="WellKnownBrowsers"/>. Arguments are therefore only replaced when detection found a value,
+	/// so arguments the user typed are kept. Nothing changes when <see cref="ManualOverride"/> is set.
+	/// Values that are already equal raise no change notification, so an unchanged browser is not saved again.
+	/// </remarks>
+	/// <param name="detected">The browser as found by detection.</param>
+	public void UpdateFromDetection(BrowserModel detected)
+	{
+		if (ManualOverride)
+		{
+			return;
+		}
+
+		Command = detected.Command;
+		IconPath = detected.IconPath;
+		if (detected.CommandArgs != null)
+		{
+			CommandArgs = detected.CommandArgs;
+		}
+		if (detected.PrivacyArgs != null)
+		{
+			PrivacyArgs = detected.PrivacyArgs;
+		}
+	}
+
 	private int usage;
 	private bool disabled;
 	private bool removed;

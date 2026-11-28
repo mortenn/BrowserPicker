@@ -348,6 +348,9 @@
   <data name="Editor_DisableAutoUpdates" xml:space="preserve">
     <value>Disable automatic updates</value>
   </data>
+  <data name="Editor_DisableAutoUpdatesToolTip" xml:space="preserve">
+    <value>Keep this browser as you set it: browser detection no longer updates its command, privacy arguments or icon.</value>
+  </data>
   <data name="Editor_EnableContainers" xml:space="preserve">
     <value>Enable container support (Firefox / Zen)</value>
   </data>
@@ -497,6 +500,9 @@
   </data>
   <data name="Privacy_OpenIncognito" xml:space="preserve">
     <value>Open incognito</value>
+  </data>
+  <data name="Privacy_OpenInPrivateWindow" xml:space="preserve">
+    <value>Open in private window</value>
   </data>
   <data name="Privacy_OpenWithPrivateBrowsing" xml:space="preserve">
     <value>Open with private browsing</value>

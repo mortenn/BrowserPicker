@@ -703,13 +703,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		);
 		if (update != null)
 		{
-			if (update.ManualOverride)
-				return;
-			update.Command = model.Command;
-			update.CommandArgs = model.CommandArgs;
-			update.PrivacyArgs = model.PrivacyArgs;
-			update.IconPath = model.IconPath;
-			SaveToFile();
+			// Browser_PropertyChanged saves each change, so nothing is written when detection found the same values.
+			update.UpdateFromDetection(model);
 			return;
 		}
 		AddBrowser(model);
