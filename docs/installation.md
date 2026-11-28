@@ -23,10 +23,11 @@ To avoid the "unknown publisher" warning, you can [import the provided certifica
 
 Browser Picker only sees links when Windows sends them to it.
 
-1. Start Browser Picker once from the Start menu, to make sure it runs.
-2. Open Windows **Settings** > **Apps** > **Default apps**.
-3. Select **Browser Picker** (or **Browser Picker (Portable)**).
-4. Select **Set default**, or set it for `HTTP` and `HTTPS` one at a time.
+1. Start Browser Picker from the Start menu.
+2. Select **Behaviour** > **Windows integration** > **Open Windows Default apps**. The first time you start Browser Picker, the Welcome tab has the same button, **Make Browser Picker your default browser**. Windows Settings opens on Browser Picker's page. (Windows doesn't let apps make themselves the default browser, so this last step is yours.)
+3. Select **Set default**, or set it for `HTTP` and `HTTPS` one at a time.
+
+**Behaviour** > **Windows integration** always shows whether Browser Picker opens web links, and which app does if it doesn't. It updates when you come back from Windows Settings.
 
 Some organizations manage the default browser with a policy. If Windows resets the default after you change it, ask your IT department.
 

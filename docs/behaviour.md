@@ -8,6 +8,7 @@ The **Behaviour** tab of the settings window controls how the picker looks and w
 
 - **Theme** and **Font size** change how Browser Picker looks.
 - **Auto size window** fits the picker to its content. Resize the picker window to give it a fixed size; this turns the option off and saves the size.
+- **Always open on primary monitor** opens the picker centered on the primary monitor. When it's off, the picker opens on the monitor under the mouse cursor.
 - **Turn off transparency** uses a solid background, which can be easier to read. **Window opacity** sets how transparent the window is otherwise.
 
 ## List order

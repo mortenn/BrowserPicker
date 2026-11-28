@@ -7,6 +7,7 @@ Browser Picker opens links without the picker when a [rule](rules.md) matches, w
 - To be asked every time, tick **Always ask** in the picker.
 - To be asked whenever no rule matches, even with one browser running, turn on **Always ask when no default is matching URL** in [Behaviour](behaviour.md).
 - To find out which rule matched, paste the URL into **Test defaults** on the Defaults tab.
+- The **Feedback** tab's log shows a line such as `Opening the link in Microsoft Edge without showing the picker: no rule matches, and it is the only running browser.` for each link that skipped the picker.
 
 ## The picker never appears
 

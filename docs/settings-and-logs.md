@@ -53,6 +53,16 @@ You can also set them with environment variables, such as `Logging__LogLevel__De
 
 The **Level** list on the Feedback tab only filters what the viewer shows. It doesn't change what Browser Picker records.
 
+### Diagnostic log file
+
+Each link starts a new Browser Picker process, so the log on the Feedback tab only shows the current window. To see how earlier links were handled, turn on **Write diagnostic log to file** on the Feedback tab. Every process then appends to a daily file in `%LOCALAPPDATA%\BrowserPicker\logs`, including the Debug lines that explain each decision, whatever the levels in `appsettings.json`.
+
+- It is off by default.
+- URLs are reduced to scheme and host, such as `https://example.com/[redacted]`, unless you turn on **Include full URLs (path and query)**. Full URLs can contain private data, so only turn it on while you investigate, then delete the logs.
+- Your user profile path is written as `%USERPROFILE%`.
+- **Delete log files after** keeps files for 1, 3, 7 or 30 days. Each file stops growing at 5 MB.
+- **Open latest log**, **Open log folder** and **Delete log files** are next to the options.
+
 If you use a `.zip` package instead of an installer, register the event source once before logs appear in the Event Log. Run this in an administrator PowerShell window:
 
 ```powershell

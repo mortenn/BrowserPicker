@@ -30,6 +30,7 @@ The top of the window shows the URL that will open.
 - Browsers with profiles show a button that expands the profile list. See [Browsers and profiles](browsers.md).
 - The shield button opens the browser in private mode, where the browser supports it.
 - Tick **Remember** before you pick to create a rule for the host name, or for the whole domain when that option is shown. The next link to that site opens in the same browser without asking.
+- For a local or network file, the picker offers **Remember folder** instead. It creates a [Folder rule](rules.md#match-types) for the file's folder and its subfolders.
 
 ## Keyboard shortcuts
 
