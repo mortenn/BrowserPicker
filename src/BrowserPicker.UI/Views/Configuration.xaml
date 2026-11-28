@@ -919,6 +919,7 @@
 							<Grid.RowDefinitions>
 								<RowDefinition Height="Auto" />
 								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
 							</Grid.RowDefinitions>
 							<StackPanel>
 								<TextBlock FontSize="18" FontWeight="SemiBold" Text="{x:Static res:Strings.Feedback_Heading}" />
@@ -929,6 +930,23 @@
 								<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding ReportBug}" Content="{x:Static res:Strings.Feedback_ReportBug}" />
 								<Button Margin="0,0,0,8" Padding="12,4" Command="{Binding CopyApplicationLog}" Content="{x:Static res:Strings.Feedback_CopyRawLog}" />
 							</WrapPanel>
+							<StackPanel Grid.Row="2" Margin="0,4,0,0">
+								<CheckBox Content="{x:Static res:Strings.Feedback_DiagnosticLogging}" IsChecked="{Binding Settings.DiagnosticFileLogging}" ToolTip="{x:Static res:Strings.Feedback_DiagnosticLoggingToolTip}" />
+								<StackPanel Margin="24,4,0,0" IsEnabled="{Binding Settings.DiagnosticFileLogging}">
+									<CheckBox Content="{x:Static res:Strings.Feedback_DiagnosticFullUrls}" IsChecked="{Binding Settings.DiagnosticLogFullUrls}" ToolTip="{x:Static res:Strings.Feedback_DiagnosticFullUrlsToolTip}" />
+									<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
+										<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Feedback_DiagnosticRetentionPrefix}" />
+										<ComboBox MinWidth="60" Margin="6,0" ItemsSource="{x:Static viewModels:FeedbackViewModel.DiagnosticLogRetentionChoices}" SelectedItem="{Binding Settings.DiagnosticLogRetentionDays}" />
+										<TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.Feedback_DiagnosticRetentionSuffix}" />
+									</StackPanel>
+								</StackPanel>
+								<WrapPanel Margin="0,8,0,0">
+									<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding OpenLatestDiagnosticLog}" Content="{x:Static res:Strings.Feedback_OpenLatestLog}" />
+									<Button Margin="0,0,8,8" Padding="12,4" Command="{Binding OpenDiagnosticLogFolder}" Content="{x:Static res:Strings.Feedback_OpenLogFolder}" />
+									<Button Margin="0,0,0,8" Padding="12,4" Command="{Binding DeleteDiagnosticLogs}" Content="{x:Static res:Strings.Feedback_DeleteLogs}" />
+								</WrapPanel>
+								<TextBlock FontSize="11" Opacity="0.6" Text="{Binding DiagnosticLogStatus}" TextWrapping="Wrap" />
+							</StackPanel>
 						</Grid>
 					</Border>
 					<Border Grid.Row="1" Background="{DynamicResource {x:Static ui:App.ContentBackgroundBrushKey}}" SnapsToDevicePixels="True">

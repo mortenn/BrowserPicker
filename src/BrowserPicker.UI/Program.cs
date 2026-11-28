@@ -23,6 +23,7 @@ internal static class Program
 		WindowsEnvironment.EnsureWindowsDirectory();
 
 		var runtimeLogBuffer = new InMemoryLogBuffer();
+		var diagnosticFileLog = new DiagnosticFileLog();
 
 		var builder = Host.CreateDefaultBuilder()
 			// The default content root is the working directory, which is wherever the app that opened the
@@ -35,6 +36,7 @@ internal static class Program
 			.ConfigureServices(services =>
 			{
 				services.AddSingleton(runtimeLogBuffer);
+				services.AddSingleton(diagnosticFileLog);
 				services.AddSingleton<App>();
 				services.AddSingleton<MainWindow>();
 				services.AddSingleton<AppSettings>();
@@ -58,12 +60,29 @@ internal static class Program
 #endif
 				logging.AddProvider(new InMemoryLoggerProvider(runtimeLogBuffer));
 				logging.AddEventLog(settings => settings.SourceName = "BrowserPicker");
+				// The file log decides itself what to keep (off unless enabled in settings), so let Debug through
+				// regardless of the appsettings.json levels, which only lower the other providers.
+				logging.AddProvider(new DiagnosticFileLoggerProvider(diagnosticFileLog));
+				logging.AddFilter<DiagnosticFileLoggerProvider>(null, LogLevel.Debug);
 			});
 
 		var host = builder.Build();
 		App.Services = host.Services;
 		var configuration = host.Services.GetRequiredService<IBrowserPickerConfiguration>();
 		App.Settings = configuration;
+		ApplyDiagnosticLogSettings(diagnosticFileLog, configuration);
+		configuration.PropertyChanged += (_, e) =>
+		{
+			if (
+				e.PropertyName
+				is nameof(IApplicationSettings.DiagnosticFileLogging)
+					or nameof(IApplicationSettings.DiagnosticLogFullUrls)
+					or nameof(IApplicationSettings.DiagnosticLogRetentionDays)
+			)
+			{
+				ApplyDiagnosticLogSettings(diagnosticFileLog, configuration);
+			}
+		};
 		var app = host.Services.GetRequiredService<App>();
 
 		// Theme and app resources are loaded by App.EnsureThemeResources when the first window opens,
@@ -83,4 +102,11 @@ internal static class Program
 
 		app.Run();
 	}
+
+	private static void ApplyDiagnosticLogSettings(DiagnosticFileLog log, IApplicationSettings settings) =>
+		log.Configure(
+			settings.DiagnosticFileLogging,
+			settings.DiagnosticLogFullUrls,
+			settings.DiagnosticLogRetentionDays
+		);
 }
