@@ -208,6 +208,29 @@ When enabled, Browser Picker may request the resolved page to discover a favicon
 
 Use this button to turn off both automatic probe types at once.
 
+> [ ] Look up domain registration (RDAP)
+
+Off by default. When enabled, the manual connection check (the padlock in the picker) also shows when the domain was registered, when it expires, its registrar and its status. A domain registered only days ago is a common sign of a phishing site.
+
+Only the registrable domain is sent (for example `example.com` for `https://www.example.com/account`), never the full URL. Browser Picker downloads IANA's list of RDAP services from `data.iana.org` and asks the registry listed for the domain's top-level domain; that registry may see the lookup. Nothing is looked up when the picker opens, even for URLs that match your Defaults. A lookup that fails, is rate limited, or covers a top-level domain without RDAP shows as "Not available" and isn't treated as a warning.
+
+> [ ] Look up certificate history (crt.sh)
+
+Off by default. When enabled, the manual connection check also shows the host's public certificate transparency history from [crt.sh](https://crt.sh), a search run by Sectigo: how many certificates have been issued, when the first and latest were issued, and by which certificate authorities. A host whose first certificate is only days old deserves a closer look.
+
+Only the host name is sent (for example `www.example.com`), never the full URL. crt.sh is often busy; a failed or rate-limited lookup shows as "Not available" and isn't treated as a warning. A host covered only by a wildcard certificate (such as `*.example.com`) has no history under its own name.
+
+This is separate from **Include DNS CAA and certificate transparency evidence**, which reads the proofs embedded in the certificate itself and sends nothing extra.
+
+> [ ] Look up the host on URLhaus (abuse.ch)
+>> Auth-Key: [________] Save / Remove
+
+Off by default. When enabled, the manual connection check also asks [URLhaus](https://urlhaus.abuse.ch/), abuse.ch's database of sites that distribute malware, whether it has seen malware on the host: how many malware URLs, whether any are online now, when they were added, their tags, and the host's Spamhaus DBL and SURBL status.
+
+URLhaus requires your own Auth-Key, which you can get for free from the [abuse.ch Authentication Portal](https://auth.abuse.ch/). Browser Picker doesn't ship a key. The key is stored in Windows Credential Manager for your user, not in `settings.json`, so it isn't included when you export, copy or back up your settings. abuse.ch's terms allow free use under fair-use principles; commercial use may require their commercial API.
+
+Only the host name is sent (for example `www.example.com`), together with your key, never the full URL. URLhaus tracks malware downloads, not phishing, so "Not listed" doesn't mean a site is safe. A failed, rejected or rate-limited lookup shows as "Not available" and isn't treated as a warning.
+
 ### Defaults
 The defaults tab lets you configure rules to map certain URLs to certain browsers.
 

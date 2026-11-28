@@ -39,4 +39,22 @@ public interface ISecuritySettings
 	/// When true, manual connection checks start immediately without showing the confirmation prompt.
 	/// </summary>
 	bool SkipConnectionCheckConfirmation { get; set; }
+
+	/// <summary>
+	/// When true, manual connection checks also look up the registrable domain's registration data over RDAP.
+	/// Sends the registrable domain (not the URL) to the registry's RDAP service.
+	/// </summary>
+	bool LookupDomainRegistration { get; set; }
+
+	/// <summary>
+	/// When true, manual connection checks also look up the host's public certificate transparency history.
+	/// Sends the host name (not the URL) to crt.sh.
+	/// </summary>
+	bool LookupCertificateHistory { get; set; }
+
+	/// <summary>
+	/// When true, manual connection checks also look up the host on URLhaus (abuse.ch), using the user's own
+	/// Auth-Key. The key is kept in Windows Credential Manager, not in the settings file.
+	/// </summary>
+	bool LookupUrlReputation { get; set; }
 }

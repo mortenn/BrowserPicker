@@ -35,6 +35,9 @@ public sealed class SerializableSettings : IApplicationSettings
 		CheckCertificateRecords = applicationSettings.CheckCertificateRecords;
 		HideManualConnectionCheck = applicationSettings.HideManualConnectionCheck;
 		SkipConnectionCheckConfirmation = applicationSettings.SkipConnectionCheckConfirmation;
+		LookupDomainRegistration = applicationSettings.LookupDomainRegistration;
+		LookupCertificateHistory = applicationSettings.LookupCertificateHistory;
+		LookupUrlReputation = applicationSettings.LookupUrlReputation;
 		UrlShorteners = applicationSettings.UrlShorteners;
 		BrowserList = [.. applicationSettings.BrowserList.Where(b => !b.Removed)];
 		Defaults = [.. applicationSettings.Defaults.Where(d => !d.Deleted && !string.IsNullOrWhiteSpace(d.Browser))];
@@ -110,6 +113,15 @@ public sealed class SerializableSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public bool SkipConnectionCheckConfirmation { get; set; }
+
+	/// <inheritdoc />
+	public bool LookupDomainRegistration { get; set; }
+
+	/// <inheritdoc />
+	public bool LookupCertificateHistory { get; set; }
+
+	/// <inheritdoc />
+	public bool LookupUrlReputation { get; set; }
 
 	/// <summary>
 	/// When true, the picker closes itself when it loses focus. Defaults to being enabled.

@@ -55,6 +55,15 @@
     "SkipConnectionCheckConfirmation": {
       "type": "boolean"
     },
+    "LookupDomainRegistration": {
+      "type": "boolean"
+    },
+    "LookupCertificateHistory": {
+      "type": "boolean"
+    },
+    "LookupUrlReputation": {
+      "type": "boolean"
+    },
     "AutoCloseOnFocusLost": {
       "type": "boolean"
     },

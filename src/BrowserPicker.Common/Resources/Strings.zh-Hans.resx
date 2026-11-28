@@ -108,6 +108,9 @@
   <data name="Common_Remove" xml:space="preserve">
     <value>移除</value>
   </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
   <data name="Common_Visible" xml:space="preserve">
     <value>可见</value>
   </data>
@@ -296,6 +299,9 @@
   </data>
   <data name="ConnectionCheck_StatusFailed" xml:space="preserve">
     <value>连接检查失败</value>
+  </data>
+  <data name="ConnectionCheck_StatusLookingUp" xml:space="preserve">
+    <value>正在查询域名信息...</value>
   </data>
   <data name="ConnectionCheck_StatusRunning" xml:space="preserve">
     <value>正在检查连接...</value>
@@ -492,6 +498,15 @@
   <data name="LogLevel_WarningAndAbove" xml:space="preserve">
     <value>Warning 及以上</value>
   </data>
+  <data name="Lookup_CertificateHistoryDisclosure" xml:space="preserve">
+    <value>证书历史查询会把主机名 "{0}" 发送到 crt.sh（由 Sectigo 运营的公开证书透明度搜索服务）。</value>
+  </data>
+  <data name="Lookup_RdapDisclosure" xml:space="preserve">
+    <value>域名注册查询会把域名 "{0}" 发送给其注册局的 RDAP 服务（通过 data.iana.org 上的 IANA 列表找到）。该服务可能会看到这次查询。</value>
+  </data>
+  <data name="Lookup_UrlhausDisclosure" xml:space="preserve">
+    <value>URLhaus 查询会把主机名 "{0}" 和你的 abuse.ch Auth-Key 发送到 URLhaus (abuse.ch)。</value>
+  </data>
   <data name="Picker_AlwaysAsk" xml:space="preserve">
     <value>总是询问</value>
   </data>
@@ -582,6 +597,24 @@
   <data name="Security_IncludeCertificateRecordsToolTip" xml:space="preserve">
     <value>仅在单击“检查连接”时使用。CAA 需要进行 DNS 查询；CT 会检查证书中嵌入的证书透明度证据。</value>
   </data>
+  <data name="Security_LookupCertificateHistory" xml:space="preserve">
+    <value>查询证书历史 (crt.sh)</value>
+  </data>
+  <data name="Security_LookupCertificateHistoryToolTip" xml:space="preserve">
+    <value>仅在你点击“检查连接”时使用。会把主机名（例如 www.example.com）而不是完整 URL 发送到 crt.sh（由 Sectigo 运营的公开证书透明度搜索服务）。</value>
+  </data>
+  <data name="Security_LookupDomainRegistration" xml:space="preserve">
+    <value>查询域名注册信息 (RDAP)</value>
+  </data>
+  <data name="Security_LookupDomainRegistrationToolTip" xml:space="preserve">
+    <value>仅在你点击“检查连接”时使用。会把域名（例如 example.com）而不是完整 URL 发送给 IANA 列出的注册局 RDAP 服务。</value>
+  </data>
+  <data name="Security_LookupUrlReputation" xml:space="preserve">
+    <value>在 URLhaus (abuse.ch) 上查询主机</value>
+  </data>
+  <data name="Security_LookupUrlReputationToolTip" xml:space="preserve">
+    <value>仅在你点击“检查连接”时使用。会把主机名（例如 www.example.com）和你自己的 abuse.ch Auth-Key 发送到 URLhaus，该服务跟踪传播恶意软件的网站。</value>
+  </data>
   <data name="Security_ManualProbes" xml:space="preserve">
     <value>手动探测</value>
   </data>
@@ -611,6 +644,18 @@
   </data>
   <data name="Security_SkipConfirmationToolTip" xml:space="preserve">
     <value>单击挂锁图标时立即开始连接检查。</value>
+  </data>
+  <data name="Security_UrlhausAuthKey" xml:space="preserve">
+    <value>Auth-Key：</value>
+  </data>
+  <data name="Security_UrlhausAuthKeyToolTip" xml:space="preserve">
+    <value>粘贴你的 abuse.ch Auth-Key。它保存在 Windows 凭据管理器中，而不是设置文件中。</value>
+  </data>
+  <data name="Security_UrlhausKeyMissing" xml:space="preserve">
+    <value>尚未保存 Auth-Key。可以从 abuse.ch 身份验证门户免费获取。</value>
+  </data>
+  <data name="Security_UrlhausKeySaved" xml:space="preserve">
+    <value>Auth-Key 已保存在 Windows 凭据管理器中。</value>
   </data>
   <data name="Shorteners_Additional" xml:space="preserve">
     <value>其他短链接服务</value>
