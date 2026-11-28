@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Backup_ClipboardEmpty" xml:space="preserve">
+    <value>剪贴板文本为空</value>
+  </data>
+  <data name="Backup_ClipboardNoText" xml:space="preserve">
+    <value>剪贴板中没有文本</value>
+  </data>
+  <data name="Backup_CopiedToClipboard" xml:space="preserve">
+    <value>已将配置 JSON 复制到剪贴板。</value>
+  </data>
+  <data name="Backup_Copy" xml:space="preserve">
+    <value>复制设置</value>
+  </data>
+  <data name="Backup_CopyFailed" xml:space="preserve">
+    <value>无法将配置 JSON 复制到剪贴板：{0}</value>
+  </data>
+  <data name="Backup_Export" xml:space="preserve">
+    <value>导出 Browser Picker 设置</value>
+  </data>
+  <data name="Backup_ExportFailed" xml:space="preserve">
+    <value>无法将配置导出到 {0}：{1}</value>
+  </data>
+  <data name="Backup_Exported" xml:space="preserve">
+    <value>已将配置导出到 {0}</value>
+  </data>
+  <data name="Backup_Heading" xml:space="preserve">
+    <value>备份或恢复你的 BrowserPicker 配置：</value>
+  </data>
+  <data name="Backup_Import" xml:space="preserve">
+    <value>导入 Browser Picker 设置</value>
+  </data>
+  <data name="Backup_ImportFailed" xml:space="preserve">
+    <value>无法从 {0} 导入配置：{1}</value>
+  </data>
+  <data name="Backup_ImportNotDeserialized" xml:space="preserve">
+    <value>无法从 {0} 导入配置：无法反序列化该文档。</value>
+  </data>
+  <data name="Backup_ImportNotObject" xml:space="preserve">
+    <value>无法从 {0} 导入配置：应为 JSON 对象。</value>
+  </data>
+  <data name="Backup_ImportNotSettings" xml:space="preserve">
+    <value>无法从 {0} 导入配置：内容不是 Browser Picker 设置 JSON。</value>
+  </data>
+  <data name="Backup_Imported" xml:space="preserve">
+    <value>已从 {0} 导入配置</value>
+  </data>
+  <data name="Backup_Paste" xml:space="preserve">
+    <value>粘贴设置</value>
+  </data>
+  <data name="Backup_PasteFailed" xml:space="preserve">
+    <value>无法从剪贴板粘贴配置：{0}</value>
+  </data>
+  <data name="Backup_ReadFailed" xml:space="preserve">
+    <value>无法从 {0} 读取配置：{1}</value>
+  </data>
+  <data name="Backup_SourceClipboard" xml:space="preserve">
+    <value>剪贴板</value>
+  </data>
+  <data name="Common_Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="Common_Browse" xml:space="preserve">
+    <value>浏览</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Common_CopyToClipboard" xml:space="preserve">
+    <value>复制到剪贴板</value>
+  </data>
+  <data name="Common_Disabled" xml:space="preserve">
+    <value>已禁用</value>
+  </data>
+  <data name="Common_Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Common_Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Common_Enabled" xml:space="preserve">
+    <value>已启用</value>
+  </data>
+  <data name="Common_Feedback" xml:space="preserve">
+    <value>反馈</value>
+  </data>
+  <data name="Common_Hidden" xml:space="preserve">
+    <value>隐藏</value>
+  </data>
+  <data name="Common_Ok" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="Common_Visible" xml:space="preserve">
+    <value>可见</value>
+  </data>
+  <data name="Config_AddBrowser" xml:space="preserve">
+    <value>添加浏览器</value>
+  </data>
+  <data name="Config_AlwaysAskWithoutDefault" xml:space="preserve">
+    <value>无匹配的默认浏览器时始终询问</value>
+  </data>
+  <data name="Config_AlwaysShowPicker" xml:space="preserve">
+    <value>始终显示浏览器选择窗口</value>
+  </data>
+  <data name="Config_Appearance" xml:space="preserve">
+    <value>外观</value>
+  </data>
+  <data name="Config_AutoCloseOnFocusLost" xml:space="preserve">
+    <value>失去焦点时自动关闭</value>
+  </data>
+  <data name="Config_AutoCloseOnFocusLostToolTip" xml:space="preserve">
+    <value>选中时，切换到其他窗口后选择器会自动关闭。关闭此选项可让选择器窗口一直保留，直到你关闭或使用它。</value>
+  </data>
+  <data name="Config_AutoSizeWindow" xml:space="preserve">
+    <value>自动调整窗口大小</value>
+  </data>
+  <data name="Config_AutoSizeWindowToolTip" xml:space="preserve">
+    <value>选中时，窗口大小自动适应内容。取消选中时，窗口使用你上次手动调整的大小。手动调整窗口大小会关闭此选项并保存该大小。</value>
+  </data>
+  <data name="Config_DisableTransparency" xml:space="preserve">
+    <value>关闭透明效果</value>
+  </data>
+  <data name="Config_DuplicateBrowserToolTip" xml:space="preserve">
+    <value>复制浏览器：以此浏览器为基础创建新浏览器</value>
+  </data>
+  <data name="Config_EditBrowserToolTip" xml:space="preserve">
+    <value>编辑浏览器定义</value>
+  </data>
+  <data name="Config_FallbackBrowser" xml:space="preserve">
+    <value>备用浏览器：</value>
+  </data>
+  <data name="Config_FontSize" xml:space="preserve">
+    <value>字体大小：</value>
+  </data>
+  <data name="Config_GroupProfiles" xml:space="preserve">
+    <value>将配置文件归入所属浏览器</value>
+  </data>
+  <data name="Config_ListOrder" xml:space="preserve">
+    <value>列表顺序</value>
+  </data>
+  <data name="Config_LookupTimeout" xml:space="preserve">
+    <value>查询超时</value>
+  </data>
+  <data name="Config_ProfileDisplay" xml:space="preserve">
+    <value>配置文件显示</value>
+  </data>
+  <data name="Config_ProfilesAsEntries" xml:space="preserve">
+    <value>将配置文件显示为单独条目</value>
+  </data>
+  <data name="Config_RefreshBrowsers" xml:space="preserve">
+    <value>刷新浏览器列表</value>
+  </data>
+  <data name="Config_RememberExpanded" xml:space="preserve">
+    <value>在每次启动之间记住已展开的配置文件组</value>
+  </data>
+  <data name="Config_RememberExpandedToolTip" xml:space="preserve">
+    <value>选中时，会记住每个浏览器配置文件列表的展开/折叠状态。取消选中时，配置文件组始终以折叠状态显示。</value>
+  </data>
+  <data name="Config_RemoveBrowserToolTip" xml:space="preserve">
+    <value>从列表中移除自定义浏览器</value>
+  </data>
+  <data name="Config_SortAlphabetical" xml:space="preserve">
+    <value>按字母顺序排序</value>
+  </data>
+  <data name="Config_SortManual" xml:space="preserve">
+    <value>手动排序</value>
+  </data>
+  <data name="Config_SortUsage" xml:space="preserve">
+    <value>按使用频率排序</value>
+  </data>
+  <data name="Config_TabBackup" xml:space="preserve">
+    <value>备份</value>
+  </data>
+  <data name="Config_TabBehaviour" xml:space="preserve">
+    <value>行为</value>
+  </data>
+  <data name="Config_TabBrowsers" xml:space="preserve">
+    <value>浏览器</value>
+  </data>
+  <data name="Config_TabDefaults" xml:space="preserve">
+    <value>默认规则</value>
+  </data>
+  <data name="Config_TabSecurity" xml:space="preserve">
+    <value>安全</value>
+  </data>
+  <data name="Config_TabShorteners" xml:space="preserve">
+    <value>短链接</value>
+  </data>
+  <data name="Config_TabTestDefaults" xml:space="preserve">
+    <value>测试默认规则</value>
+  </data>
+  <data name="Config_TabWelcome" xml:space="preserve">
+    <value>欢迎</value>
+  </data>
+  <data name="Config_Theme" xml:space="preserve">
+    <value>主题：</value>
+  </data>
+  <data name="Config_ToggleBrowserToolTip" xml:space="preserve">
+    <value>切换此浏览器是否显示在选择器中</value>
+  </data>
+  <data name="Config_ToggleProfileToolTip" xml:space="preserve">
+    <value>切换此配置文件是否显示在选择器中</value>
+  </data>
+  <data name="Config_UrlResolutionTimeout" xml:space="preserve">
+    <value>URL 解析超时：</value>
+  </data>
+  <data name="Config_UseDefaultsWhenNotRunning" xml:space="preserve">
+    <value>即使浏览器未运行也使用默认设置</value>
+  </data>
+  <data name="Config_UseDefaultsWhenNotRunningToolTip" xml:space="preserve">
+    <value>取消选中时，如果默认浏览器未运行，会显示选择窗口。选中此项后，链接将始终在默认（或备用）浏览器中打开，不显示选择窗口。</value>
+  </data>
+  <data name="Config_UseFallbackBrowser" xml:space="preserve">
+    <value>使用备用默认浏览器</value>
+  </data>
+  <data name="Config_UseFallbackBrowserToolTip" xml:space="preserve">
+    <value>选中时，不匹配任何规则的链接将在下方选择的浏览器中打开。取消选中时，将根据其他设置显示选择器（或询问你）。</value>
+  </data>
+  <data name="Config_WhenNoRuleMatches" xml:space="preserve">
+    <value>没有匹配的 URL 规则时</value>
+  </data>
+  <data name="Config_WhenToShowPicker" xml:space="preserve">
+    <value>何时显示选择器</value>
+  </data>
+  <data name="Config_WindowOpacity" xml:space="preserve">
+    <value>窗口不透明度：</value>
+  </data>
+  <data name="Config_WindowsIntegration" xml:space="preserve">
+    <value>Windows 集成</value>
+  </data>
+  <data name="ConnectionCheck_BeforeYouStart" xml:space="preserve">
+    <value>开始之前</value>
+  </data>
+  <data name="ConnectionCheck_CancelCheck" xml:space="preserve">
+    <value>取消检查</value>
+  </data>
+  <data name="ConnectionCheck_Check" xml:space="preserve">
+    <value>检查连接</value>
+  </data>
+  <data name="ConnectionCheck_Confirm" xml:space="preserve">
+    <value>检查 TLS 证书只会连接目标主机 ({0})。网站和网络代理可能会看到此连接。</value>
+  </data>
+  <data name="ConnectionCheck_ConfirmWithRecords" xml:space="preserve">
+    <value>检查 TLS 证书会连接目标主机 ({0})，并可能通过 DNS 查询 CAA 记录。网站、DNS 解析器和网络代理可能会看到此活动。</value>
+  </data>
+  <data name="ConnectionCheck_NetworkDisabled" xml:space="preserve">
+    <value>网络检查已在设置中禁用。</value>
+  </data>
+  <data name="ConnectionCheck_ReportCanceled" xml:space="preserve">
+    <value>连接检查已取消或超时。</value>
+  </data>
+  <data name="ConnectionCheck_ReportFailed" xml:space="preserve">
+    <value>连接检查失败：{0}</value>
+  </data>
+  <data name="ConnectionCheck_ReviewNote" xml:space="preserve">
+    <value>请先阅读隐私说明，准备好后再开始检查。</value>
+  </data>
+  <data name="ConnectionCheck_StatusCanceled" xml:space="preserve">
+    <value>连接检查已取消</value>
+  </data>
+  <data name="ConnectionCheck_StatusComplete" xml:space="preserve">
+    <value>连接检查完成</value>
+  </data>
+  <data name="ConnectionCheck_StatusFailed" xml:space="preserve">
+    <value>连接检查失败</value>
+  </data>
+  <data name="ConnectionCheck_StatusRunning" xml:space="preserve">
+    <value>正在检查连接...</value>
+  </data>
+  <data name="ConnectionCheck_StatusUnavailable" xml:space="preserve">
+    <value>无法检查此连接</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipDefault" xml:space="preserve">
+    <value>检查 TLS 证书。这会连接目标主机，网站或代理可能会看到此操作。</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipPassed" xml:space="preserve">
+    <value>连接检查通过</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipProblems" xml:space="preserve">
+    <value>连接检查发现问题</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipUnresolved" xml:space="preserve">
+    <value>连接检查无法解析主机</value>
+  </data>
+  <data name="ConnectionCheck_ToolTipWarnings" xml:space="preserve">
+    <value>连接检查发现警告</value>
+  </data>
+  <data name="Crash_Details" xml:space="preserve">
+    <value>异常详情：</value>
+  </data>
+  <data name="Crash_Message" xml:space="preserve">
+    <value>很抱歉，BrowserPicker 崩溃了。</value>
+  </data>
+  <data name="Crash_ReportBug" xml:space="preserve">
+    <value>请在 https://github.com/mortenn/BrowserPicker 提交错误报告。</value>
+  </data>
+  <data name="Crash_Title" xml:space="preserve">
+    <value>发生了未处理的异常</value>
+  </data>
+  <data name="Defaults_Browser" xml:space="preserve">
+    <value>浏览器</value>
+  </data>
+  <data name="Defaults_Heading" xml:space="preserve">
+    <value>按域名设置默认浏览器</value>
+  </data>
+  <data name="Defaults_MatchBy" xml:space="preserve">
+    <value>匹配方式</value>
+  </data>
+  <data name="Defaults_Pattern" xml:space="preserve">
+    <value>模式</value>
+  </data>
+  <data name="Defaults_UserChoice" xml:space="preserve">
+    <value>由用户选择</value>
+  </data>
+  <data name="Editor_Command" xml:space="preserve">
+    <value>命令：</value>
+  </data>
+  <data name="Editor_CommandArgs" xml:space="preserve">
+    <value>命令参数：</value>
+  </data>
+  <data name="Editor_ContainersRequiresPrefix" xml:space="preserve">
+    <value>需要安装</value>
+  </data>
+  <data name="Editor_ContainersRequiresSuffix" xml:space="preserve">
+    <value>扩展。</value>
+  </data>
+  <data name="Editor_DisableAutoUpdates" xml:space="preserve">
+    <value>禁用自动更新</value>
+  </data>
+  <data name="Editor_EnableContainers" xml:space="preserve">
+    <value>启用容器支持 (Firefox / Zen)</value>
+  </data>
+  <data name="Editor_ExpandFileUrls" xml:space="preserve">
+    <value>展开 file:// URL</value>
+  </data>
+  <data name="Editor_Heading" xml:space="preserve">
+    <value>添加浏览器</value>
+  </data>
+  <data name="Editor_Hotkey" xml:space="preserve">
+    <value>快捷键：</value>
+  </data>
+  <data name="Editor_HotkeyAutomatic" xml:space="preserve">
+    <value>（自动）</value>
+  </data>
+  <data name="Editor_Icon" xml:space="preserve">
+    <value>图标：</value>
+  </data>
+  <data name="Editor_Name" xml:space="preserve">
+    <value>名称：</value>
+  </data>
+  <data name="Editor_PrivacyArgs" xml:space="preserve">
+    <value>隐私模式参数：</value>
+  </data>
+  <data name="Editor_Profiles" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
+  <data name="Feedback_ApplicationLog" xml:space="preserve">
+    <value>应用程序日志</value>
+  </data>
+  <data name="Feedback_CopyMarkdown" xml:space="preserve">
+    <value>以 Markdown 格式复制反馈报告</value>
+  </data>
+  <data name="Feedback_CopyRawLog" xml:space="preserve">
+    <value>复制原始应用程序日志</value>
+  </data>
+  <data name="Feedback_Description" xml:space="preserve">
+    <value>遇到问题时，可以复制一份现成的 GitHub 报告，或新建一个已填好重要上下文的 issue。</value>
+  </data>
+  <data name="Feedback_Filter" xml:space="preserve">
+    <value>筛选</value>
+  </data>
+  <data name="Feedback_FilterPlaceholder" xml:space="preserve">
+    <value>筛选时间戳、级别、上下文、事件或消息</value>
+  </data>
+  <data name="Feedback_FilterToolTip" xml:space="preserve">
+    <value>按时间戳、级别、上下文、事件和消息筛选。</value>
+  </data>
+  <data name="Feedback_Heading" xml:space="preserve">
+    <value>反馈与诊断</value>
+  </data>
+  <data name="Feedback_Level" xml:space="preserve">
+    <value>级别</value>
+  </data>
+  <data name="Feedback_LogEmpty" xml:space="preserve">
+    <value>Browser Picker 运行时，日志将显示在这里。</value>
+  </data>
+  <data name="Feedback_LogEntryCountMany" xml:space="preserve">
+    <value>{0} 条</value>
+  </data>
+  <data name="Feedback_LogEntryCountOne" xml:space="preserve">
+    <value>{0} 条</value>
+  </data>
+  <data name="Feedback_LogLineCount" xml:space="preserve">
+    <value>{0} 行</value>
+  </data>
+  <data name="Feedback_LogStatusAll" xml:space="preserve">
+    <value>实时捕获 · 保留 {0} · 容量 {1}</value>
+  </data>
+  <data name="Feedback_LogStatusFiltered" xml:space="preserve">
+    <value>实时捕获 · 显示 {0} / {1} · {2} · 容量 {3}</value>
+  </data>
+  <data name="Feedback_LogUnavailable" xml:space="preserve">
+    <value>运行时日志不可用。</value>
+  </data>
+  <data name="Feedback_ReportBug" xml:space="preserve">
+    <value>在 GitHub 上报告错误</value>
+  </data>
+  <data name="FileFilter_Executable" xml:space="preserve">
+    <value>可执行文件 (*.exe)|*.exe|所有文件|*.*</value>
+  </data>
+  <data name="FileFilter_Icon" xml:space="preserve">
+    <value>可执行文件 (*.exe)|*.exe|图标文件 (*.ico)|*.ico|JPEG 文件 (*.jpeg)|*.jpeg|PNG 文件 (*.png)|*.png|JPG 文件 (*.jpg)|*.jpg|GIF 文件 (*.gif)|*.gif|所有文件|*.*</value>
+  </data>
+  <data name="FileFilter_Json" xml:space="preserve">
+    <value>JSON 文件 (*.json)|*.json|所有文件|*.*</value>
+  </data>
+  <data name="Loading_ScanningUrl" xml:space="preserve">
+    <value>正在扫描 URL...</value>
+  </data>
+  <data name="LogLevel_CriticalOnly" xml:space="preserve">
+    <value>仅 Critical</value>
+  </data>
+  <data name="LogLevel_DebugAndAbove" xml:space="preserve">
+    <value>Debug 及以上</value>
+  </data>
+  <data name="LogLevel_ErrorAndAbove" xml:space="preserve">
+    <value>Error 及以上</value>
+  </data>
+  <data name="LogLevel_Everything" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="LogLevel_InformationAndAbove" xml:space="preserve">
+    <value>Information 及以上</value>
+  </data>
+  <data name="LogLevel_WarningAndAbove" xml:space="preserve">
+    <value>Warning 及以上</value>
+  </data>
+  <data name="Picker_AlwaysAsk" xml:space="preserve">
+    <value>总是询问</value>
+  </data>
+  <data name="Picker_CloseToolTip" xml:space="preserve">
+    <value>关闭 Browser Picker</value>
+  </data>
+  <data name="Picker_ConfigureBrowserList" xml:space="preserve">
+    <value>配置浏览器列表</value>
+  </data>
+  <data name="Picker_CopyUrlToolTip" xml:space="preserve">
+    <value>将 URL 复制到剪贴板</value>
+  </data>
+  <data name="Picker_EditUrlToolTip" xml:space="preserve">
+    <value>在打开前编辑 URL</value>
+  </data>
+  <data name="Picker_PinToolTip" xml:space="preserve">
+    <value>切换此选择窗口在失去焦点时是否保持打开</value>
+  </data>
+  <data name="Picker_RedirectedUrl" xml:space="preserve">
+    <value>重定向后的 URL</value>
+  </data>
+  <data name="Picker_Remember" xml:space="preserve">
+    <value>记住 </value>
+  </data>
+  <data name="Picker_ShowProfiles" xml:space="preserve">
+    <value>显示配置文件</value>
+  </data>
+  <data name="Privacy_OpenInPrivacyMode" xml:space="preserve">
+    <value>以隐私模式打开</value>
+  </data>
+  <data name="Privacy_OpenInPrivateMode" xml:space="preserve">
+    <value>以隐私模式打开</value>
+  </data>
+  <data name="Privacy_OpenIncognito" xml:space="preserve">
+    <value>以无痕模式打开</value>
+  </data>
+  <data name="Privacy_OpenWithPrivateBrowsing" xml:space="preserve">
+    <value>以隐私浏览模式打开</value>
+  </data>
+  <data name="Registration_Description" xml:space="preserve">
+    <value>为此 Windows 用户注册 Browser Picker，无需管理员权限。</value>
+  </data>
+  <data name="Registration_DescriptionRegistered" xml:space="preserve">
+    <value>Browser Picker (Portable) 已为此 Windows 用户注册。</value>
+  </data>
+  <data name="Registration_Register" xml:space="preserve">
+    <value>为当前用户注册</value>
+  </data>
+  <data name="Registration_StatusFailed" xml:space="preserve">
+    <value>无法更新 Browser Picker 注册：{0}</value>
+  </data>
+  <data name="Registration_StatusPortableOnly" xml:space="preserve">
+    <value>只有便携版支持为当前用户注册浏览器。</value>
+  </data>
+  <data name="Registration_StatusRegistered" xml:space="preserve">
+    <value>已为此 Windows 用户注册 Browser Picker (Portable)。如果尚未选中它，请在 Windows 的“默认应用”中选择它。</value>
+  </data>
+  <data name="Registration_StatusUnregistered" xml:space="preserve">
+    <value>已为此 Windows 用户取消注册 Browser Picker (Portable)。</value>
+  </data>
+  <data name="Registration_Unregister" xml:space="preserve">
+    <value>为当前用户取消注册</value>
+  </data>
+  <data name="Security_ApplyProfile" xml:space="preserve">
+    <value>应用预设</value>
+  </data>
+  <data name="Security_AutomaticProbes" xml:space="preserve">
+    <value>自动探测</value>
+  </data>
+  <data name="Security_HideConnectionCheck" xml:space="preserve">
+    <value>隐藏连接检查按钮</value>
+  </data>
+  <data name="Security_HideConnectionCheckToolTip" xml:space="preserve">
+    <value>从选择器中移除挂锁图标的连接检查操作。</value>
+  </data>
+  <data name="Security_IncludeCertificateRecords" xml:space="preserve">
+    <value>包括 DNS CAA 和证书透明度证据</value>
+  </data>
+  <data name="Security_IncludeCertificateRecordsToolTip" xml:space="preserve">
+    <value>仅在单击“检查连接”时使用。CAA 需要进行 DNS 查询；CT 会检查证书中嵌入的证书透明度证据。</value>
+  </data>
+  <data name="Security_ManualProbes" xml:space="preserve">
+    <value>手动探测</value>
+  </data>
+  <data name="Security_OnlyKnownShorteners" xml:space="preserve">
+    <value>仅限已知的短链接服务</value>
+  </data>
+  <data name="Security_OnlyMatchingDefaults" xml:space="preserve">
+    <value>仅限匹配默认规则的 URL</value>
+  </data>
+  <data name="Security_ProbeFavicon" xml:space="preserve">
+    <value>获取网站图标</value>
+  </data>
+  <data name="Security_ProbeShorteners" xml:space="preserve">
+    <value>探测短链接 / 重定向</value>
+  </data>
+  <data name="Security_ProfileDefault" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="Security_ProfileEnableAll" xml:space="preserve">
+    <value>全部启用</value>
+  </data>
+  <data name="Security_ProfileMaxPrivacy" xml:space="preserve">
+    <value>最大隐私</value>
+  </data>
+  <data name="Security_SkipConfirmation" xml:space="preserve">
+    <value>跳过确认提示</value>
+  </data>
+  <data name="Security_SkipConfirmationToolTip" xml:space="preserve">
+    <value>单击挂锁图标时立即开始连接检查。</value>
+  </data>
+  <data name="Shorteners_Additional" xml:space="preserve">
+    <value>其他短链接服务</value>
+  </data>
+  <data name="Shorteners_Default" xml:space="preserve">
+    <value>默认短链接服务</value>
+  </data>
+  <data name="Shorteners_Description" xml:space="preserve">
+    <value>这些域名是已知的短链接服务，除非在设置中禁止，否则会在启动时进行探测。</value>
+  </data>
+  <data name="Shorteners_JumpPagesNote" xml:space="preserve">
+    <value>ℹ️ 上方未列出部分其他跳转页面</value>
+  </data>
+  <data name="Shorteners_JumpPagesToolTip" xml:space="preserve">
+    <value>某些页面（例如 Outlook 安全链接）会被特殊处理，其目标 URL 位于查询字符串中；由于这些页面需要在代码中提供额外信息，因此未在此列出。</value>
+  </data>
+  <data name="TestDefaults_Actual" xml:space="preserve">
+    <value>实际选择的浏览器：</value>
+  </data>
+  <data name="TestDefaults_Matched" xml:space="preserve">
+    <value>匹配的默认浏览器：</value>
+  </data>
+  <data name="TestDefaults_Url" xml:space="preserve">
+    <value>URL：</value>
+  </data>
+  <data name="UrlEditor_Heading" xml:space="preserve">
+    <value>编辑目标 URL</value>
+  </data>
+  <data name="UrlEditor_SaveToolTip" xml:space="preserve">
+    <value>保存更改 (Ctrl+Enter)</value>
+  </data>
+  <data name="UrlEditor_Title" xml:space="preserve">
+    <value>编辑 URL</value>
+  </data>
+  <data name="Welcome_Farewell" xml:space="preserve">
+    <value>再见！</value>
+  </data>
+  <data name="Welcome_Intro" xml:space="preserve">
+    <value>欢迎使用 Browser Picker，希望你喜欢这个小应用！
+我已经为你打开了设置窗口，
+你可以在开始使用前先四处看看 :)</value>
+  </data>
+  <data name="Welcome_IssuesPrefix" xml:space="preserve">
+    <value>如果你遇到任何问题或有新想法，
+请访问</value>
+  </data>
+  <data name="Welcome_IssuesSuffix" xml:space="preserve">
+    <value>并提交 issue！</value>
+  </data>
+  <data name="Welcome_SelfDestruct" xml:space="preserve">
+    <value>此消息将在 10 秒后自毁</value>
+  </data>
+  <data name="Welcome_Star" xml:space="preserve">
+    <value>请在 GitHub 上给它点个 ⭐，这样发布新版本时你就会收到通知。</value>
+  </data>
+</root>

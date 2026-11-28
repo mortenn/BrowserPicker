@@ -4,4 +4,19 @@
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
+  <!--
+    User-visible strings. The Strings class is generated at build time, so there is no Designer.cs to keep in sync.
+    It lives here rather than in BrowserPicker.UI because WPF compiles XAML against a temporary assembly
+    that does not include build-generated resource classes.
+    Add a translation as Strings.<culture>.resx next to Strings.resx.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>BrowserPicker.Common.Resources</StronglyTypedNamespace>
+      <StronglyTypedClassName>Strings</StronglyTypedClassName>
+      <StronglyTypedFileName>$(IntermediateOutputPath)Strings.Designer.cs</StronglyTypedFileName>
+      <PublicClass>true</PublicClass>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

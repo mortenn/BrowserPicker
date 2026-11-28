@@ -5,6 +5,7 @@
 	xmlns:converters="clr-namespace:BrowserPicker.UI.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:res="clr-namespace:BrowserPicker.Common.Resources;assembly=BrowserPicker.Common"
 	xmlns:ui="clr-namespace:BrowserPicker.UI"
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
 	Title="Browser Picker"
@@ -92,7 +93,7 @@
 				Grid.ColumnSpan="3"
 				Margin="5"
 				HorizontalAlignment="Center"
-				Text="Add a browser" />
+				Text="{x:Static res:Strings.Editor_Heading}" />
 
 			<Image
 				Grid.Row="0"
@@ -110,7 +111,7 @@
 				Grid.Column="1"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				Text="Name: " />
+				Text="{x:Static res:Strings.Editor_Name}" />
 			<TextBox Grid.Row="1" Grid.Column="2" Margin="2" Text="{Binding Model.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
 			<TextBlock
@@ -118,7 +119,7 @@
 				Grid.Column="1"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				Text="Command: " />
+				Text="{x:Static res:Strings.Editor_Command}" />
 			<Grid Grid.Row="2" Grid.Column="2" Margin="2">
 				<TextBox x:Name="CommandTextBox" Style="{StaticResource EllipsisTextBox}" Text="{Binding Model.Command, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Model.Command}" />
 				<TextBlock Text="{Binding Text, ElementName=CommandTextBox}">
@@ -142,7 +143,7 @@
 				HorizontalAlignment="Center"
 				Click="Command_Browse"
 				Content="..."
-				ToolTip="Browse" />
+				ToolTip="{x:Static res:Strings.Common_Browse}" />
 
 			<TextBlock
 				Grid.Row="3"
@@ -150,7 +151,7 @@
 				Grid.ColumnSpan="2"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				Text="Command Args: " />
+				Text="{x:Static res:Strings.Editor_CommandArgs}" />
 			<Grid Grid.Row="3" Grid.Column="2" Margin="2">
 				<TextBox x:Name="CommandArgsTextBox" Style="{StaticResource EllipsisTextBox}" Text="{Binding Model.CommandArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Model.CommandArgs}" />
 				<TextBlock Text="{Binding Text, ElementName=CommandArgsTextBox}">
@@ -171,7 +172,7 @@
 				Grid.Column="1"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				Text="Icon: " />
+				Text="{x:Static res:Strings.Editor_Icon}" />
 			<Grid Grid.Row="4" Grid.Column="2" Margin="2">
 				<TextBox x:Name="IconPathTextBox" Style="{StaticResource EllipsisTextBox}" Text="{Binding Model.IconPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding Model.IconPath}" />
 				<TextBlock Text="{Binding Text, ElementName=IconPathTextBox}">
@@ -195,13 +196,13 @@
 				HorizontalAlignment="Center"
 				Click="Icon_Browse"
 				Content="..."
-				ToolTip="Browse" />
+				ToolTip="{x:Static res:Strings.Common_Browse}" />
 
 			<CheckBox
 				Grid.Row="5"
 				Grid.Column="2"
 				Margin="2,4"
-				Content="Expand file:// URLs"
+				Content="{x:Static res:Strings.Editor_ExpandFileUrls}"
 				IsChecked="{Binding Model.ExpandFileUrls}" />
 
 			<TextBlock
@@ -210,14 +211,14 @@
 				Grid.ColumnSpan="2"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				Text="Privacy Args: " />
+				Text="{x:Static res:Strings.Editor_PrivacyArgs}" />
 			<TextBox Grid.Row="6" Grid.Column="2" Margin="2" Text="{Binding Model.PrivacyArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
 			<CheckBox
 				Grid.Row="7"
 				Grid.Column="2"
 				Margin="2,4"
-				Content="Disable automatic updates"
+				Content="{x:Static res:Strings.Editor_DisableAutoUpdates}"
 				IsChecked="{Binding Model.ManualOverride}">
 				<CheckBox.Style>
 					<Style BasedOn="{StaticResource {x:Type CheckBox}}" TargetType="CheckBox">
@@ -236,7 +237,7 @@
 				Grid.ColumnSpan="2"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
-				Text="Hotkey:" />
+				Text="{x:Static res:Strings.Editor_Hotkey}" />
 			<Grid Grid.Row="8" Grid.Column="2">
 				<TextBox Margin="2" KeyDown="OnCustomKeyBindDown" KeyUp="OnCustomKeyBindUp" Text="{Binding Model.CustomKeyBind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				<TextBlock
@@ -244,7 +245,7 @@
 					VerticalAlignment="Center"
 					Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
 					IsHitTestVisible="False"
-					Text="(Automatic)">
+					Text="{x:Static res:Strings.Editor_HotkeyAutomatic}">
 					<TextBlock.Style>
 						<Style>
 							<Setter Property="UIElement.Visibility" Value="Collapsed" />
@@ -271,12 +272,12 @@
 					</Style>
 				</StackPanel.Style>
 				<CheckBox Margin="0,2" IsChecked="{Binding Model.ContainersEnabled}">
-					<TextBlock TextWrapping="Wrap">Enable container support (Firefox / Zen)</TextBlock>
+					<TextBlock Text="{x:Static res:Strings.Editor_EnableContainers}" TextWrapping="Wrap" />
 				</CheckBox>
 				<TextBlock Margin="20,4,0,0" FontSize="11" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" TextWrapping="Wrap">
-					<Run Text="Requires" />
+					<Run Text="{x:Static res:Strings.Editor_ContainersRequiresPrefix}" />
 					<Hyperlink Command="{Binding OpenExtensionLink}">Open URL in Container</Hyperlink>
-					<Run Text="extension." />
+					<Run Text="{x:Static res:Strings.Editor_ContainersRequiresSuffix}" />
 				</TextBlock>
 			</StackPanel>
 
@@ -292,7 +293,7 @@
 						</Style.Triggers>
 					</Style>
 				</StackPanel.Style>
-				<TextBlock Margin="0,0,0,4" FontWeight="Bold" Text="Profiles" />
+				<TextBlock Margin="0,0,0,4" FontWeight="Bold" Text="{x:Static res:Strings.Editor_Profiles}" />
 				<ItemsControl MaxHeight="200" ItemsSource="{Binding Model.Profiles}">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
@@ -334,8 +335,8 @@
 				Margin="0,5,2,5"
 				HorizontalAlignment="Right"
 				Orientation="Horizontal">
-				<Button Padding="10,0" Click="Cancel_OnClick" Content="Cancel" />
-				<Button Margin="10,0,0,0" Padding="10,0" Click="Ok_OnClick" Content="Ok" />
+				<Button Padding="10,0" Click="Cancel_OnClick" Content="{x:Static res:Strings.Common_Cancel}" />
+				<Button Margin="10,0,0,0" Padding="10,0" Click="Ok_OnClick" Content="{x:Static res:Strings.Common_Ok}" />
 			</StackPanel>
 		</Grid>
 	</Border>

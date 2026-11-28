@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using BrowserPicker.Common;
 using BrowserPicker.Common.Framework;
+using BrowserPicker.Common.Resources;
 using BrowserPicker.UI.SecurityProfiles;
 using BrowserPicker.UI.Views;
 using BrowserPicker.Windows;
@@ -604,12 +605,10 @@ public sealed class ConfigurationViewModel : ModelBase
 	}
 
 	public string BrowserRegistrationActionText =>
-		BrowserRegisteredForCurrentUser ? "Unregister for current user" : "Register for current user";
+		BrowserRegisteredForCurrentUser ? Strings.Registration_Unregister : Strings.Registration_Register;
 
 	public string BrowserRegistrationDescription =>
-		BrowserRegisteredForCurrentUser
-			? "Browser Picker (Portable) is registered for this Windows user."
-			: "Register Browser Picker for this Windows user without requiring administrator privileges.";
+		BrowserRegisteredForCurrentUser ? Strings.Registration_DescriptionRegistered : Strings.Registration_Description;
 
 	/// <summary>
 	/// Prompts the user to select a backup file location and saves the current settings.
@@ -620,7 +619,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			FileName = "BrowserPicker.json",
 			DefaultExt = ".json",
-			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			Filter = Strings.FileFilter_Json,
 			CheckPathExists = true,
 			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
 		};
@@ -639,7 +638,7 @@ public sealed class ConfigurationViewModel : ModelBase
 		{
 			FileName = "BrowserPicker.json",
 			DefaultExt = ".json",
-			Filter = "JSON Files (*.json)|*.json|All Files|*.*",
+			Filter = Strings.FileFilter_Json,
 			CheckPathExists = true,
 			DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
 		};
@@ -658,11 +657,11 @@ public sealed class ConfigurationViewModel : ModelBase
 
 		if (TrySetClipboardText(jsonSettings.ExportSettingsJson(), out var error))
 		{
-			jsonSettings.AppendBackupLog("Copied configuration JSON to the clipboard.");
+			jsonSettings.AppendBackupLog(Strings.Backup_CopiedToClipboard);
 			return;
 		}
 
-		jsonSettings.AppendBackupLog($"Unable to copy configuration JSON to the clipboard: {error}");
+		jsonSettings.AppendBackupLog(string.Format(Strings.Backup_CopyFailed, error));
 	}
 
 	private void PasteSettingsFromClipboard()
@@ -674,11 +673,11 @@ public sealed class ConfigurationViewModel : ModelBase
 
 		if (!TryGetClipboardText(out var text, out var error))
 		{
-			jsonSettings.AppendBackupLog($"Unable to paste configuration from the clipboard: {error}");
+			jsonSettings.AppendBackupLog(string.Format(Strings.Backup_PasteFailed, error));
 			return;
 		}
 
-		jsonSettings.TryImportSettingsJson(text!, "the clipboard");
+		jsonSettings.TryImportSettingsJson(text!, Strings.Backup_SourceClipboard);
 	}
 
 	private void ToggleCurrentUserBrowserRegistration()
@@ -689,24 +688,23 @@ public sealed class ConfigurationViewModel : ModelBase
 			if (BrowserRegisteredForCurrentUser)
 			{
 				UserDefaultBrowserRegistration.UnregisterForCurrentUser();
-				BrowserRegistrationStatus = "Unregistered Browser Picker (Portable) for this Windows user.";
+				BrowserRegistrationStatus = Strings.Registration_StatusUnregistered;
 			}
 			else
 			{
 				UserDefaultBrowserRegistration.RegisterForCurrentUser();
-				BrowserRegistrationStatus =
-					"Registered Browser Picker (Portable) for this Windows user. If it is not selected yet, choose it in Windows Default apps.";
+				BrowserRegistrationStatus = Strings.Registration_StatusRegistered;
 			}
 
 			RefreshBrowserRegistrationState();
 		}
 		catch (Exception ex)
 		{
-			BrowserRegistrationStatus = $"Unable to update Browser Picker registration: {ex.Message}";
+			BrowserRegistrationStatus = string.Format(Strings.Registration_StatusFailed, ex.Message);
 			RefreshBrowserRegistrationState();
 		}
 #else
-		BrowserRegistrationStatus = "Current-user browser registration is only available in portable builds.";
+		BrowserRegistrationStatus = Strings.Registration_StatusPortableOnly;
 		RefreshBrowserRegistrationState();
 #endif
 	}
@@ -955,14 +953,14 @@ public sealed class ConfigurationViewModel : ModelBase
 				{
 					if (!Clipboard.ContainsText(TextDataFormat.UnicodeText))
 					{
-						clipboardError = "clipboard does not contain text";
+						clipboardError = Strings.Backup_ClipboardNoText;
 						return;
 					}
 
 					clipboardText = Clipboard.GetText(TextDataFormat.UnicodeText);
 					if (string.IsNullOrWhiteSpace(clipboardText))
 					{
-						clipboardError = "clipboard text is empty";
+						clipboardError = Strings.Backup_ClipboardEmpty;
 					}
 				}
 				catch (Exception ex)
@@ -1151,7 +1149,7 @@ public sealed class ConfigurationViewModel : ModelBase
 			var (idOrName, _) = ParentViewModel.GetMatchedBrowserKeyForUrl(test_defaults_url);
 			if (idOrName == null)
 			{
-				return "User choice";
+				return Strings.Defaults_UserChoice;
 			}
 			var choice = ParentViewModel.Choices.FirstOrDefault(c =>
 				c.Model.Id == idOrName || c.Model.Name == idOrName
@@ -1165,7 +1163,11 @@ public sealed class ConfigurationViewModel : ModelBase
 	/// </summary>
 	public string TestActualResult
 	{
-		get { return ParentViewModel.GetBrowserToLaunch(test_defaults_url).Browser?.Model.Name ?? "User choice"; }
+		get
+		{
+			return ParentViewModel.GetBrowserToLaunch(test_defaults_url).Browser?.Model.Name
+				?? Strings.Defaults_UserChoice;
+		}
 	}
 
 	private void PrefillTestDefaultsUrl()

@@ -4,9 +4,10 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:res="clr-namespace:BrowserPicker.Common.Resources;assembly=BrowserPicker.Common"
 	xmlns:ui="clr-namespace:BrowserPicker.UI"
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
-	Title="Check connection"
+	Title="{x:Static res:Strings.ConnectionCheck_Check}"
 	Width="760"
 	Height="520"
 	MinWidth="560"
@@ -123,11 +124,11 @@
 							</Style.Triggers>
 						</Style>
 					</StackPanel.Style>
-					<TextBlock FontWeight="SemiBold" Text="Before you start" />
+					<TextBlock FontWeight="SemiBold" Text="{x:Static res:Strings.ConnectionCheck_BeforeYouStart}" />
 					<TextBlock Margin="0,4,16,0" Opacity="0.9" Text="{Binding ConfirmText, Mode=OneWay}" TextWrapping="Wrap" />
 				</StackPanel>
 				<StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
-					<Button Command="{Binding Cancel}" Content="Cancel check">
+					<Button Command="{Binding Cancel}" Content="{x:Static res:Strings.ConnectionCheck_CancelCheck}">
 						<Button.Style>
 							<Style BasedOn="{StaticResource DialogButtonStyle}" TargetType="{x:Type Button}">
 								<Setter Property="Visibility" Value="Collapsed" />
@@ -139,7 +140,7 @@
 							</Style>
 						</Button.Style>
 					</Button>
-					<Button Margin="8,0,0,0" Command="{Binding Start}" Content="Check connection">
+					<Button Margin="8,0,0,0" Command="{Binding Start}" Content="{x:Static res:Strings.ConnectionCheck_Check}">
 						<Button.Style>
 							<Style BasedOn="{StaticResource PrimaryDialogButtonStyle}" TargetType="{x:Type Button}">
 								<Setter Property="Visibility" Value="Visible" />
@@ -253,7 +254,7 @@
 					</Style>
 				</TextBlock.Style>
 			</TextBlock>
-			<TextBlock Text="Review the privacy note, then start the check when you are ready." TextWrapping="Wrap">
+			<TextBlock Text="{x:Static res:Strings.ConnectionCheck_ReviewNote}" TextWrapping="Wrap">
 				<TextBlock.Style>
 					<Style TargetType="{x:Type TextBlock}">
 						<Setter Property="Visibility" Value="Visible" />
@@ -268,7 +269,7 @@
 		</Grid>
 
 		<StackPanel Grid.Row="3" Margin="0,12,0,0" HorizontalAlignment="Right" Orientation="Horizontal">
-			<Button Command="{Binding Close}" Content="Close" IsCancel="True" Style="{StaticResource DialogButtonStyle}" />
+			<Button Command="{Binding Close}" Content="{x:Static res:Strings.Common_Close}" IsCancel="True" Style="{StaticResource DialogButtonStyle}" />
 		</StackPanel>
 	</Grid>
 </Window>

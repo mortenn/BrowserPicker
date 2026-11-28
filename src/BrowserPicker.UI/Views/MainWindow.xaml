@@ -4,6 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:res="clr-namespace:BrowserPicker.Common.Resources;assembly=BrowserPicker.Common"
 	xmlns:ui="clr-namespace:BrowserPicker.UI"
 	xmlns:viewModels="clr-namespace:BrowserPicker.UI.ViewModels"
 	xmlns:views="clr-namespace:BrowserPicker.UI.Views"
@@ -135,7 +136,7 @@
 					FontSize="10"
 					FontWeight="Normal"
 					Foreground="Silver"
-					ToolTip="Close Browser Picker" />
+					ToolTip="{x:Static res:Strings.Picker_CloseToolTip}" />
 			</Grid>
 		</Border>
 	</Border>
