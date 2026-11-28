@@ -44,6 +44,7 @@ public sealed class SerializableSettings : IApplicationSettings
 			)
 			.ToList();
 		AutoSizeWindow = applicationSettings.AutoSizeWindow;
+		CenterOnPrimaryMonitor = applicationSettings.CenterOnPrimaryMonitor;
 		WindowWidth = applicationSettings.WindowWidth;
 		WindowHeight = applicationSettings.WindowHeight;
 		ConfigWindowWidth = applicationSettings.ConfigWindowWidth;
@@ -129,6 +130,9 @@ public sealed class SerializableSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public bool AutoSizeWindow { get; set; } = true;
+
+	/// <inheritdoc />
+	public bool CenterOnPrimaryMonitor { get; set; }
 
 	/// <inheritdoc />
 	public double WindowWidth { get; set; }

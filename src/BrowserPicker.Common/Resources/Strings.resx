@@ -135,6 +135,12 @@
   <data name="Config_AutoSizeWindowToolTip" xml:space="preserve">
     <value>When checked, the window fits its content. When unchecked, the window uses the last size you set by resizing. Resize the window to fix a size; that turns this off and saves the size.</value>
   </data>
+  <data name="Config_CenterOnPrimaryMonitor" xml:space="preserve">
+    <value>Always open on primary monitor</value>
+  </data>
+  <data name="Config_CenterOnPrimaryMonitorToolTip" xml:space="preserve">
+    <value>When checked, the picker opens centered on the primary monitor. When unchecked, it opens on the monitor under the mouse cursor.</value>
+  </data>
   <data name="Config_DisableTransparency" xml:space="preserve">
     <value>Turn off transparency</value>
   </data>

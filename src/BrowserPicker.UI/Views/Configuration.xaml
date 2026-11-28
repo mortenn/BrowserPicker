@@ -436,6 +436,7 @@
 								<TextBlock Margin="2,0,0,0" VerticalAlignment="Center" Text=" px" />
 							</StackPanel>
 							<CheckBox Content="{x:Static res:Strings.Config_AutoSizeWindow}" IsChecked="{Binding Settings.AutoSizeWindow}" ToolTip="{x:Static res:Strings.Config_AutoSizeWindowToolTip}" />
+							<CheckBox Content="{x:Static res:Strings.Config_CenterOnPrimaryMonitor}" IsChecked="{Binding Settings.CenterOnPrimaryMonitor}" ToolTip="{x:Static res:Strings.Config_CenterOnPrimaryMonitorToolTip}" />
 							<CheckBox Content="{x:Static res:Strings.Config_DisableTransparency}" IsChecked="{Binding Settings.DisableTransparency}" />
 							<StackPanel Margin="0,4,0,0" Orientation="Horizontal">
 								<StackPanel.Style>

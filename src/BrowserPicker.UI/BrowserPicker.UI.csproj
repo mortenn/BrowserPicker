@@ -10,6 +10,8 @@
     <ApplicationIcon>Resources\web_icon.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <NoWarn>$(NoWarn);WPF0001</NoWarn>
+    <!-- Required by the [LibraryImport] source generator, which emits unsafe marshalling code. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <!--
     Precompile to native code when publishing for a specific runtime (the portable single-file build).

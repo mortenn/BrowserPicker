@@ -135,6 +135,12 @@
   <data name="Config_AutoSizeWindowToolTip" xml:space="preserve">
     <value>选中时，窗口大小自动适应内容。取消选中时，窗口使用你上次手动调整的大小。手动调整窗口大小会关闭此选项并保存该大小。</value>
   </data>
+  <data name="Config_CenterOnPrimaryMonitor" xml:space="preserve">
+    <value>始终在主显示器上打开</value>
+  </data>
+  <data name="Config_CenterOnPrimaryMonitorToolTip" xml:space="preserve">
+    <value>选中时，选择窗口会在主显示器上居中打开。未选中时，会在鼠标指针所在的显示器上打开。</value>
+  </data>
   <data name="Config_DisableTransparency" xml:space="preserve">
     <value>关闭透明效果</value>
   </data>

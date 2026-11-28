@@ -50,6 +50,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool use_fallback_default;
 	private string backup_log = string.Empty;
 	private bool auto_size_window = true;
+	private bool center_on_primary_monitor;
 	private double window_width;
 	private double window_height;
 	private double config_window_width = 600;
@@ -433,6 +434,15 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 				SaveToFile();
 		}
 	}
+	public bool CenterOnPrimaryMonitor
+	{
+		get => center_on_primary_monitor;
+		set
+		{
+			if (SetProperty(ref center_on_primary_monitor, value))
+				SaveToFile();
+		}
+	}
 	public double WindowWidth
 	{
 		get => window_width;
@@ -798,6 +808,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		hide_manual_connection_check = s.HideManualConnectionCheck;
 		skip_connection_check_confirmation = s.SkipConnectionCheckConfirmation;
 		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
+		center_on_primary_monitor = s.CenterOnPrimaryMonitor;
 		url_shorteners = s.UrlShorteners;
 		window_width = NormalizeMainWindowDimension(s.WindowWidth, MinWindowWidth);
 		window_height = NormalizeMainWindowDimension(s.WindowHeight, MinWindowHeight);
@@ -830,6 +841,7 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(HideManualConnectionCheck));
 		OnPropertyChanged(nameof(SkipConnectionCheckConfirmation));
 		OnPropertyChanged(nameof(AutoCloseOnFocusLost));
+		OnPropertyChanged(nameof(CenterOnPrimaryMonitor));
 		OnPropertyChanged(nameof(WindowWidth));
 		OnPropertyChanged(nameof(WindowHeight));
 		OnPropertyChanged(nameof(ConfigWindowWidth));

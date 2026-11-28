@@ -96,6 +96,11 @@ public interface IApplicationSettings : ISecuritySettings
 	bool AutoSizeWindow { get; set; }
 
 	/// <summary>
+	/// When true, the picker always opens centered on the primary monitor. When false, it opens on the monitor under the mouse cursor.
+	/// </summary>
+	bool CenterOnPrimaryMonitor { get; set; }
+
+	/// <summary>
 	/// Preferred main window width in pixels. Used when <see cref="AutoSizeWindow"/> is false.
 	/// </summary>
 	double WindowWidth { get; set; }
