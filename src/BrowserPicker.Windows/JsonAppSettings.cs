@@ -45,6 +45,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 	private bool check_certificate_records = true;
 	private bool hide_manual_connection_check;
 	private bool skip_connection_check_confirmation;
+	private bool lookup_domain_registration;
+	private bool lookup_certificate_history;
 	private bool auto_close_on_focus_lost = true;
 	private string[] url_shorteners = [];
 	private bool use_fallback_default;
@@ -404,6 +406,24 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		set
 		{
 			if (SetProperty(ref skip_connection_check_confirmation, value))
+				SaveToFile();
+		}
+	}
+	public bool LookupDomainRegistration
+	{
+		get => lookup_domain_registration;
+		set
+		{
+			if (SetProperty(ref lookup_domain_registration, value))
+				SaveToFile();
+		}
+	}
+	public bool LookupCertificateHistory
+	{
+		get => lookup_certificate_history;
+		set
+		{
+			if (SetProperty(ref lookup_certificate_history, value))
 				SaveToFile();
 		}
 	}
@@ -812,6 +832,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		check_certificate_records = s.CheckCertificateRecords;
 		hide_manual_connection_check = s.HideManualConnectionCheck;
 		skip_connection_check_confirmation = s.SkipConnectionCheckConfirmation;
+		lookup_domain_registration = s.LookupDomainRegistration;
+		lookup_certificate_history = s.LookupCertificateHistory;
 		auto_close_on_focus_lost = s.AutoCloseOnFocusLost;
 		center_on_primary_monitor = s.CenterOnPrimaryMonitor;
 		url_shorteners = s.UrlShorteners;
@@ -845,6 +867,8 @@ public sealed class JsonAppSettings : ModelBase, IBrowserPickerConfiguration
 		OnPropertyChanged(nameof(CheckCertificateRecords));
 		OnPropertyChanged(nameof(HideManualConnectionCheck));
 		OnPropertyChanged(nameof(SkipConnectionCheckConfirmation));
+		OnPropertyChanged(nameof(LookupDomainRegistration));
+		OnPropertyChanged(nameof(LookupCertificateHistory));
 		OnPropertyChanged(nameof(AutoCloseOnFocusLost));
 		OnPropertyChanged(nameof(CenterOnPrimaryMonitor));
 		OnPropertyChanged(nameof(WindowWidth));
