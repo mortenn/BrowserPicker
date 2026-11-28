@@ -18,6 +18,12 @@ public partial class App
 {
 	private const int LoadingWindowDelayMilliseconds = 300;
 
+	/// <summary>How long shutdown waits for background work to observe cancellation before closing anyway.</summary>
+	private static readonly TimeSpan ShutdownGracePeriod = TimeSpan.FromSeconds(2);
+
+	/// <summary>If the process is still alive this long after shutdown was requested, end it.</summary>
+	private static readonly TimeSpan ShutdownWatchdogTimeout = TimeSpan.FromSeconds(10);
+
 	/// <summary>
 	/// This CancellationToken gets cancelled when the application exits
 	/// </summary>
@@ -327,8 +333,9 @@ public partial class App
 				// Goal is to avoid flicker for fast loading sites but to show progress for sites that take longer
 				loadingWindow = ShowLoadingWindow(urlLookup.Token);
 
-				// Wait for long-running processes in case they finish quickly
-				await Task.Run(() => long_running_processes.Wait(ApplicationCancellationToken.Token), urlLookup.Token);
+				// Wait for long-running processes (Initialize relies on discovery having finished).
+				// WaitAsync instead of Task.Run(() => Wait()) so no thread pool thread sits blocked.
+				await long_running_processes.WaitAsync(ApplicationCancellationToken.Token);
 
 				// cancel the token to prevent showing LoadingWindow if it is not needed and has not been shown already
 				await urlLookup.CancelAsync();
@@ -339,7 +346,7 @@ public partial class App
 				var waited = await loadingWindow;
 				waited?.Close();
 			}
-			catch (TaskCanceledException)
+			catch (OperationCanceledException)
 			{
 				// Open up the browser picker window
 				ShowMainWindow();
@@ -380,13 +387,10 @@ public partial class App
 		try
 		{
 			var tasks = BackgroundTasks.Select(task => task.Start(ApplicationCancellationToken.Token)).ToArray();
-			await Task.WhenAll(tasks);
-			foreach (var task in tasks)
-			{
-				await task;
-			}
+			// ConfigureAwait(false): the continuation must not need the UI thread, which ExitApplication may block.
+			await Task.WhenAll(tasks).ConfigureAwait(false);
 		}
-		catch (TaskCanceledException)
+		catch (OperationCanceledException)
 		{
 			// ignored
 		}
@@ -478,15 +482,38 @@ public partial class App
 	private static void ExitApplication(object? sender, EventArgs args)
 	{
 		ApplicationCancellationToken.Cancel();
+		StartShutdownWatchdog();
+
 		try
 		{
-			long_running_processes?.Wait();
+			// Bounded wait so a background task that ignores cancellation cannot block the UI thread forever.
+			long_running_processes?.Wait(ShutdownGracePeriod);
 		}
-		catch (TaskCanceledException)
+		catch (AggregateException)
 		{
-			// ignore;
+			// Canceled or faulted background work; we are exiting anyway.
 		}
-		Current.Shutdown();
+		finally
+		{
+			Current.Shutdown();
+		}
+	}
+
+	/// <summary>
+	/// Safety net: never leave a BrowserPicker.exe behind after shutdown was requested.
+	/// </summary>
+	private static async void StartShutdownWatchdog()
+	{
+		try
+		{
+			// ConfigureAwait(false): the dispatcher is shut down by then, so resuming on it would never run.
+			await Task.Delay(ShutdownWatchdogTimeout).ConfigureAwait(false);
+			Environment.Exit(0);
+		}
+		catch
+		{
+			// ignored: an exception escaping an async void method would crash the process
+		}
 	}
 
 	public ApplicationViewModel? ViewModel { get; }
