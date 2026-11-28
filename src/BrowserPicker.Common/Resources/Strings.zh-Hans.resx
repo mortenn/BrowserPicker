@@ -336,6 +336,9 @@
   <data name="Defaults_Pattern" xml:space="preserve">
     <value>模式</value>
   </data>
+  <data name="Defaults_Profile" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
   <data name="Defaults_UserChoice" xml:space="preserve">
     <value>由用户选择</value>
   </data>
