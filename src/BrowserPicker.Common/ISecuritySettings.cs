@@ -39,4 +39,10 @@ public interface ISecuritySettings
 	/// When true, manual connection checks start immediately without showing the confirmation prompt.
 	/// </summary>
 	bool SkipConnectionCheckConfirmation { get; set; }
+
+	/// <summary>
+	/// When true, manual connection checks also look up the registrable domain's registration data over RDAP.
+	/// Sends the registrable domain (not the URL) to the registry's RDAP service.
+	/// </summary>
+	bool LookupDomainRegistration { get; set; }
 }

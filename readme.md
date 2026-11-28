@@ -208,6 +208,12 @@ When enabled, Browser Picker may request the resolved page to discover a favicon
 
 Use this button to turn off both automatic probe types at once.
 
+> [ ] Look up domain registration (RDAP)
+
+Off by default. When enabled, the manual connection check (the padlock in the picker) also shows when the domain was registered, when it expires, its registrar and its status. A domain registered only days ago is a common sign of a phishing site.
+
+Only the registrable domain is sent (for example `example.com` for `https://www.example.com/account`), never the full URL. Browser Picker downloads IANA's list of RDAP services from `data.iana.org` and asks the registry listed for the domain's top-level domain; that registry may see the lookup. Nothing is looked up when the picker opens, even for URLs that match your Defaults. A lookup that fails, is rate limited, or covers a top-level domain without RDAP shows as "Not available" and isn't treated as a warning.
+
 ### Defaults
 The defaults tab lets you configure rules to map certain URLs to certain browsers.
 

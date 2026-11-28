@@ -55,6 +55,9 @@
     "SkipConnectionCheckConfirmation": {
       "type": "boolean"
     },
+    "LookupDomainRegistration": {
+      "type": "boolean"
+    },
     "AutoCloseOnFocusLost": {
       "type": "boolean"
     },

@@ -37,6 +37,7 @@ public sealed class AppSettings : IApplicationSettings
 			CheckCertificateRecords = true;
 			HideManualConnectionCheck = false;
 			SkipConnectionCheckConfirmation = false;
+			LookupDomainRegistration = false;
 			UrlShorteners = Reg.Get<string[]>() ?? [];
 			WindowWidth = double.TryParse(Reg.GetValue("WindowWidth") as string, out var w) ? w : 0;
 			WindowHeight = double.TryParse(Reg.GetValue("WindowHeight") as string, out var h) ? h : 0;
@@ -136,6 +137,9 @@ public sealed class AppSettings : IApplicationSettings
 
 	/// <inheritdoc />
 	public bool SkipConnectionCheckConfirmation { get; set; }
+
+	/// <inheritdoc />
+	public bool LookupDomainRegistration { get; set; }
 
 	/// <inheritdoc />
 	public string[] UrlShorteners { get; set; } = [];

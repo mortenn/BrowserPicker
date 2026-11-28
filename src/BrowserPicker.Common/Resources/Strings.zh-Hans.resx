@@ -297,6 +297,9 @@
   <data name="ConnectionCheck_StatusFailed" xml:space="preserve">
     <value>连接检查失败</value>
   </data>
+  <data name="ConnectionCheck_StatusLookingUp" xml:space="preserve">
+    <value>正在查询域名信息...</value>
+  </data>
   <data name="ConnectionCheck_StatusRunning" xml:space="preserve">
     <value>正在检查连接...</value>
   </data>
@@ -492,6 +495,9 @@
   <data name="LogLevel_WarningAndAbove" xml:space="preserve">
     <value>Warning 及以上</value>
   </data>
+  <data name="Lookup_RdapDisclosure" xml:space="preserve">
+    <value>域名注册查询会把域名 "{0}" 发送给其注册局的 RDAP 服务（通过 data.iana.org 上的 IANA 列表找到）。该服务可能会看到这次查询。</value>
+  </data>
   <data name="Picker_AlwaysAsk" xml:space="preserve">
     <value>总是询问</value>
   </data>
@@ -581,6 +587,12 @@
   </data>
   <data name="Security_IncludeCertificateRecordsToolTip" xml:space="preserve">
     <value>仅在单击“检查连接”时使用。CAA 需要进行 DNS 查询；CT 会检查证书中嵌入的证书透明度证据。</value>
+  </data>
+  <data name="Security_LookupDomainRegistration" xml:space="preserve">
+    <value>查询域名注册信息 (RDAP)</value>
+  </data>
+  <data name="Security_LookupDomainRegistrationToolTip" xml:space="preserve">
+    <value>仅在你点击“检查连接”时使用。会把域名（例如 example.com）而不是完整 URL 发送给 IANA 列出的注册局 RDAP 服务。</value>
   </data>
   <data name="Security_ManualProbes" xml:space="preserve">
     <value>手动探测</value>

@@ -6,7 +6,7 @@ Browser Picker works without any network access. If a lookup fails, the picker s
 
 ## Proxies
 
-**Short link expansion and favicons** use the Windows proxy settings, like most Windows apps. Standard `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY` environment variables take precedence when they are set.
+**Short link expansion and favicons** use the Windows proxy settings, like most Windows apps. So do the optional [lookups with outside services](security.md#lookups-with-outside-services). Standard `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY` environment variables take precedence when they are set.
 
 If the proxy requires you to sign in, or blocks the request, these lookups fail quietly. The picker then shows the short link instead of its target, and no icon.
 
