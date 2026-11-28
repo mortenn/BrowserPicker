@@ -216,29 +216,44 @@
 					</Style>
 				</TabItem.Style>
 				<ScrollViewer Padding="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-					<TextBlock
-						Margin="4"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						FontSize="16"
-						FontWeight="Light"
-						TextWrapping="Wrap">
-						<Run Text="{x:Static res:Strings.Welcome_Intro}" />
-						<LineBreak />
-						<LineBreak />
-						<Run Text="{x:Static res:Strings.Welcome_Star}" />
-						<LineBreak />
-						<LineBreak />
-						<Run Text="{x:Static res:Strings.Welcome_IssuesPrefix}" />
-						<Hyperlink>github.com/mortenn/BrowserPicker</Hyperlink>
-						<Run Text="{x:Static res:Strings.Welcome_IssuesSuffix}" />
-						<LineBreak />
-						<LineBreak />
-						<Run Text="{x:Static res:Strings.Welcome_Farewell}" />
-						<LineBreak />
-						<LineBreak />
-						<Run FontSize="8" Text="{x:Static res:Strings.Welcome_SelfDestruct}" />
-					</TextBlock>
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+						<TextBlock
+							Margin="4"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="Light"
+							TextWrapping="Wrap">
+							<Run Text="{x:Static res:Strings.Welcome_Intro}" />
+							<LineBreak />
+							<LineBreak />
+							<Run Text="{x:Static res:Strings.Welcome_Star}" />
+							<LineBreak />
+							<LineBreak />
+							<Run Text="{x:Static res:Strings.Welcome_IssuesPrefix}" />
+							<Hyperlink>github.com/mortenn/BrowserPicker</Hyperlink>
+							<Run Text="{x:Static res:Strings.Welcome_IssuesSuffix}" />
+							<LineBreak />
+							<LineBreak />
+							<Run Text="{x:Static res:Strings.Welcome_Farewell}" />
+							<LineBreak />
+							<LineBreak />
+							<Run FontSize="8" Text="{x:Static res:Strings.Welcome_SelfDestruct}" />
+						</TextBlock>
+						<StackPanel Margin="4,12,4,4" HorizontalAlignment="Center">
+							<StackPanel.Style>
+								<Style TargetType="StackPanel">
+									<Setter Property="Visibility" Value="Visible" />
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding IsDefaultBrowser}" Value="True">
+											<Setter Property="Visibility" Value="Collapsed" />
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</StackPanel.Style>
+							<TextBlock Margin="0,0,0,6" HorizontalAlignment="Center" Text="{Binding DefaultBrowserStatusText}" TextWrapping="Wrap" />
+							<Button Padding="10,4" HorizontalAlignment="Center" Command="{Binding OpenDefaultApps}" Content="{x:Static res:Strings.Welcome_MakeDefaultBrowser}" />
+						</StackPanel>
+					</StackPanel>
 				</ScrollViewer>
 			</TabItem>
 
@@ -525,7 +540,17 @@
 								</StackPanel>
 							</StackPanel>
 
-							<StackPanel>
+							<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_WindowsIntegration}" />
+							<TextBlock Margin="0,0,0,6" Text="{Binding DefaultBrowserStatusText}" TextWrapping="Wrap" />
+							<Button
+								Margin="0,0,0,6"
+								Padding="10,4"
+								HorizontalAlignment="Left"
+								Command="{Binding OpenDefaultApps}"
+								Content="{x:Static res:Strings.Config_OpenDefaultApps}"
+								ToolTip="{x:Static res:Strings.Config_OpenDefaultAppsToolTip}" />
+
+							<StackPanel Margin="0,6,0,0">
 								<StackPanel.Style>
 									<Style TargetType="StackPanel">
 										<Setter Property="Visibility" Value="Visible" />
@@ -536,7 +561,6 @@
 										</Style.Triggers>
 									</Style>
 								</StackPanel.Style>
-								<TextBlock Margin="0,16,0,6" FontWeight="Bold" Text="{x:Static res:Strings.Config_WindowsIntegration}" />
 								<TextBlock Margin="0,0,0,6" Text="{Binding BrowserRegistrationDescription}" TextWrapping="Wrap" />
 								<Button
 									Margin="0,0,0,6"

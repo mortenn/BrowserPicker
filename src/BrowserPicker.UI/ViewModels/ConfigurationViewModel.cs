@@ -614,6 +614,52 @@ public sealed class ConfigurationViewModel : ModelBase
 		private set => SetProperty(ref show_current_user_browser_registration, value);
 	}
 
+	/// <summary>
+	/// Opens Windows Default apps on Browser Picker's page, where the user can make it the default browser.
+	/// </summary>
+	public ICommand OpenDefaultApps => open_default_apps ??= new DelegateCommand(OpenWindowsDefaultApps);
+
+	/// <summary>
+	/// Whether Windows opens both http and https links with Browser Picker.
+	/// </summary>
+	public bool IsDefaultBrowser
+	{
+		get => is_default_browser;
+		private set => SetProperty(ref is_default_browser, value);
+	}
+
+	/// <summary>
+	/// Describes which app Windows opens web links with.
+	/// </summary>
+	public string DefaultBrowserStatusText
+	{
+		get => default_browser_status_text;
+		private set => SetProperty(ref default_browser_status_text, value);
+	}
+
+	/// <summary>
+	/// Reads the user's default app choice again. Called when the settings are shown or their window is activated,
+	/// so the status follows a change made in Windows Settings.
+	/// </summary>
+	internal void RefreshDefaultBrowserStatus()
+	{
+		var status = DefaultBrowserStatus.Read();
+		IsDefaultBrowser = status.IsDefault;
+		DefaultBrowserStatusText = status.Description;
+	}
+
+	private void OpenWindowsDefaultApps()
+	{
+		try
+		{
+			DefaultBrowserStatus.OpenDefaultApps();
+		}
+		catch (Exception ex)
+		{
+			DefaultBrowserStatusText = string.Format(Strings.DefaultStatus_OpenFailed, ex.Message);
+		}
+	}
+
 	public string BrowserRegistrationActionText =>
 		BrowserRegisteredForCurrentUser ? Strings.Registration_Unregister : Strings.Registration_Register;
 
@@ -1139,6 +1185,9 @@ public sealed class ConfigurationViewModel : ModelBase
 	private string browser_registration_status = string.Empty;
 	private bool browser_registered_for_current_user;
 	private bool show_current_user_browser_registration;
+	private DelegateCommand? open_default_apps;
+	private bool is_default_browser;
+	private string default_browser_status_text = string.Empty;
 
 	private string? test_defaults_url;
 

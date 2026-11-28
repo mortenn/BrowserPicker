@@ -159,6 +159,12 @@
   <data name="Config_LookupTimeout" xml:space="preserve">
     <value>查询超时</value>
   </data>
+  <data name="Config_OpenDefaultApps" xml:space="preserve">
+    <value>打开 Windows 默认应用</value>
+  </data>
+  <data name="Config_OpenDefaultAppsToolTip" xml:space="preserve">
+    <value>Windows 不允许应用将自己设为默认浏览器。此按钮会在 Windows 设置中打开 Browser Picker 的页面，你可以在那里将它设为打开网页链接的应用。</value>
+  </data>
   <data name="Config_ProfileDisplay" xml:space="preserve">
     <value>配置文件显示</value>
   </data>
@@ -332,6 +338,27 @@
   </data>
   <data name="Defaults_UserChoice" xml:space="preserve">
     <value>由用户选择</value>
+  </data>
+  <data name="DefaultStatus_AnotherApp" xml:space="preserve">
+    <value>另一个应用（{0}）</value>
+  </data>
+  <data name="DefaultStatus_NoApp" xml:space="preserve">
+    <value>无应用</value>
+  </data>
+  <data name="DefaultStatus_NoDefault" xml:space="preserve">
+    <value>Windows 没有设置打开网页链接的默认应用。请在 Windows 默认应用中选择 Browser Picker。</value>
+  </data>
+  <data name="DefaultStatus_OpenFailed" xml:space="preserve">
+    <value>无法打开 Windows 默认应用：{0}</value>
+  </data>
+  <data name="DefaultStatus_OpensWebLinks" xml:space="preserve">
+    <value>Browser Picker 会打开网页链接。</value>
+  </data>
+  <data name="DefaultStatus_OtherApp" xml:space="preserve">
+    <value>网页链接会用 {0} 打开，而不是 Browser Picker。请在 Windows 默认应用中选择 Browser Picker。</value>
+  </data>
+  <data name="DefaultStatus_PartialScheme" xml:space="preserve">
+    <value>Browser Picker 会打开 {0} 链接，但 {1} 链接会用 {2} 打开。请在 Windows 默认应用中为 HTTP 和 HTTPS 都选择 Browser Picker。</value>
   </data>
   <data name="Editor_Command" xml:space="preserve">
     <value>命令：</value>
@@ -626,6 +653,9 @@
   </data>
   <data name="Welcome_IssuesSuffix" xml:space="preserve">
     <value>并提交 issue！</value>
+  </data>
+  <data name="Welcome_MakeDefaultBrowser" xml:space="preserve">
+    <value>将 Browser Picker 设为默认浏览器</value>
   </data>
   <data name="Welcome_SelfDestruct" xml:space="preserve">
     <value>此消息将在 10 秒后自毁</value>
