@@ -25,6 +25,9 @@ internal static class Program
 		var runtimeLogBuffer = new InMemoryLogBuffer();
 
 		var builder = Host.CreateDefaultBuilder()
+			// The default content root is the working directory, which is wherever the app that opened the
+			// link was running. Read appsettings.json from next to BrowserPicker.exe instead.
+			.UseContentRoot(AppContext.BaseDirectory)
 			// appsettings.json is only read at startup; skip the file watcher the default host sets up.
 			.ConfigureHostConfiguration(config =>
 				config.AddInMemoryCollection([new("hostBuilder:reloadConfigOnChange", "false")])
