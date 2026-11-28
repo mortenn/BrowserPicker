@@ -176,6 +176,13 @@ public static partial class LoggingExtensions
 	)]
 	public static partial void LogAutomationSingleRunningBrowser(this ILogger logger, string? browserName);
 
+	[LoggerMessage(
+		EventId = 1040,
+		Level = LogLevel.Information,
+		Message = "Opening the link in {BrowserName} without showing the picker: {Reason}"
+	)]
+	public static partial void LogOpeningWithoutPicker(this ILogger logger, string browserName, string reason);
+
 	[LoggerMessage(EventId = 1029, Level = LogLevel.Debug, Message = "Target URL is not a valid absolute Uri: {Url}")]
 	public static partial void LogAutomationInvalidUrl(this ILogger logger, string? url);
 }
